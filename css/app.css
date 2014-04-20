@@ -15,48 +15,6 @@ html { font-size: 100%; }
 
 /* Grid */
 
-*, *:before, *:after {
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-}
-
-.container {
-  margin: 0 auto;
-  max-width: 60rem;
-  width: 90%;
-}
-
-@media (min-width: 40rem) {
-  .column {
-    float: left;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  .column.full { width: 100%; }
-  .column.two-thirds { width: 66.7%; }
-  .column.half { width: 50%; }
-  .column.third { width: 33.3%; }
-  .column.fourth { width: 25%; }
-  .column.three-fourths { width: 75%; }
-  .column.flow-opposite { float: right; }  
-}
-
-.clearfix:before,
-.clearfix:after {
-  content: " ";
-  display: table;
-}
- 
-.clearfix:after {
-  clear: both;
-}
- 
-.clearfix {
-  *zoom: 1;
-}
-
 /* Ditto */
 
 body {
@@ -68,13 +26,18 @@ body {
     font-size: 0.8em;
 }
 
-#sidebar {
+@media (min-width: 40rem) {
+	#sidebar {
+	width: 300px;
     position: fixed;
     height: 100%;
 
     overflow-y: scroll;
     overflow: -moz-scrollbars-vertical;
+	}
+}
 
+#sidebar {
     margin-right: 20px;
     margin-top: 0;
     padding-left: 25px;
@@ -131,6 +94,13 @@ body {
 
     text-indent: -5px;  /* to compensate for the padding for the dash */
     font-size: 12px;
+}
+
+@media (min-width: 40rem) {
+	#content {
+		width: 580px;
+		padding-left:350px;
+	}
 }
 
 #content {
