@@ -18,7 +18,7 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 
 2013年3月，ECMAScript 6草案冻结，不再添加新功能。新的功能设想将被放到ECMAScript 7。
 
-2013年12月，ECMAScript 6草案预计将会发布。然后是12个月的讨论期，听取各方反馈。
+2013年12月，ECMAScript 6草案发布。然后是12个月的讨论期，听取各方反馈。
 
 2014年12月，ECMAScript 6预计将发布正式版本。
 
