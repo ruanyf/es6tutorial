@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- jQuery -->
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+  <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js"></script>
+
+  <!-- marked -->
+  <script src="//chutsu.github.io/ditto/ver/0.1/marked.js"></script>
+
+  <!-- ditto -->
+  <script src="//chutsu.github.io/ditto/ver/0.1/ditto.js"></script>
+  <link rel="stylesheet" href="/css/normalize.css">
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body>
+  <!-- essential -->
+  <div id="sidebar"></div>
+  <div id="content"></div>
+
+  <!-- optional -->
+  <div id="back_to_top">back to top</div>
+  <div id="edit">edit</div>
+  <div id="loading">Loading ...</div>
+  <div id="error">Opps! ... File not found!</div>
+
+  <script>
+      // essential settings
+      ditto.index = "README.md",
+      ditto.sidebar_file = "sidebar.md",
+
+      // where the docs are actually stored on github - so you can edit
+      ditto.base_url = "https://github.com/ruanyf/es6tutorial/edit/gh-pages/";  // <------- EDIT ME!!
+
+      // run
+      ditto.run();
+  </script>
+</body>
+</html>
