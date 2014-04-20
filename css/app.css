@@ -96,21 +96,24 @@ body {
     font-size: 0.8rem;
 }
 
-@media (min-width: 40rem) {
-	#content {
-		width: 580px;
-		padding-left:350px;
-	}
-}
-
 #content {
     padding-top: 10px;
     padding-bottom: 150px;
-
+	margin-left: 20px;
+	margin-right: 20px;
     font-size: 0.8rem;
 	line-height:1.6rem;
 
     /* border: 1px solid black; */
+}
+
+@media (min-width: 40rem) {
+	#content {
+		width: 580px;
+		padding-left:350px;
+		margin-left: 0px;
+		margin-right: 0px;
+	}
 }
 
 #content pre {
