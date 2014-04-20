@@ -23,7 +23,7 @@ body {
     padding: 0;
 
     font-family: Verdana, Arial;
-    font-size: 0.8em;
+    font-size: 0.8rem;
 }
 
 @media (min-width: 40rem) {
@@ -31,6 +31,7 @@ body {
 	width: 300px;
     position: fixed;
     height: 100%;
+    margin-right: 20px;
 
     overflow-y: scroll;
     overflow: -moz-scrollbars-vertical;
@@ -38,7 +39,6 @@ body {
 }
 
 #sidebar {
-    margin-right: 20px;
     margin-top: 0;
     padding-left: 25px;
     padding-top: 0;
@@ -93,7 +93,7 @@ body {
     padding: 0;
 
     text-indent: -5px;  /* to compensate for the padding for the dash */
-    font-size: 12px;
+    font-size: 0.8rem;
 }
 
 @media (min-width: 40rem) {
@@ -107,8 +107,8 @@ body {
     padding-top: 10px;
     padding-bottom: 150px;
 
-    text-align: justify;
-    font-size: 16px;
+    font-size: 1.2rem;
+	line-height:1.2rem;
 
     /* border: 1px solid black; */
 }
