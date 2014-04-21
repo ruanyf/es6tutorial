@@ -124,6 +124,7 @@ body {
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 0.8rem;
+	line-height: 1.2;
 
     color: #FFF;
 
@@ -217,7 +218,7 @@ body {
     width: 70px;
     top: 20px;
 
-    margin-left: 890px;
+    margin-left: 970px;
     margin-top: 0px;
 
     color: #FFF;
@@ -243,7 +244,7 @@ body {
     width: 70px;
     top: 45px;
 
-    margin-left: 890px;
+    margin-left: 970px;
     margin-top: 0px;
 
     color: #FFF;
