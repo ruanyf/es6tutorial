@@ -1,10 +1,18 @@
 # ECMAScript 6简介
 
+ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，正处在快速开发之中，大部分已经完成了，预计将在2014年底正式发布。Mozilla将在这个标准的基础上，推出JavaScript 2.0。
+
+ES6的目标，是使得JavaScript语言可以用来编写大型的复杂的应用程序，成为企业级开发语言。
+
+## ECMAScript和JavaScript的关系
+
 ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现。
 
 1996年11月，JavaScript的创造者Netscape公司，决定将JavaScript提交给国际标准化组织ECMA，希望这种语言能够成为国际标准。次年，ECMA发布262号标准文件（ECMA-262）的第一版，规定了浏览器脚本语言的标准，并将这种语言称为ECMAScript。这个版本就是ECMAScript 1.0版。
 
 之所以不叫JavaScript，有两个原因。一是商标，Java是Sun公司的商标，根据授权协议，只有Netscape公司可以合法地使用JavaScript这个名字，且JavaScript本身也已经被Netscape公司注册为商标。二是想体现这门语言的制定者是ECMA，不是Netscape，这样有利于保证这门语言的开放性和中立性。因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现。在日常场合，这两个词是可以互换的。
+
+## ECMAScript的历史
 
 1998年6月，ECMAScript 2.0版发布。
 
@@ -23,3 +31,32 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 2014年12月，ECMAScript 6预计将发布正式版本。
 
 ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等。TC39的总体考虑是，ECMAScript 5与ECMAScript 3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当前，JavaScript.next指的是ECMAScript 6，当第六版发布以后，将指ECMAScript 7。TC39预计，ECMAScript 5会在2013年的年中成为JavaScript开发的主流标准，并在今后五年中一直保持这个位置。
+
+## 部署进度
+
+由于ES6还没有定案，有些语法规则还会变动，目前支持ES6的软件和开发环境还不多。各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。
+
+## 使用方法
+
+Google公司的V8引擎已经部署了ES6的部分特性。使用node.js 0.11版，就可以体验这些特性。
+
+node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
+
+```bash
+source nvm.sh
+nvm use 0.11
+node --harmony
+```
+
+另外，可以使用Google的[Traceur](https://github.com/google/traceur-compiler)，将ES6代码编译为ES5。
+
+```bash
+# 安装
+npm install -g traceur
+
+# 运行ES6文件
+traceur /path/to/es6
+
+# 将ES6文件转为ES5文件
+traceur --script /path/to/es6 --out /path/to/es5
+```
