@@ -128,7 +128,7 @@ body {
 
     color: #FFF;
 
-    background: #444;
+    background: #111;
     border-radius: 5px;
 }
 
@@ -281,7 +281,7 @@ body {
 
 code[class*="language-"],
 pre[class*="language-"] {
-	color: #f8f8f2;
+	color: #a6e22e;
 	text-shadow: 0 1px rgba(0,0,0,0.3);
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	direction: ltr;
