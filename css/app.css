@@ -275,15 +275,13 @@ body {
 }
 
 /**
- * okaidia theme for JavaScript, CSS and HTML
- * Loosely based on Monokai textmate theme by http://www.monokai.nl/
- * @author ocodia
+ * prism.js Funky theme
+ * Based on “Polyfilling the gaps” talk slides http://lea.verou.me/polyfilling-the-gaps/
+ * @author Lea Verou
  */
 
 code[class*="language-"],
 pre[class*="language-"] {
-	color: #f8f8f2;
-	text-shadow: 0 1px rgba(0,0,0,0.3);
 	font-family: Consolas, Monaco, 'Andale Mono', monospace;
 	direction: ltr;
 	text-align: left;
@@ -303,32 +301,35 @@ pre[class*="language-"] {
 
 /* Code blocks */
 pre[class*="language-"] {
-	padding: 1em;
+	padding: .4em .8em;
 	margin: .5em 0;
 	overflow: auto;
-	border-radius: 0.3em;
+	background: url('data:image/svg+xml;charset=utf-8,<svg%20version%3D"1.1"%20xmlns%3D"http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg"%20width%3D"100"%20height%3D"100"%20fill%3D"rgba(0%2C0%2C0%2C.2)">%0D%0A<polygon%20points%3D"0%2C50%2050%2C0%200%2C0"%20%2F>%0D%0A<polygon%20points%3D"0%2C100%2050%2C100%20100%2C50%20100%2C0"%20%2F>%0D%0A<%2Fsvg>');
+	background-size: 1em 1em;
 }
 
-:not(pre) > code[class*="language-"],
-pre[class*="language-"] {
-	background: #272822;
+code[class*="language-"] {
+	background: black;
+	color: white;
+	box-shadow: -.3em 0 0 .3em black, .3em 0 0 .3em black;
 }
 
 /* Inline code */
 :not(pre) > code[class*="language-"] {
-	padding: .1em;
+	padding: .2em;
 	border-radius: .3em;
+	box-shadow: none;
 }
 
 .token.comment,
 .token.prolog,
 .token.doctype,
 .token.cdata {
-	color: slategray;
+	color: #aaa;
 }
 
 .token.punctuation {
-	color: #f8f8f2;
+	color: #999;
 }
 
 .namespace {
@@ -337,47 +338,38 @@ pre[class*="language-"] {
 
 .token.property,
 .token.tag,
+.token.boolean,
+.token.number,
 .token.constant,
 .token.symbol {
-	color: #f92672;
-}
-
-.token.boolean,
-.token.number{
-	color: #ae81ff;
+	color: #0cf;
 }
 
 .token.selector,
 .token.attr-name,
 .token.string,
 .token.builtin {
-	color: #a6e22e;
+	color: yellow;
 }
-
 
 .token.operator,
 .token.entity,
 .token.url,
 .language-css .token.string,
-.style .token.string,
-.token.variable {
-	color: #f8f8f2;
+.toke.variable {
+	color: yellowgreen;
 }
 
 .token.atrule,
-.token.attr-value
-{
-	color: #e6db74;
+.token.attr-value,
+.token.keyword {
+	color: deeppink;
 }
 
-
-.token.keyword{
-color: #66d9ef;
-}
 
 .token.regex,
 .token.important {
-	color: #fd971f;
+	color: orange;
 }
 
 .token.important {
