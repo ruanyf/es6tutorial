@@ -26,27 +26,29 @@ body {
     font-size: 0.8rem;
 }
 
-@media (min-width: 40rem) {
-	#sidebar {
-	width: 300px;
-    position: fixed;
-    height: 100%;
-    margin-right: 20px;
-
-    overflow-y: scroll;
-    overflow: -moz-scrollbars-vertical;
-	}
-}
-
 #sidebar {
     margin-top: 0;
     padding-left: 25px;
-    padding-top: 0;
+	padding-bottom:25px;
+    padding-top: 25px;
 
     box-shadow: 0 0 40px #CCC;
     -webkit-box-shadow: 0 0 40px #CCC;
     -moz-box-shadow: 0 0 40px #CCC;
     border-right: 1px solid #BBB;
+}
+
+@media (min-width: 40rem) {
+	#sidebar {
+	width: 280px;
+    position: fixed;
+    height: 100%;
+    margin-right: 20px;
+	padding-bottom:0px;
+    padding-top: 0px;
+    overflow-y: scroll;
+    overflow: -moz-scrollbars-vertical;
+	}
 }
 
 #sidebar h1 {
@@ -110,7 +112,7 @@ body {
 @media (min-width: 40rem) {
 	#content {
 		width: 580px;
-		padding-left:350px;
+		padding-left:330px;
 		margin-left: 0px;
 		margin-right: 0px;
 	}
@@ -215,7 +217,7 @@ body {
     width: 70px;
     top: 20px;
 
-    margin-left: 890px;
+    margin-left: 60%;
     margin-top: 0px;
 
     color: #FFF;
@@ -226,6 +228,12 @@ body {
 
     border-radius: 5px;
     background-color: #AAA;
+}
+
+@media (min-width: 40rem) {
+	#back_to_top {
+		 margin-left: 890px;
+	}
 }
 
 #back_to_top:hover {
@@ -241,7 +249,7 @@ body {
     width: 70px;
     top: 45px;
 
-    margin-left: 890px;
+    margin-left: 60%;
     margin-top: 0px;
 
     color: #FFF;
@@ -253,6 +261,13 @@ body {
     border-radius: 5px;
     background-color: #AAA;
 }
+
+@media (min-width: 40rem) {
+	#edit {
+		 margin-left: 890px;
+	}
+}
+
 
 #edit:hover {
     background-color: #444;
