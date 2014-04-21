@@ -191,9 +191,7 @@ function router() {
 
     }).always(function() {
         clearInterval(loading);
-		var block = document.getElementById('content')
-		Prism.highlightElement(block);
+		Prism.highlightAll();
         $(ditto.loading_id).hide();
-
     });
 }
