@@ -230,12 +230,6 @@ body {
     background-color: #AAA;
 }
 
-@media (min-width: 40rem) {
-	#back_to_top {
-		 margin-left: 890px;
-	}
-}
-
 #back_to_top:hover {
     background-color: #444;
     cursor: pointer;
@@ -261,13 +255,6 @@ body {
     border-radius: 5px;
     background-color: #AAA;
 }
-
-@media (min-width: 40rem) {
-	#edit {
-		 margin-left: 890px;
-	}
-}
-
 
 #edit:hover {
     background-color: #444;
