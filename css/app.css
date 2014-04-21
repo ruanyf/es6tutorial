@@ -135,12 +135,12 @@ body {
 #content code {
     padding-right: 5px;
 
-    color: #FFF;
+    color: #a6e22e;
     font-size: 0.8rem;
     font-weight: normal;
-    font-family: Consolas, monospace;
+    font-family: Consolas,"Courier New",Courier,FreeMono,monospace;
 
-    background: #444;
+    background: #111;
     border-radius: 2px;
 }
 
