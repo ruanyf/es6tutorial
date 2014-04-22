@@ -120,7 +120,7 @@ function create_page_anchors() {
 
         if (i === 2){
 			var ul_tag = $('#content h1')
-				.after(ul)
+				.after('ul')
 				.addClass("content-toc")
 				.attr('id','content-toc');
 			for (var j = 0; j < headers.length; j++) {
