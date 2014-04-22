@@ -196,6 +196,11 @@ function router() {
 		$('#content code').map(function() {
             Prism.highlightElement(this);
         });
+
+		$('html, body').animate({
+            scrollTop: $('#content').offset().top
+        }, 200);
+
     }).fail(function() {
         show_error();
 
