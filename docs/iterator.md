@@ -49,3 +49,16 @@ it.next().value // '2'
 // ...
 
 ```
+
+一个对象只要具备了next方法，就可以用for...of循环遍历它的值。
+
+```javascript
+
+for (var n of it) {
+  if (n > 5)
+    break;
+  console.log(n);
+}
+
+```
+
