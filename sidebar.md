@@ -5,8 +5,9 @@
 授权：<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">署名-非商用许可证</a>
 
 ## 目录
-0. [README](#README)
-1. [ECMAScript 6简介](#docs/intro)
+- [首页：Readme](#README)
+- [ECMAScript 6简介](#docs/intro)
+- [Iterator：遍历器](#docs/iterator)
 
 ## 其他
 - [源码](http://github.com/ruanyf/es6tutorial/)
