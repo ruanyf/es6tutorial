@@ -197,9 +197,11 @@ function router() {
             Prism.highlightElement(this);
         });
 
-		$('html, body').animate({
-            scrollTop: $('#content').offset().top
-        }, 200);
+		if(path.indexOf('README') !== -1){
+			$('html, body').animate({
+				scrollTop: $('#content').offset().top
+			}, 200);
+		}
 
     }).fail(function() {
         show_error();
