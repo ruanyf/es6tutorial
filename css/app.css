@@ -118,7 +118,7 @@ body {
 	}
 }
 
-#content pre {
+#content pre{
     margin-left: auto;
     margin-right: auto;
     padding-top: 10px;
@@ -193,7 +193,7 @@ body {
 
 #content ul li {
     text-indent: -5px;  /* to compensate for the padding for the dash */
-    font-size: 13px;
+    font-size: 0.8rem;
 }
 
 #content ul li.link {
@@ -207,6 +207,11 @@ body {
 #content a:link, #content a:visited {
     color: #4682BE;
     text-decoration: none;
+}
+
+#content .content-toc{
+    background: #bdc3c7;
+    border-radius: 5px;
 }
 
 #back_to_top {
