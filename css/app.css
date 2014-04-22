@@ -183,6 +183,8 @@ body {
 #content ul {
     display: block;
     list-style-type: none;
+	padding-top: 0.5rem;
+	padding-bottom:0.5rem;
 }
 
 #content ul li:before {  /* a hack to have dashes as a list style */
@@ -197,9 +199,9 @@ body {
 }
 
 #content ul li.link {
-    color: #4682BE;
+    color: #2980b9;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 0.7rem;
     font-weight: bold;
     cursor: pointer;
 }
