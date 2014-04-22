@@ -9,3 +9,4 @@
 
 ## 其他
 - [源码](http://github.com/ruanyf/es6tutorial/)
+- [修订历史](https://github.com/ruanyf/es6tutorial/commits/gh-pages)
