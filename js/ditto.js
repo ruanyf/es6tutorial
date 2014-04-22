@@ -120,13 +120,13 @@ function create_page_anchors() {
 
         if (i === 2){
 			var ul_tag = $('#content h1')
-				.after('ul')
+				.after('<ul></ul>')
 				.addClass("content-toc")
 				.attr('id','content-toc');
 			for (var j = 0; j < headers.length; j++) {
                 var li_tag = $('<li></li>').text(headers[j]);
                 // li_create_linkage(li_tag, i);
-				ul_tag.prepend(li_tag);
+				ul_tag.append(li_tag);
 			}
 		}
     }
