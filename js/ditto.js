@@ -90,7 +90,6 @@ function li_create_linkage(li_tag, header_level) {
         var header = $(
             ditto.content_id + " h" + header_level + "." + li_tag.attr("id")
         );
-		console.log(header);
         $('html, body').animate({
             scrollTop: header.offset().top
         }, 200);
@@ -126,8 +125,8 @@ function create_page_anchors() {
 				.attr('id','content-toc');
 			for (var j = 0; j < headers.length; j++) {
                 var li_tag = $('<li></li>').text(headers[j]);
-                li_create_linkage(li_tag, i);
 				ul_tag.append(li_tag);
+                li_create_linkage(li_tag, i);
 			}
 		}
     }
