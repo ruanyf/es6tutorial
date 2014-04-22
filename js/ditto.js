@@ -186,7 +186,7 @@ function router() {
     $.get(path , function(data) {
         $(ditto.error_id).hide();
         $(ditto.content_id).html(marked(data));
-		if ($(ditto.content_id h1) === ditto.document_title){
+		if ($(ditto.content_id+" h1").text() === ditto.document_title){
 			document.title = ditto.document_title;
 		} else {
 			document.title = $(ditto.content_id h1).text() + " - " + ditto.document_title;
