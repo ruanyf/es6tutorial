@@ -118,7 +118,7 @@ function create_page_anchors() {
 			this.id = 'h'+i+'-'+replace_symbols($(this).text());
         });
 
-        if (i === 2){
+        if ((i === 2) && headers.length !== 0){
 			var ul_tag = $('<ul></ul>')
 				.insertAfter('#content h1')
 				.addClass("content-toc")
