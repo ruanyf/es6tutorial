@@ -108,13 +108,14 @@ function create_page_anchors() {
     // if there is a match, create click listeners
     // and scroll to relevant sections
 
-    // go through header level 2 and 3
-    for (var i = 2; i <= 4; i++) {
+    // go through header level 1 to 3
+    for (var i = 1; i <= 4; i++) {
         // parse all headers
         var headers = [];
         $('#content h' + i).map(function() {
             headers.push($(this).text());
             $(this).addClass(replace_symbols($(this).text()));
+			this.id = 'h'+1+'-'+replace_symbols($(this).text();
         });
 
         // parse and set links between li and h2
