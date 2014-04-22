@@ -115,17 +115,20 @@ function create_page_anchors() {
         $('#content h' + i).map(function() {
             headers.push($(this).text());
             $(this).addClass(replace_symbols($(this).text()));
-			this.id = 'h'+1+'-'+replace_symbols($(this).text());
+			this.id = 'h'+i+'-'+replace_symbols($(this).text());
         });
 
-        // parse and set links between li and h2
-        $('#content ul li').map(function() {
-            for (var j = 0; j < headers.length; j++) {
-                if (headers[j] === $(this).text()) {
-                    li_create_linkage($(this), i);
-                }
-            }
-        });
+        if (i === 2){
+			var ul_tag = $('#content h1')
+				.after(ul)
+				.addClass("content-toc")
+				.attr('id','content-toc');
+			for (var j = 0; j < headers.length; j++) {
+                var li_tag = $('<li></li>').text(headers[j]);
+                li_create_linkage(li_tag, i);
+				ul_tag.prepend(li_tag);
+			}
+		}
     }
 }
 
