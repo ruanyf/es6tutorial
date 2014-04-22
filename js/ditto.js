@@ -90,6 +90,7 @@ function li_create_linkage(li_tag, header_level) {
         var header = $(
             ditto.content_id + " h" + header_level + "." + li_tag.attr("id")
         );
+		console.log(header);
         $('html, body').animate({
             scrollTop: header.offset().top
         }, 200);
