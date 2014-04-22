@@ -115,7 +115,7 @@ function create_page_anchors() {
         $('#content h' + i).map(function() {
             headers.push($(this).text());
             $(this).addClass(replace_symbols($(this).text()));
-			this.id = 'h'+1+'-'+replace_symbols($(this).text();
+			this.id = 'h'+1+'-'+replace_symbols($(this).text());
         });
 
         // parse and set links between li and h2
