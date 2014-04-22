@@ -197,7 +197,7 @@ function router() {
             Prism.highlightElement(this);
         });
 
-		if(path.indexOf('README') !== -1){
+		if(path.indexOf('README') === -1){
 			$('html, body').animate({
 				scrollTop: $('#content').offset().top
 			}, 200);
