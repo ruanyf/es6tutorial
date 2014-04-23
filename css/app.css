@@ -62,7 +62,7 @@ body {
 }
 
 #sidebar h2 {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 #sidebar h5 {
@@ -90,12 +90,12 @@ body {
 
 #sidebar ul li {
     margin-top: 0;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.2rem;
     margin-left: 10px;
     padding: 0;
 
     text-indent: -5px;  /* to compensate for the padding for the dash */
-    font-size: 0.8rem;
+    font-size: 0.7rem;
 }
 
 #content {
