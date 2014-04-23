@@ -9,6 +9,7 @@
 - [ECMAScript 6简介](#docs/intro)
 - [Iterator：遍历器](#docs/iterator)
 - [Generator函数](#docs/generator)
+- [Promise对象](#docs/promise)
 - [参考链接](#docs/reference)
 
 ## 其他
