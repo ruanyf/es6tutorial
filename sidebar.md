@@ -8,7 +8,7 @@
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
 - [箭头函数](#docs/arrow)
-- [Iterator：遍历器](#docs/iterator)
+- [Iterator和for...of循环](#docs/iterator)
 - [Generator函数](#docs/generator)
 - [Promise对象](#docs/promise)
 - [参考链接](#docs/reference)

@@ -1,4 +1,6 @@
-# Iterator：遍历器
+# Iterator和for...of循环
+
+## Iterator（遍历器）
 
 遍历器（Iterator）是一种协议，任何对象只要部署这个协议，就可以完成遍历操作。在ES6中，遍历操作特指for...of循环。
 
@@ -61,7 +63,10 @@ for (var n of it) {
 }
 
 ```
-在ES6中，数组本身就具有iterator接口。
+
+## for...of循环
+
+ES6中，任何具备了iterator接口的对象，都可以用for...of循环遍历。数组原生具备iterator接口。
 
 ```javascript
 
@@ -73,5 +78,95 @@ for(let v of arr) {
 \\ red
 \\ green
 \\ blue
+
+```
+
+JavaScript原有的for...in循环，只能获得对象的键名，不能直接获取键值。ES6提供for...of循环，允许遍历获得键值。
+
+```javascript
+
+var arr = ["a", "b", "c", "d"];
+for (a in arr) {
+  console.log(a);
+}
+// 0
+// 1
+// 2
+// 3
+
+for (a of arr) {
+  console.log(a); 
+}
+// a
+// b
+// c
+// d
+
+```
+
+上面代码表明，for...in循环读取键名，for...of循环读取键值。
+
+对于Set和Map结构的数据，可以直接使用for...of循环。
+
+```javascript
+
+var engines = Set(["Gecko", "Trident", "Webkit", "Webkit"]);
+for (var e of engines) {
+    console.log(e);
+}
+// Gecko
+// Trident
+// Webkit
+
+var es6 = new Map();
+es6.set("edition", 6);
+es6.set("committee", "TC39");
+es6.set("standard", "ECMA-262");
+for (var [name, value] of es6) {
+  console.log(name + ": " + value);
+}
+// edition: 6
+// committee: TC39
+// standard: ECMA-262
+
+```
+
+上面代码演示了如何遍历Set结构和Map结构，后者是同时遍历键名和键值。
+
+对于普通的对象，for...of结构不能直接使用，会报错，必须部署了iterator接口后才能使用。但是，这样情况下，for...in循环依然可以用来遍历键名。
+
+```javascript
+
+var es6 = {
+  edition: 6,
+  committee: "TC39",
+  standard: "ECMA-262"
+};
+
+for (e in es6) {
+  console.log(e);
+}
+// edition
+// committee
+// standard
+
+for (e of es6) {
+  console.log(e);
+}
+// TypeError: es6 is not iterable
+
+```
+
+上面代码表示，for...in循环可以遍历键名，for...of循环会报错。
+
+对于类似数组的对象（比如），for...of循环可以直接使用。
+
+```javascript
+
+let paras = document.querySelectorAll("p");
+
+for (let p of paras) {
+  p.classList.add("read");
+}
 
 ```
