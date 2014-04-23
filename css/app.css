@@ -62,7 +62,7 @@ body {
 }
 
 #sidebar h2 {
-    font-size: 15px;
+    font-size: 0.8rem;
 }
 
 #sidebar h5 {
@@ -90,7 +90,7 @@ body {
 
 #sidebar ul li {
     margin-top: 0;
-    margin-bottom: 2px;
+    margin-bottom: 0.3rem;
     margin-left: 10px;
     padding: 0;
 
