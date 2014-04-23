@@ -60,3 +60,17 @@ traceur /path/to/es6
 # 将ES6文件转为ES5文件
 traceur --script /path/to/es6 --out /path/to/es5
 ```
+
+## ECMAScript 7
+
+2013年3月，ES6的草案封闭，不再接受新功能了。新的功能将被加入ES7。
+
+ES7可能包括的功能有：
+
+（1）**Object.observe**：对象与网页元素的双向绑定，只要其中之一发生变化，就会自动反映在另一者上。
+
+（2）**Multi-Threading**：多线程支持。目前，Intel和Mozilla有一个共同的研究项目RiverTrail，致力于让JavaScript多线程运行。预计这个项目的研究成果会被纳入ECMAScript标准。
+
+（3）**Traits**：它将是“类”功能（class）的一个替代。通过它，不同的对象可以分享同样的特性。
+
+其他可能包括的功能还有：更精确的数值计算、改善的内存回收、增强的跨站点安全、类型化的更贴近硬件的低级别操作、国际化支持（Internationalization Support）、更多的数据结构等等。
