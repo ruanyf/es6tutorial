@@ -137,7 +137,7 @@ Promise.all(promises).then(function(posts) {
 
 ```
 
-## Promise.resolve方法：生成新的Promise对象
+## Promise.resolve方法
 
 有时需要将现有对象转为Promise对象，Promise.resolve方法就起到这个作用。
 
