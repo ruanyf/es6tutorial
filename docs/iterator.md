@@ -61,4 +61,17 @@ for (var n of it) {
 }
 
 ```
+在ES6中，数组本身就具有iterator接口。
 
+```javascript
+
+const arr = ['red', 'green', 'blue'];
+
+for(let v of arr) {
+	console.log(v);
+}
+\\ red
+\\ green
+\\ blue
+
+```
