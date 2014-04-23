@@ -7,6 +7,7 @@
 ## 目录
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
+- [箭头函数](#docs/arrow)
 - [Iterator：遍历器](#docs/iterator)
 - [Generator函数](#docs/generator)
 - [Promise对象](#docs/promise)
@@ -15,3 +16,4 @@
 ## 其他
 - [源码](http://github.com/ruanyf/es6tutorial/)
 - [修订历史](https://github.com/ruanyf/es6tutorial/commits/gh-pages)
+- [反馈意见](https://github.com/ruanyf/es6tutorial/issues)
