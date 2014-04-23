@@ -8,6 +8,7 @@
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
 - [Iterator：遍历器](#docs/iterator)
+- [Generator函数](#docs/generator)
 - [参考链接](#docs/reference)
 
 ## 其他
