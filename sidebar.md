@@ -7,7 +7,7 @@
 ## 目录
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
-- [原生对象的扩展](#docs/extension)
+- [字符串的扩展](#docs/string)
 - [箭头函数](#docs/arrow)
 - [Iterator和for...of循环](#docs/iterator)
 - [Generator函数](#docs/generator)

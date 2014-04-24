@@ -1,10 +1,8 @@
-# 原生对象的扩展
+# 字符串的扩展
 
-ES6为String、Math、Number、String这几个原生对象，添加了新的属性和方法。
+ES6加强了对Unicode的支持，并且扩展了字符串对象。
 
-## 字符串
-
-### codePointAt方法
+## codePointAt方法
 
 JavaScript内部，字符以UTF-16的格式储存，每个字符固定为16字节。对于那些需要4个字节储存的字符（Unicode编号大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
@@ -50,7 +48,7 @@ is32Bit("a") // false
 
 ```
 
-### String.fromCodePoint方法
+## String.fromCodePoint方法
 
 该方法用于从Unicode编号返回对应的字符串，作用与codePointAt正好相反。
 
@@ -62,9 +60,9 @@ String.fromCodePoint(134071) // "𠮷"
 
 注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
 
-### 字符的Unicode表示法
+## 字符的Unicode表示法
 
-JavaScript允许采用“\uxxxx”表示一个字符，其中“xxxx”表示字符的Unicode编号。
+JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表示字符的Unicode编号。
 
 ```javascript
 
@@ -96,7 +94,7 @@ ES6对这一点做出了改进，只要将超过0xFFFF的编号放入大括号�
 
 ```
 
-### 正则表达式的u修饰符
+## 正则表达式的u修饰符
 
 ES6对正则表达式添加了u修饰符，用来正确处理大于\uFFFF的Unicode字符。
 
@@ -127,7 +125,7 @@ codePointLength(s) // 2
 
 ```
 
-### contains(), startsWith(), endsWith()
+## contains(), startsWith(), endsWith()
 
 传统上，JavaScript只有indexOf方法，可以用来确定一个字符串是否包含在另一个字符串中。ES6又提供了三种新方法。
 
@@ -159,7 +157,7 @@ s.contains("o", 8) // false
 
 上面代码表示，使用第二个参数n时，endsWith的行为与其他两个方法有所不同。它针对前n个字符，而其他两个方法针对从第n个位置直到字符串结束。
 
-### repeat()
+## repeat()
 
 repeat()返回一个新字符串，表示将原字符串重复n次。
 
@@ -167,6 +165,60 @@ repeat()返回一个新字符串，表示将原字符串重复n次。
 
 "x".repeat(3) // "xxx"
 "hello".repeat(2) // "hellohello"
+
+```
+
+## 正则表达式的y修饰符
+
+除了u修饰符，ES6还为正则表达式添加了y修饰符，叫做“粘连”（sticky）修饰符。它的作用与g修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始，不同之处在于，g修饰符只确保剩余位置中存在匹配，而y修饰符确保匹配必须从剩余的第一个位置开始，这也就是“粘连”的涵义。
+
+```javascript
+
+var s = "aaa_aa_a";
+var r1 = /a+/g;
+var r2 = /a+/y;
+
+r1.exec(s) // ["aaa"]
+r2.exec(s) // ["aaa"]
+
+r1.exec(s) // ["aa"]
+r2.exec(s) // null
+
+```
+
+上面代码有两个正则表达式，一个使用g修饰符，另一个使用y修饰符。这两个正则表达式各执行了两次，第一次执行的时候，两者行为相同，剩余字符串都是“_aa_a”。由于g修饰没有位置要求，所以第二次执行会返回结果，而y修饰符要求匹配必须从头部开始，所以返回null。
+
+如果改一下正则表达式，保证每次都能头部匹配，y修饰符就会返回结果了。
+
+```javascript
+
+var s = "aaa_aa_a";
+var r = /a+_/y;
+
+r.exec(s) // ["aaa_"]
+r.exec(s) // ["aa_"]
+
+```
+
+上面代码每次匹配，都是从剩余字符串的头部开始。
+
+进一步说，y修饰符号隐含了头部匹配的标志&#710;。
+
+```javascript
+
+/b/y.exec("aba")
+// null
+
+```
+
+上面代码由于不能保证头部匹配，所以返回null。y修饰符的设计本意，就是让头部匹配的标志&#710;在全局匹配中都有效。
+
+与y修饰符相匹配，ES6的正则对象多了sticky属性，表示是否设置了y修饰符。
+
+```javascript
+
+var r = /hello\d/y;
+r.sticky // true 
 
 ```
 
@@ -182,4 +234,3 @@ ES6提供了二进制和八进制数值的新的写法，分别用前缀0b和0o�
 0o767 === 503 // true
 
 ```
-
