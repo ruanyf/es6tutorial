@@ -9,6 +9,7 @@
 - [ECMAScript 6简介](#docs/intro)
 - [let和const命令](#docs/let)
 - [字符串的扩展](#docs/string)
+- [数值的扩展](#docs/number)
 - [对象和函数的扩展](#docs/object)
 - [箭头函数](#docs/arrow)
 - [Iterator和for...of循环](#docs/iterator)
