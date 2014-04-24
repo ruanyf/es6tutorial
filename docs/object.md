@@ -34,6 +34,43 @@ var Person = {
 
 ```
 
+## 属性名表达式
+
+ES6允许表达式作为对象的属性名，在写法上要把表达式放在大括号内。
+
+```javascript
+
+var lastWord = "last word";
+
+var a = {
+    "first word": "hello",
+    [lastWord]: "world"
+};
+
+a["first word"] // "hello"
+a[lastWord] // "world"
+a["last word"] // "world"
+
+```
+
+上面代码中，对象a的属性名lastWord是一个变量。
+
+下面是一个将字符串的加法表达式作为属性名的例子。
+
+```javascript
+
+var suffix = " word";
+
+var a = {
+    ["first" + suffix]: "hello",
+    ["last" + suffix]: "world"
+};
+
+a["first word"] // "hello"
+a["last word"] // "world"
+
+```
+
 ## 函数参数的默认值
 
 ES6允许为函数的参数设置默认值。
