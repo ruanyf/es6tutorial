@@ -110,4 +110,6 @@ var handler = {
 
 ```
 
-上面代码的init和doSomething方法中，都使用了箭头函数，它们中的this都绑定handler对象。否则，doSomething方法内部的this对象就指向全局对象，运行时会报错。
+上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象。否则，doSomething方法内部的this对象就指向全局对象，运行时会报错。
+
+由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
