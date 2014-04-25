@@ -212,7 +212,7 @@ function router() {
 		  reload: true,
 		  config: function () {  
 		    this.page.identifier = location.hash;  
-		    this.page.url = 'http://'+location.host+'/#!'+location.hash.replace("#", "");
+		    this.page.url = location.href;
 		  }
 		});
 
