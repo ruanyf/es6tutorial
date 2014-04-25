@@ -5,6 +5,7 @@
 授权：<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">署名-非商用许可证</a>
 
 ## 目录
+<ol start="0">
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
 - [let和const命令](#docs/let)
@@ -20,6 +21,7 @@
 - [Promise对象](#docs/promise)
 - [Class和Module](#docs/class)
 - [参考链接](#docs/reference)
+</ol>
 
 ## 其他
 - [源码](http://github.com/ruanyf/es6tutorial/)
