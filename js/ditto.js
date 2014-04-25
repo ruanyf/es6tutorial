@@ -199,7 +199,7 @@ function router() {
     var loading = show_loading();
     $.get(path , function(data) {
         $(ditto.error_id).hide();
-        $(ditto.content_id).html(marked(data)+disqusCode);
+        $(ditto.content_id).html(marked(data));
 		if ($(ditto.content_id+" h1").text() === ditto.document_title){
 			document.title = ditto.document_title;
 		} else {
