@@ -196,7 +196,7 @@ function router() {
     }
 
 	window.disqus_identifier=location.hash;
-	window.disqus_url='http://'+location.host+'?'+location.hash.replace("#", "");
+	window.disqus_url='http://'+location.host+'/'+location.hash.replace("#", "");
 
     // otherwise get the markdown and render it
     var loading = show_loading();
