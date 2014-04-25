@@ -195,6 +195,9 @@ function router() {
         path = path + ".md";
     }
 
+	window.disqus_identifier=location.hash;
+	window.disqus_url='http://'+location.host+'?'+location.hash.replace("#", "");
+
     // otherwise get the markdown and render it
     var loading = show_loading();
     $.get(path , function(data) {
@@ -207,16 +210,6 @@ function router() {
 		}
         normalize_paths();
         create_page_anchors();
-
-		if(window.DISQUS){
-			DISQUS.reset({
-		  reload: true,
-		  config: function () {  
-		    window.disqus_identifier = location.hash;  
-		    window.disqus_url = location.href;
-		  }
-		});
-		}
 
 		$('#content code').map(function() {
             Prism.highlightElement(this);
