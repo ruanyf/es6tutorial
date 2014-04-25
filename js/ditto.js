@@ -16,7 +16,7 @@ var ditto = {
     run: initialize
 };
 
-var disqusCode = '<div id="disqus_thread"></div>'
+var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
 	+ '<script type="text/javascript">'
 	+ "var disqus_shortname = 'es6'; "
 	+ "(function() {"
@@ -26,6 +26,7 @@ var disqusCode = '<div id="disqus_thread"></div>'
 	+ " })();"
 	+ '</script>'; 
 
+var disqus_identifier;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -180,6 +181,8 @@ function show_loading() {
 
 function router() {
     var path = location.hash.replace("#", "./");
+
+	disqus_identifier = path;
 
     // default page if hash is empty
     if (location.pathname === "/index.html") {
