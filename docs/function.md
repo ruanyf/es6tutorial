@@ -1,6 +1,105 @@
-# 箭头函数
+# 函数的扩展
 
-## 定义
+## 函数参数的默认值
+
+ES6允许为函数的参数设置默认值。
+
+```javascript
+
+function Point(x = 0, y = 0) {
+   this.x = x;
+   this.y = y;
+}
+
+var p = new Point(); 
+// p = { x:0, y:0 }
+
+```
+
+任何带有默认值的参数，被视为可选参数。不带默认值的参数，则被视为必需参数。
+
+## rest（...）运算符
+
+ES6引入rest运算符（...），用于获取函数的多余参数，这样就不需要使用arguments.length了。rest运算符后面是一个数组变量，该变量将多余的参数放入数组中。
+
+```javascript
+
+function add(...values) {
+   let sum = 0;
+
+   for (var val of values) {
+      sum += val;
+   }
+
+   return sum;
+}
+
+add(2, 5, 3) // 10
+
+```
+
+上面代码的add函数是一个求和函数，利用rest运算符，可以向该函数传入任意数目的参数。
+
+下面是一个利用rest运算符改写数组push方法的例子。
+
+```javascript
+
+function push(array, ...items) { 
+  items.forEach(function(item) {
+    array.push(item);
+    console.log(item);
+  });
+}
+ 
+var a = [];
+push(a, "a1", "a2", "a3", "a4"); 
+
+```
+
+注意，rest参数不能再有其他参数，否则会报错。
+
+```javascript
+
+// 报错
+function f(a, ...b, c) { 
+  // ...
+}
+
+```
+
+rest运算符不仅可以用于函数定义，还可以用于函数调用。
+
+```javascript
+
+function f(s1, s2, s3, s4, s5) {
+    console.log(s1 + s2 + s3 + s4 +s5);
+}
+
+var a = ["a2", "a3", "a4", "a5"];
+
+f("a1", ...a)
+// a1a2a3a4a5
+
+```
+
+从上面的例子可以看出，rest运算符的另一个重要作用是，可以将数组转变成正常的参数序列。利用这一点，可以简化求出一个数组最大元素的写法。
+
+```javascript
+
+// ES5
+Math.max.apply(null, [14, 3, 77])
+
+// ES6
+Math.max(...[14, 3, 77])
+
+// 等同于
+Math.max(14, 3, 77);
+
+```
+
+上面代码表示，由于JavaScript不提供求数组最大元素的函数，所以只能套用Math.max函数，将数组转为一个参数序列，然后求最大值。有了rest运算符以后，就可以直接用Math.max了。
+
+## 箭头函数
 
 ES6允许使用“箭头”（=>）定义函数。
 
@@ -51,9 +150,6 @@ var sum = (num1, num2) => { return num1 + num2; }
 var getTempItem = id => ({ id: id, name: "Temp" });
 
 ```
-
-##实例：回调函数
-
 箭头函数的一个用处是简化回调函数。
 
 ```javascript
@@ -81,8 +177,6 @@ var result = values.sort(function(a, b) {
 var result = values.sort((a, b) => a - b);
 
 ```
-
-## 注意点
 
 箭头函数有几个使用注意点。
 

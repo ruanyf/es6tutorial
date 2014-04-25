@@ -14,6 +14,21 @@ Object.is(NaN, NaN) // true
 
 ```
 
+## __proto__属性
+
+ES6正式将__proto__属性写入了标准，用来指定对象的prototype对象。
+
+```javascript
+
+var obj = {
+  __proto__: someOtherObj,
+  method: function() { ... }
+}
+
+```
+
+有了这个属性，实际上已经不需要通过Object.create()来生成新对象了。
+
 ## 增强的对象写法
 
 ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
@@ -71,101 +86,77 @@ a["last word"] // "world"
 
 ```
 
-## 函数参数的默认值
+## symbols
 
-ES6允许为函数的参数设置默认值。
-
-```javascript
-
-function Point(x = 0, y = 0) {
-   this.x = x;
-   this.y = y;
-}
-
-var p = new Point(); 
-// p = { x:0, y:0 }
-
-```
-
-任何带有默认值的参数，被视为可选参数。不带默认值的参数，则被视为必需参数。
-
-## rest（...）运算符
-
-ES6引入rest运算符（...），用于获取函数的多余参数，这样就不需要使用arguments.length了。rest运算符后面是一个数组变量，该变量将多余的参数放入数组中。
+ES6引入了一种新的原始数据类型symbol。它通过Symbol函数生成。
 
 ```javascript
 
-function add(...values) {
-   let sum = 0;
+var mySymbol = Symbol('Test');
 
-   for (var val of values) {
-      sum += val;
-   }
+mySymbol.name 
+// Test
 
-   return sum;
-}
-
-add(2, 5, 3) // 10
+typeof mySymbol
+// "symbol"
 
 ```
 
-上面代码的add函数是一个求和函数，利用rest运算符，可以向该函数传入任意数目的参数。
+上面代码表示，Symbol函数接受一个字符串作为参数，用来指定生成的symbol的名称，可以通过name属性读取。typeof运算符的结果，表明Symbol是一种单独的数据类型。
 
-下面是一个利用rest运算符改写数组push方法的例子。
+注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的symbol是一个原始类型的值，不是对象。
+
+symbol的最大特点，就是每一个symbol都是不相等的，保证产生一个独一无二的值。
 
 ```javascript
 
-function push(array, ...items) { 
-  items.forEach(function(item) {
-    array.push(item);
-    console.log(item);
-  });
-}
- 
-var a = [];
-push(a, "a1", "a2", "a3", "a4"); 
+let red = Symbol();
+let green = Symbol();
+let blue = Symbol();
+
+function handleColor(color) {
+  switch (color) {
+    case red:
+      ...
+    case green:
+      ...
+    case blue:
+      ...
+  }
+} 
 
 ```
 
-注意，rest参数不能再有其他参数，否则会报错。
+上面代码中，red、green、blue三个变量都是Symbol类型，它们的值是不相等的。
+
+由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，不会出现同名的属性。
 
 ```javascript
 
-// 报错
-function f(a, ...b, c) { 
-  // ...
-}
+var a = {};
+var mySymbol = Symbol();
+
+a[mySymbol] = 'Hello!';
+
+//另一种写法
+Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
 ```
 
-rest运算符不仅可以用于函数定义，还可以用于函数调用。
+上面代码通过点结构和Object.defineProperty两种方法，为对象增加一个属性。
+
+如果要在对象内部使用symbol属性名，必须采用属性名表达式。
 
 ```javascript
 
-function f(s1, s2, s3, s4, s5) {
-    console.log(s1 + s2 + s3 + s4 +s5);
-}
+let specialMethod = Symbol();
 
-var a = ["a2", "a3", "a4", "a5"];
+let obj = {
+  [specialMethod]: function (arg) {
+    ...
+  }
+};
 
-f("a1", ...a)
-// a1a2a3a4a5
-
-```
-
-从上面的例子可以看出，rest运算符的另一个重要作用是，可以将数组转变成正常的参数序列。利用这一点，可以简化求出一个数组最大元素的写法。
-
-```javascript
-
-// ES5
-Math.max.apply(null, [14, 3, 77])
-
-// ES6
-Math.max(...[14, 3, 77])
-
-// 等同于
-Math.max(14, 3, 77);
+obj[specialMethod](123);
 
 ```
-
-上面代码表示，由于JavaScript不提供求数组最大元素的函数，所以只能套用Math.max函数，将数组转为一个参数序列，然后求最大值。有了rest运算符以后，就可以直接用Math.max了。

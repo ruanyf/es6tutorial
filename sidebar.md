@@ -10,11 +10,12 @@
 - [let和const命令](#docs/let)
 - [字符串的扩展](#docs/string)
 - [数值的扩展](#docs/number)
-- [对象和函数的扩展](#docs/object)
-- [箭头函数](#docs/arrow)
+- [对象的扩展](#docs/object)
+- [函数的扩展](#docs/function)
 - [Iterator和for...of循环](#docs/iterator)
 - [Generator函数](#docs/generator)
 - [Promise对象](#docs/promise)
+- [Class](#docs/class)
 - [参考链接](#docs/reference)
 
 ## 其他
