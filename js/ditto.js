@@ -16,15 +16,7 @@ var ditto = {
     run: initialize
 };
 
-var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
-	+ '<script type="text/javascript">'
-	+ "var disqus_shortname = 'es6'; "
-	+ "(function() {"
-	+ "var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;"
-	+ "dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js?'+Date.now();"
-	+ "(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);"
-	+ " })();"
-	+ '</script>'; 
+var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
 
 var disqus_identifier=location.hash;
 var disqus_title;
