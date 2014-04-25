@@ -18,9 +18,9 @@ var ditto = {
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
 
-var disqus_identifier=location.hash;
+var disqus_identifier;
 var disqus_title;
-var disqus_url='http://'+location.host+'/'+location.hash?location.hash.replace("#", ""):'index';
+var disqus_url;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -187,9 +187,6 @@ function router() {
         path = path + ".md";
     }
 
-	window.disqus_identifier=location.hash;
-	window.disqus_url='http://'+location.host+'/'+location.hash?location.hash.replace("#", ""):'index';
-
     // otherwise get the markdown and render it
     var loading = show_loading();
     $.get(path , function(data) {
@@ -202,6 +199,15 @@ function router() {
 		}
         normalize_paths();
         create_page_anchors();
+
+		if(window.DISQUS){DISQUS.reset({
+		  reload: true,
+		  config: function () {  
+		    this.page.identifier = location.hash;  
+		    this.page.url = location.href;
+		  }
+		});
+}
 
 		$('#content code').map(function() {
             Prism.highlightElement(this);
