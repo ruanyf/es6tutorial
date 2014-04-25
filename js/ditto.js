@@ -208,13 +208,15 @@ function router() {
         normalize_paths();
         create_page_anchors();
 
-		DISQUS.reset({
+		if(window.DISQUS){
+			DISQUS.reset({
 		  reload: true,
 		  config: function () {  
 		    this.page.identifier = location.hash;  
 		    this.page.url = location.href;
 		  }
 		});
+		}
 
 		$('#content code').map(function() {
             Prism.highlightElement(this);
