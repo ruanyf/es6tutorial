@@ -180,7 +180,8 @@ body {
     border-radius: 5px;
 }
 
-#content ul {
+#content ul,
+#content ol {
     display: block;
     list-style-type: none;
 	padding-top: 0.5rem;
@@ -193,12 +194,14 @@ body {
     left: -5px;
 }
 
-#content ul li {
+#content ul li,
+#content ol li{
     text-indent: -5px;  /* to compensate for the padding for the dash */
     font-size: 0.8rem;
 }
 
-#content ul li.link {
+#content ul li.link,
+#content ol li.link {
     color: #2980b9;
     text-decoration: none;
     font-size: 0.7rem;
