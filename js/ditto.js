@@ -26,9 +26,9 @@ var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
 	+ " })();"
 	+ '</script>'; 
 
-var disqus_identifier = location.hash;
-var disqus_title = document.title;
-var disqus_url = location.href;
+var disqus_identifier;
+var disqus_title;
+var disqus_url;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -194,6 +194,10 @@ function router() {
     } else {
         path = path + ".md";
     }
+
+	disqus_identifier = location.hash;
+	disqus_title = $(ditto.content_id+" h1").text();
+	disqus_url = location.href;
 
     // otherwise get the markdown and render it
     var loading = show_loading();
