@@ -119,7 +119,7 @@ function create_page_anchors() {
         });
 
         if ((i === 2) && headers.length !== 0){
-			var ul_tag = $('<ul></ul>')
+			var ul_tag = $('<ol></ol>')
 				.insertAfter('#content h1')
 				.addClass("content-toc")
 				.attr('id','content-toc');
