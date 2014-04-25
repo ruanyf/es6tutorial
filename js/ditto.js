@@ -28,7 +28,7 @@ var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
 
 var disqus_identifier=location.hash;
 var disqus_title;
-var disqus_url='http://'+location.host+'/'+location.hash.replace("#", "");
+var disqus_url='http://'+location.host+'/'+location.hash?location.hash.replace("#", ""):'index';
 
 function initialize() {
     // initialize sidebar and buttons
@@ -196,7 +196,7 @@ function router() {
     }
 
 	window.disqus_identifier=location.hash;
-	window.disqus_url='http://'+location.host+'/'+location.hash.replace("#", "");
+	window.disqus_url='http://'+location.host+'/'+location.hash?location.hash.replace("#", ""):'index';
 
     // otherwise get the markdown and render it
     var loading = show_loading();
