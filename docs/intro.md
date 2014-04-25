@@ -43,9 +43,19 @@ Google公司的V8引擎已经部署了ES6的部分特性。使用node.js 0.11版
 node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
 
 ```bash
+
 source nvm.sh
 nvm use 0.11
 node --harmony
+
+```
+
+启动命令中的--harmony选项可以打开大部分的ES6功能，但是还是--use_strict选项打开块级作用域功能、--harmony_generators选项打开generator功能。使用下面的命令，可以查看所有与ES6有关的选项。
+
+```bash
+
+node --v8-options | grep harmony
+
 ```
 
 另外，可以使用Google的[Traceur](https://github.com/google/traceur-compiler)，将ES6代码编译为ES5。

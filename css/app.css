@@ -82,13 +82,20 @@ body {
     padding-top: 0;
 }
 
+#sidebar ol {
+    margin: 0;
+    padding-left: 10px;
+    padding-top: 0;
+}
+
 #sidebar ul li:before {  /* a hack to have dashes as a list style */
     content: "-";
     position: relative;
     left: -5px;
 }
 
-#sidebar ul li {
+#sidebar ul li,
+#sidebar ol li {
     margin-top: 0;
     margin-bottom: 0.2rem;
     margin-left: 10px;
