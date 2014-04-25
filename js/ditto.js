@@ -21,7 +21,7 @@ var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
 	+ "var disqus_shortname = 'es6'; "
 	+ "(function() {"
 	+ "var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;"
-	+ "dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js?time='+Date.now();"
+	+ "dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js;"
 	+ "(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);"
 	+ " })();"
 	+ '</script>'; 
@@ -195,10 +195,6 @@ function router() {
         path = path + ".md";
     }
 
-	disqus_identifier = path;
-	disqus_title = $(ditto.content_id+" h1").text();
-	disqus_url = location.href;
-
     // otherwise get the markdown and render it
     var loading = show_loading();
     $.get(path , function(data) {
@@ -211,6 +207,15 @@ function router() {
 		}
         normalize_paths();
         create_page_anchors();
+
+		DISQUS.reset({
+		  reload: true,
+		  config: function () {  
+		    this.page.identifier = "newidentifier";  
+		    this.page.url = "http://example.com/#!newthread";
+		  }
+		});
+
 		$('#content code').map(function() {
             Prism.highlightElement(this);
         });
