@@ -151,3 +151,30 @@ for (n of fibonacci()) {
 ```
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
+
+## yield*语句
+
+如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
+
+```javascript
+
+let delegatedIterator = (function* () {
+  yield 'Hello!';
+  yield 'Bye!';
+}());
+
+let delegatingIterator = (function* () {
+  yield 'Greetings!';
+  yield* delegatedIterator;
+  yield 'Ok, bye.';
+}());
+
+for(let value of delegatingIterator) {
+  console.log(value);
+}
+// "Greetings!
+// "Hello!"
+// "Bye!"
+//  "Ok, bye."
+
+```

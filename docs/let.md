@@ -102,6 +102,24 @@ function f1() {
 
 ```
 
+另外，ES6的函数也默认在块级作用域内声明。
+
+```javascript
+
+function f() { console.log('I am outside!'); }
+(function () {
+  if(false) {
+    // What should happen with this redeclaration?
+    function f() { console.log('I am inside!'); }
+  }
+
+  f();
+}());
+
+```
+
+上面代码在ES5中运行，会得到“I am inside!”，但是在ES6中运行，会得到“I am outside!”。
+
 ## const命令
 
 const也用来声明变量，但是声明的是常量。一旦声明，常量的值就不能改变。

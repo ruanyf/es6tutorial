@@ -7,6 +7,7 @@
 - Dale Schouten, [10 Ecmascript-6 tricks you can perform right now](http://html5hub.com/10-ecmascript-6-tricks-you-can-perform-right-now/)
 - Domenic Denicola, [ES6: The Awesome Parts](http://www.slideshare.net/domenicdenicola/es6-the-awesome-parts)
 - Nicholas C. Zakas, [Understanding ECMAScript 6](https://github.com/nzakas/understandinges6)
+- Justin Drake, [ECMAScript 6 in Node.JS](https://github.com/JustinDrake/node-es6-examples)
 - Ryan Dao, [Summary of ECMAScript 6 major features](http://ryandao.net/portal/content/summary-ecmascript-6-major-features)
 - Luke Hoban, [ES6 features](https://github.com/lukehoban/es6features)
 

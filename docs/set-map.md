@@ -267,4 +267,4 @@ console.log(value); // undefined
 
 ```
 
-WeakMap还有has和delete方法，但没有size方法，也无法遍历它的值。
+WeakMap还有has和delete方法，但没有size方法，也无法遍历它的值，这与WeakMap的键被垃圾回收机制忽略有关。

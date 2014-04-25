@@ -145,6 +145,16 @@ Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
 上面代码通过点结构和Object.defineProperty两种方法，为对象增加一个属性。
 
+下面的写法为Map结构添加了一个成员，但是该成员永远无法被引用。
+
+```javascript
+
+let a = Map();
+a.set(Symbol(), 'Noise');
+a.size // 1
+
+```
+
 如果要在对象内部使用symbol属性名，必须采用属性名表达式。
 
 ```javascript
