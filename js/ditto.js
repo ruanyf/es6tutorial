@@ -195,9 +195,9 @@ function router() {
         path = path + ".md";
     }
 
-	disqus_identifier = location.hash;
+	disqus_identifier = path;
 	disqus_title = $(ditto.content_id+" h1").text();
-	disqus_url = location.href+'?location='+path;
+	disqus_url = path;
 
     // otherwise get the markdown and render it
     var loading = show_loading();
