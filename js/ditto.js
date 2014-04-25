@@ -26,7 +26,9 @@ var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'
 	+ " })();"
 	+ '</script>'; 
 
-var disqus_identifier;
+var disqus_identifier = location.hash;
+var disqus_title = document.title;
+var disqus_url = location.href;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -181,8 +183,6 @@ function show_loading() {
 
 function router() {
     var path = location.hash.replace("#", "./");
-
-	disqus_identifier = path;
 
     // default page if hash is empty
     if (location.pathname === "/index.html") {
