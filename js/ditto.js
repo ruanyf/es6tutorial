@@ -18,9 +18,9 @@ var ditto = {
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
 
-var disqus_identifier;
-var disqus_title;
-var disqus_url;
+var disqus_identifier=location.hash?location.hash:'index';
+var disqus_title=document.title;
+var disqus_url='http://'+location.host+'/'+location.hash.replace("#", "");
 
 function initialize() {
     // initialize sidebar and buttons
@@ -204,6 +204,7 @@ function router() {
 		  reload: true,
 		  config: function () {  
 		    window.disqus_identifier = location.hash;  
+			window.disqus_title = document.title;  
 		    window.disqus_url = 'http://'+location.host+'/'+location.hash.replace("#", "");
 		  }
 		});
