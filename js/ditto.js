@@ -16,6 +16,17 @@ var ditto = {
     run: initialize
 };
 
+var disqusCode = '<div id="disqus_thread"></div>'
+	+ '<script type="text/javascript">'
+	+ "var disqus_shortname = 'es6'; "
+	+ "(function() {"
+	+ "var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;"
+	+ "dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';"
+	+ "(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);"
+	+ " })();"
+	+ '</script>'; 
+
+
 function initialize() {
     // initialize sidebar and buttons
     if (ditto.sidebar) {
@@ -185,7 +196,7 @@ function router() {
     var loading = show_loading();
     $.get(path , function(data) {
         $(ditto.error_id).hide();
-        $(ditto.content_id).html(marked(data));
+        $(ditto.content_id).html(marked(data)+disqusCode);
 		if ($(ditto.content_id+" h1").text() === ditto.document_title){
 			document.title = ditto.document_title;
 		} else {
