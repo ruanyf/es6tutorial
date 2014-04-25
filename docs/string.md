@@ -221,3 +221,29 @@ var r = /hello\d/y;
 r.sticky // true 
 
 ```
+
+## 模板字符串
+
+模板字符串（template string）是增强版的字符串，用反引号（`）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
+
+```javascript
+
+// 普通字符串
+`In JavaScript '\n' is a line-feed.`
+
+// 多行字符串
+`In JavaScript this is
+ not legal.`
+
+// 字符串中嵌入变量
+var name = "Bob", time = "today";
+`Hello ${name}, how are you ${time}?`
+
+var x = 1;
+var y = 2;
+console.log(`${ x } + ${ y } = ${ x + y}`) 
+// "1 + 2 = 3"
+		
+```
+
+上面代码表示，在模板字符串中嵌入变量，需要将变量名写在${}之中。

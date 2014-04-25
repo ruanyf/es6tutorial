@@ -160,3 +160,43 @@ let obj = {
 obj[specialMethod](123);
 
 ```
+
+## Proxy
+
+所谓Proxy，可以理解成在目标对象之前，架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，可以被过滤和改写。
+
+ES6原生提供Proxy构造函数，用来生成proxy实例对象。
+
+```javascript
+
+var proxy = new Proxy({}, {
+    get: function(target, property) {
+        return 35;
+    }
+});
+
+proxy.time // 35
+proxy.name // 35
+proxy.title // 35
+
+```
+
+上面代码就是Proxy构造函数使用实例，它接受两个参数，第一个所要代理的目标对象（上例是一个空对象），第二个是拦截函数，它有一个get方法，用来拦截对目标对象的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
+
+下面是另一个拦截函数的例子。
+
+```javascript
+
+var proxy = new Proxy(target, {
+        get: function(target, property) {
+            if (property in target) {
+                return target[property];
+            } else {
+                throw new ReferenceError("Property \"" + property + "\" does not exist.");
+            }
+        }
+});
+
+```
+
+上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。

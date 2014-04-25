@@ -241,7 +241,7 @@ map.forEach(function(value, key, map) {
 
 上面代码中，forEach方法的回调函数的this，就指向reporter。
 
-## WeakMap结构
+## WeakMap
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名。
 

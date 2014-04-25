@@ -8,6 +8,7 @@
 - [前言](#README)
 - [ECMAScript 6简介](#docs/intro)
 - [let和const命令](#docs/let)
+- [多变量的模式赋值](#docs/destructuring)
 - [字符串的扩展](#docs/string)
 - [数值的扩展](#docs/number)
 - [对象的扩展](#docs/object)
@@ -16,7 +17,7 @@
 - [Iterator和for...of循环](#docs/iterator)
 - [Generator函数](#docs/generator)
 - [Promise对象](#docs/promise)
-- [Class](#docs/class)
+- [Class和Module](#docs/class)
 - [参考链接](#docs/reference)
 
 ## 其他
