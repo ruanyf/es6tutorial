@@ -203,8 +203,8 @@ function router() {
 		if(window.DISQUS){DISQUS.reset({
 		  reload: true,
 		  config: function () {  
-		    this.page.identifier = location.hash;  
-		    this.page.url = 'http://'+location.host+'/'+location.hash.replace("#", "");
+		    window.disqus_identifier = location.hash;  
+		    window.disqus_url = 'http://'+location.host+'/'+location.hash.replace("#", "");
 		  }
 		});
 }
