@@ -212,8 +212,8 @@ function router() {
 			DISQUS.reset({
 		  reload: true,
 		  config: function () {  
-		    this.page.identifier = location.hash;  
-		    this.page.url = location.href;
+		    window.disqus_identifier = location.hash;  
+		    window.disqus_url = location.href;
 		  }
 		});
 		}
