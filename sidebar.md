@@ -12,6 +12,7 @@
 - [数值的扩展](#docs/number)
 - [对象的扩展](#docs/object)
 - [函数的扩展](#docs/function)
+- [Set和Map数据结构](#docs/set-map)
 - [Iterator和for...of循环](#docs/iterator)
 - [Generator函数](#docs/generator)
 - [Promise对象](#docs/promise)

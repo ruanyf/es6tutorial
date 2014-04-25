@@ -159,14 +159,29 @@ for (e of es6) {
 
 上面代码表示，for...in循环可以遍历键名，for...of循环会报错。
 
-对于类似数组的对象（比如），for...of循环可以直接使用。
+总结一下，for...of循环可以使用的范围包括数组、类似数组的对象（比如arguments对象、DOM NodeList对象）、Set和Map结构、后文的Generator对象，以及字符串。下面是for...of循环用于字符串和DOM NodeList对象的例子。
 
 ```javascript
+
+// 字符串的例子
+
+let str = "hello";
+
+for (let s of str) {
+  console.log(s);
+}
+// h
+// e
+// l
+// l
+// o
+
+// DOM NodeList对象的例子
 
 let paras = document.querySelectorAll("p");
 
 for (let p of paras) {
-  p.classList.add("read");
+  p.classList.add("test");
 }
 
 ```
