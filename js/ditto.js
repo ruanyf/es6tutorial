@@ -18,10 +18,6 @@ var ditto = {
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
 
-var disqus_identifier=location.hash?location.hash:'index';
-var disqus_title=document.title;
-var disqus_url='http://'+location.host+'/'+location.hash.replace("#", "");
-
 function initialize() {
     // initialize sidebar and buttons
     if (ditto.sidebar) {
@@ -200,19 +196,23 @@ function router() {
         normalize_paths();
         create_page_anchors();
 
-		if(window.DISQUS){DISQUS.reset({
-		  reload: true,
-		  config: function () {  
-		    window.disqus_identifier = location.hash;  
-			window.disqus_title = document.title;  
-		    window.disqus_url = 'http://'+location.host+'/'+location.hash.replace("#", "");
-		  }
-		});
-}
-
 		$('#content code').map(function() {
             Prism.highlightElement(this);
         });
+
+		function loadDisqus() {
+			// http://docs.disqus.com/help/2/
+			window.disqus_shortname = 'es6';
+			window.disqus_identifier = location.hash;
+			window.disqus_url = 'http://es6.ruanyifeng.com/' + location.hash?location.hash.replace("#", ""):'index';
+
+			// http://docs.disqus.com/developers/universal/
+			(function() {
+				var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+				dsq.src = 'http://es6.disqus.com/embed.js';
+				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+			})();
+		}
 
 		if(path.indexOf('README') === -1){
 			$('html, body').animate({
