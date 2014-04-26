@@ -213,6 +213,7 @@ function router() {
 				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 			})();
 		}
+		loadDisqus();
 
 		if(path.indexOf('README') === -1){
 			$('html, body').animate({
