@@ -203,9 +203,9 @@ function router() {
 		function loadDisqus() {
 			// http://docs.disqus.com/help/2/
 			window.disqus_shortname = 'es6';
-			window.disqus_identifier = location.hash?location.hash.replace("#", ""):'index';
-			// window.disqus_title =$(ditto.content_id+" h1").text();
-			window.disqus_url = 'http://es6.ruanyifeng.com/' + location.hash?location.hash.replace("#", ""):'index';
+			window.disqus_identifier = (location.hash?location.hash.replace("#", ""):'index');
+			window.disqus_title =$(ditto.content_id+" h1").text();
+			window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash?location.hash.replace("#", ""):'index');
 
 			// http://docs.disqus.com/developers/universal/
 			(function() {
