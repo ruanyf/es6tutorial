@@ -200,7 +200,8 @@ function router() {
             Prism.highlightElement(this);
         });
 
-		function loadDisqus() {
+		// 加载disqus
+		(function () {
 			// http://docs.disqus.com/help/2/
 			window.disqus_shortname = 'es6';
 			window.disqus_identifier = (location.hash?location.hash.replace("#", ""):'READEME');
@@ -210,11 +211,10 @@ function router() {
 			// http://docs.disqus.com/developers/universal/
 			(function() {
 				var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-				dsq.src = 'http://es6.disqus.com/embed.js';
+				dsq.src = 'http://'+window.disqus_shortname+'.disqus.com/embed.js';
 				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 			})();
-		}
-		loadDisqus();
+		})();
 
 		if(path.indexOf('README') === -1){
 			$('html, body').animate({

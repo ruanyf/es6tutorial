@@ -197,6 +197,10 @@ proxy.title // 35
 
 ```javascript
 
+var person = {
+    name: "张三"
+};
+
 var proxy = new Proxy(target, {
         get: function(target, property) {
             if (property in target) {
@@ -206,6 +210,9 @@ var proxy = new Proxy(target, {
             }
         }
 });
+
+proxy.name // "张三"
+proxy.age // 抛出一个错误
 
 ```
 

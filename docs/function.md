@@ -18,6 +18,25 @@ var p = new Point();
 
 任何带有默认值的参数，被视为可选参数。不带默认值的参数，则被视为必需参数。
 
+利用参数默认值，可以指定一个参数不得省略，如果省略就抛出一个错误。
+
+```javascript
+
+function throwIfMissing() {
+        throw new Error('Missing parameter');
+    }
+
+function foo(mustBeProvided = throwIfMissing()) {
+        return mustBeProvided;
+}
+
+foo()
+// Error: Missing parameter
+
+```
+
+上面代码的foo函数，如果调用的时候没有参数，就会调用默认值throwIfMissing函数，从而抛出一个错误。
+
 ## rest（...）运算符
 
 ES6引入rest运算符（...），用于获取函数的多余参数，这样就不需要使用arguments.length了。rest运算符后面是一个数组变量，该变量将多余的参数放入数组中。
