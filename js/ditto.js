@@ -171,10 +171,6 @@ function show_loading() {
 
 function router() {
 
-	$('html, body').animate({
-		scrollTop: $('#content').offset().top
-	}, 200);
-
     var path = location.hash.replace("#", "./");
 
     // default page if hash is empty
@@ -221,6 +217,12 @@ function router() {
 				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 			})();
 		})();
+
+		if(path.indexOf('README') === -1){
+			$('html, body').animate({
+				scrollTop: $('#content').offset().top
+			}, 200);
+		}
 
     }).fail(function() {
         show_error();

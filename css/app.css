@@ -288,12 +288,28 @@ body {
     display: none;
     position: fixed;
 
-    height: 17px;
-    top: 45%;
+    height: 100%;
+	width: 100%;
+    top: 0;
+	background-color: rgba(0,0,0,0.5);
 
-    margin-left: 560px;
+	z-index:10;
 
     font-size: 14px;
+}
+
+@media (min-width: 40rem) {
+	#loading, #error {
+	    display: none;
+		position: fixed;
+
+		height: 17px;
+		top: 45%;
+
+		margin-left: 560px;
+
+		font-size: 14px;
+	}	
 }
 
 /**
