@@ -320,7 +320,7 @@ body {
 #pageup,#pagedown{
 	height:20px;
 	width:70px;
-	display:inline-box;
+	display:inline-block;
 	border-radius: 5px;
     background-color: #AAA;
 	text-align: center;
@@ -328,9 +328,17 @@ body {
 	color: #FFF;
 }
 
+#pageup{
+	margin-right:5px;
+}
+
+#pagedown{
+	margin-left:5px;
+}
+
 @media (min-width: 40rem) {
 	#flip{
-		margin-left:380px;
+		margin-left:545px;
 	}
 }
 
