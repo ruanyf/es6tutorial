@@ -233,11 +233,11 @@ function router() {
 		}
 
 		if(location.hash==='' || location.hash===menu[0]){
-			$('#pageup').style.display='none';
+			$('#pageup').css('display','none');
 		}
 
 		if (location.hash===menu[(menu.length-1)]){
-			$('pagedown').style.display='none';
+			$('#pagedown').css('display','none');
 		}
 
 		$('#pageup').on('click',function (){
