@@ -314,7 +314,7 @@ body {
 	width:150px;
 	bottom:10px;
 	font-size:10px;
-	margin:auto auto;
+	margin-left:auto;
 }
 
 #pageup,#pagedown{
