@@ -35,8 +35,6 @@ function initialize() {
     // page router
     router();
     $(window).on('hashchange', router);
-	var flip = document.querySelector('#flip');
-    Veil(flip, {prop: 'bottom'});
 }
 
 function init_sidebar_section() {
@@ -234,64 +232,3 @@ function router() {
         $(ditto.loading_id).hide();
 	});
 }
-
-// veil.js
-
-(function (window, document, $) {
-
-    window.Veil = function (elem, options) {
-
-        var defaults = {
-            offset: 0,
-            prop: 'top',
-            onScroll: function (elem, threshold) {},
-            isHidden: function (elem, threshold) {},
-            isVisible: function (elem, threshold) {}
-        };
-
-        var lastScroll = 0;
-        var treshold = 0;
-
-        // merge the defaults with the passed options
-        for (var key in options) {
-            defaults[key] = options[key];
-        }
-
-        // if the defaults.prop is 'top' or 'bottom'
-        // we need the height, otherwise the width
-        var sizeProp = /to/i.test(defaults.prop) ? 'offsetHeight' : 'offsetWidth';
-
-        Veil.scroll = function () {
-            var scrollOffset = document.documentElement.scrollTop || document.body.scrollTop,
-                elemSize = elem[sizeProp] + defaults.offset,
-                diff = scrollOffset - lastScroll;
-
-            treshold = (treshold + diff > elemSize) ? elemSize : (scrollOffset < 0) ? 0 : treshold + diff;
-            treshold = (treshold < 0) ? 0 : treshold;
-
-            elem.style[defaults.prop] = (-treshold) + 'px';
-            defaults.onScroll(elem, treshold);
-            if (!treshold) defaults.isVisible(elem, treshold);
-            if (treshold === elemSize) defaults.isHidden(elem, treshold);
-
-            lastScroll = scrollOffset;
-        };
-
-        Veil.scroll();
-
-        // modern browsers
-        if (window.addEventListener) return window.addEventListener('scroll', Veil.scroll);
-
-        // ie8 and below
-        window.attachEvent('onscroll', Veil.scroll);
-    };
-
-    // if jquery or zepto is present,
-    // add a function to their prototype
-    if ($) $.fn.veil = function (options) {
-        return this.each(function () {
-            Veil(this, options);
-        });
-    };
-
-}(this, document, this.jQuery || this.Zepto));
