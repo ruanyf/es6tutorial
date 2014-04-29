@@ -245,10 +245,18 @@ function router() {
 		}
 
 		$('#pageup').on('click',function (){
-		
+			for (var i=0;i<menu.length;i++){
+				if (location.hash==='') break;
+				if (menu[i]===location.hash) break;
+			}
+			location.hash = menu[i-1]
 		});
 		$('#pagedown').on('click',function (){
-
+			for (var i=0;i<menu.length;i++){
+				if (location.hash==='') break;
+				if (menu[i]===location.hash) break;
+			}
+			location.hash = menu[i+1];
 		});
 
     }).fail(function() {
