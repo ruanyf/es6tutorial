@@ -232,6 +232,21 @@ function router() {
 			}, 200);
 		}
 
+		if(location.hash==='' || location.hash===menu[0]){
+			$('#pageup').style.display='none';
+		}
+
+		if (location.hash===menu[(menu.length-1)]){
+			$('pagedown').style.display='none';
+		}
+
+		$('#pageup').on('click',function (){
+		
+		});
+		$('#pagedown').on('click',function (){
+
+		});
+
     }).fail(function() {
         show_error();
 
