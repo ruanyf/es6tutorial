@@ -48,6 +48,20 @@ function init_sidebar_section() {
 		menuOL.find('li a').map(function(){
 			menu.push(this.href.slice(this.href.indexOf('#')));
 		});
+		$('#pageup').on('click',function (){
+			for (var i=0;i<menu.length;i++){
+				if (location.hash==='') break;
+				if (menu[i]===location.hash) break;
+			}
+			location.hash = menu[i-1]
+		});
+		$('#pagedown').on('click',function (){
+			for (var i=0;i<menu.length;i++){
+				if (location.hash==='') break;
+				if (menu[i]===location.hash) break;
+			}
+			location.hash = menu[i+1];
+		});
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
@@ -243,21 +257,6 @@ function router() {
 		}else{
 			$('#pagedown').css('display','inline-block');
 		}
-
-		$('#pageup').on('click',function (){
-			for (var i=0;i<menu.length;i++){
-				if (location.hash==='') break;
-				if (menu[i]===location.hash) break;
-			}
-			location.hash = menu[i-1]
-		});
-		$('#pagedown').on('click',function (){
-			for (var i=0;i<menu.length;i++){
-				if (location.hash==='') break;
-				if (menu[i]===location.hash) break;
-			}
-			location.hash = menu[i+1];
-		});
 
     }).fail(function() {
         show_error();
