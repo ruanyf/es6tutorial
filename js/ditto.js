@@ -34,7 +34,7 @@ function initialize() {
     }
 
 	// 初始化内容数组
-	var menuOL = $(ditto.sidebar+' ol');
+	var menuOL = $(ditto.sidebar_id+' ol');
 	menuOL.attr('start',0);
 
 	menuOL.find('li').map(function(){
