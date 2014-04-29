@@ -17,6 +17,10 @@ var ditto = {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
+var header = $('#flip'),
+    headerHeight = 30,
+    treshold = 0,
+    lastScroll = 0;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -35,7 +39,17 @@ function initialize() {
     // page router
     router();
     $(window).on('hashchange', router);
-}
+	$(document).on('scroll', function (evt) {
+		var newScroll = $(document).scrollTop(),
+        diff = newScroll-lastScroll;
+	    treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
+		treshold = (treshold < 0) ? 0 : treshold;
+    
+		header.css('bottom', (-treshold)+'px');
+
+		lastScroll = newScroll;
+	
+	}
 
 function init_sidebar_section() {
     $.get(ditto.sidebar_file, function(data) {
