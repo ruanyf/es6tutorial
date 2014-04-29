@@ -43,7 +43,7 @@ function initialize() {
 			var newScroll = $(document).scrollTop(),
 		    diff = newScroll-lastScroll;
 			treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
-			treshold = (treshold < 0) ? 0 : treshold;
+			treshold = (treshold < 0) ? 10 : treshold;
     
 			$('#flip').css('bottom', (-treshold)+'px');
 
