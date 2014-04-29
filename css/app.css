@@ -332,6 +332,12 @@ body {
 	margin-right:5px;
 }
 
+#pageup:hover,
+#pagedown:hover{
+    background-color: #444;
+    cursor: pointer;
+}
+
 #pagedown{
 	margin-left:5px;
 }
