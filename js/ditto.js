@@ -39,17 +39,6 @@ function initialize() {
     // page router
     router();
     $(window).on('hashchange', router);
-	$(document).on('scroll', function (evt) {
-		var newScroll = $(document).scrollTop(),
-        diff = newScroll-lastScroll;
-	    treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
-		treshold = (treshold < 0) ? 0 : treshold;
-    
-		header.css('bottom', (-treshold)+'px');
-
-		lastScroll = newScroll;
-	}
-	
 }
 
 function init_sidebar_section() {
@@ -245,5 +234,15 @@ function router() {
     }).always(function() {
         clearInterval(loading);
         $(ditto.loading_id).hide();
-    });
+		$(document).on('scroll', function (evt) {
+			var newScroll = $(document).scrollTop(),
+		    diff = newScroll-lastScroll;
+			treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
+			treshold = (treshold < 0) ? 0 : treshold;
+    
+			header.css('bottom', (-treshold)+'px');
+
+			lastScroll = newScroll;
+		}
+	});
 }
