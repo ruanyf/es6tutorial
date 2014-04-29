@@ -308,6 +308,32 @@ body {
 	}	
 }
 
+#flip{
+	position:fixed;
+	height:20px;
+	width:150px;
+	bottom:10px;
+	font-size:10px;
+	margin:auto auto;
+}
+
+#pageup,#pagedown{
+	height:20px;
+	width:70px;
+	display:inline-box;
+	border-radius: 5px;
+    background-color: #AAA;
+	text-align: center;
+	line-height:20px;
+	color: #FFF;
+}
+
+@media (min-width: 40rem) {
+	#flip{
+		margin-left:380px;
+	}
+}
+
 /**
  * okaidia theme for JavaScript, CSS and HTML
  * Loosely based on Monokai textmate theme by http://www.monokai.nl/
