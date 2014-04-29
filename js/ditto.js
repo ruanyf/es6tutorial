@@ -48,8 +48,9 @@ function initialize() {
 		header.css('bottom', (-treshold)+'px');
 
 		lastScroll = newScroll;
-	
 	}
+	
+}
 
 function init_sidebar_section() {
     $.get(ditto.sidebar_file, function(data) {
