@@ -17,10 +17,6 @@ var ditto = {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
-var header,
-    headerHeight = 30,
-    treshold = 0,
-    lastScroll = 0;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -39,16 +35,14 @@ function initialize() {
     // page router
     router();
     $(window).on('hashchange', router);
-	$(document).on('scroll', function (evt) {
-			var newScroll = $(document).scrollTop(),
-		    diff = newScroll-lastScroll;
-			treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
-			treshold = (treshold < 0) ? -10 : treshold;
-    
-			$('#flip').css('bottom', (-treshold)+'px');
+	var flip = document.querySelector('#flip');
+    var hasTouch = 'ontouchstart' in window;
 
-			lastScroll = newScroll;
-	});	
+        if (!hasTouch) {
+            Veil(flip, {
+                prop: 'bottom'
+            });
+        }
 }
 
 function init_sidebar_section() {
@@ -246,3 +240,64 @@ function router() {
         $(ditto.loading_id).hide();
 	});
 }
+
+// veil.js
+
+(function (window, document, $) {
+
+    window.Veil = function (elem, options) {
+
+        var defaults = {
+            offset: 0,
+            prop: 'top',
+            onScroll: function (elem, threshold) {},
+            isHidden: function (elem, threshold) {},
+            isVisible: function (elem, threshold) {}
+        };
+
+        var lastScroll = 0;
+        var treshold = 0;
+
+        // merge the defaults with the passed options
+        for (var key in options) {
+            defaults[key] = options[key];
+        }
+
+        // if the defaults.prop is 'top' or 'bottom'
+        // we need the height, otherwise the width
+        var sizeProp = /to/i.test(defaults.prop) ? 'offsetHeight' : 'offsetWidth';
+
+        Veil.scroll = function () {
+            var scrollOffset = document.documentElement.scrollTop || document.body.scrollTop,
+                elemSize = elem[sizeProp] + defaults.offset,
+                diff = scrollOffset - lastScroll;
+
+            treshold = (treshold + diff > elemSize) ? elemSize : (scrollOffset < 0) ? 0 : treshold + diff;
+            treshold = (treshold < 0) ? 0 : treshold;
+
+            elem.style[defaults.prop] = (-treshold) + 'px';
+            defaults.onScroll(elem, treshold);
+            if (!treshold) defaults.isVisible(elem, treshold);
+            if (treshold === elemSize) defaults.isHidden(elem, treshold);
+
+            lastScroll = scrollOffset;
+        };
+
+        Veil.scroll();
+
+        // modern browsers
+        if (window.addEventListener) return window.addEventListener('scroll', Veil.scroll);
+
+        // ie8 and below
+        window.attachEvent('onscroll', Veil.scroll);
+    };
+
+    // if jquery or zepto is present,
+    // add a function to their prototype
+    if ($) $.fn.veil = function (options) {
+        return this.each(function () {
+            Veil(this, options);
+        });
+    };
+
+}(this, document, this.jQuery || this.Zepto));
