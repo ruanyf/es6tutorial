@@ -218,11 +218,11 @@ function router() {
 			})();
 		})();
 
-		// if(path.indexOf('README') === -1){
+		if(location.hash === ''){
 			$('html, body').animate({
 				scrollTop: $('#content').offset().top
 			}, 200);
-		// }
+		}
 
     }).fail(function() {
         show_error();
