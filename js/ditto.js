@@ -17,7 +17,7 @@ var ditto = {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
-var header = $('#flip'),
+var header,
     headerHeight = 30,
     treshold = 0,
     lastScroll = 0;
@@ -45,7 +45,7 @@ function initialize() {
 			treshold = (treshold+diff>headerHeight) ? headerHeight : treshold+diff;
 			treshold = (treshold < 0) ? 0 : treshold;
     
-			header.css('bottom', (-treshold)+'px');
+			$('#flip').css('bottom', (-treshold)+'px');
 
 			lastScroll = newScroll;
 	});	
