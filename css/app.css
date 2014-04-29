@@ -311,11 +311,10 @@ body {
 #flip{
 	position:fixed;
 	height:20px;
-	width:150px;
+	width:100%;
 	bottom:10px;
 	font-size:10px;
-	margin-left:auto;
-	margin-right:auto;
+	text-align:center;
 }
 
 #pageup,#pagedown{
@@ -340,6 +339,7 @@ body {
 @media (min-width: 40rem) {
 	#flip{
 		margin-left:545px;
+		width:150px;
 	}
 }
 
