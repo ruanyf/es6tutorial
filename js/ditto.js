@@ -46,7 +46,7 @@ function init_sidebar_section() {
 		menuOL.attr('start',0);
 
 		menuOL.find('li a').map(function(){
-			menu.push(this.href);
+			menu.push(this.href.slice(this.href.indexOf('#')));
 		});
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
