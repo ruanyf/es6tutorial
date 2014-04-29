@@ -17,6 +17,7 @@ var ditto = {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
+var menu;
 
 function initialize() {
     // initialize sidebar and buttons
@@ -31,6 +32,14 @@ function initialize() {
     if (ditto.edit_button) {
         init_edit_button();
     }
+
+	// 初始化内容数组
+	var menuOL = $(ditto.sidebar+' ol');
+	menuOL.attr('start',0);
+
+	menuOL.find('li').map(function(){
+		menu.push(this.href);
+	});
 
     // page router
     router();
