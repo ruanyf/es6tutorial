@@ -45,7 +45,7 @@ function init_sidebar_section() {
 		var menuOL = $(ditto.sidebar_id+' ol');
 		menuOL.attr('start',0);
 
-		menuOL.find('li').map(function(){
+		menuOL.find('li a').map(function(){
 			menu.push(this.href);
 		});
     }, "text").fail(function() {
