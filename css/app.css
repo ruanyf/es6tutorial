@@ -288,13 +288,8 @@ body {
     display: none;
     position: fixed;
 
-    height: 100%;
-	width: 100%;
     top: 0;
-	background-color: rgba(0,0,0,0.5);
-	padding:auto auto;
-
-	z-index:10;
+	height: 17px;
 
     font-size: 14px;
 }
