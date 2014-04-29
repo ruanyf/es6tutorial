@@ -33,14 +33,6 @@ function initialize() {
         init_edit_button();
     }
 
-	// 初始化内容数组
-	var menuOL = $(ditto.sidebar_id+' ol');
-	menuOL.attr('start',0);
-
-	menuOL.find('li').map(function(){
-		menu.push(this.href);
-	});
-
     // page router
     router();
     $(window).on('hashchange', router);
@@ -49,6 +41,13 @@ function initialize() {
 function init_sidebar_section() {
     $.get(ditto.sidebar_file, function(data) {
         $(ditto.sidebar_id).html(marked(data));
+		// 初始化内容数组
+		var menuOL = $(ditto.sidebar_id+' ol');
+		menuOL.attr('start',0);
+
+		menuOL.find('li').map(function(){
+			menu.push(this.href);
+		});
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
