@@ -36,13 +36,7 @@ function initialize() {
     router();
     $(window).on('hashchange', router);
 	var flip = document.querySelector('#flip');
-    var hasTouch = 'ontouchstart' in window;
-
-        if (!hasTouch) {
-            Veil(flip, {
-                prop: 'bottom'
-            });
-        }
+    Veil(flip, {prop: 'bottom'});
 }
 
 function init_sidebar_section() {
