@@ -17,7 +17,7 @@ var ditto = {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
-var menu;
+var menu=new Array();
 
 function initialize() {
     // initialize sidebar and buttons
