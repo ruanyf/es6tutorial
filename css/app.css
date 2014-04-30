@@ -151,6 +151,11 @@ body {
     border-radius: 2px;
 }
 
+#content p>code {
+    color: #c7254e;
+    background: #f9f2f4;
+}
+
 #content h2 {
     margin-top: 50px;
     margin-bottom: 0px;
