@@ -142,12 +142,13 @@ body {
 #content code {
     padding-right: 5px;
 
-    color: #a6e22e;
+    color: #c7254e;
     font-size: 0.7rem;
     font-weight: normal;
     font-family: Consolas,"Courier New",Courier,FreeMono,monospace;
 
-    background: #111;
+    background: #f9f2f4;
+	white-space: nowrap;
     border-radius: 2px;
 }
 
