@@ -30,7 +30,7 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 
 2014年12月，ECMAScript 6预计将发布正式版本。
 
-ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等。TC39的总体考虑是，ECMAScript 5与ECMAScript 3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当前，JavaScript.next指的是ECMAScript 6，当第六版发布以后，将指ECMAScript 7。TC39预计，ECMAScript 5会在2013年的年中成为JavaScript开发的主流标准，并在今后五年中一直保持这个位置。
+ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等大公司。TC39的总体考虑是，ES5与ES3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当前，JavaScript.next指的是ES6，当第六版发布以后，将指ES7。TC39估计，ES5会在2013年的年中成为JavaScript开发的主流标准，并在今后五年中一直保持这个位置。
 
 ## 部署进度
 
@@ -50,7 +50,7 @@ node --harmony
 
 ```
 
-启动命令中的--harmony选项可以打开大部分的ES6功能，但是还有一些特性，需要单独打开，主要是使用--use_strict选项打开块级作用域功能、使用--harmony_generators选项打开generator功能。
+启动命令中的`--harmony`选项可以打开大部分的ES6功能，但是还有一些特性，需要单独打开，主要是使用`--use_strict`选项打开块级作用域功能、使用`--harmony_generators`选项打开generator功能。
 
 使用下面的命令，可以查看所有与ES6有关的选项。
 
