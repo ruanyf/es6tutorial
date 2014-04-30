@@ -50,7 +50,9 @@ node --harmony
 
 ```
 
-启动命令中的--harmony选项可以打开大部分的ES6功能，但是还是--use_strict选项打开块级作用域功能、--harmony_generators选项打开generator功能。使用下面的命令，可以查看所有与ES6有关的选项。
+启动命令中的--harmony选项可以打开大部分的ES6功能，但是还有一些特性，需要单独打开，主要是使用--use_strict选项打开块级作用域功能、使用--harmony_generators选项打开generator功能。
+
+使用下面的命令，可以查看所有与ES6有关的选项。
 
 ```bash
 
