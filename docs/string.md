@@ -4,7 +4,7 @@ ES6加强了对Unicode的支持，并且扩展了字符串对象。
 
 ## codePointAt方法
 
-JavaScript内部，字符以UTF-16的格式储存，每个字符固定为16字节。对于那些需要4个字节储存的字符（Unicode编号大于0xFFFF的字符），JavaScript会认为它们是两个字符。
+JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode编号大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
 ```javascript
 
@@ -18,9 +18,9 @@ s.charCodeAt(1) // 57271
 		
 ```
 
-上面代码说明，对于4个字节储存的字符，JavaScript不能正确处理。
+上面代码说明，对于4个字节储存的字符，JavaScript不能正确处理。字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
 
-ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的Unicode编号。，
+ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的Unicode编号。
 
 ```javascript
 
@@ -33,9 +33,9 @@ s.charCodeAt(2) // 97
 
 ```
 
-上面代码说明，codePointAt方法的参数是，字符在字符串中的位置。对于两个字节储存的字符，它的返回结果与charCodeAt方法相同。
+codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码表明，它会正确返回四字节的UTF-16字符的Unicode编号。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
 
-该方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
+codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
 ```javascript
 
