@@ -354,6 +354,14 @@ body {
 	}
 }
 
+.progress-indicator-2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background-color: #0A74DA;
+}
+
 /**
  * okaidia theme for JavaScript, CSS and HTML
  * Loosely based on Monokai textmate theme by http://www.monokai.nl/
