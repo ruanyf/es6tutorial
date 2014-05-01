@@ -190,6 +190,7 @@ m.get(hello)  // Hello ES6!
 m.get("edition")  // 6
 
 ```
+
 **（3）遍历**
 
 Map原生提供三个遍历器。
