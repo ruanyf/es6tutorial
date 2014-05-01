@@ -107,6 +107,8 @@ function dedupe(array) {
 
 ## Map
 
+**（1）基本用法**
+
 JavaScript的对象，本质上是键值对的集合，但是只能用字符串当作键。这给它的使用带来了很大的限制。
 
 ```javascript
@@ -151,6 +153,8 @@ map.get("title") // "Author"
 
 ```
 
+**（2）属性和方法**
+
 Map数据结构有以下属性和方法。
 
 - size：返回成员总数。
@@ -159,9 +163,6 @@ Map数据结构有以下属性和方法。
 - has(key)：返回一个布尔值，表示某个键是否在Map数据结构中。
 - delete(key)：删除某个键。
 - clear()：清除所有成员。
-- keys()：返回键名的遍历器。
-- values()：返回键值的遍历器。
-- entries()：返回所有成员的遍历器。
 
 下面是一些用法实例。
 
@@ -189,8 +190,15 @@ m.get(hello)  // Hello ES6!
 m.get("edition")  // 6
 
 ```
+**（3）遍历**
 
-运用Map结构原生提供的三个遍历器，可以遍历所有成员。
+Map原生提供三个遍历器。
+
+- keys()：返回键名的遍历器。
+- values()：返回键值的遍历器。
+- entries()：返回所有成员的遍历器。
+
+下面是使用实例。
 
 ```javascript
 
@@ -213,13 +221,13 @@ for (let item of map) {
 
 ```
 
-Map结构还有一个forEach方法，与数组的forEach方法类似，也可以实现遍历。
+此外，Map还有一个forEach方法，与数组的forEach方法类似，也可以实现遍历。
 
 ```javascript
 
 map.forEach(function(value, key, map)) {
     console.log("Key: %s, Value: %s", key, value);
-});
+};
 
 ```
 
