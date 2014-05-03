@@ -55,20 +55,20 @@ node --harmony
 ```bash
 
 $ node --v8-options | grep harmony
-  --harmony_typeof (enable harmony semantics for typeof)
-  --harmony_scoping (enable harmony block scoping)
-  --harmony_modules (enable harmony modules (implies block scoping))
-  --harmony_symbols (enable harmony symbols (a.k.a. private names))
-  --harmony_proxies (enable harmony proxies)
-  --harmony_collections (enable harmony collections (sets, maps, and weak maps))
-  --harmony_observation (enable harmony object observation (implies harmony collections)
-  --harmony_generators (enable harmony generators)
-  --harmony_iteration (enable harmony iteration (for-of))
-  --harmony_numeric_literals (enable harmony numeric literals (0o77, 0b11))
-  --harmony_strings (enable harmony string)
-  --harmony_arrays (enable harmony arrays)
-  --harmony_maths (enable harmony math functions)
-  --harmony (enable all harmony features (except typeof))
+  --harmony_typeof
+  --harmony_scoping
+  --harmony_modules
+  --harmony_symbols
+  --harmony_proxies
+  --harmony_collections
+  --harmony_observation
+  --harmony_generators
+  --harmony_iteration
+  --harmony_numeric_literals
+  --harmony_strings
+  --harmony_arrays
+  --harmony_maths
+  --harmony
 
 ```
 
