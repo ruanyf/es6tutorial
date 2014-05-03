@@ -50,6 +50,8 @@ class ColorPoint extends Point {
 
 ## Module的基本用法
 
+**（1）export和import**
+
 ES6实现了模块功能，试图解决JavaScript代码的依赖和部署上的问题。模块功能有两个关键字：export和import。export用于用户自定义模块，规定对外接口；import用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
 ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。最简单的模块就是一个JS文件，里面使用export关键字输出变量。
@@ -77,7 +79,17 @@ function setHeader(element) {
 
 上面代码中import关键字接受一个对象（用大括号表示），里面指定要从其他模块导入的变量。大括号里面的变量名，必须与被导入模块对外接口的名称相同。
 
-export关键字除了输出变量，还可以输出方法。下面是一个circle.js文件，它输出两个方法。
+如果想为输入的属性或方法重新取一个名字，import语言要写成下面这样。
+
+```javascript
+
+import { someMethod, another as newName } from './exporter';
+
+```
+
+**（2）模块的整体加载**
+
+export关键字除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法。
 
 ```javascript
 
@@ -120,6 +132,44 @@ console.log("圆周长：" + circle.circumference(14));
 
 module关键字后面跟一个变量，表示导入的模块定义在该变量上。
 
+**（3）export default语句**
+
+如果不想为某个属性或方法，指定输入的名称，可以使用export default语句。
+
+```javascript
+
+// export-default.js
+
+export default function foo() {
+    console.log('foo');
+}
+
+```
+
+上面代码中的foo方法，就被称为该模块的默认方法。
+
+在其他模块导入该模块时，import语句可以为默认方法指定任意名字。
+
+```javascript
+
+// import-default.js
+
+import customName from './export-default';
+
+customName(); // 'foo'
+
+```
+
+显然，一个模块只能有一个默认方法。
+
+如果要输出默认属性，只需将值跟在`export default之后`即可。
+
+```javascript
+
+export default 42;  
+
+```
+
 ## 模块的继承
 
 模块之间也可以继承。
@@ -138,7 +188,15 @@ export default function(x) {
 
 ```
 
-上面代码中的“export *”，表示导入circle模块的所有属性和方法。export default命令表示，定义模块的默认方法。
+上面代码中的“export *”，表示输出circle模块的所有属性和方法，export default命令定义模块的默认方法。
+
+这时，可以为circle中的属性或方法，改名后再输出。
+
+```javascript
+
+export { area as circleArea } from 'circle';  
+
+```
 
 加载上面模块的写法如下。
 
