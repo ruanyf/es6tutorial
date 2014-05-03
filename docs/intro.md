@@ -36,8 +36,6 @@ ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负
 
 由于ES6还没有定案，有些语法规则还会变动，目前支持ES6的软件和开发环境还不多。各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。
 
-## 使用方法
-
 Google公司的V8引擎已经部署了ES6的部分特性。使用node.js 0.11版，就可以体验这些特性。
 
 node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
@@ -72,18 +70,65 @@ $ node --v8-options | grep harmony
 
 ```
 
-另外，可以使用Google的[Traceur](https://github.com/google/traceur-compiler)，将ES6代码编译为ES5。
+## Traceur编译器
+
+Google公司的[Traceur](https://github.com/google/traceur-compiler)编译器，可以将ES6代码编译为ES5代码。
+
+Traceur是一个node.js的模块，需要用npm安装。
 
 ```bash
-# 安装
+
 npm install -g traceur
 
-# 运行ES6文件
+```
+
+它有多种使用方法，首先是命令行工具。
+
+```bash
+
+# 运行ES6文件，在标准输出显示结果
 traceur /path/to/es6
 
 # 将ES6文件转为ES5文件
 traceur --script /path/to/es6 --out /path/to/es5
+
 ```
+
+命令行下转换的文件，就可以放到浏览器中运行。假定转换后的文件是result.js，它插入浏览器的写法如下。
+
+```html
+
+<script src="bin/traceur-runtime.js"></script>
+<script src="out/result.js"></script>
+
+```
+
+上面代码中的traceur-runtime.js，是traceur提供的浏览器函数库。
+
+Traceur的node.js用法如下。
+
+```javascript
+
+var traceur = require('traceur');
+var fs = require('fs');
+
+var contents = fs.readFileSync('es6-file.js').toString();
+
+var result = traceur.compile(contents, {
+  filename: 'es6-file.js',
+  sourceMap: true,
+  // 其他设置
+  modules: 'commonjs'
+});
+
+if (result.error)
+  throw result.error;
+fs.writeFileSync('out.js', result.js);
+fs.writeFileSync('out.js.map', result.sourceMap);
+
+```
+
+除了命令行工具，Traceur还提供一个[浏览器界面](http://google.github.io/traceur-compiler/demo/repl.html)，用于在线转换ES6代码。
 
 ## ECMAScript 7
 

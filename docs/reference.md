@@ -1,5 +1,8 @@
 # 参考链接
 
+- [ECMAScript 6 Language Specification](http://people.mozilla.org/~jorendorff/es6-draft.html): 语言规格草案
+- [harmony:proposals](http://wiki.ecmascript.org/doku.php?id=harmony:proposals): ES6的各种提案
+
 ## 综合介绍
 
 - Sayanee Basu, [Use ECMAScript 6 Today](http://net.tutsplus.com/articles/news/ecmascript-6-today/)
@@ -33,5 +36,6 @@
 
 ## 工具
 
+- Google, [traceur-compiler](https://github.com/google/traceur-compiler): Traceur编译器
 - Casper Beyer, [ECMAScript 6 Features and Tools](http://caspervonb.github.io/2014/03/05/ecmascript6-features-and-tools.html)
 - Stoyan Stefanov, [Writing ES6 today with jstransform](http://www.phpied.com/writing-es6-today-with-jstransform/)
