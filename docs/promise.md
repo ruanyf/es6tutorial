@@ -28,6 +28,24 @@ promise.then(function(value) {
 
 promise实例生成以后，可以用then方法分别指定resolve方法和reject方法的回调函数。
 
+下面是一个使用Promise对象的简单例子。
+
+```javascript
+
+function timeout(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+timeout(100).then(() => {
+  console.log('done');
+});
+
+```
+
+上面代码的timeout方法返回一个Promise实例对象，表示一段时间以后改变自身状态，从而触发then方法绑定的回调函数。
+
 下面是一个用Promise对象实现的Ajax操作的例子。
 
 ```javascript
@@ -163,3 +181,34 @@ p.then(function (s){
 ```
 
 上面代码生成一个新的Promise对象，它的状态为fulfilled，所以回调函数会立即执行，Promise.resolve方法的参数就是回调函数的参数。
+
+## async函数
+
+async函数是用来取代回调函数的另一种方法。
+
+只要函数名之前加上async关键字，就表明该函数内部有异步操作。该异步操作应该返回一个promise对象，前面用await关键字注明。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+
+```javascript
+
+function timeout(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function asyncValue(value) {
+  await timeout(50);
+  return value;
+}
+
+(async function() {
+  var value = await asyncValue(42);
+  assert.equal(42, value);
+  done();
+})();
+
+```
+
+上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。后面的匿名函数前也有async关键字，表明该函数也需要暂停，等到await后面的`asyncValue(42)`得到值以后，再执行后面的语句。
+
+async函数并不属于ES6，而是被列入了ES7，但是traceur编译器已经实现了这个功能。

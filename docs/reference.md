@@ -15,6 +15,7 @@
 - Justin Drake, [ECMAScript 6 in Node.JS](https://github.com/JustinDrake/node-es6-examples)
 - Ryan Dao, [Summary of ECMAScript 6 major features](http://ryandao.net/portal/content/summary-ecmascript-6-major-features)
 - Luke Hoban, [ES6 features](https://github.com/lukehoban/es6features)
+- Traceur-compiler, [Language Features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures): Traceur编译列出的一些ES6例子
 
 ## 语法点
 
