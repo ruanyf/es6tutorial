@@ -1,5 +1,7 @@
 # 参考链接
 
+## 官方文件
+
 - [ECMAScript 6 Language Specification](http://people.mozilla.org/~jorendorff/es6-draft.html): 语言规格草案
 - [harmony:proposals](http://wiki.ecmascript.org/doku.php?id=harmony:proposals): ES6的各种提案
 

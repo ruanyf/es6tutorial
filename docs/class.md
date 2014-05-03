@@ -34,7 +34,7 @@ class之间可以通过extends关键字，实现继承。
 class ColorPoint extends Point {
 
   constructor(x, y, color) {
-    super(x, y); // same as super.constructor(x, y)
+    super(x, y); // 等同于super.constructor(x, y)
     this.color = color;
   }
 
@@ -46,7 +46,7 @@ class ColorPoint extends Point {
 
 ```
 
-上面代码定义了一个ColorPoint类，该类通过extends关键字，继承了Point类的所有属性和方法。在constructor方法内，super就指代父类Point。
+上面代码定义了一个ColorPoint类，该类通过extends关键字，继承了Point类的所有属性和方法。在constructor方法内，super就指代父类Point；在toString方法内，`super()`表示对父类求值，由于此处需要字符串，所以会自动调用父类的toString方法。
 
 ## Module的基本用法
 
