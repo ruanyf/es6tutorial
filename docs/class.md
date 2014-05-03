@@ -6,6 +6,7 @@ ES6引入了Class（类）这个概念，作为对象的模板。通过class关�
 
 ```javascript
 
+//定义类
 class Point {
 
   constructor(x, y) {
