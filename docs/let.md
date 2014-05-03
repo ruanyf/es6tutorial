@@ -84,7 +84,7 @@ function f1() {
 
 上面的函数有两个代码块，都声明了变量n，运行后输出5。这表示外层代码块不受内层代码块的影响。如果使用var定义变量n，最后输出的值就是10。
 
-块级作用域的出现，实际上使得获得广泛应用的立即执行函数（IIFE）不再必要了。
+块级作用域的出现，实际上使得获得广泛应用的立即执行匿名函数（IIFE）不再必要了。
 
 ```javascript
 
@@ -102,14 +102,14 @@ function f1() {
 
 ```
 
-另外，ES6的函数也默认在块级作用域内声明。
+另外，ES6也规定，函数的作用域为其所在的块级作用域。
 
 ```javascript
 
 function f() { console.log('I am outside!'); }
 (function () {
   if(false) {
-    // What should happen with this redeclaration?
+    // 重复声明一次函数f
     function f() { console.log('I am inside!'); }
   }
 

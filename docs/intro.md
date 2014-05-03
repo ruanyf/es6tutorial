@@ -50,13 +50,25 @@ node --harmony
 
 ```
 
-启动命令中的`--harmony`选项可以打开大部分的ES6功能，但是还有一些特性，需要单独打开，主要是使用`--use_strict`选项打开块级作用域功能、使用`--harmony_generators`选项打开generator功能。
-
-使用下面的命令，可以查看所有与ES6有关的选项。
+启动命令中的`--harmony`选项可以打开所有已经部署的ES6功能。使用下面的命令，可以查看所有与ES6有关的单个选项。
 
 ```bash
 
-node --v8-options | grep harmony
+$ node --v8-options | grep harmony
+  --harmony_typeof (enable harmony semantics for typeof)
+  --harmony_scoping (enable harmony block scoping)
+  --harmony_modules (enable harmony modules (implies block scoping))
+  --harmony_symbols (enable harmony symbols (a.k.a. private names))
+  --harmony_proxies (enable harmony proxies)
+  --harmony_collections (enable harmony collections (sets, maps, and weak maps))
+  --harmony_observation (enable harmony object observation (implies harmony collections)
+  --harmony_generators (enable harmony generators)
+  --harmony_iteration (enable harmony iteration (for-of))
+  --harmony_numeric_literals (enable harmony numeric literals (0o77, 0b11))
+  --harmony_strings (enable harmony string)
+  --harmony_arrays (enable harmony arrays)
+  --harmony_maths (enable harmony math functions)
+  --harmony (enable all harmony features (except typeof))
 
 ```
 
