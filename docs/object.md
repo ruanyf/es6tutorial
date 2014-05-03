@@ -49,6 +49,22 @@ var Person = {
 
 ```
 
+这种写法用于函数的返回值，将会非常方便。
+
+```javascript
+
+function getPoint() {
+  var x = 1;
+  var y = 10;
+
+  return {x, y};
+}
+
+getPoint()
+// {x:1, y:10}
+
+```
+
 ## 属性名表达式
 
 ES6允许定义对象时，用表达式作为对象的属性名。在写法上，要把表达式放在方括号内。

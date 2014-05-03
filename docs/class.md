@@ -50,9 +50,34 @@ class ColorPoint extends Point {
 
 ## Module的基本用法
 
-ES6允许将独立的js文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件，从而使得模块化编程成为可能。
+ES6实现了模块功能，试图解决JavaScript代码的依赖和部署上的问题。模块功能有两个关键字：export和import。export用于用户自定义模块，规定对外接口；import用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
-假设有一个circle.js，它是一个单独模块。
+ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。最简单的模块就是一个JS文件，里面使用export关键字输出变量。
+
+```javascript
+
+// profile.js
+export var firstName = 'David';
+export var lastName = 'Belle';
+export var year = 1973;
+
+```
+
+上面是profile.js，ES6将其视为一个模块，里面用export关键字输出了三个变量。其他js文件就可以通过import关键字加载这个模块（文件）。
+
+```javascript
+
+import {firstName, lastName, year} from './profile';
+
+function setHeader(element) {
+  element.textContent = firstName + ' ' + lastName;
+}
+
+```
+
+上面代码中import关键字接受一个对象（用大括号表示），里面指定要从其他模块导入的变量。大括号里面的变量名，必须与被导入模块对外接口的名称相同。
+
+export关键字除了输出变量，还可以输出方法。下面是一个circle.js文件，它输出两个方法。
 
 ```javascript
 
@@ -68,8 +93,6 @@ export function circumference(radius) {
 
 ```
 
-上面代码中的export关键字，表示这个方法是对外开放的接口。
-
 然后，main.js引用这个模块。
 
 ```javascript
@@ -82,10 +105,7 @@ console.log("圆面积：" + area(4));
 console.log("圆周长：" + circumference(14));
 
 ```
-
-import语句用来导入模块，它接受一个对象，里面指定所要导入的方法，后面的from指定模块名。
-
-另一种写法是使用module命令，整体加载circle.js。
+上面写法是逐一指定要导入的方法。另一种写法是使用module关键字，整体导入。
 
 ```javascript
 
@@ -98,7 +118,7 @@ console.log("圆周长：" + circle.circumference(14));
 
 ```
 
-module命令跟一个变量，表示加载的模块定义在该变量上。
+module关键字后面跟一个变量，表示导入的模块定义在该变量上。
 
 ## 模块的继承
 
