@@ -6,6 +6,7 @@ ES6引入了Class（类）这个概念，可以定义class，作为对象的模�
 
 ```javascript
 
+//定义类
 class Point {
 
   constructor(x, y) {
@@ -18,6 +19,10 @@ class Point {
   }
 
 }
+
+//使用类
+var point = new Point(2,3);
+point.toString(); //(2, 3)
 
 ```
 
