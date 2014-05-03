@@ -2,7 +2,7 @@
 
 ## Class
 
-ES6引入了Class（类）这个概念，可以定义class，作为对象的模板。
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类
 
 ```javascript
 
@@ -18,6 +18,9 @@ class Point {
   }
 
 }
+
+var point = new Point(2,3);
+point.toString() // (2, 3)
 
 ```
 
