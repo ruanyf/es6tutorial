@@ -2,7 +2,7 @@
 
 ## Class
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。
 
 ```javascript
 
@@ -52,7 +52,9 @@ class ColorPoint extends Point {
 
 **（1）export和import**
 
-ES6实现了模块功能，试图解决JavaScript代码的依赖和部署上的问题。模块功能有两个关键字：export和import。export用于用户自定义模块，规定对外接口；import用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
+ES6实现了模块功能，试图解决JavaScript代码的依赖和部署上的问题，取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
+
+模块功能有两个关键字：export和import。export用于用户自定义模块，规定对外接口；import用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
 ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。最简单的模块就是一个JS文件，里面使用export关键字输出变量。
 
@@ -162,7 +164,7 @@ customName(); // 'foo'
 
 显然，一个模块只能有一个默认方法。
 
-如果要输出默认属性，只需将值跟在`export default之后`即可。
+如果要输出默认属性，只需将值跟在`export default`之后即可。
 
 ```javascript
 
