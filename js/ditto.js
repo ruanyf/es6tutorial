@@ -17,8 +17,8 @@ var ditto = {
     run: initialize
 };
 
-var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>'; 
-var menu=new Array();
+var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>';
+var menu = new Array();
 
 function initialize() {
     // initialize sidebar and buttons
@@ -42,27 +42,27 @@ function initialize() {
 function init_sidebar_section() {
     $.get(ditto.sidebar_file, function(data) {
         $(ditto.sidebar_id).html(marked(data));
-		// 初始化内容数组
-		var menuOL = $(ditto.sidebar_id+' ol');
-		menuOL.attr('start',0);
+        // 初始化内容数组
+        var menuOL = $(ditto.sidebar_id + ' ol');
+        menuOL.attr('start', 0);
 
-		menuOL.find('li a').map(function(){
-			menu.push(this.href.slice(this.href.indexOf('#')));
-		});
-		$('#pageup').on('click',function (){
-			for (var i=0;i<menu.length;i++){
-				if (location.hash==='') break;
-				if (menu[i]===location.hash) break;
-			}
-			location.hash = menu[i-1]
-		});
-		$('#pagedown').on('click',function (){
-			for (var i=0;i<menu.length;i++){
-				if (location.hash==='') break;
-				if (menu[i]===location.hash) break;
-			}
-			location.hash = menu[i+1];
-		});
+        menuOL.find('li a').map(function() {
+            menu.push(this.href.slice(this.href.indexOf('#')));
+        });
+        $('#pageup').on('click', function() {
+            for (var i = 0; i < menu.length; i++) {
+                if (location.hash === '') break;
+                if (menu[i] === location.hash) break;
+            }
+            location.hash = menu[i - 1]
+        });
+        $('#pagedown').on('click', function() {
+            for (var i = 0; i < menu.length; i++) {
+                if (location.hash === '') break;
+                if (menu[i] === location.hash) break;
+            }
+            location.hash = menu[i + 1];
+        });
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
@@ -140,20 +140,20 @@ function create_page_anchors() {
         $('#content h' + i).map(function() {
             headers.push($(this).text());
             $(this).addClass(replace_symbols($(this).text()));
-			this.id = 'h'+i+'-'+replace_symbols($(this).text());
+            this.id = 'h' + i + '-' + replace_symbols($(this).text());
         });
 
-        if ((i === 2) && headers.length !== 0){
-			var ul_tag = $('<ol></ol>')
-				.insertAfter('#content h1')
-				.addClass("content-toc")
-				.attr('id','content-toc');
-			for (var j = 0; j < headers.length; j++) {
+        if ((i === 2) && headers.length !== 0) {
+            var ul_tag = $('<ol></ol>')
+                .insertAfter('#content h1')
+                .addClass("content-toc")
+                .attr('id', 'content-toc');
+            for (var j = 0; j < headers.length; j++) {
                 var li_tag = $('<li></li>').text(headers[j]);
-				ul_tag.append(li_tag);
+                ul_tag.append(li_tag);
                 li_create_linkage(li_tag, i);
-			}
-		}
+            }
+        }
     }
 }
 
@@ -214,79 +214,80 @@ function router() {
 
     // otherwise get the markdown and render it
     var loading = show_loading();
-    $.get(path , function(data) {
+    $.get(path, function(data) {
         $(ditto.error_id).hide();
-        $(ditto.content_id).html(marked(data)+disqusCode);
-		if ($(ditto.content_id+" h1").text() === ditto.document_title){
-			document.title = ditto.document_title;
-		} else {
-			document.title = $(ditto.content_id+" h1").text() + " - " + ditto.document_title;
-		}
+        $(ditto.content_id).html(marked(data) + disqusCode);
+        if ($(ditto.content_id + " h1").text() === ditto.document_title) {
+            document.title = ditto.document_title;
+        } else {
+            document.title = $(ditto.content_id + " h1").text() + " - " + ditto.document_title;
+        }
         normalize_paths();
         create_page_anchors();
 
-		// 完成代码高亮
-		$('#content code').map(function() {
+        // 完成代码高亮
+        $('#content code').map(function() {
             Prism.highlightElement(this);
         });
 
-		// 加载disqus
-		(function () {
-			// http://docs.disqus.com/help/2/
-			window.disqus_shortname = 'es6';
-			window.disqus_identifier = (location.hash?location.hash.replace("#", ""):'READEME');
-			window.disqus_title =$(ditto.content_id+" h1").text();
-			window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash?location.hash.replace("#", ""):'README');
+        // 加载disqus
+        (function() {
+            // http://docs.disqus.com/help/2/
+            window.disqus_shortname = 'es6';
+            window.disqus_identifier = (location.hash ? location.hash.replace("#", "") : 'READEME');
+            window.disqus_title = $(ditto.content_id + " h1").text();
+            window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
 
-			// http://docs.disqus.com/developers/universal/
-			(function() {
-				var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-				dsq.src = 'http://'+window.disqus_shortname+'.disqus.com/embed.js';
-				(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-			})();
-		})();
+            // http://docs.disqus.com/developers/universal/
+            (function() {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        })();
 
-		if(location.hash==='' || location.hash===menu[0]){
-			$('#pageup').css('display','none');
-		}else{
-			$('#pageup').css('display','inline-block');
-		}
+        if (location.hash === '' || location.hash === menu[0]) {
+            $('#pageup').css('display', 'none');
+        } else {
+            $('#pageup').css('display', 'inline-block');
+        }
 
-		if (location.hash===menu[(menu.length-1)]){
-			$('#pagedown').css('display','none');
-		}else{
-			$('#pagedown').css('display','inline-block');
-		}
+        if (location.hash === menu[(menu.length - 1)]) {
+            $('#pagedown').css('display', 'none');
+        } else {
+            $('#pagedown').css('display', 'inline-block');
+        }
 
-		(function(){
-			var $w = $(window);
-			var $prog2 = $('.progress-indicator-2');
-			var wh = $w.height();
-			var h = $('body').height();
-			var sHeight = h - wh;
- 			var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
+        (function() {
+            var $w = $(window);
+            var $prog2 = $('.progress-indicator-2');
+            var wh = $w.height();
+            var h = $('body').height();
+            var sHeight = h - wh;
+            var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
-			$w.off('scroll').on('scroll', function(){
-				var perc = Math.max(0, Math.min(1, $w.scrollTop()/sHeight));
-				updateProgress(perc);
-			});
+            $w.off('scroll').on('scroll', function() {
+                var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
+                updateProgress(perc);
+            });
 
-			function updateProgress(perc){
-				$prog2.css({width : perc*100 + '%'});
-				ditto.save_progress && store.set('page-progress', perc);
-			}
+            function updateProgress(perc) {
+                $prog2.css({width: perc * 100 + '%'});
+                ditto.save_progress && store.set('page-progress', perc);
+            }
 
-			updateProgress(perc);
-			$('html, body').animate({
-				scrollTop: sHeight * perc
- 			}, 200);
-		}());
+            updateProgress(perc);
+            $('html, body').animate({
+                scrollTop: sHeight * perc
+            }, 200);
+        }());
 
     }).fail(function() {
         show_error();
-
     }).always(function() {
         clearInterval(loading);
         $(ditto.loading_id).hide();
-	});
+    });
 }
