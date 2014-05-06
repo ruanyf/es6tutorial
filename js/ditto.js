@@ -11,6 +11,7 @@ var ditto = {
     sidebar: true,
     edit_button: true,
     back_to_top_button: true,
+    save_progress: true, // 保存阅读进度
 
     // initialize function
     run: initialize
@@ -195,6 +196,11 @@ function router() {
 
     var path = location.hash.replace("#", "./");
 
+    if (ditto.save_progress && store.get('menu-progress') !== location.hash) {
+        store.set('menu-progress', location.hash);
+        store.set('page-progress', 0);
+    }
+
     // default page if hash is empty
     if (location.pathname === "/index.html") {
         path = location.pathname.replace("index.html", ditto.index);
@@ -240,12 +246,6 @@ function router() {
 			})();
 		})();
 
-		if(location.hash !== ''){
-			$('html, body').animate({
-				scrollTop: $('#content').offset().top
-			}, 200);
-		}
-
 		if(location.hash==='' || location.hash===menu[0]){
 			$('#pageup').css('display','none');
 		}else{
@@ -264,16 +264,22 @@ function router() {
 			var wh = $w.height();
 			var h = $('body').height();
 			var sHeight = h - wh;
-			$w.off('scroll');
-			$w.on('scroll', function(){
+ 			var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
+
+			$w.off('scroll').on('scroll', function(){
 				var perc = Math.max(0, Math.min(1, $w.scrollTop()/sHeight));
 				updateProgress(perc);
 			});
 
 			function updateProgress(perc){
 				$prog2.css({width : perc*100 + '%'});
+				ditto.save_progress && store.set('page-progress', perc);
 			}
 
+			updateProgress(perc);
+			$('html, body').animate({
+				scrollTop: sHeight * perc
+ 			}, 200);
 		}());
 
     }).fail(function() {
