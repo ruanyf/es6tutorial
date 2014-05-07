@@ -192,7 +192,7 @@ function show_loading() {
     return loading;
 }
 
-function router() {
+function router() {	
 
     var path = location.hash.replace("#", "./");
 
@@ -211,6 +211,10 @@ function router() {
     } else {
         path = path + ".md";
     }
+
+	// 取消scroll事件的监听函数
+	// 防止改变下面的变量perc的值
+	$(window).off('scroll');
 
     // otherwise get the markdown and render it
     var loading = show_loading();
@@ -283,7 +287,7 @@ function router() {
             var h = $('body').height();
             var sHeight = h - wh;
 
-            $w.off('scroll').on('scroll', function() {
+            $w.on('scroll', function() {
                 var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
                 updateProgress(perc);
             });
