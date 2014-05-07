@@ -255,10 +255,12 @@ function router() {
 				$('html, body').animate({
 					scrollTop: $('#content').offset().top
 				}, 200);
+				console.log('no perc');
 			} else {
 				$('html, body').animate({
 					scrollTop: Boolean(perc)?($('body').height()-$(window).height())*perc:$('#content').offset().top
 				}, 200);
+				console.log('perc');
 			}
 		}
 
