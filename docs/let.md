@@ -48,6 +48,19 @@ a[6](); // 6
 
 ```
 
+let不像var那样，会发生“变量提升”现象。
+
+```javascript
+
+function do_something() {
+  console.log(foo); // ReferenceError
+  let foo = 2;
+}
+
+```
+
+上面代码在声明foo之前，就使用这个变量，结果会抛出一个错误。
+
 注意，let不允许在相同作用域内，重复声明同一个变量。
 
 ```javascript
