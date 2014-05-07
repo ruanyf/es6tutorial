@@ -248,6 +248,14 @@ function router() {
             })();
         })();
 
+		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
+
+		if(location.hash !== '' || Boolean(perc)){
+			$('html, body').animate({
+				scrollTop: Boolean(perc)?($('body').height()-$(window).height())*perc:$('#content').offset().top
+			}, 200);
+        }
+
         if (location.hash === '' || location.hash === menu[0]) {
             $('#pageup').css('display', 'none');
         } else {
@@ -266,7 +274,6 @@ function router() {
             var wh = $w.height();
             var h = $('body').height();
             var sHeight = h - wh;
-            var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
             $w.off('scroll').on('scroll', function() {
                 var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
@@ -278,10 +285,6 @@ function router() {
                 ditto.save_progress && store.set('page-progress', perc);
             }
 
-            updateProgress(perc);
-            $('html, body').animate({
-                scrollTop: sHeight * perc
-            }, 200);
         }());
 
     }).fail(function() {
