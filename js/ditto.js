@@ -251,14 +251,14 @@ function router() {
 		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
 		if(location.hash !== '' || Boolean(perc)){
-			if (ditto.save_progress && store.get('menu-progress') !== location.hash){
+			if (!Boolean(perc){
 				$('html, body').animate({
 					scrollTop: $('#content').offset().top
 				}, 200);
 				console.log('no perc');
 			} else {
 				$('html, body').animate({
-					scrollTop: Boolean(perc)?($('body').height()-$(window).height())*perc:$('#content').offset().top
+					scrollTop: ($('body').height()-$(window).height())*perc
 				}, 200);
 				console.log('perc');
 			}
