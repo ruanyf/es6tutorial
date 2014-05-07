@@ -250,11 +250,6 @@ function router() {
 
 		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
-		if (location.hash !== '' ditto.save_progress && store.get('menu-progress') !== location.hash) {
-			store.set('menu-progress', location.hash);
-			store.set('page-progress', 0);
-		}
-
 		if(location.hash !== '' || Boolean(perc)){
 			if (ditto.save_progress && store.get('menu-progress') !== location.hash){
 				$('html, body').animate({
