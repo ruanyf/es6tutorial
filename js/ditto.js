@@ -259,12 +259,10 @@ function router() {
 				$('html, body').animate({
 					scrollTop: $('#content').offset().top
 				}, 200);
-				console.log('no perc');
 			} else {
 				$('html, body').animate({
 					scrollTop: ($('body').height()-$(window).height())*perc
 				}, 200);
-				console.log('perc');
 			}
 		}
 
