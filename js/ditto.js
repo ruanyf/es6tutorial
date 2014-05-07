@@ -251,7 +251,7 @@ function router() {
 		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
 		if(location.hash !== '' || Boolean(perc)){
-			if (!Boolean(perc){
+			if (!Boolean(perc)){
 				$('html, body').animate({
 					scrollTop: $('#content').offset().top
 				}, 200);
