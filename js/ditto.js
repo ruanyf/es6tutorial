@@ -250,11 +250,22 @@ function router() {
 
 		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
+		if (location.hash !== '' ditto.save_progress && store.get('menu-progress') !== location.hash) {
+			store.set('menu-progress', location.hash);
+			store.set('page-progress', 0);
+		}
+
 		if(location.hash !== '' || Boolean(perc)){
-			$('html, body').animate({
-				scrollTop: Boolean(perc)?($('body').height()-$(window).height())*perc:$('#content').offset().top
-			}, 200);
-        }
+			if (ditto.save_progress && store.get('menu-progress') !== location.hash){
+				$('html, body').animate({
+					scrollTop: $('#content').offset().top
+				}, 200);
+			} else {
+				$('html, body').animate({
+					scrollTop: Boolean(perc)?($('body').height()-$(window).height())*perc:$('#content').offset().top
+				}, 200);
+			}
+		}
 
         if (location.hash === '' || location.hash === menu[0]) {
             $('#pageup').css('display', 'none');
