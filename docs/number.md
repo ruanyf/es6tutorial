@@ -78,7 +78,7 @@ ES6在Math对象上提供了更多的数学方法。
 - Math.cosh(x) 返回x的双曲余弦（hyperbolic cosine）
 - Math.expm1(x)	返回e&#710;x - 1
 - Math.fround(x) 返回x的单精度浮点数形式
-- Math.hypot(...values)	返回所有参数的平方的和的平方根
+- Math.hypot(...values)	返回所有参数的平方和的平方根
 - Math.imul(x, y) 返回两个参数以32位整数形式相乘的结果
 - Math.log1p(x)	返回1 + x的自然对数
 - Math.log10(x) 返回以10为底的x的对数

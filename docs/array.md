@@ -1,4 +1,30 @@
-# 数组推导
+# 数组的扩展
+
+## Array.prototype.find()，Array.prototype.findIndex()
+
+Array.prototype.find()用于找出第一个符合条件的数组元素。它的参数是一个回调函数，所有数组元素依次遍历该回调函数，直到找出第一个返回值为true的元素。
+
+```javascript
+
+[1, 5, 10, 15].find(function(value, index, arr) {
+	return a > 9;
+}) // 10 
+
+```
+
+从上面代码可以看到，回调函数接受三个参数，依次为当前的值、当前的位置和原数组。
+
+Array.prototype.findIndex()的用法与find()非常类似，返回第一个符合条件的数组元素的位置。
+
+```javascript
+
+[1, 5, 10, 15].findIndex(function(value, index, arr) {
+	return a > 9;
+}) // 2 
+
+```
+
+## 数组推导
 
 ES6提供简洁写法，允许直接通过现有数组生成新数组，这被称为数组推导（array comprehension）。
 

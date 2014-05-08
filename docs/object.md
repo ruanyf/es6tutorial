@@ -14,9 +14,41 @@ Object.is(NaN, NaN) // true
 
 ```
 
-## __proto__属性
+## Object.assign()
 
-ES6正式将__proto__属性写入了标准，用来指定对象的prototype对象。
+Object.assign()用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
+
+```javascript
+
+var target = { a: 1 };
+
+var source1 = { b: 2 };
+var source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+```
+
+注意，如果源对象与目标对象有同名属性，则前者会覆盖后者。
+
+```javascript
+
+var target = { a: 1, b: 1 };
+
+var source1 = { b: 2 };
+var source2 = { c: 3 };
+
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+```
+
+## __proto__属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+
+**（1）__proto__属性**
+
+__proto__属性，用来读取或设置当前对象的prototype对象。该属性一度被正式写入ES6草案，但后来又被移除。目前，所有浏览器（包括IE11）都部署了这个属性。
 
 ```javascript
 
@@ -28,6 +60,41 @@ var obj = {
 ```
 
 有了这个属性，实际上已经不需要通过Object.create()来生成新对象了。
+
+**（2）Object.setPrototypeOf()**
+
+Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。
+
+```javascript
+
+// 格式
+Object.setPrototypeOf(object, prototype)
+
+// 用法
+var o = Object.setPrototypeOf({}, null);
+
+```
+
+该方法等同于下面的函数。
+
+```javascript
+
+function (obj, proto) {
+  obj.__proto__ = proto;
+  return obj; 
+}
+
+```
+
+**（3）Object.getPrototypeOf()**
+
+与setPrototypeOf()配套的，还有getPrototypeOf()，用于读取一个对象的prototype对象。
+
+```javascript
+
+Object.getPrototypeOf(obj)
+
+```
 
 ## 增强的对象写法
 

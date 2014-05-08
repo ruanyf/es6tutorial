@@ -153,6 +153,38 @@ map.get("title") // "Author"
 
 ```
 
+注意，只有对同一个对象的引用，Map结构才将其视为同一个键。这一点要非常小心。
+
+```javascript
+
+var map = new Map();
+
+map.set(['a'], 555); 
+map.get(['a']) // undefined
+
+```
+
+上面代码的set和get方法，表面是针对同一个键，但实际上这是两个值，内存地址是不一样的，因此get方法无法读取该键，返回undefined。
+
+同理，同样的值的两个实例，在Map结构中被视为两个键。
+
+```javascript
+
+var map = new Map();
+
+var k1 = ['a'];
+var k2 = ['a'];
+
+map.set(k1, 111);
+map.set(k2, 222);
+
+map.get(k1) // 111
+map.get(k2) // 222
+
+```
+
+上面代码中，变量k1和k2的值是一样的，但是它们在Map结构中被视为两个键。
+
 **（2）属性和方法**
 
 Map数据结构有以下属性和方法。
