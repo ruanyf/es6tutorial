@@ -61,8 +61,11 @@ var getJSON = function(url) {
 
     function handler() {
       if (this.readyState === this.DONE) {
-        if (this.status === 200) { resolve(this.response); }
-        else { reject(this); }
+        if (this.status === 200) { 
+			resolve(this.response); 
+		} else { 
+			reject(this); 
+		}
       }
     };
   });
@@ -118,6 +121,7 @@ getJSON("/posts.json").then(function(posts) {
   // some code
 }).catch(function(error) {
   // 处理前一个回调函数运行时发生的错误
+  console.log('发生错误！', error);
 });
 
 ```

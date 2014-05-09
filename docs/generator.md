@@ -62,6 +62,24 @@ Generator函数的本质，其实是提供一种可以暂停执行的函数。yi
 
 yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。
 
+Generator函数可以不用yield语句，这时就变成了一个单纯的暂缓执行函数。
+
+```javascript
+
+function* f() {
+  console.log('执行了！')
+}
+
+var generator = f();
+
+setTimeout(function () {
+  generator.next() 
+}, 2000);
+
+```
+
+上面代码中，只有调用next方法时，函数f才会执行。
+
 ## next方法的参数
 
 yield语句本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield语句的返回值。
