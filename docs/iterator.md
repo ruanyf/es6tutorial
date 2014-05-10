@@ -4,6 +4,8 @@
 
 遍历器（Iterator）是一种协议，任何对象只要部署这个协议，就可以完成遍历操作。在ES6中，遍历操作特指for...of循环。
 
+它的作用主要有两个，一是为遍历对象的属性提供统一的接口，二是为使得对象的属性能够按次序排列。
+
 ES6的遍历器协议规定，部署了next方法的对象，就具备了遍历器功能。next方法必须返回一个包含value和done两个属性的对象。其中，value属性是当前遍历位置的值，done属性是一个布尔值，表示遍历是否结束。
 
 ```javascript
@@ -52,7 +54,9 @@ it.next().value // '2'
 
 ```
 
-一个对象只要具备了next方法，就可以用for...of循环遍历它的值。
+## for...of循环
+
+ES6中，一个对象只要部署了next方法，就被视为具有iterator接口，就可以用for...of循环遍历它的值。下面用上一节的idMaker函数生成的it遍历器作为例子。
 
 ```javascript
 
@@ -61,12 +65,18 @@ for (var n of it) {
     break;
   console.log(n);
 }
+// 0
+// 1
+// 2
+// 3
+// 4
+// 5
 
 ```
 
-## for...of循环
+上面代码说明，for...of默认从0开始循环。
 
-ES6中，任何具备了iterator接口的对象，都可以用for...of循环遍历。数组原生具备iterator接口。
+数组原生具备iterator接口。
 
 ```javascript
 

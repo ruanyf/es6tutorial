@@ -60,6 +60,8 @@ Generator函数使用iterator接口，每次调用next方法的返回值，就�
 
 Generator函数的本质，其实是提供一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。
 
+由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
+
 yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。
 
 Generator函数可以不用yield语句，这时就变成了一个单纯的暂缓执行函数。
@@ -124,6 +126,35 @@ loadUI.next()
 ```
 
 上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
+
+总结一下，如果某个操作非常耗时，可以把它拆成N步。
+
+```javascript
+
+function* longRunningTask() {
+	yield step1();
+	yield step2();
+	// ...
+	yield stepN();
+}
+
+```
+
+然后，使用一个函数，按次序自动执行所有步骤。
+
+```javascript
+
+scheduler(longRunningTask());
+
+function scheduler(task) {
+	setTimeout(function () {
+		if (!task.next().done) {
+			scheduler(task);
+        }
+    }, 0);
+}
+
+```
 
 注意，yield语句是同步运行，不是异步运行（否则就失去了取代回调函数的设计目的了）。实际操作中，一般让yield语句返回Promises对象。
 
