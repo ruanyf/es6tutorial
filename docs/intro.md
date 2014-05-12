@@ -82,7 +82,7 @@ Traceur允许将ES6代码直接插入网页。
 
 首先，必须在网页头部加载Traceur库文件。
 
-```html
+```javascript
 
 <!-- 加载Traceur编译器 -->
 <script src="http://google.github.io/traceur-compiler/bin/traceur.js"
@@ -99,7 +99,7 @@ Traceur允许将ES6代码直接插入网页。
 
 接下来，就可以把ES6代码放入上面这些代码的下方。
 
-```html
+```javascript
 
 <script type="module">
 	class Calc {
@@ -123,7 +123,7 @@ Traceur允许将ES6代码直接插入网页。
 
 如果ES6代码是一个外部文件，也可以用`script`标签插入网页。
 
-```html
+```javascript
 
 <script type="module" src="calc.js" >
 </script>
@@ -136,7 +136,7 @@ Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/de
 
 上面的例子转为ES5代码运行，就是下面这个样子。
 
-```html
+```javascript
 
 <script src="http://google.github.io/traceur-compiler/bin/traceur.js"
         type="text/javascript"></script>
