@@ -74,7 +74,100 @@ $ node --v8-options | grep harmony
 
 Google公司的[Traceur](https://github.com/google/traceur-compiler)编译器，可以将ES6代码编译为ES5代码。
 
-Traceur是一个node.js的模块，需要用npm安装。
+它有多种使用方式。
+
+**（1）直接插入网页**
+
+Traceur允许将ES6代码直接插入网页。
+
+首先，必须在网页头部加载Traceur库文件。
+
+```html
+
+<!-- 加载Traceur编译器 -->
+<script src="http://google.github.io/traceur-compiler/bin/traceur.js"
+        type="text/javascript"></script>
+<!-- 将Traceur编译器用于网页 -->
+<script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
+        type="text/javascript"></script>
+<!-- 打开实验选项，否则有些特性可能编译不成功 -->
+<script>
+        traceur.options.experimental = true;
+</script>
+
+```
+
+接下来，就可以把ES6代码放入上面这些代码的下方。
+
+```html
+
+<script type="module">
+	class Calc {
+		constructor(){
+			console.log('Calc constructor');
+		}
+		add(a, b){
+			return a + b;
+		}
+	}
+
+	var c = new Calc();
+	console.log(c.add(4,5));
+</script>
+
+```
+
+正常情况下，上面代码会在控制台打印出9。
+
+注意，`script`标签的`type`属性的值是`module`，而不是`text/javascript`。这是Traceur编译器识别ES6代码的标识，编译器会自动将所有`type=module`的代码编译为ES5，然后再交给浏览器执行。
+
+如果ES6代码是一个外部文件，也可以用`script`标签插入网页。
+
+```html
+
+<script type="module" src="calc.js" >
+</script>
+
+```
+
+**（2）在线转换**
+
+Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将ES6代码转为ES5代码。转换后的代码，可以直接作为ES5代码插入网页运行。
+
+上面的例子转为ES5代码运行，就是下面这个样子。
+
+```html
+
+<script src="http://google.github.io/traceur-compiler/bin/traceur.js"
+        type="text/javascript"></script>
+<script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
+        type="text/javascript"></script> 
+<script>
+        traceur.options.experimental = true;
+</script>
+<script>
+$traceurRuntime.ModuleStore.getAnonymousModule(function() {
+	"use strict";
+
+	var Calc = function Calc() {
+		console.log('Calc constructor');
+	};
+
+	($traceurRuntime.createClass)(Calc, {add: function(a, b) {
+		return a + b;
+	}}, {});
+
+	var c = new Calc();
+	console.log(c.add(4, 5));
+	return {};
+});
+</script>
+
+```
+
+**（3）命令行转换**
+
+作为命令行工具使用时，Traceur是一个node.js的模块，首先需要用npm安装。
 
 ```bash
 
@@ -82,36 +175,48 @@ npm install -g traceur
 
 ```
 
-它有多种使用方法，首先是命令行工具。
+安装成功后，就可以在命令行下使用traceur了。
+
+traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的calc.js为例。
 
 ```bash
 
-# 运行ES6文件，在标准输出显示结果
-traceur /path/to/es6
-
-# 将ES6文件转为ES5文件
-traceur --script /path/to/es6 --out /path/to/es5
+$ traceur calc.js
+Calc constructor
+9
 
 ```
 
-命令行下转换的文件，就可以放到浏览器中运行。假定转换后的文件是result.js，它插入浏览器的写法如下。
+如果要将ES6脚本转为ES5，要采用下面的写法
 
-```html
+```bash
 
-<script src="bin/traceur-runtime.js"></script>
-<script src="out/result.js"></script>
+traceur --script calc.es6.js --out calc.es5.js 
 
 ```
 
-上面代码中的traceur-runtime.js，是traceur提供的浏览器函数库。
+上面代码的`--script`选项表示指定输入文件，`--out`选项表示指定输出文件。
 
-Traceur的node.js用法如下。
+为了防止有些特性编译不成功，最好加上`--experimental`选项。
+
+```bash
+
+traceur --script calc.es6.js --out calc.es5.js --experimental
+
+```
+
+命令行下转换的文件，就可以放到浏览器中运行。
+
+**（4）Node.js环境的用法**
+
+Traceur的node.js用法如下（假定已安装traceur模块）。
 
 ```javascript
 
 var traceur = require('traceur');
 var fs = require('fs');
 
+// 将ES6脚本转为字符串
 var contents = fs.readFileSync('es6-file.js').toString();
 
 var result = traceur.compile(contents, {
@@ -123,12 +228,13 @@ var result = traceur.compile(contents, {
 
 if (result.error)
   throw result.error;
+
+// result对象的js属性就是转换后的ES5代码  
 fs.writeFileSync('out.js', result.js);
+// sourceMap属性对应map文件
 fs.writeFileSync('out.js.map', result.sourceMap);
 
 ```
-
-除了命令行工具，Traceur还提供一个[浏览器界面](http://google.github.io/traceur-compiler/demo/repl.html)，用于在线转换ES6代码。
 
 ## ECMAScript 7
 
