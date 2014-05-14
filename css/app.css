@@ -174,7 +174,7 @@ body {
 }
 
 #content h2:before {
-	content: counters(section) ". ";
+	content: counter(section) ". ";
 }
 
 #content h3 {
