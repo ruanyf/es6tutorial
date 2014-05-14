@@ -8,7 +8,7 @@
 1. [前言](#README)
 1. [ECMAScript 6简介](#docs/intro)
 1. [let和const命令](#docs/let)
-1. [多变量的模式赋值](#docs/destructuring)
+1. [变量的解构赋值](#docs/destructuring)
 1. [字符串的扩展](#docs/string)
 1. [数值的扩展](#docs/number)
 1. [数组的扩展](#docs/array)
