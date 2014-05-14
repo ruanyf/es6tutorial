@@ -114,6 +114,8 @@ body {
 	line-height:1.3rem;
 
     /* border: 1px solid black; */
+
+	counter-reset: section; 
 }
 
 @media (min-width: 40rem) {
@@ -167,6 +169,12 @@ body {
     text-align: left;
 
     border-top: 2px solid #666;
+
+	counter-increment: section;
+}
+
+#content h2:before {
+	content: counters(section, ".") " ";
 }
 
 #content h3 {
