@@ -286,7 +286,7 @@ map.forEach(function(value, key, map) {
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名。
 
-WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。 
+WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。 
 
 下面是WeakMap结构的一个例子，可以看到用法上与Map几乎一样。
 
@@ -308,4 +308,4 @@ console.log(value); // undefined
 
 ```
 
-WeakMap还有has和delete方法，但没有size方法，也无法遍历它的值，这与WeakMap的键被垃圾回收机制忽略有关。
+WeakMap还有has和delete方法，但没有size方法，也无法遍历它的值，这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。

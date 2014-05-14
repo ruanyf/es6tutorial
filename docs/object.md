@@ -193,26 +193,28 @@ symbol的最大特点，就是每一个symbol都是不相等的，保证产生�
 
 ```javascript
 
-let red = Symbol();
-let green = Symbol();
-let blue = Symbol();
+let w1 = Symbol();
+let w2 = Symbol();
+let w3 = Symbol();
 
-function handleColor(color) {
-  switch (color) {
-    case red:
+function f(w) {
+  switch (w) {
+    case w1:
       ...
-    case green:
+    case w2:
       ...
-    case blue:
+    case w3:
       ...
   }
 } 
 
 ```
 
-上面代码中，red、green、blue三个变量都是Symbol类型，它们的值是不相等的。
+上面代码中，w1、w2、w3三个变量都等于`Symbol()`，但是它们的值是不相等的。
 
-由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，不会出现同名的属性。
+由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性。
+
+Symbol类型作为属性名，可以被遍历，Object.getOwnPropertySymbols()和Object.getOwnPropertyKeys()都可以获取该属性。 
 
 ```javascript
 
