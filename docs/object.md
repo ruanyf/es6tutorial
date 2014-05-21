@@ -88,7 +88,7 @@ function (obj, proto) {
 
 **（3）Object.getPrototypeOf()**
 
-与setPrototypeOf()配套的，还有getPrototypeOf()，用于读取一个对象的prototype对象。
+该方法与setPrototypeOf()配套，用于读取一个对象的prototype对象。
 
 ```javascript
 
