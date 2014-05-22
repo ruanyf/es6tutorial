@@ -302,3 +302,48 @@ proxy.age // 抛出一个错误
 ```
 
 上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。
+
+## Object.observe()，Object.unobserve()
+
+Object.observe()用来监听对象的变化。一旦监听对象发生变化，就会触发回调函数。
+
+```javascript
+
+var o = {};
+
+function observer(changes){
+    changes.forEach(function(change) {
+		console.log('发生变动的属性：' + change.name);
+		console.log('变动前的值：' + change.oldValue);
+		console.log('变动后的值：' + change.object[change.name]);
+		console.log('变动类型：' + change.type);
+    });
+}
+
+Object.observe(o, observer);
+
+```
+
+上面代码中，Object.observe()监听一个空对象o，一旦o发生变化（比如新增或删除一个属性），就会触发回调函数。
+
+Object.observe()指定的回调函数，接受一个数组（changes）作为参数。该数组的成员与对象的变化一一对应，也就是说，对象发生多少个变化，该数组就有多少个成员。每个成员是一个对象（change），它的name属性表示发生变化源对象的属性名，oldValue属性表示发生变化前的值，object属性指向变动后的源对象，type属性表示变化的种类，目前共支持六种变化：add、update、delete、setPrototype、reconfigure（属性的attributes对象发生变化）、preventExtensions（当一个对象变得不可扩展时，也就不必再观察了）。
+
+Object.observe()还可以接受第三个参数，用来指定监听的事件种类。
+
+```javascript
+
+Object.observe(o, observer, ['delete']);
+
+```
+
+上面的代码表示，只在发生delete事件时，才会调用回调函数。
+
+Object.unobserve()用来取消监听。
+
+```javascript
+
+Object.unobserve(o, observer);
+
+```
+
+注意，Object.observe()和Object.unobserve()这两个方法不属于ES6，而是属于ES7的一部分，Chrome 36已经开始支持了。
