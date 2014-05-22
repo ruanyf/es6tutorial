@@ -56,7 +56,7 @@ Array(3,11,8) // [3, 11, 8]
 ```javascript
 
 [1, 5, 10, 15].find(function(value, index, arr) {
-	return a > 9;
+	return value > 9;
 }) // 10 
 
 ```
@@ -68,7 +68,7 @@ Array(3,11,8) // [3, 11, 8]
 ```javascript
 
 [1, 5, 10, 15].findIndex(function(value, index, arr) {
-	return a > 9;
+	return value > 9;
 }) // 2 
 
 ```
