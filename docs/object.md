@@ -36,7 +36,7 @@ target // {a:1, b:2, c:3}
 
 var target = { a: 1, b: 1 };
 
-var source1 = { b: 2 };
+var source1 = { b: 2, c: 2 };
 var source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
