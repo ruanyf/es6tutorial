@@ -30,13 +30,13 @@ target // {a:1, b:2, c:3}
 
 ```
 
-注意，如果源对象与目标对象有同名属性，则前者会覆盖后者。
+注意，如果目标对象与源对象有同名属性，或多个目标对象有同名属性，则前者会覆盖后者。
 
 ```javascript
 
 var target = { a: 1, b: 1 };
 
-var source1 = { b: 2 };
+var source1 = { b: 2, c: 2 };
 var source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
@@ -81,14 +81,14 @@ var o = Object.setPrototypeOf({}, null);
 
 function (obj, proto) {
   obj.__proto__ = proto;
-  return obj; 
+  return obj;
 }
 
 ```
 
 **（3）Object.getPrototypeOf()**
 
-与setPrototypeOf()配套的，还有getPrototypeOf()，用于读取一个对象的prototype对象。
+该方法与setPrototypeOf()配套，用于读取一个对象的prototype对象。
 
 ```javascript
 
@@ -177,7 +177,7 @@ ES6引入了一种新的原始数据类型symbol。它通过Symbol函数生成�
 
 var mySymbol = Symbol('Test');
 
-mySymbol.name 
+mySymbol.name
 // Test
 
 typeof mySymbol
@@ -206,7 +206,7 @@ function f(w) {
     case w3:
       ...
   }
-} 
+}
 
 ```
 
@@ -214,7 +214,7 @@ function f(w) {
 
 由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性。
 
-Symbol类型作为属性名，可以被遍历，Object.getOwnPropertySymbols()和Object.getOwnPropertyKeys()都可以获取该属性。 
+Symbol类型作为属性名，可以被遍历，Object.getOwnPropertySymbols()和Object.getOwnPropertyKeys()都可以获取该属性。
 
 ```javascript
 
