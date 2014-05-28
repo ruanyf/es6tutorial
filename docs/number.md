@@ -68,7 +68,22 @@ Number.isSafeInteger(outside) // false
 
 ## Math对象的扩展
 
-ES6在Math对象上提供了更多的数学方法。
+**（1）Math.trunc()**
+
+Math.trunc方法用于去除一个数的小数部分，返回整数部分。
+
+```javascript
+
+Math.trunc(4.1) // 4
+Math.trunc(4.9) // 4
+Math.trunc(-4.1) // -4
+Math.trunc(-4.9) // -4
+
+```
+
+**（2）数学方法**
+
+ES6在Math对象上还提供了许多新的数学方法。
 
 - Math.acosh(x)	返回x的反双曲余弦（inverse hyperbolic cosine）
 - Math.asinh(x) 返回x的反双曲正弦（inverse hyperbolic sine）
@@ -85,4 +100,3 @@ ES6在Math对象上提供了更多的数学方法。
 - Math.log2(x) 返回以2为底的x的对数
 - Math.sign(x) 如果x为负返回-1，x为0返回0，x为正返回1
 - Math.tanh(x)	返回x的双曲正切（hyperbolic tangent）
-- Math.trunc(x)	移除一个浮点数的小数位，返回一个整数
