@@ -107,12 +107,12 @@ function* loadUI() {
 	yield loadUIDataAsynchronously(); 
 	hideLoadingScreen(); 
 } 
-
+var loader = loadUI();
 // 加载UI
-loadUI.next() 
+loader.next() 
 
 // 卸载UI
-loadUI.next()
+loader.next()
 
 ```
 
