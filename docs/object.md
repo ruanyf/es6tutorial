@@ -169,9 +169,9 @@ a["last word"] // "world"
 
 ```
 
-## symbols
+## Symbol
 
-ES6引入了一种新的原始数据类型symbol。它通过Symbol函数生成。
+ES6引入了一种新的原始数据类型Symbol。它通过Symbol函数生成。
 
 ```javascript
 
@@ -185,11 +185,11 @@ typeof mySymbol
 
 ```
 
-上面代码表示，Symbol函数接受一个字符串作为参数，用来指定生成的symbol的名称，可以通过name属性读取。typeof运算符的结果，表明Symbol是一种单独的数据类型。
+上面代码表示，Symbol函数接受一个字符串作为参数，用来指定生成的Symbol的名称，可以通过name属性读取。typeof运算符的结果，表明Symbol是一种单独的数据类型。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的symbol是一个原始类型的值，不是对象。
+注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
 
-symbol的最大特点，就是每一个symbol都是不相等的，保证产生一个独一无二的值。
+symbol的最大特点，就是每一个Symbol都是不相等的，保证产生一个独一无二的值。
 
 ```javascript
 
@@ -240,7 +240,7 @@ a.size // 1
 
 ```
 
-如果要在对象内部使用symbol属性名，必须采用属性名表达式。
+如果要在对象内部使用Symbol属性名，必须采用属性名表达式。
 
 ```javascript
 

@@ -146,7 +146,7 @@ Promise.all方法用于将多个异步操作（或Promise对象），包装成�
 
 ```javascript
 
-// 生成一个promise对象的数组
+// 生成一个Promise对象的数组
 var promises = [2, 3, 5, 7, 11, 13].map(function(id){
   return getJSON("/post/" + id + ".json");
 });

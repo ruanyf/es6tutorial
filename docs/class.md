@@ -25,9 +25,9 @@ point.toString() // (2, 3)
 
 ```
 
-上面代码定义了一个class类，可以看到里面有一个constructor函数，这就是构造函数。而this关键字则代表实例对象。
+上面代码定义了一个“类”，可以看到里面有一个constructor函数，这就是构造函数。而this关键字则代表实例对象。
 
-class之间可以通过extends关键字，实现继承。
+Class之间可以通过extends关键字，实现继承。
 
 ```javascript
 

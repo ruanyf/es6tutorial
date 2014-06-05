@@ -22,7 +22,7 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 
 2008年7月，由于对于下一个版本应该包括哪些功能，各方分歧太大，争论过于激进，ECMA开会决定，中止ECMAScript 4.0的开发，将其中涉及现有功能改善的一小部分，发布为ECMAScript 3.1，而将其他激进的设想扩大范围，放入以后的版本，由于会议的气氛，该版本的项目代号起名为Harmony（和谐）。会后不久，ECMAScript 3.1就改名为ECMAScript 5。
 
-2009年12月，ECMAScript 5.0版正式发布。Harmony项目则一分为二，一些较为可行的设想定名为Javascript.next继续开发，后来演变成ECMAScript 6；一些不是很成熟的设想，则被视为JavaScript.next.next，在更远的将来再考虑推出。
+2009年12月，ECMAScript 5.0版正式发布。Harmony项目则一分为二，一些较为可行的设想定名为JavaScript.next继续开发，后来演变成ECMAScript 6；一些不是很成熟的设想，则被视为JavaScript.next.next，在更远的将来再考虑推出。
 
 2011年6月，ECMAscript 5.1版发布，并且成为ISO国际标准（ISO/IEC 16262:2011）。
 
@@ -38,9 +38,9 @@ ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负
 
 由于ES6还没有定案，有些语法规则还会变动，目前支持ES6的软件和开发环境还不多。各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。
 
-Google公司的V8引擎已经部署了ES6的部分特性。使用node.js 0.11版，就可以体验这些特性。
+Google公司的V8引擎已经部署了ES6的部分特性。使用Node.js 0.11版，就可以体验这些特性。
 
-node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
+Node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
 
 ```bash
 
@@ -211,7 +211,7 @@ traceur --script calc.es6.js --out calc.es5.js --experimental
 
 **（4）Node.js环境的用法**
 
-Traceur的node.js用法如下（假定已安装traceur模块）。
+Traceur的Node.js用法如下（假定已安装traceur模块）。
 
 ```javascript
 
