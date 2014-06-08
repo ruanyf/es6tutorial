@@ -190,7 +190,20 @@ p.then(function (s){
 
 async函数是用来取代回调函数的另一种方法。
 
-只要函数名之前加上async关键字，就表明该函数内部有异步操作。该异步操作应该返回一个promise对象，前面用await关键字注明。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+只要函数名之前加上async关键字，就表明该函数内部有异步操作。该异步操作应该返回一个Promise对象，前面用await关键字注明。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+
+```javascript
+
+async function getStockPrice(symbol, currency) {
+	let price = await getStockPrice(symbol);
+	return convert(price, currency);
+}
+
+```
+
+上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数将返回一个Promise对象。调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockPrice函数）产生的Promise对象，不再执行函数体内后面的语句。等到getStockPrice完成，再自动回到函数体内，执行剩下的语句。
+
+下面是一个更一般性的例子。
 
 ```javascript
 
@@ -205,14 +218,8 @@ async function asyncValue(value) {
   return value;
 }
 
-(async function() {
-  var value = await asyncValue(42);
-  assert.equal(42, value);
-  done();
-})();
-
 ```
 
-上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。后面的匿名函数前也有async关键字，表明该函数也需要暂停，等到await后面的`asyncValue(42)`得到值以后，再执行后面的语句。
+上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。
 
 async函数并不属于ES6，而是被列入了ES7，但是traceur编译器已经实现了这个功能。
