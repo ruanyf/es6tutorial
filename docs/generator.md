@@ -11,6 +11,7 @@ Generator函数就是普通函数，但是有两个特征。一是，function关
 function* helloWorldGenerator() {
     yield 'hello';
     yield 'world';
+	return 'ending';
 }
 
 var hw = helloWorldGenerator();
@@ -30,7 +31,7 @@ hw.next()
 // { value: 'world', done: false }
 
 hw.next()
-// { value: undefined, done: true }
+// { value: 'ending', done: true }
 
 hw.next()
 // { value: undefined, done: true }
@@ -43,9 +44,9 @@ hw.next()
 
 第二次调用，函数从上次yield语句停下的地方，一直执行到下一个yield语句。next方法返回的对象的value属性就是当前yield语句的值world，done属性的值false，表示遍历还没有结束。
 
-第三次调用，函数从上次yield语句停下的地方，一直执行到函数结束。next方法返回的对象的value属性就是函数最后的返回值，由于上例的函数没有return语句（即没有返回值），所以value属性的值为undefined，done属性的值true，表示遍历已经结束。
+第三次调用，函数从上次yield语句停下的地方，一直执行到return语句（如果没有return语句，就执行到函数结束）。next方法返回的对象的value属性，就是紧跟在return语句后面的表达式的值（如果没有return语句，则value属性的值为undefined），done属性的值true，表示遍历已经结束。
 
-第四次调用，此时函数已经运行完毕，next方法返回与前一次一样的值，value属性为undefined，done属性为true。以后再调用next方法，返回的都是这个值。
+第四次调用，此时函数已经运行完毕，next方法返回对象的value属性为undefined，done属性为true。以后再调用next方法，返回的都是这个值。
 
 总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
 

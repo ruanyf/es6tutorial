@@ -30,7 +30,7 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 
 2013年12月，ECMAScript 6草案发布。然后是12个月的讨论期，听取各方反馈。
 
-2014年12月，ECMAScript 6预计将发布正式版本。
+2015年6月，ECMAScript 6预计将发布正式版本。
 
 ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等大公司。TC39的总体考虑是，ES5与ES3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当前，JavaScript.next指的是ES6，当第六版发布以后，将指ES7。TC39估计，ES5会在2013年的年中成为JavaScript开发的主流标准，并在今后五年中一直保持这个位置。
 

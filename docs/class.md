@@ -67,7 +67,20 @@ export var year = 1973;
 
 ```
 
-上面是profile.js，ES6将其视为一个模块，里面用export关键字输出了三个变量。其他js文件就可以通过import关键字加载这个模块（文件）。
+上面是profile.js，ES6将其视为一个模块，里面用export关键字输出了三个变量。export的写法，除了像上面这样，还有另外一种，两者是等价的。
+
+```javascript
+
+// profile.js
+var firstName = 'David';
+var lastName = 'Belle';
+var year = 1973;
+
+export {firstName, lastName, year}
+
+```
+
+使用export定义模块以后，其他js文件就可以通过import关键字加载这个模块（文件）。
 
 ```javascript
 
