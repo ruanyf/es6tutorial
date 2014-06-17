@@ -17,7 +17,7 @@ for (i of s) {console.log(i)}
 
 ```
 
-上面代码通过add方法向Set结构加入成员，结果表明set结构不会添加重复的值。
+上面代码通过add方法向Set结构加入成员，结果表明Set结构不会添加重复的值。
 
 Set函数接受一个数组作为参数，用来初始化。
 
@@ -25,16 +25,20 @@ Set函数接受一个数组作为参数，用来初始化。
 
 var items = new Set([1,2,3,4,5,5,5,5]);
 
-items.size()
+items.size 
 // 5
 
 ```
 
 向Set加入值的时候，不会发生类型转换。这意味在Set中，5和“5”是两个不同的值。
 
-set数据结构有以下方法。
+Set结构有以下属性。
 
-- size()：返回成员总数。
+- Set.prototype.constructor：构造函数，默认就是Set函数。
+- Set.prototype.size：返回Set的成员总数。
+
+Set数据结构有以下方法。
+
 - add(value)：添加某个值。
 - delete(value)：删除某个值。
 - has(value)：返回一个布尔值，表示该值是否为set的成员。
@@ -47,7 +51,7 @@ set数据结构有以下方法。
 s.add(1).add(2).add(2); 
 // 注意2被加入了两次
 
-s.size() // 2
+s.size // 2
 
 s.has(1) // true
 s.has(2) // true
@@ -308,4 +312,4 @@ console.log(value); // undefined
 
 ```
 
-WeakMap还有has和delete方法，但没有size方法，也无法遍历它的值，这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。
+WeakMap还有has和delete方法，但没有size属性，也无法遍历它的值，这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。
