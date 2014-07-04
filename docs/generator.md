@@ -119,13 +119,13 @@ loader.next()
 
 ```
 
-上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
+上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。等到数据加载完成，再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
 
 下面是另一个例子，通过Generator函数逐行读取文本文件。
 
 ```javascript
 
-function *numbers() {
+function* numbers() {
 	let file = new FileReader("numbers.txt");
 	try {
 		while(!file.eof) {
@@ -181,7 +181,7 @@ function delay(milliseconds) {
     return deferred.promise;
 }
 
-function *f(){
+function* f(){
     yield delay(100);
 };
 
