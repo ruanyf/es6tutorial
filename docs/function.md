@@ -2,7 +2,56 @@
 
 ## 函数参数的默认值
 
-ES6允许为函数的参数设置默认值。
+在ES6之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
+
+```javascript
+
+function log(x, y) {
+  y = y || 'World';
+  console.log(x, y);
+}
+
+log('Hello') // Hello World
+log('Hello', 'China') // Hello China
+log('Hello', '') // Hello World
+
+```
+
+上面代码检查函数log的参数y有没有赋值，如果没有，则指定默认值为World。这种写法的缺点在于，如果参数y赋值了，但是对应的布尔值为false，则该赋值不起作用。就像上面代码的最后一行，参数y等于空字符，结果被改为默认值。
+
+为了避免这个问题，通常需要先判断一下参数y是否被赋值，如果没有，再等于默认值。这有两种写法。
+
+```javascript
+
+// 写法一
+if (typeof y === 'undefined') {
+  y = 'World';
+}
+
+
+// 写法二
+if (arguments.length === 1) {
+  y = 'World';
+}
+
+
+```
+
+ES6允许为函数的参数设置默认值，即直接写在参数定义的后面。
+
+```javascript
+
+function log(x, y = 'World') {
+  console.log(x, y);
+}
+
+log('Hello') // Hello World
+log('Hello', 'China') // Hello China
+log('Hello', '') // Hello 
+
+```
+
+可以看到，ES6的写法比ES5简洁许多，而且非常自然。下面是另一个例子。
 
 ```javascript
 
@@ -16,18 +65,16 @@ var p = new Point();
 
 ```
 
-任何带有默认值的参数，被视为可选参数。不带默认值的参数，则被视为必需参数。
-
 利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误。
 
 ```javascript
 
 function throwIfMissing() {
-        throw new Error('Missing parameter');
-    }
+    throw new Error('Missing parameter');
+}
 
 function foo(mustBeProvided = throwIfMissing()) {
-        return mustBeProvided;
+    return mustBeProvided;
 }
 
 foo()
@@ -36,6 +83,40 @@ foo()
 ```
 
 上面代码的foo函数，如果调用的时候没有参数，就会调用默认值throwIfMissing函数，从而抛出一个错误。
+
+从上面代码还可以看到，参数mustBeProvided的默认值等于throwIfMissing函数的运行结果（即函数名之后有一对圆括号），这表明参数的默认值不是在定义时执行，而是在运行时执行（即如果参数已经赋值，默认值中的函数就不会运行），这与python语言不一样。
+
+另一个需要注意的地方是，参数默认值所处的作用域，不是全局作用域，而是函数作用域。
+
+```javascript
+
+var x = 1;
+
+function foo(x, y = x) {
+  console.log(y);
+}
+
+foo(2) // 2
+
+```
+
+上面代码中，参数y的默认值等于x，由于处在函数作用域，所以x等于参数x，而不是全局变量x。
+
+参数默认值可以与解构赋值，联合起来使用。
+
+```javascript
+
+function foo({x, y = 5}) {
+  console.log(x, y);
+}
+
+foo({}) // undefined, 5
+foo({x: 1}) // 1, 5
+foo({x: 1, y: 2}) // 1, 2
+
+```
+
+上面代码中，foo函数的参数是一个对象，变量x和y用于解构赋值，y有默认值5。
 
 ## rest参数
 

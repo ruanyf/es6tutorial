@@ -76,7 +76,7 @@ var firstName = 'David';
 var lastName = 'Belle';
 var year = 1973;
 
-export {firstName, lastName, year}
+export {firstName, lastName, year};
 
 ```
 
@@ -132,7 +132,19 @@ console.log("圆面积：" + area(4));
 console.log("圆周长：" + circumference(14));
 
 ```
-上面写法是逐一指定要导入的方法。另一种写法是使用module关键字，整体导入。
+
+上面写法是逐一指定要导入的方法。另一种写法是整体导入。
+
+```javascript
+
+import * as circle from 'circle';
+
+console.log("圆面积：" + circle.area(4));
+console.log("圆周长：" + circle.circumference(14));
+
+```
+
+module关键字可以取代import语句，达到整体输入模块的作用。
 
 ```javascript
 
@@ -176,6 +188,14 @@ customName(); // 'foo'
 ```
 
 显然，一个模块只能有一个默认方法。
+
+如果想在一条import语句中，同时输入默认方法和指定名称的变量，可以写成下面这样。
+
+```javascript
+
+import customName, { otherMethod } from './export-default';
+
+```
 
 如果要输出默认属性，只需将值跟在`export default`之后即可。
 
