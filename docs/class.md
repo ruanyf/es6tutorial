@@ -56,7 +56,7 @@ ES6实现了模块功能，试图解决JavaScript代码的依赖和部署上的�
 
 模块功能有两个关键字：export和import。export用于用户自定义模块，规定对外接口；import用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
-ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。最简单的模块就是一个JS文件，里面使用export关键字输出变量。
+ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
 
 ```javascript
 
@@ -67,7 +67,7 @@ export var year = 1973;
 
 ```
 
-上面是profile.js，ES6将其视为一个模块，里面用export关键字输出了三个变量。export的写法，除了像上面这样，还有另外一种，两者是等价的。
+上面是profile.js文件，ES6将其视为一个模块，里面用export关键字输出了三个变量。export的写法，除了像上面这样，还有另外一种。
 
 ```javascript
 
@@ -80,7 +80,9 @@ export {firstName, lastName, year};
 
 ```
 
-使用export定义模块以后，其他js文件就可以通过import关键字加载这个模块（文件）。
+上面代码在export关键字后，使用大括号输出一组变量，它与前一种写法是等价的。
+
+使用export定义模块以后，其他JS文件就可以通过import关键字加载这个模块（文件）。
 
 ```javascript
 
