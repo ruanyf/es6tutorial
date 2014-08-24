@@ -302,7 +302,7 @@ var result = values.sort((a, b) => a - b);
 - 不可以当作构造函数，也就是说，不可以使用new命令，否则会抛出一个错误。
 - 不可以使用arguments对象，该对象在函数体内不存在。 
 
-关于this对象，下面的代码将它绑定定义时的对象。
+上面三点中，第一点尤其值得注意。this对象的指向是可变的，但是在箭头函数中，它是固定的。下面的代码是一个例子，将this对象绑定定义时所在的对象。
 
 ```javascript
 
@@ -312,7 +312,7 @@ var handler = {
 
     init: function() {
         document.addEventListener("click",
-                event => this.doSomething(event.type), false);
+            event => this.doSomething(event.type), false);
     },
 
     doSomething: function(type) {
@@ -322,6 +322,8 @@ var handler = {
 
 ```
 
-上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象。否则，doSomething方法内部的this对象就指向全局对象，运行时会报错。
+上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，this.doSomething这一行会报错，因为此时this指向全局对象。
 
 由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
+
+长期以来，JavaScript语言的this对象一直是一个令人头痛的问题，在对象方法中使用this，必须非常小心。箭头函数绑定this，很大程度上解决了这个困扰。
