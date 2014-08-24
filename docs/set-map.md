@@ -109,6 +109,60 @@ function dedupe(array) {
 
 ```
 
+## WeakSet
+
+WeakSet结构与Set类似，也是不重复的值的集合。但是，它与Set有两个区别。
+
+首先，WeakSet的成员只能是对象，而不能是其他类型的值。其次，WeakSet中的对象都是弱引用，即垃圾回收机制不考虑WeakSet对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于WeakSet之中。这个特点意味着，无法引用WeakSet的成员，因此WeakSet是不可遍历的。
+
+WeakSet是一个构造函数，可以使用new命令，创建WeakSet数据结构。
+
+```javascript
+
+var ws = new WeakSet();
+
+```
+
+作为构造函数，WeakSet可以接受一个数组或类似数组的对象作为参数。（实际上，任何具有iterable接口的对象，都可以作为WeakSet的对象。）该数组的所有成员，都会自动成为WeakSet实例对象的成员。
+
+```javascript
+
+var a = [[1,2], [3,4]];
+
+var ws = new WeakSet(a);
+
+```
+
+上面代码中，a是一个数组，它有两个成员，也都是数组。将a作为WeakSet构造函数的参数，a的成员会自动成为WeakSet的成员。
+
+WeakSet结构有以下四个方法。
+
+- **WeakSet.prototype.add(value)**：向WeakSet实例添加一个新成员。
+- **WeakSet.prototype.clear()**：清除WeakSet实例的所有成员。
+- **WeakSet.prototype.delete(value)**：清除WeakSet实例的指定成员。
+- **WeakSet.prototype.has(value)**：返回一个布尔值，表示某个值是否在WeakSet实例之中。
+
+下面是一个例子。
+
+```javascript
+
+var ws = new WeakSet();
+var obj = {};
+var foo = {};
+
+ws.add(window);
+ws.add(obj);
+
+ws.has(window); // true
+ws.has(foo);    // false
+
+ws.delete(window); 
+ws.has(window);    // false
+
+ws.clear();
+
+```
+
 ## Map
 
 **（1）基本用法**
