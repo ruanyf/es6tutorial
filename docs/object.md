@@ -212,9 +212,7 @@ function f(w) {
 
 上面代码中，w1、w2、w3三个变量都等于`Symbol()`，但是它们的值是不相等的。
 
-由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性。
-
-Symbol类型作为属性名，可以被遍历，Object.getOwnPropertySymbols()和Object.getOwnPropertyKeys()都可以获取该属性。
+由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性。另一种用途是，可以防止属性值被不小心修改。
 
 ```javascript
 
@@ -228,7 +226,22 @@ Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
 ```
 
-上面代码通过点结构和Object.defineProperty两种方法，为对象增加一个属性。
+上面代码通过方括号结构和Object.defineProperty两种方法，将对象的属性名指定为一个Symbol值。
+
+注意，不能使用点结构，将Symbol值作为对象的属性名。
+
+```javascript
+
+var a = {};
+var mySymbol = Symbol();
+
+a.mySymbol = 'Hello!';
+
+a[mySymbol] // undefined
+
+```
+
+上面代码中，mySymbol属性的值为未定义，原因在于`a.mySymbol`这样的写法，并不是把一个Symbol值当作属性名，而是把mySymbol这个字符串当作属性名进行赋值，这是因为点结构中的属性名永远都是字符串。
 
 下面的写法为Map结构添加了一个成员，但是该成员永远无法被引用。
 
@@ -256,9 +269,31 @@ obj[specialMethod](123);
 
 ```
 
+Symbol类型作为属性名，不会出现在for...in循环中，也不会被Object.getOwnPropertyNames方法返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取Symbol属性名。
+
+```javascript
+
+var obj = {};
+
+var foo = Symbol("foo");
+
+Object.defineProperty(obj, foo, {
+    value: "foobar",
+});
+
+Object.getOwnPropertyNames(obj)
+// []
+
+Object.getOwnPropertySymbols(obj)
+// [Symbol(foo)]
+
+```
+
+上面代码中，使用Object.getOwnPropertyNames方法得不到Symbol属性名，需要使用Object.getOwnPropertySymbols方法。
+
 ## Proxy
 
-所谓Proxy，可以理解成在目标对象之前，架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，可以被过滤和改写。
+所谓Proxy，可以理解成在目标对象之前，架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。
 
 ES6原生提供Proxy构造函数，用来生成proxy实例对象。
 
@@ -276,7 +311,7 @@ proxy.title // 35
 
 ```
 
-上面代码就是Proxy构造函数使用实例，它接受两个参数，第一个所要代理的目标对象（上例是一个空对象），第二个是拦截函数，它有一个get方法，用来拦截对目标对象的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
+上面代码就是Proxy构造函数使用实例，它接受两个参数，第一个是所要代理的目标对象（上例是一个空对象），第二个是拦截函数，它有一个get方法，用来拦截对目标对象的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
 
 下面是另一个拦截函数的例子。
 
