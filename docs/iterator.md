@@ -54,6 +54,8 @@ it.next().value // '2'
 
 ```
 
+在ES6中，数组、类似数组的对象、Set和Map结构，都原生具备iterator接口，可以被for...of循环遍历。
+
 ## for...of循环
 
 ES6中，一个对象只要部署了next方法，就被视为具有iterator接口，就可以用for...of循环遍历它的值。下面用上一节的idMaker函数生成的it遍历器作为例子。
@@ -91,6 +93,8 @@ for(let v of arr) {
 
 ```
 
+for...of循环完全可以取代数组实例的forEach方法。
+
 JavaScript原有的for...in循环，只能获得对象的键名，不能直接获取键值。ES6提供for...of循环，允许遍历获得键值。
 
 ```javascript
@@ -114,7 +118,7 @@ for (a of arr) {
 
 ```
 
-上面代码表明，for...in循环读取键名，for...of循环读取键值。
+上面代码表明，for...in循环读取键名，for...of循环读取键值。如果要通过for...of循环，获取数组的索引，可以借助数组实例的entries方法和keys方法，参见《数组的扩展》章节。
 
 对于Set和Map结构的数据，可以直接使用for...of循环。
 

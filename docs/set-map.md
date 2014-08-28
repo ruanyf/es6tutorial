@@ -62,7 +62,7 @@ s.has(2) // false
 
 ```
 
-下面是一个对比，看看在判断是否包括一个键上面，对象和Set的写法不同。
+下面是一个对比，看看在判断是否包括一个键上面，对象结构和Set结构的写法不同。
 
 ```javascript
 
@@ -108,6 +108,8 @@ function dedupe(array) {
 }
 
 ```
+
+Set的遍历，可以借助for...of循环完成，参见《Iterator和for...of循环》章节。
 
 ## WeakSet
 

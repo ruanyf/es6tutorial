@@ -51,10 +51,21 @@ var [foo] = 1;
 var [foo] = 'Hello';
 var [foo] = false;
 var [foo] = NaN;
+var [bar, foo] = [1];
 
 ```
 
-以上几种情况都属于解构不成功，foo的值都会等于undefined。但是，如果对undefined或null进行解构，就会报错。
+以上几种情况都属于解构不成功，foo的值都会等于undefined。另一种情况是不完全解构。
+
+```javascript
+
+var [x, y] = [1, 2, 3];
+
+```
+
+上面代码中，x和y可以顺利取到值。
+
+如果对undefined或null进行解构，会报错。
 
 ```javascript
 
@@ -72,6 +83,9 @@ var [foo] = null;
 
 var [foo = true] = [];
 foo // true
+
+[x, y='b'] = ['a'] // x=3, y='b'
+[x, y='b'] = ['a', undefined] // x=3, y='b'
 
 ```
 
@@ -215,9 +229,11 @@ var { foo, bar } = example();
 
 ```javascript
 
-function f({x, y, z}) {
-  // ...
-}
+function f([x]) { ... }
+
+f(['a'])
+
+function f({x, y, z}) { ... }
 
 f({x:1, y:2, z:3})
 

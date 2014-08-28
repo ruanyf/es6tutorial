@@ -2,7 +2,22 @@
 
 ## Class
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。
+ES5通过构造函数，定义并生成新对象。下面是一个例子。
+
+```javascript
+
+function Point(x,y){
+	this.x = x;
+	this.y = y;
+}
+
+Point.prototype.toString = function () {
+	return '('+this.x+', '+this.y+')';
+}
+
+```
+
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。上面的代码用“类”改写，就是下面这样。
 
 ```javascript
 
@@ -204,6 +219,18 @@ import customName, { otherMethod } from './export-default';
 ```javascript
 
 export default 42;  
+
+```
+
+export default也可以用来输出类。
+
+```javascript
+
+// MyClass.js
+export default class { ... }
+
+// main.js
+import MyClass from 'MyClass'
 
 ```
 

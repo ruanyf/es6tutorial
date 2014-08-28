@@ -74,6 +74,31 @@ setTimeout(function () {
 
 上面代码中，只有调用next方法时，函数f才会执行。
 
+利用Generator函数，可以在任意对象上部署iterator接口。
+
+```javascript
+
+function* iterEntries(obj) {
+	let keys = Object.keys(obj);
+	for (let i=0; i < keys.length; i++) {
+		let key = keys[i];
+		yield [key, obj[key]];
+	}
+}
+
+let myObj = { foo: 3, bar: 7 };
+
+for (let [key, value] of iterEntries(myObj)) {
+	console.log(key, value);
+}
+
+// foo 3
+// bar 7
+
+```
+
+上述代码中，由于Generator函数返回一个具有iterator接口的对象，所以只要让yield语句每次返回一个参数对象的成员，就可以在任意对象上部署next方法。
+
 ## next方法的参数
 
 yield语句本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield语句的返回值。

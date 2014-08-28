@@ -247,3 +247,14 @@ console.log(`${ x } + ${ y } = ${ x + y}`)
 ```
 
 上面代码表示，在模板字符串中嵌入变量，需要将变量名写在${}之中。
+
+模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
+
+```javascript
+
+if (x > MAX) {
+	throw new Error(`Most ${MAX} allowed: ${x}!`);
+	// 传统写法为'Most '+MAX+' allowed: '+x+'!'
+}
+
+```

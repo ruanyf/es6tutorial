@@ -52,10 +52,17 @@ __proto__属性，用来读取或设置当前对象的prototype对象。该属�
 
 ```javascript
 
+// es6的写法
+
 var obj = {
   __proto__: someOtherObj,
   method: function() { ... }
 }
+
+// es5的写法
+
+var obj = Object.create(someOtherObj);
+obj.method = function() { ... }
 
 ```
 
@@ -260,12 +267,20 @@ a.size // 1
 let specialMethod = Symbol();
 
 let obj = {
-  [specialMethod]: function (arg) {
-    ...
-  }
+  [specialMethod]: function (arg) { ... }
 };
 
 obj[specialMethod](123);
+
+```
+
+采用增强的对象写法，上面代码的obj对象可以写得更简洁一些。
+
+```javascript
+
+let obj = {
+  [specialMethod](arg) { ... }
+};
 
 ```
 
