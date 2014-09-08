@@ -18,7 +18,7 @@ s.charCodeAt(1) // 57271
 		
 ```
 
-上面代码说明，对于4个字节储存的字符，JavaScript不能正确处理。字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
+上面代码中，汉字“𠮷”的Unicode编号是0x20BB7，需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
 
 ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的Unicode编号。
 
@@ -27,13 +27,15 @@ ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，�
 var s = "𠮷a";
 
 s.codePointAt(0) // 134071
-s.codePointAt(1) // 97
+s.codePointAt(1) // 57271
 		
 s.charCodeAt(2) // 97
 
 ```
 
-codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码表明，它会正确返回四字节的UTF-16字符的Unicode编号。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
+codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制Unicode编号134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
+
+总之，codePointAt方法会正确返回四字节的UTF-16字符的Unicode编号。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
 
 codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
