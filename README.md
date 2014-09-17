@@ -8,7 +8,7 @@
 
 本书为中级难度，适合已有一定JavaScript语言基础的读者，用来了解这门语言的最新发展；也可当作参考手册，查寻新增的语法点。
 
-网上为预览版，全书已由电子工业出版社出版（[版权页](images/copyright.png)，[内页1](images/page1.png)，[内页2](images/page2.png)），铜版纸全彩印刷，附有索引。欢迎大家购买，支持开源项目。
+全书已由电子工业出版社出版（[版权页](images/copyright.png)，[内页1](images/page1.png)，[内页2](images/page2.png)），铜版纸全彩印刷，附有索引。欢迎大家购买，支持开源项目。
 
 - [亚马逊](http://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B00MQKRLD6/)
 - [京东](http://item.jd.com/11526272.html)
