@@ -387,7 +387,7 @@ person.age = 300 // 报错
 
 ## Object.observe()，Object.unobserve()
 
-Object.observe方法用来监听对象的变化。一旦监听对象发生变化，就会触发回调函数。
+Object.observe方法用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
 
 ```javascript
 
@@ -408,7 +408,27 @@ Object.observe(o, observer);
 
 上面代码中，Object.observe方法监听一个空对象o，一旦o发生变化（比如新增或删除一个属性），就会触发回调函数。
 
-Object.observe方法指定的回调函数，接受一个数组（changes）作为参数。该数组的成员与对象的变化一一对应，也就是说，对象发生多少个变化，该数组就有多少个成员。每个成员是一个对象（change），它的name属性表示发生变化源对象的属性名，oldValue属性表示发生变化前的值，object属性指向变动后的源对象，type属性表示变化的种类，目前共支持六种变化：add、update、delete、setPrototype、reconfigure（属性的attributes对象发生变化）、preventExtensions（当一个对象变得不可扩展时，也就不必再观察了）。
+Object.observe方法指定的回调函数，接受一个数组（changes）作为参数。该数组的成员与对象的变化一一对应，也就是说，对象发生多少个变化，该数组就有多少个成员。每个成员是一个对象（change），它的name属性表示发生变化源对象的属性名，oldValue属性表示发生变化前的值，object属性指向变动后的源对象，type属性表示变化的种类。基本上，change对象是下面的样子。
+
+```javascript
+
+var change = {
+  object: {...}, 
+  type: 'update', 
+  name: 'p2', 
+  oldValue: 'Property 2'
+}
+
+```
+
+Object.observe方法目前共支持监听六种变化。
+
+- add：添加属性
+- update：属性值的变化
+- delete：删除属性
+- setPrototype：设置原型
+- reconfigure：属性的attributes对象发生变化
+- preventExtensions：对象被禁止扩展（当一个对象变得不可扩展时，也就不必再监听了）
 
 Object.observe方法还可以接受第三个参数，用来指定监听的事件种类。
 
