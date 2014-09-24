@@ -84,8 +84,8 @@ var [foo] = null;
 var [foo = true] = [];
 foo // true
 
-[x, y='b'] = ['a'] // x=3, y='b'
-[x, y='b'] = ['a', undefined] // x=3, y='b'
+[x, y='b'] = ['a'] // x=a, y='b'
+[x, y='b'] = ['a', undefined] // x=a, y='b'
 
 ```
 
