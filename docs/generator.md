@@ -122,6 +122,29 @@ g.next(true) // { value: 0, done: false }
 
 上面代码先定义了一个可以无限运行的Generator函数f，如果next方法没有参数，每次运行到yield语句，变量reset的值总是undefined。当next方法带一个参数true时，当前的变量reset就被重置为这个参数（即true），因此i会等于-1，下一轮循环就会从-1开始递增。
 
+再看一个例子。
+
+```javascript
+
+function* foo(x) {
+  var y = 2 * (yield (x + 1));
+  var z = yield (y / 3);
+  return (x + y + z);
+}
+
+var it = foo(5);
+
+it.next()
+// { value:6, done:false }
+it.next(12)
+// { value:8, done:false }
+it.next(13)
+// { value:42, done:true }
+
+```
+
+上面代码第一次调用next方法时，返回`x+1`的值6；第二次调用next方法，将上一次yield语句的值设为12，因此y等于24，返回`y / 3`的值8；第三次调用next方法，将上一次yield语句的值设为13，因此z等于13，这时x等于5，y等于24，所以return语句的值等于42。
+
 注意，由于next方法的参数表示上一个yield语句的返回值，所以第一次使用next方法时，不能带有参数。V8引擎直接忽略第一次使用next方法时的参数，只有从第二次使用next方法开始，参数才是有效的。
 
 ## 异步操作的应用
@@ -145,6 +168,29 @@ loader.next()
 ```
 
 上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。等到数据加载完成，再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
+
+Ajax是典型的异步操作，通过Generator函数部署Ajax操作，可以用同步的方式表达。
+
+```javascript
+
+function* main() {
+  var result = yield request("http://some.url");
+  var resp = JSON.parse(result);
+    console.log(resp.value);
+}
+
+function request(url) {
+  makeAjaxCall(url, function(response){
+    it.next(response);
+  });
+}
+
+var it = main();
+it.next();
+
+```
+
+上面代码的main函数，就是通过Ajax操作获取数据。可以看到，除了多了一个yield，它几乎与同步操作的写法完全一样。注意，makeAjaxCall函数中的next方法，必须加上response参数，因为yield语句构成的表达式，本身是没有值的，总是等于undefined。
 
 下面是另一个例子，通过Generator函数逐行读取文本文件。
 
@@ -217,6 +263,26 @@ function* f(){
 ## for...of循环
 
 for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
+
+```javascript
+
+function *foo() {
+    yield 1;
+    yield 2;
+    yield 3;
+    yield 4;
+    yield 5;
+    return 6;
+}
+
+for (var v of foo()) {
+    console.log(v);
+}
+// 1 2 3 4 5
+
+```
+
+上面代码使用for...of循环，依次显示5个yield语句的值。这里需要注意，一旦next方法的返回对象的done属性为true，for...of循环就会中止，且不包含该返回对象，所以上面代码的return语句返回的6，不包括在for...of循环之中。
 
 下面是一个利用generator函数和for...of循环，实现斐波那契数列的例子。
 
