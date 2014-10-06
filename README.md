@@ -10,9 +10,9 @@
 
 全书已由电子工业出版社出版（[版权页](images/copyright.png)，[内页1](images/page1.png)，[内页2](images/page2.png)），铜版纸全彩印刷，附有索引。欢迎大家购买，支持开源项目。
 
-- [亚马逊](http://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B00MQKRLD6/)
 - [京东](http://item.jd.com/11526272.html)
 - [当当](http://product.dangdang.com/23546442.html)
+- [亚马逊](http://www.amazon.cn/%E5%9B%BE%E4%B9%A6/dp/B00MQKRLD6/)
 - [China-pub](http://product.china-pub.com/4284817)
 
 ### 版权许可
