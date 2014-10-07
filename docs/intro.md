@@ -44,9 +44,9 @@ Node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https:
 
 ```bash
 
-source nvm.sh
-nvm use 0.11
-node --harmony
+$ source nvm.sh
+$ nvm use 0.11
+$ node --harmony
 
 ```
 
@@ -55,6 +55,7 @@ node --harmony
 ```bash
 
 $ node --v8-options | grep harmony
+
   --harmony_typeof
   --harmony_scoping
   --harmony_modules
@@ -74,7 +75,7 @@ $ node --v8-options | grep harmony
 
 ## Traceur编译器
 
-Google公司的[Traceur](https://github.com/google/traceur-compiler)编译器，可以将ES6代码编译为ES5代码。
+Google公司的[Traceur](https://github.com/google/traceur-compiler)编译器，可以将ES6代码编译为ES5代码。这意味着，你可以用ES6的方式编写程序，又不用担心浏览器是否支持。
 
 它有多种使用方式。
 
@@ -173,7 +174,7 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
 
 ```bash
 
-npm install -g traceur
+$ npm install -g traceur
 
 ```
 
@@ -189,11 +190,11 @@ Calc constructor
 
 ```
 
-如果要将ES6脚本转为ES5，要采用下面的写法
+如果要将ES6脚本转为ES5保存，要采用下面的写法
 
 ```bash
 
-traceur --script calc.es6.js --out calc.es5.js 
+$ traceur --script calc.es6.js --out calc.es5.js 
 
 ```
 
@@ -203,7 +204,7 @@ traceur --script calc.es6.js --out calc.es5.js
 
 ```bash
 
-traceur --script calc.es6.js --out calc.es5.js --experimental
+$ traceur --script calc.es6.js --out calc.es5.js --experimental
 
 ```
 
