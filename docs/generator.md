@@ -305,6 +305,86 @@ for (n of fibonacci()) {
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
 
+## throw方法
+
+Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
+
+```javascript
+
+var g = function* () {
+    while (true) {
+        try {
+            yield;
+        } catch (e) {
+            if (e != 'a') {
+                throw e;
+            }
+            console.log('内部捕获', e);
+        }
+    }
+};
+
+var i = g();
+i.next();
+
+try {
+    i.throw('a');
+    i.throw('b');
+} catch (e) {
+    console.log('外部捕获', e);
+}
+// 内部捕获 a
+// 外部捕获 b
+
+```
+
+上面代码中，遍历器i连续抛出两个错误。第一个错误被Generator函数体内的catch捕获，然后Generator函数执行完成，于是第二个错误被函数体外的catch捕获。
+
+这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
+
+```javascript
+
+foo('a', function (a) {
+    if (a.error) {
+        throw new Error(a.error);
+    }
+ 
+    foo('b', function (b) {
+        if (b.error) {
+            throw new Error(b.error);
+        }
+ 
+        foo('c', function (c) {
+            if (c.error) {
+                throw new Error(c.error);
+            }
+ 
+            console.log(a, b, c);
+        });
+    });
+});
+
+```
+
+使用Generator函数可以大大简化上面的代码。
+
+```javascript
+
+function* g(){
+  try {
+        var a = yield foo('a');
+        var b = yield foo('b');
+        var c = yield foo('c');
+    } catch (e) {
+        console.log(e);
+    }
+
+  console.log(a, b, c);
+
+}
+
+```
+
 ## yield*语句
 
 如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
