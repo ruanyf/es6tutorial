@@ -412,7 +412,7 @@ for(let value of delegatingIterator) {
 
 ```
 
-上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。
+上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
 
 下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
 
