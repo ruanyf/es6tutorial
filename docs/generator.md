@@ -275,7 +275,7 @@ function *foo() {
     return 6;
 }
 
-for (var v of foo()) {
+for (let v of foo()) {
     console.log(v);
 }
 // 1 2 3 4 5
@@ -296,7 +296,7 @@ function* fibonacci() {
     }
 }
 
-for (n of fibonacci()) {
+for (let n of fibonacci()) {
     if (n > 1000) break;
     console.log(n);
 }
