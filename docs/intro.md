@@ -245,7 +245,7 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 ES7可能包括的功能有：
 
-（1）**Object.observe**：对象与网页元素的双向绑定，只要其中之一发生变化，就会自动反映在另一者上。
+（1）**Object.observe**：用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
 
 （2）**Multi-Threading**：多线程支持。目前，Intel和Mozilla有一个共同的研究项目RiverTrail，致力于让JavaScript多线程运行。预计这个项目的研究成果会被纳入ECMAScript标准。
 
