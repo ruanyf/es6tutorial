@@ -72,9 +72,9 @@ var getJSON = function(url) {
 };
 
 getJSON("/posts.json").then(function(json) {
-  console.log('Contents: ' + value);
+  console.log('Contents: ' + json);
 }, function(error) {
-  console.error('出错了', reason);
+  console.error('出错了', error);
 });
 
 ```
