@@ -91,7 +91,7 @@ ES6对正则表达式添加了u修饰符，用来正确处理大于\uFFFF的Unic
 
 ```javascript
 
-大于\uFFFF的Unicode字符var s = "𠮷";
+var s = "𠮷";
 
 /^.$/.test(s) // false
 /^.$/u.test(s) // true
@@ -293,7 +293,7 @@ console.log(`${ x } + ${ y } = ${ x + y}`)
 上面代码表示，在模板字符串中嵌入变量，需要将变量名写在${}之中。
 
 模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
-This article explains the effects of the u flag. It helps if you’ve read JavaScript has a Unicode problem first.
+
 ```javascript
 
 if (x > MAX) {
