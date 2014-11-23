@@ -74,6 +74,28 @@ String.fromCodePoint(0x20BB7)
 
 注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
 
+## at()
+
+ES5提供String.prototype.charAt方法，返回字符串给定位置的字符。该方法不能识别Unicode编号大于0xFFFF的字符。
+
+```javascript
+
+'𠮷'.charAt(0)
+// '\uD842'
+
+```
+
+上面代码中，charAt方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
+
+ES7提供了at方法，可以识别Unicode编号大于0xFFFF的字符，返回正确的字符。
+
+```javascript
+
+'𠮷'.at(0)
+// '𠮷'
+
+```
+
 ## 字符的Unicode表示法
 
 JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表示字符的Unicode编号。
