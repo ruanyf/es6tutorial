@@ -41,7 +41,34 @@ codePointAt方法是测试一个字符由两个字节还是由四个字节组成
 
 ```javascript
 
-String.fromCodePoint(134071) // "𠮷"
+function is32Bit(c) {
+    return c.codePointAt(0) > 0xFFFF;
+}
+
+is32Bit("𠮷") // true
+is32Bit("a") // false
+
+```
+
+## String.fromCodePoint()
+
+ES5提供String.fromCharCode方法，用于从Unicode编号返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
+
+```javascript
+
+String.fromCharCode(0x20BB7)
+// "ஷ"
+
+```
+
+上面代码中，最后返回的字符编号是0x0BB7，而不是0x20BB7。
+
+ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
+
+```javascript
+
+String.fromCodePoint(0x20BB7) 
+// "𠮷"
 
 ```
 
@@ -201,11 +228,8 @@ ES6提供String.prototype.normalize()方法，用来将字符的不同表示方�
 normalize方法可以接受四个参数。
 
 - NFC，默认参数，表示“标准等价合成”（Normalization Form Canonical Composition），返回多个简单字符的合成字符。所谓“标准等价”指的是视觉和语义上的等价。
-
 - NFD，表示“标准等价分解”（Normalization Form Canonical Decomposition），即在标准等价的前提下，返回合成字符分解的多个简单字符。
-
 - NFKC，表示“兼容等价合成”（Normalization Form Compatibility Composition），返回合成字符。所谓“兼容等价”指的是语义上存在等价，但视觉上不等价，比如“囍”和“喜喜”。
-
 - NFKD，表示“兼容等价分解”（Normalization Form Compatibility Decomposition），即在兼容等价的前提下，返回合成字符分解的多个简单字符。
 
 ```javascript
