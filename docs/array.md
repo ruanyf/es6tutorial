@@ -26,6 +26,16 @@ Array.from(arrayLike).map(x => x * x);
 
 ```
 
+Array.from()的一个应用是，将字符串转为数组，然后返回字符串的长度。这样可以避免JavaScript将大于\uFFFF的Unicode字符，算作两个字符的bug。
+
+```javascript
+
+function countSymbols(string) {
+  return Array.from(string).length;
+}
+
+```
+
 ## Array.of()
 
 Array.of()方法用于将一组值，转换为数组。

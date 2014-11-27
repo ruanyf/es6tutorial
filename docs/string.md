@@ -2,7 +2,7 @@
 
 ES6加强了对Unicode的支持，并且扩展了字符串对象。
 
-## codePointAt方法
+## codePointAt()
 
 JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode编号大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
@@ -50,17 +50,51 @@ is32Bit("a") // false
 
 ```
 
-## String.fromCodePoint方法
+## String.fromCodePoint()
 
-该方法用于从Unicode编号返回对应的字符串，作用与codePointAt正好相反。
+ES5提供String.fromCharCode方法，用于从Unicode编号返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
 
 ```javascript
 
-String.fromCodePoint(134071) // "𠮷"
+String.fromCharCode(0x20BB7)
+// "ஷ"
+
+```
+
+上面代码中，最后返回的字符编号是0x0BB7，而不是0x20BB7。
+
+ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
+
+```javascript
+
+String.fromCodePoint(0x20BB7) 
+// "𠮷"
 
 ```
 
 注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
+
+## at()
+
+ES5提供String.prototype.charAt方法，返回字符串给定位置的字符。该方法不能识别Unicode编号大于0xFFFF的字符。
+
+```javascript
+
+'𠮷'.charAt(0)
+// '\uD842'
+
+```
+
+上面代码中，charAt方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
+
+ES7提供了at方法，可以识别Unicode编号大于0xFFFF的字符，返回正确的字符。
+
+```javascript
+
+'𠮷'.at(0)
+// '𠮷'
+
+```
 
 ## 字符的Unicode表示法
 
@@ -87,18 +121,25 @@ JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表
 
 上面代码表示，如果直接在“\u”后面跟上超过0xFFFF的数值（比如\u20BB7），JavaScript会理解成“\u20BB+7”。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
 
-ES6对这一点做出了改进，只要将超过0xFFFF的编号放入大括号，就能正确解读该字符。
+ES6对这一点做出了改进，只要将Unicode编号放入大括号，就能正确解读该字符。
 
 ```javascript
 
 "\u{20BB7}"
 // "𠮷"
 
+"\u{41}\u{42}\u{43}"
+// "ABC"
+
 ```
 
 ## 正则表达式的u修饰符
 
 ES6对正则表达式添加了u修饰符，用来正确处理大于\uFFFF的Unicode字符。
+
+**（1）点字符**
+
+点（.）字符在正则表达式中，解释为除了换行以外的任意单个字符。对于大于\uFFFF的Unicode字符，点字符不能识别，必须加上u修饰符。
 
 ```javascript
 
@@ -110,6 +151,46 @@ var s = "𠮷";
 ```
 
 上面代码表示，如果不添加u修饰符，正则表达式就会认为字符串为两个字符，从而匹配失败。
+
+**（2）Unicode字符表示法**
+
+ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达式中必须加上u修饰符，才能识别。
+
+```javascript
+
+/\u{61}/.test('a') // false
+/\u{61}/u.test('a') // true
+/\u{20BB7}/u.test('𠮷') // true
+
+```
+
+上面代码表示，如果不加u修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配属61个连续的u。
+
+**（3）量词**
+
+使用u修饰符后，所有量词都会正确识别大于\uFFFF的Unicode字符。
+
+```javascript
+
+/a{2}/.test('aa') // true
+/a{2}/u.test('aa') // true
+/𠮷{2}/.test('𠮷𠮷') // false
+/𠮷{2}/u.test('𠮷𠮷') // true
+
+```
+
+**（4）预定义模式**
+
+u修饰符也影响到预定义模式，能否正确识别大于\uFFFF的Unicode字符。
+
+```javascript
+
+/^\S$/.test('𠮷') // false
+/^\S$/u.test('𠮷')
+
+```
+
+上面代码的`\S`是预定义模式，匹配所有不是空格的字符。只有加了u修饰符，它才能正确匹配大于\uFFFF的Unicode字符。
 
 利用这一点，可以写出一个正确返回字符串长度的函数。
 
@@ -126,6 +207,63 @@ s.length // 4
 codePointLength(s) // 2
 
 ```
+
+**（5）i修饰符**
+
+有些Unicode字符的编码不同，但是字型很相近，比如，\u004B与\u212A都是大写的K。
+
+```javascript
+
+/[a-z]/i.test('\u212A') // false
+/[a-z]/iu.test('\u212A') // true
+
+```
+
+上面代码中，不加u修饰符，就无法识别非规范的K字符。
+
+## normalize()
+
+为了表示语调和重音符号，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如O（\u004F）和ˇ（\u030C）合成Ǒ（\u004F\u030C）。
+
+这两种表示方法，在视觉和语义上都等价，但是JavaScript不能识别。
+
+```javascript
+
+'\u01D1'==='\u004F\u030C' //false
+
+'\u01D1'.length // 1
+'\u004F\u030C'.length // 2
+
+```
+
+上面代码表示，JavaScript将合成字符视为两个字符，导致两种表示方法不相等。
+
+ES6提供String.prototype.normalize()方法，用来将字符的不同表示方法统一为同样的形式，这称为Unicode正规化。
+
+```javascript
+
+'\u01D1'.normalize() === '\u004F\u030C'.normalize() 
+// true
+
+```
+
+normalize方法可以接受四个参数。
+
+- NFC，默认参数，表示“标准等价合成”（Normalization Form Canonical Composition），返回多个简单字符的合成字符。所谓“标准等价”指的是视觉和语义上的等价。
+- NFD，表示“标准等价分解”（Normalization Form Canonical Decomposition），即在标准等价的前提下，返回合成字符分解的多个简单字符。
+- NFKC，表示“兼容等价合成”（Normalization Form Compatibility Composition），返回合成字符。所谓“兼容等价”指的是语义上存在等价，但视觉上不等价，比如“囍”和“喜喜”。
+- NFKD，表示“兼容等价分解”（Normalization Form Compatibility Decomposition），即在兼容等价的前提下，返回合成字符分解的多个简单字符。
+
+```javascript
+
+'\u004F\u030C'.normalize(NFC).length // 1
+'\u004F\u030C'.normalize(NFD).length // 2
+
+```
+
+上面代码表示，NFC参数返回字符的合成形式，NFD参数返回字符的分解形式。
+
+不过，normalize方法目前不能识别三个或三个以上字符的合成。这种情况下，还是只能使用正则表达式，通过Unicode编号区间判断。
 
 ## contains(), startsWith(), endsWith()
 
