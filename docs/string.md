@@ -4,7 +4,7 @@ ES6加强了对Unicode的支持，并且扩展了字符串对象。
 
 ## codePointAt()
 
-JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode编号大于0xFFFF的字符），JavaScript会认为它们是两个字符。
+JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode码点大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
 ```javascript
 
@@ -18,9 +18,9 @@ s.charCodeAt(1) // 57271
 		
 ```
 
-上面代码中，汉字“𠮷”的Unicode编号是0x20BB7，UTF-16编码为0xD842 0xDFB7（十进制为55362 57271），需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
+上面代码中，汉字“𠮷”的码点是0x20BB7，UTF-16编码为0xD842 0xDFB7（十进制为55362 57271），需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
 
-ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的Unicode编号。
+ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的码点。
 
 ```javascript
 
@@ -33,9 +33,9 @@ s.charCodeAt(2) // 97
 
 ```
 
-codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制Unicode编号134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
+codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
 
-总之，codePointAt方法会正确返回四字节的UTF-16字符的Unicode编号。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
+总之，codePointAt方法会正确返回四字节的UTF-16字符的码点。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
 
 codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
@@ -52,7 +52,7 @@ is32Bit("a") // false
 
 ## String.fromCodePoint()
 
-ES5提供String.fromCharCode方法，用于从Unicode编号返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
+ES5提供String.fromCharCode方法，用于从码点返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
 
 ```javascript
 
@@ -61,7 +61,7 @@ String.fromCharCode(0x20BB7)
 
 ```
 
-上面代码中，最后返回的字符编号是0x0BB7，而不是0x20BB7。
+上面代码中，最后返回码点U+0BB7对应的字符，而不是码点U+20BB7对应的字符。
 
 ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
 
@@ -76,7 +76,7 @@ String.fromCodePoint(0x20BB7)
 
 ## at()
 
-ES5提供String.prototype.charAt方法，返回字符串给定位置的字符。该方法不能识别Unicode编号大于0xFFFF的字符。
+ES5提供String.prototype.charAt方法，返回字符串给定位置的字符。该方法不能识别码点大于0xFFFF的字符。
 
 ```javascript
 
@@ -98,7 +98,7 @@ ES7提供了at方法，可以识别Unicode编号大于0xFFFF的字符，返回�
 
 ## 字符的Unicode表示法
 
-JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表示字符的Unicode编号。
+JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表示字符的码点。
 
 ```javascript
 
@@ -121,7 +121,7 @@ JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表
 
 上面代码表示，如果直接在“\u”后面跟上超过0xFFFF的数值（比如\u20BB7），JavaScript会理解成“\u20BB+7”。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
 
-ES6对这一点做出了改进，只要将Unicode编号放入大括号，就能正确解读该字符。
+ES6对这一点做出了改进，只要将码点放入大括号，就能正确解读该字符。
 
 ```javascript
 
@@ -139,7 +139,7 @@ ES6对正则表达式添加了u修饰符，用来正确处理大于\uFFFF的Unic
 
 **（1）点字符**
 
-点（.）字符在正则表达式中，解释为除了换行以外的任意单个字符。对于大于\uFFFF的Unicode字符，点字符不能识别，必须加上u修饰符。
+点（.）字符在正则表达式中，解释为除了换行以外的任意单个字符。对于码点大于0xFFFF的Unicode字符，点字符不能识别，必须加上u修饰符。
 
 ```javascript
 
@@ -164,11 +164,11 @@ ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达�
 
 ```
 
-上面代码表示，如果不加u修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配属61个连续的u。
+上面代码表示，如果不加u修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配61个连续的u。
 
 **（3）量词**
 
-使用u修饰符后，所有量词都会正确识别大于\uFFFF的Unicode字符。
+使用u修饰符后，所有量词都会正确识别大于码点大于0xFFFF的Unicode字符。
 
 ```javascript
 
@@ -181,7 +181,7 @@ ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达�
 
 **（4）预定义模式**
 
-u修饰符也影响到预定义模式，能否正确识别大于\uFFFF的Unicode字符。
+u修饰符也影响到预定义模式，能否正确识别码点大于0xFFFF的Unicode字符。
 
 ```javascript
 
@@ -190,7 +190,7 @@ u修饰符也影响到预定义模式，能否正确识别大于\uFFFF的Unicode
 
 ```
 
-上面代码的`\S`是预定义模式，匹配所有不是空格的字符。只有加了u修饰符，它才能正确匹配大于\uFFFF的Unicode字符。
+上面代码的`\S`是预定义模式，匹配所有不是空格的字符。只有加了u修饰符，它才能正确匹配码点大于0xFFFF的Unicode字符。
 
 利用这一点，可以写出一个正确返回字符串长度的函数。
 
