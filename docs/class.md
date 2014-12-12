@@ -75,11 +75,11 @@ class ColorPoint extends Point {
 
 JavaScript没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的require、Python的import，甚至就连CSS都有@import，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
 
-ES6解决了这个问题，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
+在ES6之前，社区制定了一些模块加载方案，最主要的有CommonJS和AMD两种。前者用于服务器，后者用于浏览器。ES6在语言规格的层面上，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
 
 **（1）export命令，import命令**
 
-模块功能有两个命令：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
+模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
 ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
 
@@ -107,9 +107,7 @@ export {firstName, lastName, year};
 
 ```
 
-上面代码在export命令后面，使用大括号指定所要输出的一组变量。
-
-它与前一种export命令直接放置在var语句前的写法是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
+上面代码在export命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
 
 使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
 
@@ -213,7 +211,6 @@ export default function () {
 // import-default.js
 
 import customName from './export-default';
-
 customName(); // 'foo'
 
 ```
@@ -277,6 +274,7 @@ export default class { ... }
 
 // main.js
 import MyClass from 'MyClass'
+let o = new MyClass();
 
 ```
 

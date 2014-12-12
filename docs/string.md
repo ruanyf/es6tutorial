@@ -379,14 +379,28 @@ r.sticky // true
 var name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
 
-var x = 1;
-var y = 2;
-console.log(`${ x } + ${ y } = ${ x + y}`) 
-// "1 + 2 = 3"
-		
 ```
 
-上面代码表示，在模板字符串中嵌入变量，需要将变量名写在${}之中。
+上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。
+
+大括号内部可以进行运算，以及引用对象属性。
+
+```javascript
+
+var x = 1;
+var y = 2;
+
+console.log(`${x} + ${y} = ${x+y}`) 
+// "1 + 2 = 3"
+
+console.log(`${x} + ${y*2} = ${x+y*2}`) 
+// "1 + 4 = 5"
+
+var obj = {x: 1, y: 2};
+console.log(`${obj.x + obj.y}`)
+// 3
+
+```
 
 模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
 
