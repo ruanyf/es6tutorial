@@ -77,6 +77,24 @@ JavaScript没有模块（module）体系，无法将一个大程序拆分成互�
 
 在ES6之前，社区制定了一些模块加载方案，最主要的有CommonJS和AMD两种。前者用于服务器，后者用于浏览器。ES6在语言规格的层面上，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
 
+ES6模块的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS和AMD模块，都只能在运行时确定这些东西。比如，CommonJS模块就是对象，输入时必须查找对象属性。
+
+```javascript
+
+var { stat, exists, readFile } = require('fs');
+
+```
+
+ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
+
+```javascript
+
+import { stat, exists, readFile } from 'fs';
+
+```
+
+所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
+
 **（1）export命令，import命令**
 
 模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
