@@ -2,15 +2,15 @@
 
 ## 含义
 
-所谓Generator，简单说，就是一个内部状态的遍历器，即每调用一次遍历器，内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制内部状态的变化，依次遍历这些状态。
+所谓Generator，有多种理解角度。首先，可以把它理解成一个内部状态的遍历器，即每调用一次遍历器，内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制内部状态的变化，依次遍历这些状态。
 
-Generator函数就是普通函数，但是有两个特征。一是，function关键字后面有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
+在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
 
 function* helloWorldGenerator() {
-    yield 'hello';
-    yield 'world';
+  yield 'hello';
+  yield 'world';
 	return 'ending';
 }
 
@@ -50,9 +50,7 @@ hw.next()
 
 总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
 
-Generator函数的本质，其实是提供一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。
-
-由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
+由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个成员，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。另一方面，由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
 yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。
 
@@ -72,7 +70,7 @@ setTimeout(function () {
 
 ```
 
-上面代码中，只有调用next方法时，函数f才会执行。
+上面代码中，函数f如果是普通函数，在为generator变量赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
 
 利用Generator函数，可以在任意对象上部署iterator接口。
 
@@ -97,7 +95,7 @@ for (let [key, value] of iterEntries(myObj)) {
 
 ```
 
-上述代码中，由于Generator函数返回一个具有iterator接口的对象，所以只要让yield语句每次返回一个参数对象的成员，就可以在任意对象上部署next方法。
+上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
 
 ## next方法的参数
 
@@ -234,8 +232,8 @@ function scheduler(task) {
 	setTimeout(function () {
 		if (!task.next().done) {
 			scheduler(task);
-        }
-    }, 0);
+    }
+  }, 0);
 }
 
 ```
@@ -247,13 +245,13 @@ function scheduler(task) {
 var Q = require('q');
  
 function delay(milliseconds) {
-    var deferred = Q.defer();
-    setTimeout(deferred.resolve, milliseconds);
-    return deferred.promise;
+  var deferred = Q.defer();
+  setTimeout(deferred.resolve, milliseconds);
+  return deferred.promise;
 }
 
 function* f(){
-    yield delay(100);
+  yield delay(100);
 };
 
 ```
@@ -267,16 +265,16 @@ for...of循环可以自动遍历Generator函数，且此时不再需要调用nex
 ```javascript
 
 function *foo() {
-    yield 1;
-    yield 2;
-    yield 3;
-    yield 4;
-    yield 5;
-    return 6;
+  yield 1;
+  yield 2;
+  yield 3;
+  yield 4;
+  yield 5;
+  return 6;
 }
 
 for (let v of foo()) {
-    console.log(v);
+  console.log(v);
 }
 // 1 2 3 4 5
 
@@ -304,6 +302,52 @@ for (let n of fibonacci()) {
 ```
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
+
+## 作为数据结构的Generator
+
+Generator可以暂停函数执行，返回任意表达式的值。这种特点使得Generator有多种应用场景。
+
+- 异步操作的同步化表达（abstractions of async behavior）
+- 控制流管理（control flow management）
+- 数据结构（data structure)
+
+第一种和第二种应用在本章前面部分，已经有所提及了。这里主要再补充一下，Generator可以看作是数据结构，因为它可以对任意表达式，提供类似数组的接口。
+
+```javascript
+
+function *doStuff() {
+  yield fs.readFile.bind(null, 'hello.txt');
+  yield fs.readFile.bind(null, 'world.txt');
+  yield fs.readFile.bind(null, 'and-such.txt');
+}
+
+```
+
+上面代码就是依次返回三个函数，但是由于使用了Generator函数，导致可以像处理数组那样，处理这三个返回的函数。
+
+```javascript
+
+for (task of doStuff()) {
+  // task是一个函数，可以像回调函数那样使用它
+}
+
+```
+
+实际上，如果用ES5表达，完全可以用数组模拟Generator的这种用法。
+
+```javascript
+
+function doStuff() {
+  return [
+    fs.readFile.bind(null, 'hello.txt'),
+    fs.readFile.bind(null, 'world.txt'),
+    fs.readFile.bind(null, 'and-such.txt')
+  ];
+}
+
+```
+
+上面的函数，可以用一模一样的for...of循环处理！两相一比较，就不难看出Generator的这种用法，就是让数据或者操作，可以像数组那样处理。
 
 ## throw方法
 
