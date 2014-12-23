@@ -499,3 +499,29 @@ result
 // ['a', 'b', 'c', 'd', 'e', 'f', 'g']
 
 ```
+
+## 作为对象属性的Generator函数
+
+如果一个对象的属性是Generator函数，可以简写成下面的形式。
+
+```javascript
+
+let obj = {
+  * myGeneratorMethod() {
+    ···
+  }
+};
+
+```
+
+它的完整形式如下，两者是等价的。
+
+```javascript
+
+let obj = {
+  myGeneratorMethod: function* () {
+    ···
+  }
+};
+
+```

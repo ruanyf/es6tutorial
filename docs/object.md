@@ -1,5 +1,124 @@
 # 对象的扩展
 
+## 属性的简洁表示法
+
+ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
+
+```javascript
+
+var Person = {
+
+  name: '张三',
+
+  //等同于birth: birth
+  birth,
+
+  // 等同于hello: function ()...
+  hello() { console.log('我的名字是', this.name); }
+
+};
+
+```
+
+这种写法用于函数的返回值，将会非常方便。
+
+```javascript
+
+function getPoint() {
+  var x = 1;
+  var y = 10;
+
+  return {x, y};
+}
+
+getPoint()
+// {x:1, y:10}
+
+```
+
+下面是一个类似的例子。
+
+```javascript
+
+let x = 4;
+let y = 1;
+
+// 下行等同于 let obj = { x: x, y: y };
+let obj = { x, y };
+
+```
+
+## 属性名表达式
+
+JavaScript语言定义对象的属性，有两种方法。
+
+```javascript
+
+// 方法一
+obj.foo = true;
+
+// 方法二
+obj['a'+'bc'] = 123;
+
+```
+
+上面代码的方法一是直接用标识符作为属性名，方法二是用表达式作为属性名，这时要将表达式放在方括号之内。
+
+但是，如果使用字面量方式定义对象（使用大括号），在ES5中只能使用方法一（标识符）定义属性。
+
+```javascript
+
+var obj = {
+  foo: true,
+  abc: 123
+};
+
+```
+
+ES6允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
+
+```javascript
+
+let propKey = 'foo';
+
+let obj = {
+   [propKey]: true,
+   ['a'+'bc']: 123
+};
+
+```
+
+下面是另一个例子。
+
+```javascript
+
+var lastWord = "last word";
+
+var a = {
+    "first word": "hello",
+    [lastWord]: "world"
+};
+
+a["first word"] // "hello"
+a[lastWord] // "world"
+a["last word"] // "world"
+
+```
+
+表达式还可以用于定义方法名。
+
+```javascript
+
+let obj = {
+  ['h'+'ello']() {
+    return 'hi';
+  }
+};
+
+console.log(obj.hello()); // hi
+
+```
+
 ## Object.is()
 
 Object.is()用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致，不同之处只有两个：一是+0不等于-0，二是NaN等于自身。
@@ -44,6 +163,87 @@ target // {a:1, b:2, c:3}
 
 ```
 
+assign方法有很多用处。
+
+**（1）为对象添加属性**
+
+```javascript
+
+class Point {
+  constructor(x, y) {
+    Object.assign(this, {x, y});
+  }
+}
+
+```
+
+上面方法通过assign方法，将x属性和y属性添加到Point类的对象实例。
+
+**（2）为对象添加方法**
+
+```javascript
+
+Object.assign(SomeClass.prototype, {
+  someMethod(arg1, arg2) {
+    ···
+  },
+  anotherMethod() {
+    ···
+  }
+});
+
+// 等同于下面的写法
+SomeClass.prototype.someMethod = function (arg1, arg2) {
+  ···
+};
+SomeClass.prototype.anotherMethod = function () {
+  ···
+};
+
+```
+
+上面代码使用了对象属性的简洁表示法，直接将两个函数放在大括号中，再使用assign方法添加到SomeClass.prototype之中。
+
+**（3）克隆对象**
+
+```javascript
+
+function clone(origin) {
+  return Object.assign({}, origin);
+}
+
+```
+
+上面代码将原始对象拷贝到一个空对象，就得到了原始对象的克隆。
+
+不过，采用这种方法克隆，只能克隆原始对象自身的值，不能克隆它继承的值。如果想要保持继承链，可以采用下面的代码。
+
+```javascript
+
+function clone(origin) {
+  let originProto = Object.getPrototypeOf(origin);
+  return Object.assign(Object.create(originProto), origin);
+}
+
+```
+
+**（4）为属性指定默认值**
+
+```javascript
+
+const DEFAULTS = {
+  logLevel: 0,
+  outputFormat: 'html'
+};
+
+function processContent(options) {
+  let options = Object.assign({}, DEFAULTS, options);
+}
+
+```
+
+上面代码中，DEFAULTS对象是默认值，options对象是用户提供的参数。assign方法将DEFAULTS和options合并成一个新对象，如果两者有同名属性，则option的属性值会覆盖DEFAULTS的属性值。
+
 ## __proto__属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
 **（1）__proto__属性**
@@ -70,7 +270,7 @@ obj.method = function() { ... }
 
 **（2）Object.setPrototypeOf()**
 
-Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。
+Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。它是ES6正式推荐的设置原型对象的方法。
 
 ```javascript
 
@@ -100,79 +300,6 @@ function (obj, proto) {
 ```javascript
 
 Object.getPrototypeOf(obj)
-
-```
-
-## 增强的对象写法
-
-ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
-
-```javascript
-
-var Person = {
-
-  name: '张三',
-
-  //等同于birth: birth
-  birth,
-
-  // 等同于hello: function ()...
-  hello() { console.log('我的名字是', this.name); }
-
-};
-
-```
-
-这种写法用于函数的返回值，将会非常方便。
-
-```javascript
-
-function getPoint() {
-  var x = 1;
-  var y = 10;
-
-  return {x, y};
-}
-
-getPoint()
-// {x:1, y:10}
-
-```
-
-## 属性名表达式
-
-ES6允许定义对象时，用表达式作为对象的属性名。在写法上，要把表达式放在方括号内。
-
-```javascript
-
-var lastWord = "last word";
-
-var a = {
-    "first word": "hello",
-    [lastWord]: "world"
-};
-
-a["first word"] // "hello"
-a[lastWord] // "world"
-a["last word"] // "world"
-
-```
-
-上面代码中，对象a的属性名lastWord是一个变量。
-
-下面是一个将字符串的加法表达式作为属性名的例子。
-
-```javascript
-
-var suffix = " word";
-
-var a = {
-    ["first" + suffix]: "hello",
-    ["last" + suffix]: "world"
-};
-
-a["first word"] // "hello"
-a["last word"] // "world"
 
 ```
 
