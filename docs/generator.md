@@ -52,7 +52,7 @@ hw.next()
 
 由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个成员，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。另一方面，由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
-yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。
+yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。一个函数里面，只能执行一次（或者说一个）return语句，但是可以执行多次（或者说多个）yield语句。正常函数只能返回一个值，因为只能执行一次return；Generator函数可以返回一系列的值，因为可以有任意多个yield。
 
 Generator函数可以不用yield语句，这时就变成了一个单纯的暂缓执行函数。
 
@@ -70,32 +70,7 @@ setTimeout(function () {
 
 ```
 
-上面代码中，函数f如果是普通函数，在为generator变量赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
-
-利用Generator函数，可以在任意对象上部署iterator接口。
-
-```javascript
-
-function* iterEntries(obj) {
-	let keys = Object.keys(obj);
-	for (let i=0; i < keys.length; i++) {
-		let key = keys[i];
-		yield [key, obj[key]];
-	}
-}
-
-let myObj = { foo: 3, bar: 7 };
-
-for (let [key, value] of iterEntries(myObj)) {
-	console.log(key, value);
-}
-
-// foo 3
-// bar 7
-
-```
-
-上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
+上面代码中，函数f如果是普通函数，在为变量generator赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
 
 ## next方法的参数
 
@@ -145,9 +120,58 @@ it.next(13)
 
 注意，由于next方法的参数表示上一个yield语句的返回值，所以第一次使用next方法时，不能带有参数。V8引擎直接忽略第一次使用next方法时的参数，只有从第二次使用next方法开始，参数才是有效的。
 
-## 异步操作的应用
+## for...of循环
 
-Generator函数的这种暂停执行的效果，意味着可以把异步操作写在yield语句里面，等到调用next方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在yield语句下面，反正要等到调用next方法时再执行。所以，Generator函数的一个重要实际意义就是用来处理异步操作，改写回调函数。
+for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
+
+```javascript
+
+function *foo() {
+  yield 1;
+  yield 2;
+  yield 3;
+  yield 4;
+  yield 5;
+  return 6;
+}
+
+for (let v of foo()) {
+  console.log(v);
+}
+// 1 2 3 4 5
+
+```
+
+上面代码使用for...of循环，依次显示5个yield语句的值。这里需要注意，一旦next方法的返回对象的done属性为true，for...of循环就会中止，且不包含该返回对象，所以上面代码的return语句返回的6，不包括在for...of循环之中。
+
+下面是一个利用generator函数和for...of循环，实现斐波那契数列的例子。
+
+```javascript
+
+function* fibonacci() {
+    let [prev, curr] = [0, 1];
+    for (;;) {
+        [prev, curr] = [curr, prev + curr];
+        yield curr;
+    }
+}
+
+for (let n of fibonacci()) {
+    if (n > 1000) break;
+    console.log(n);
+}
+
+```
+
+从上面代码可见，使用for...of语句时不需要使用next方法。
+
+## 应用
+
+Generator可以暂停函数执行，返回任意表达式的值。这种特点使得Generator有多种应用场景。
+
+### （1）异步操作的同步化表达
+
+Generator函数的暂停执行的效果，意味着可以把异步操作写在yield语句里面，等到调用next方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在yield语句下面，反正要等到调用next方法时再执行。所以，Generator函数的一个重要实际意义就是用来处理异步操作，改写回调函数。
 
 ```javascript
 
@@ -209,6 +233,8 @@ function* numbers() {
 
 上面代码打开文本文件，使用yield语句可以手动逐行读取文件。
 
+### （2）控制流管理
+
 总结一下，如果某个操作非常耗时，可以把它拆成N步。
 
 ```javascript
@@ -258,60 +284,36 @@ function* f(){
 
 上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
 
-## for...of循环
+### （3）部署iterator接口
 
-for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
-
-```javascript
-
-function *foo() {
-  yield 1;
-  yield 2;
-  yield 3;
-  yield 4;
-  yield 5;
-  return 6;
-}
-
-for (let v of foo()) {
-  console.log(v);
-}
-// 1 2 3 4 5
-
-```
-
-上面代码使用for...of循环，依次显示5个yield语句的值。这里需要注意，一旦next方法的返回对象的done属性为true，for...of循环就会中止，且不包含该返回对象，所以上面代码的return语句返回的6，不包括在for...of循环之中。
-
-下面是一个利用generator函数和for...of循环，实现斐波那契数列的例子。
+利用Generator函数，可以在任意对象上部署iterator接口。
 
 ```javascript
 
-function* fibonacci() {
-    let [prev, curr] = [0, 1];
-    for (;;) {
-        [prev, curr] = [curr, prev + curr];
-        yield curr;
-    }
+function* iterEntries(obj) {
+	let keys = Object.keys(obj);
+	for (let i=0; i < keys.length; i++) {
+		let key = keys[i];
+		yield [key, obj[key]];
+	}
 }
 
-for (let n of fibonacci()) {
-    if (n > 1000) break;
-    console.log(n);
+let myObj = { foo: 3, bar: 7 };
+
+for (let [key, value] of iterEntries(myObj)) {
+	console.log(key, value);
 }
+
+// foo 3
+// bar 7
 
 ```
 
-从上面代码可见，使用for...of语句时不需要使用next方法。
+上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
 
-## 作为数据结构的Generator
+### （4）作为数据结构
 
-Generator可以暂停函数执行，返回任意表达式的值。这种特点使得Generator有多种应用场景。
-
-- 异步操作的同步化表达（abstractions of async behavior）
-- 控制流管理（control flow management）
-- 数据结构（data structure)
-
-第一种和第二种应用在本章前面部分，已经有所提及了。这里主要再补充一下，Generator可以看作是数据结构，因为它可以对任意表达式，提供类似数组的接口。
+Generator可以看作是数据结构，更确切地说，可以看作是一个数组结构，因为Generator函数可以返回一系列的值，这意味着它可以对任意表达式，提供类似数组的接口。
 
 ```javascript
 
