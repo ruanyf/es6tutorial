@@ -2,7 +2,7 @@
 
 ## 含义
 
-所谓Generator，有多种理解角度。首先，可以把它理解成一个内部状态的遍历器，即每调用一次遍历器，内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制内部状态的变化，依次遍历这些状态。
+所谓Generator，有多种理解角度。首先，可以把它理解成一个内部状态的遍历器，每调用一次，内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制内部状态的变化，依次遍历这些状态。
 
 在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
@@ -164,6 +164,217 @@ for (let n of fibonacci()) {
 ```
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
+
+## throw方法
+
+Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
+
+```javascript
+
+var g = function* () {
+    while (true) {
+        try {
+            yield;
+        } catch (e) {
+            if (e != 'a') {
+                throw e;
+            }
+            console.log('内部捕获', e);
+        }
+    }
+};
+
+var i = g();
+i.next();
+
+try {
+    i.throw('a');
+    i.throw('b');
+} catch (e) {
+    console.log('外部捕获', e);
+}
+// 内部捕获 a
+// 外部捕获 b
+
+```
+
+上面代码中，遍历器i连续抛出两个错误。第一个错误被Generator函数体内的catch捕获，然后Generator函数执行完成，于是第二个错误被函数体外的catch捕获。
+
+这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
+
+```javascript
+
+foo('a', function (a) {
+    if (a.error) {
+        throw new Error(a.error);
+    }
+ 
+    foo('b', function (b) {
+        if (b.error) {
+            throw new Error(b.error);
+        }
+ 
+        foo('c', function (c) {
+            if (c.error) {
+                throw new Error(c.error);
+            }
+ 
+            console.log(a, b, c);
+        });
+    });
+});
+
+```
+
+使用Generator函数可以大大简化上面的代码。
+
+```javascript
+
+function* g(){
+  try {
+        var a = yield foo('a');
+        var b = yield foo('b');
+        var c = yield foo('c');
+    } catch (e) {
+        console.log(e);
+    }
+
+  console.log(a, b, c);
+
+}
+
+```
+
+## yield*语句
+
+如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
+
+```javascript
+
+let delegatedIterator = (function* () {
+  yield 'Hello!';
+  yield 'Bye!';
+}());
+
+let delegatingIterator = (function* () {
+  yield 'Greetings!';
+  yield* delegatedIterator;
+  yield 'Ok, bye.';
+}());
+
+for(let value of delegatingIterator) {
+  console.log(value);
+}
+// "Greetings!
+// "Hello!"
+// "Bye!"
+//  "Ok, bye."
+
+```
+
+上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
+
+下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
+
+```javascript
+
+// 下面是二叉树的构造函数，
+// 三个参数分别是左树、当前节点和右树
+function Tree(left, label, right) {
+  this.left = left;
+  this.label = label;
+  this.right = right;
+}
+
+// 下面是中序（inorder）遍历函数。
+// 由于返回的是一个遍历器，所以要用generator函数。
+// 函数体内采用递归算法，所以左树和右树要用yield*遍历
+function* inorder(t) {
+  if (t) {
+    yield* inorder(t.left);
+    yield t.label;
+    yield* inorder(t.right);
+  }
+}
+
+// 下面生成二叉树
+function make(array) {
+  // 判断是否为叶节点
+  if (array.length == 1) return new Tree(null, array[0], null);
+  return new Tree(make(array[0]), array[1], make(array[2]));
+}
+let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
+
+// 遍历二叉树
+var result = [];
+for (let node of inorder(tree)) {
+  result.push(node); 
+}
+
+result
+// ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+
+```
+
+## 作为对象属性的Generator函数
+
+如果一个对象的属性是Generator函数，可以简写成下面的形式。
+
+```javascript
+
+let obj = {
+  * myGeneratorMethod() {
+    ···
+  }
+};
+
+```
+
+它的完整形式如下，两者是等价的。
+
+```javascript
+
+let obj = {
+  myGeneratorMethod: function* () {
+    ···
+  }
+};
+
+```
+
+## Generator与状态机
+
+Generator是实现状态机的最佳结构。比如，下面的clock函数就是一个状态机。
+
+```javascript
+
+var ticking = true;
+var clock = function() {
+  if (ticking)
+    console.log('Tick!');
+  else
+    console.log('Tock!');
+  ticking = !ticking;
+}
+
+```
+
+上面代码的clock函数一共有两种状态（Tick和Tock），每运行一次，就改变一次状态。这个函数如果用Generator实现，就是下面这样。
+
+```javascript
+
+var clock = function*(_) {
+  while (true) {
+    yield _;
+    console.log('Tick!');
+    yield _;
+    console.log('Tock!');
+  }
+};
+
+```
+
+上面的Generator实现与ES5实现对比，可以看到少了用来保存状态的外部变量ticking，这样就更简洁，更安全（状态不会被非法篡改）、更符合函数式编程的思想，在写法上也更优雅。Generator之所以可以不用外部变量保存状态，是因为它本身就包含了一个状态信息，即目前是否处于暂停态。
 
 ## 应用
 
@@ -350,180 +561,3 @@ function doStuff() {
 ```
 
 上面的函数，可以用一模一样的for...of循环处理！两相一比较，就不难看出Generator使得数据或者操作，具备了类似数组的接口。
-
-## throw方法
-
-Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
-
-```javascript
-
-var g = function* () {
-    while (true) {
-        try {
-            yield;
-        } catch (e) {
-            if (e != 'a') {
-                throw e;
-            }
-            console.log('内部捕获', e);
-        }
-    }
-};
-
-var i = g();
-i.next();
-
-try {
-    i.throw('a');
-    i.throw('b');
-} catch (e) {
-    console.log('外部捕获', e);
-}
-// 内部捕获 a
-// 外部捕获 b
-
-```
-
-上面代码中，遍历器i连续抛出两个错误。第一个错误被Generator函数体内的catch捕获，然后Generator函数执行完成，于是第二个错误被函数体外的catch捕获。
-
-这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
-
-```javascript
-
-foo('a', function (a) {
-    if (a.error) {
-        throw new Error(a.error);
-    }
- 
-    foo('b', function (b) {
-        if (b.error) {
-            throw new Error(b.error);
-        }
- 
-        foo('c', function (c) {
-            if (c.error) {
-                throw new Error(c.error);
-            }
- 
-            console.log(a, b, c);
-        });
-    });
-});
-
-```
-
-使用Generator函数可以大大简化上面的代码。
-
-```javascript
-
-function* g(){
-  try {
-        var a = yield foo('a');
-        var b = yield foo('b');
-        var c = yield foo('c');
-    } catch (e) {
-        console.log(e);
-    }
-
-  console.log(a, b, c);
-
-}
-
-```
-
-## yield*语句
-
-如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
-
-```javascript
-
-let delegatedIterator = (function* () {
-  yield 'Hello!';
-  yield 'Bye!';
-}());
-
-let delegatingIterator = (function* () {
-  yield 'Greetings!';
-  yield* delegatedIterator;
-  yield 'Ok, bye.';
-}());
-
-for(let value of delegatingIterator) {
-  console.log(value);
-}
-// "Greetings!
-// "Hello!"
-// "Bye!"
-//  "Ok, bye."
-
-```
-
-上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
-
-下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
-
-```javascript
-
-// 下面是二叉树的构造函数，
-// 三个参数分别是左树、当前节点和右树
-function Tree(left, label, right) {
-  this.left = left;
-  this.label = label;
-  this.right = right;
-}
-
-// 下面是中序（inorder）遍历函数。
-// 由于返回的是一个遍历器，所以要用generator函数。
-// 函数体内采用递归算法，所以左树和右树要用yield*遍历
-function* inorder(t) {
-  if (t) {
-    yield* inorder(t.left);
-    yield t.label;
-    yield* inorder(t.right);
-  }
-}
-
-// 下面生成二叉树
-function make(array) {
-  // 判断是否为叶节点
-  if (array.length == 1) return new Tree(null, array[0], null);
-  return new Tree(make(array[0]), array[1], make(array[2]));
-}
-let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
-
-// 遍历二叉树
-var result = [];
-for (let node of inorder(tree)) {
-  result.push(node); 
-}
-
-result
-// ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-
-```
-
-## 作为对象属性的Generator函数
-
-如果一个对象的属性是Generator函数，可以简写成下面的形式。
-
-```javascript
-
-let obj = {
-  * myGeneratorMethod() {
-    ···
-  }
-};
-
-```
-
-它的完整形式如下，两者是等价的。
-
-```javascript
-
-let obj = {
-  myGeneratorMethod: function* () {
-    ···
-  }
-};
-
-```
