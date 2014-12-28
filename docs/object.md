@@ -305,7 +305,20 @@ Object.getPrototypeOf(obj)
 
 ## Symbol
 
-ES6引入了一种新的原始数据类型Symbol。它通过Symbol函数生成。
+ES6引入了一种新的原始数据类型Symbol，表示独一无二的ID。它通过Symbol函数生成。
+
+```javascript
+
+let symbol1 = Symbol();
+
+typeof symbol
+// "symbol"
+
+```
+
+上面代码中，变量symbol1就是一个独一无二的ID。typeof运算符的结果，表明变量symbol1是Symbol数据类型，而不是字符串之类的其他类型。
+
+Symbol函数可以接受一个字符串作为参数，表示Symbol实例的名称。
 
 ```javascript
 
@@ -314,14 +327,33 @@ var mySymbol = Symbol('Test');
 mySymbol.name
 // Test
 
-typeof mySymbol
-// "symbol"
+```
+
+上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol的名称，可以通过name属性读取。之所以要新增name属性，是因为键名是Symbol类型，而有些场合需要一个字符串类型的值来指代这个键。
+
+注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
+
+Symbol类型的值不能与其他类型的值进行运算，会报错。
+
+```javascript
+
+var sym = Symbol('My symbol');
+'' + sym
+// TypeError: Cannot convert a Symbol value to a string
 
 ```
 
-上面代码表示，Symbol函数接受一个字符串作为参数，用来指定生成的Symbol的名称，可以通过name属性读取。typeof运算符的结果，表明Symbol是一种单独的数据类型。
+但是，Symbol类型的值可以转为字符串。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
+```javascript
+
+String(sym)
+// 'Symbol(My symbol)'
+
+sym.toString()
+// 'Symbol(My symbol)'
+
+```
 
 symbol的最大特点，就是每一个Symbol都是不相等的，保证产生一个独一无二的值。
 
@@ -330,6 +362,10 @@ symbol的最大特点，就是每一个Symbol都是不相等的，保证产生�
 let w1 = Symbol();
 let w2 = Symbol();
 let w3 = Symbol();
+
+w1 === w2 // false
+w1 === w3 // false
+w2 === w3 // false
 
 function f(w) {
   switch (w) {
@@ -346,17 +382,26 @@ function f(w) {
 
 上面代码中，w1、w2、w3三个变量都等于`Symbol()`，但是它们的值是不相等的。
 
-由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性。另一种用途是，可以防止属性值被不小心修改。
+由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性，也就防止了键值被不小心改写或覆盖。Symbol类型还可以用于定义一组常量，防止它们的值发生冲突。
 
 ```javascript
 
-var a = {};
 var mySymbol = Symbol();
 
+// 第一种写法
+var a = {};
 a[mySymbol] = 'Hello!';
 
-//另一种写法
+// 第二种写法
+var a = {
+   [mySymbol]: 123
+};
+
+// 第三种写法
+var a = {};
 Object.defineProperty(a, mySymbol, { value: 'Hello!' });
+
+a[mySymbol] // "Hello!"
 
 ```
 
@@ -387,6 +432,15 @@ a.size // 1
 
 ```
 
+为Symbol函数添加一个参数，就可以引用了。
+
+```javascript
+
+let a = Map();
+a.set(Symbol('my_key'), 'Noise');
+
+```
+
 如果要在对象内部使用Symbol属性名，必须采用属性名表达式。
 
 ```javascript
@@ -411,7 +465,7 @@ let obj = {
 
 ```
 
-Symbol类型作为属性名，不会出现在for...in循环中，也不会被Object.getOwnPropertyNames方法返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取Symbol属性名。
+Symbol类型作为属性名，不会出现在for...in循环中，也不会被Object.keys()、Object.getOwnPropertyNames()返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取Symbol属性名。
 
 ```javascript
 
@@ -432,6 +486,21 @@ Object.getOwnPropertySymbols(obj)
 ```
 
 上面代码中，使用Object.getOwnPropertyNames方法得不到Symbol属性名，需要使用Object.getOwnPropertySymbols方法。
+
+Reflect.ownKeys方法返回所有类型的键名。
+
+```javascript
+
+let obj = {
+  [Symbol('my_key')]: 1,
+  enum: 2,
+  nonEnum: 3
+};
+
+Reflect.ownKeys(obj)
+// [Symbol(my_key), 'enum', 'nonEnum']
+
+```
 
 ## Proxy
 

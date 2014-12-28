@@ -67,7 +67,33 @@ class MySpecialTree {
 
 ```
 
-上面代码是一个类部署Iterator接口的写法。`Symbol.iterator`是一个表达式，返回一个Symbol对象的iterator属性，这是一个类型为Symbol的特殊值，所以要放在方括号内。这里要注意，@@iterator的键名是`Symbol.iterator`，该方法执行后，返回一个当前对象的遍历器。
+上面代码是一个类部署Iterator接口的写法。`Symbol.iterator`是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。这里要注意，@@iterator的键名是`Symbol.iterator`，键值是一个方法（函数），该方法执行后，返回一个当前对象的遍历器。
+
+下面是为对象添加Iterator接口的例子。
+
+```javascript
+
+let obj = {
+  data: [ 'hello', 'world' ],
+  [Symbol.iterator]() {
+    const self = this;
+    let index = 0;
+    return {
+      next() {
+        if (index < self.data.length) {
+          return {
+            value: self.data[index++],
+            done: false
+          };
+        } else {
+          return { value: undefined, done: true };
+        }
+      }
+    };
+  }
+};
+
+```
 
 《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个遍历器。
 
