@@ -268,11 +268,52 @@ for(let value of delegatingIterator) {
 // "Greetings!
 // "Hello!"
 // "Bye!"
-//  "Ok, bye."
+// "Ok, bye."
 
 ```
 
 上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
+
+如果`yield*`后面跟着一个数组，就表示该数组会返回一个遍历器，因此就会遍历数组成员。
+
+```javascript
+
+function* gen(){
+  yield* ["a", "b", "c"];
+}
+
+gen().next() // { value:"a", done:false }
+
+```
+
+上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
+
+`yield*`命令可以很方便地取出嵌套数组的所有成员。
+
+```javascript
+
+function* iterTree(tree) {
+  if (Array.isArray(tree)) {
+    for(let i=0; i < tree.length; i++) {
+      yield* iterTree(tree[i]);
+    }
+  } else {
+    yield tree;
+  }
+}
+
+const tree = [ 'a', ['b', 'c'], ['d', 'e'] ];
+
+for(let x of iterTree(tree)) {
+  console.log(x);
+}
+// a
+// b
+// c
+// d
+// e
+
+```
 
 下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
 
@@ -522,6 +563,26 @@ for (let [key, value] of iterEntries(myObj)) {
 
 上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
 
+下面是一个对数组部署Iterator接口的例子，尽管数组原生具有这个接口。
+
+```javascript
+
+function* makeSimpleGenerator(array){
+  var nextIndex = 0;
+    
+  while(nextIndex < array.length){
+    yield array[nextIndex++];
+  }
+}
+
+var gen = makeSimpleGenerator(['yo', 'ya']);
+
+gen.next().value // 'yo'
+gen.next().value // 'ya'
+gen.next().done  // true
+
+```
+
 ### （4）作为数据结构
 
 Generator可以看作是数据结构，更确切地说，可以看作是一个数组结构，因为Generator函数可以返回一系列的值，这意味着它可以对任意表达式，提供类似数组的接口。
@@ -570,4 +631,4 @@ function doStuff() {
 
 Generator函数是ECMAScript 6对协程的实现，但属于不完全实现，只做到了暂停执行和转移执行权，有一些特性没有实现，比如不支持所调用的函数之中的yield语句。
 
-如果将Generator函数看作多任务运行的方式，存在多个进入点和退出点。那么，一方面，并发的多任务可以写成多个Generator函数；另一方面，继发的任务则可以按照发生顺序，写在一个Generator函数之中。
+如果将Generator函数看作多任务运行的方式，存在多个进入点和退出点。那么，一方面，并发的多任务可以写成多个Generator函数；另一方面，继发的任务则可以按照发生顺序，写在一个Generator函数之中，然后用一个任务管理函数执行（参考本节的“控制流管理”部分）。
