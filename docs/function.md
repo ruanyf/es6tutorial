@@ -228,7 +228,23 @@ d
 
 ```
 
-扩展运算符内部调用的是数据结构的Iterator接口，因此只要具有Iterator接口的对象，都可以使用扩展运算符。
+扩展运算符内部调用的是数据结构的Iterator接口，因此只要具有Iterator接口的对象，都可以使用扩展运算符，比如Map结构。
+
+```javascript
+
+let map = new Map([
+  [1, 'one'],
+  [2, 'two'],
+  [3, 'three'],
+]);
+
+
+let arr = [...map.keys()]; // [1, 2, 3]
+
+```
+
+Generator函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
+
 
 ```javascript
 

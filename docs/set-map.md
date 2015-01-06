@@ -2,6 +2,8 @@
 
 ## Set
 
+### 基本用法
+
 ES6提供了新的数据结构Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
 
 Set本身是一个构造函数，用来生成Set数据结构。
@@ -19,7 +21,7 @@ for (i of s) {console.log(i)}
 
 上面代码通过add方法向Set结构加入成员，结果表明Set结构不会添加重复的值。
 
-Set函数接受一个数组作为参数，用来初始化。
+Set函数可以接受一个数组作为参数，用来初始化。
 
 ```javascript
 
@@ -30,7 +32,23 @@ items.size
 
 ```
 
-向Set加入值的时候，不会发生类型转换。这意味在Set中，5和“5”是两个不同的值。
+向Set加入值的时候，不会发生类型转换，5和“5”是两个不同的值。Set内部判断两个值是否精确相等，使用的是精确相等运算符（===）。这意味着，两个对象总是不相等的。
+
+```javascript
+
+let set = new Set();
+
+set.add({})
+set.size // 1
+    
+set.add({})
+set.size // 2
+
+```
+
+上面代码表示，由于两个空对象不是精确相等，所以它们被视为两个值。
+
+### 属性和方法
 
 Set结构有以下属性。
 
@@ -39,10 +57,10 @@ Set结构有以下属性。
 
 Set数据结构有以下方法。
 
-- add(value)：添加某个值。
-- delete(value)：删除某个值。
-- has(value)：返回一个布尔值，表示该值是否为set的成员。
-- clear()：清除所有成员。
+- add(value)：添加某个值，返回Set结构本身。
+- delete(value)：删除某个值，返回一个布尔值，表示删除是否成功。
+- has(value)：返回一个布尔值，表示该值是否为Set的成员。
+- clear()：清除所有成员，没有返回值。
 
 下面是这些属性和方法的使用演示。
 
@@ -109,7 +127,113 @@ function dedupe(array) {
 
 ```
 
-Set的遍历，可以借助for...of循环完成，参见《Iterator和for...of循环》章节。
+### 遍历操作
+
+Set结构有一个values方法，返回一个遍历器。
+
+```javascript
+
+let set = new Set(['red', 'green', 'blue']);
+for ( let item of set.values() ){
+  console.log(item);
+}
+// red
+// green
+// blue
+
+```
+
+Set结构的默认遍历器就是它的values方法。
+
+```javascript
+
+Set.prototype[Symbol.iterator] === Set.prototype.values
+// true
+
+```
+
+这意味着，可以省略values方法，直接用for...of循环遍历Set。
+
+```javascript
+
+let set = new Set(['red', 'green', 'blue']);
+
+for (let x of set) {
+  console.log(x);
+}
+// red
+// green
+// blue
+
+```
+
+Set结构的foreach方法，用于对每个成员执行某种操作，返回修改后的Set结构。
+
+```javascript
+
+let set = new Set([1, 2, 3]);
+
+set.foreach((value, key) => value*2 )
+// 返回Set结构{2, 4, 6}
+
+```
+
+上面代码说明，foreach方法的参数就是一个处理函数。该函数的参数依次为键值、键名、集合本身（上例省略了该参数）。另外，foreach方法还可以有第二个参数，表示绑定的this对象。
+
+为了与Map结构保持一致，Set结构也有keys和entries方法，这时每个值的键名就是键值。
+
+```javascript
+
+let set = new Set(['red', 'green', 'blue']);
+for ( let item of set.keys() ){
+  console.log(item);
+}
+// red
+// green
+// blue
+
+for ( let [key, value] of set.entries() ){
+  console.log(key, value);
+}
+// red, red
+// green, green
+// blue, blue
+
+```
+
+由于扩展运算符（...）内部使用for...of循环，所以也可以用于Set结构。
+
+```javascript
+
+let set = new Set(['red', 'green', 'blue']);
+let arr = [...set]; 
+// ['red', 'green', 'blue']
+
+```
+
+这就提供了另一种便捷的去除数组重复元素的方法。
+
+```javascript
+
+let arr = [3, 5, 2, 2, 5, 5];
+let unique = [...new Set(arr)]; 
+// [3, 5, 2]
+
+```
+
+而且，数组的map和filter方法也可以用于Set了。
+
+```javascript
+
+let set = new Set([1, 2, 3]);
+set = new Set([...set].map(x => x * 2));
+// 返回Set结构：{2, 4, 6}
+
+let set = new Set([1, 2, 3, 4, 5]);
+set = new Set([...set].filter(x => (x % 2) == 0));
+// 返回Set结构：{2, 4}
+
+```
 
 ## WeakSet
 
@@ -137,10 +261,9 @@ var ws = new WeakSet(a);
 
 上面代码中，a是一个数组，它有两个成员，也都是数组。将a作为WeakSet构造函数的参数，a的成员会自动成为WeakSet的成员。
 
-WeakSet结构有以下四个方法。
+WeakSet结构有以下三个方法。
 
 - **WeakSet.prototype.add(value)**：向WeakSet实例添加一个新成员。
-- **WeakSet.prototype.clear()**：清除WeakSet实例的所有成员。
 - **WeakSet.prototype.delete(value)**：清除WeakSet实例的指定成员。
 - **WeakSet.prototype.has(value)**：返回一个布尔值，表示某个值是否在WeakSet实例之中。
 
@@ -182,24 +305,25 @@ data[element] = metadata;
 
 上面代码原意是将一个DOM节点作为对象data的键，但是由于对象只接受字符串作为键名，所以element被自动转为字符串`[Object HTMLDivElement]`。
 
-为了解决这个问题，ES6提供了map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，对象也可以当作键。
+为了解决这个问题，ES6提供了map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应。
 
 ```javascript
 
 var m = new Map();
-
-o = {p: "Hello World"};
+var o = {p: "Hello World"};
 
 m.set(o, "content")
+m.get(o) // "content"
 
-console.log(m.get(o))
-// "content"
+m.has(o) // true
+m.delete(o) // true
+m.has(o) // false
 
 ```
 
-上面代码使用set方法，将对象o当作m的一个键，然后又使用get方法读取这个键。
+上面代码使用set方法，将对象o当作m的一个键，然后又使用get方法读取这个键，接着使用delete方法删除了这个键。
 
-map函数也可以接受一个数组进行初始化，该数组的成员是一个个表示键值对的数组。
+作为构造函数，Map也可以接受一个数组作为参数。该数组的成员是一个个表示键值对的数组。
 
 ```javascript
 
@@ -245,20 +369,54 @@ map.get(k2) // 222
 
 上面代码中，变量k1和k2的值是一样的，但是它们在Map结构中被视为两个键。
 
-由上可知，map的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键。这就解决了同名属性碰撞（clash）的问题，我们扩展别人的库的时候，如果使用对象作为键名，就不用担心自己的属性与原作者的属性同名。
+由上可知，Map的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键。这就解决了同名属性碰撞（clash）的问题，我们扩展别人的库的时候，如果使用对象作为键名，就不用担心自己的属性与原作者的属性同名。
+
+如果Map的键是一个简单类型的值（数字、字符串、布尔值），则只要两个值严格相等，Map将其视为一个键。这对于NaN，以及+0和-0都成立。
+
+```javascript
+
+let map = new Map();
+    
+map.set(NaN, 123);
+map.get(NaN) // 123
+
+map.set(-0, 123);
+map.get(+0) // 123
+
+```
+
+如果读取一个未知的键，则返回undefined。
+
+```javascript
+
+new Map().get('asfddfsasadf')
+// undefined
+
+```
 
 **（2）属性和方法**
 
 Map数据结构有以下属性和方法。
 
 - size：返回成员总数。
-- set(key, value)：设置一个键值对。
-- get(key)：读取一个键。
+- set(key, value)：设置key所对应的键值，然后返回整个Map结构。如果key已经有值，则键值会被更新，否则就新生成该键。
+- get(key)：读取key对应的键值，如果找不到key，返回undefined。
 - has(key)：返回一个布尔值，表示某个键是否在Map数据结构中。
-- delete(key)：删除某个键。
-- clear()：清除所有成员。
+- delete(key)：删除某个键，返回true。如果删除失败，返回false。
+- clear()：清除所有成员，没有返回值。
 
-下面是一些用法实例。
+set()方法返回的是Map本身，因此可以采用链式写法。
+
+```javascript
+
+let map = new Map()
+  .set(1, 'a')
+  .set(2, 'b')
+  .set(3, 'c');
+
+```
+
+下面是has()和delete()的例子。
 
 ```javascript
 
@@ -285,6 +443,20 @@ m.get("edition")  // 6
 
 ```
 
+下面是size属性和clear方法的例子。
+
+```javascript
+
+let map = new Map();
+map.set('foo', true);
+map.set('bar', false);
+    
+map.size // 2
+map.clear()
+map.size // 0
+
+```    
+
 **（3）遍历**
 
 Map原生提供三个遍历器。
@@ -297,22 +469,92 @@ Map原生提供三个遍历器。
 
 ```javascript
 
+let map = new Map([
+  ['F', 'no'],
+  ['T',  'yes'],
+]);
+
 for (let key of map.keys()) {
-    console.log("Key: %s", key);
+  console.log(key);
 }
+// "F"
+// "T"
 
 for (let value of map.values()) {
-    console.log("Value: %s", value);
+  console.log(value);
 }
+// "no"
+// "yes"
 
 for (let item of map.entries()) {
-    console.log("Key: %s, Value: %s", item[0], item[1]);
+  console.log(item[0], item[1]);
+}
+// "F" "no"
+// "T" "yes"
+
+// 或者
+for (let [key, value] of map.entries()) {
+  console.log(key, value);
 }
 
-// same as using map.entries()
-for (let item of map) {
-    console.log("Key: %s, Value: %s", item[0], item[1]);
+// 等同于使用map.entries()
+for (let [key, value] of map) {
+  console.log(key, value);
 }
+
+```
+
+上面代码最后的那个例子，表示Map结构的默认遍历器接口（Symbol.iterator属性），就是entries方法。
+
+```javascript
+
+map[Symbol.iterator] === map.entries
+// true
+
+```
+
+Map结构转为数组结构，比较快速的方法是结合使用扩展运算符（...）。
+
+```javascript
+
+let map = new Map([
+  [1, 'one'],
+  [2, 'two'],
+  [3, 'three'],
+]);
+
+[...map.keys()]
+// [1, 2, 3]
+
+[...map.values()]
+// ['one', 'two', 'three']
+
+[...map.entries()]
+// [[1,'one'], [2, 'two'], [3, 'three']]
+
+[...map]
+// [[1,'one'], [2, 'two'], [3, 'three']]
+
+```
+
+结合数组的map方法、filter方法，可以实现Map的遍历和过滤（Map本身没有map和filter方法）。
+
+```javascript
+
+let map0 = new Map()
+  .set(1, 'a')
+  .set(2, 'b')
+  .set(3, 'c');
+    
+let map1 = new Map(
+  [...map0].filter(([k, v]) => k < 3) 
+);
+// 产生Map结构 {1 => 'a', 2 => 'b'}
+    
+let map2 = new Map(
+  [...map0].map(([k, v]) => [k * 2, '_' + v])
+    );
+// 产生Map结构 {2 => '_a', 4 => '_b', 6 => '_c'}
 
 ```
 
@@ -321,7 +563,7 @@ for (let item of map) {
 ```javascript
 
 map.forEach(function(value, key, map)) {
-    console.log("Key: %s, Value: %s", key, value);
+  console.log("Key: %s, Value: %s", key, value);
 };
 
 ```
@@ -331,13 +573,13 @@ forEach方法还可以接受第二个参数，用来绑定this。
 ```javascript
 
 var reporter = {
-    report: function(key, value) {
-        console.log("Key: %s, Value: %s", key, value);
-    }
+  report: function(key, value) {
+    console.log("Key: %s, Value: %s", key, value);
+  }
 };
 
 map.forEach(function(value, key, map) {
-    this.report(key, value);
+  this.report(key, value);
 }, reporter);
 
 ```
@@ -346,7 +588,7 @@ map.forEach(function(value, key, map) {
 
 ## WeakMap
 
-WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名。
+WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
 
 WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。 
 
@@ -370,4 +612,37 @@ console.log(value); // undefined
 
 ```
 
-WeakMap还有has和delete方法，但没有size属性，也无法遍历它的值，这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。
+WeakMap与Map在API上的区别主要是两个，一是没有遍历操作（即没有key()、values()和entries()方法），也没有size属性；二是无法清空，即不支持clear方法。这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。因此，WeakMap只有四个方法可用：get()、set()、has()、delete()。
+
+WeakMap的一个用处是部署私有属性。
+
+```javascript
+
+let _counter = new WeakMap();
+let _action = new WeakMap();
+
+class Countdown {
+  constructor(counter, action) {
+    _counter.set(this, counter);
+    _action.set(this, action);
+  }
+  dec() {
+    let counter = _counter.get(this);
+    if (counter < 1) return;
+    counter--;
+    _counter.set(this, counter);
+    if (counter === 0) {
+      _action.get(this)();
+    }
+  }
+}
+
+let c = new Countdown(2, () => console.log('DONE'));
+
+c.dec()
+c.dec()
+// DONE
+
+```
+
+上面代码中，Countdown类的两个内部属性_counter和_action，是实例的弱引用，所以如果删除实例，它们也就随之消失，不会造成内存泄漏。
