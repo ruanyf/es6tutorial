@@ -32,7 +32,7 @@ items.size
 
 ```
 
-向Set加入值的时候，不会发生类型转换，5和“5”是两个不同的值。Set内部判断两个值是否精确相等，使用的是精确相等运算符（===）。这意味着，两个对象总是不相等的。
+向Set加入值的时候，不会发生类型转换，所以5和“5”是两个不同的值。Set内部判断两个值是否不同，使用的算法类似于精确相等运算符（===），唯一的例外是NaN等于自身。这意味着，两个对象总是不相等的。
 
 ```javascript
 
@@ -232,6 +232,21 @@ set = new Set([...set].map(x => x * 2));
 let set = new Set([1, 2, 3, 4, 5]);
 set = new Set([...set].filter(x => (x % 2) == 0));
 // 返回Set结构：{2, 4}
+
+```
+
+因此使用Set，可以很容易地实现并集（Union）和交集（Intersect）。
+
+```javascript
+
+let a = new Set([1,2,3]);
+let b = new Set([4,3,2]);
+
+let union = new Set([...a, ...b]);
+// [1,2,3,4]
+
+let intersect = new Set([...a].filter(x => b.has(x))); 
+// [2,3]
 
 ```
 
