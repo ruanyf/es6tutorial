@@ -65,6 +65,47 @@ var p = new Point();
 
 ```
 
+定义了默认值的参数，必须是函数的尾部参数，其后不能再有其他无默认值的参数。这是因为有了默认值以后，该参数可以省略，只有位于尾部，才可能判断出到底省略了哪些参数。
+
+```javascript
+
+// 以下两种写法都是错的
+
+function f(x=5, y) {
+}
+
+function f(x, y=5, z) {
+}
+
+```
+
+如果传入undefined，将触发该参数等于默认值，null则没有这个效果。
+
+```javascript
+
+function foo(x=5, y=6){ 
+  console.log(x,y); 
+}
+
+foo(undefined, null)
+// 5 null
+
+```
+
+上面代码中，x参数对应undefined，结果触发了默认值，y参数等于null，就没有触发默认值。
+
+指定了默认值以后，函数的length属性，将返回没有指定默认值的参数个数。也就是说，指定了默认值后，length属性将失真。
+
+```javascript
+
+(function(a){}).length // 1
+(function(a=5){}).length // 0
+(function(a, b, c=5){}).length // 2
+
+```
+
+上面代码中，length属性的返回值，等于函数的参数个数减去指定了默认值的参数个数。
+
 利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误。
 
 ```javascript
@@ -188,14 +229,42 @@ add(...numbers) // 42
 
 上面代码中，`array.push(...items)`和`add(...numbers)`这两行，都是函数的调用，它们的都使用了扩展运算符。该运算符将一个数组，变为参数序列。
 
-扩展运算符可以简化求出一个数组最大元素的写法。
+由于扩展运算符可以展开数组，所以不再需要apply方法，将数组转为函数的参数了。
 
 ```javascript
 
-// ES5
+// ES5的写法
+
+function f(x, y, z) { }
+var args = [0, 1, 2];
+f.apply(null, args);
+
+// ES6的写法
+
+function f(x, y, z) { }
+var args = [0, 1, 2];
+f(...args);
+
+```
+
+扩展运算符与正常的函数参数可以结合使用，非常灵活。
+
+```javascript
+
+function f(v, w, x, y, z) { }
+var args = [0, 1];
+f(-1, ...args, 2, ...[3]);
+
+```
+
+下面是扩展运算符取代apply方法的一个实际的例子，应用Math.max方法，简化求出一个数组最大元素的写法。
+
+```javascript
+
+// ES5的写法
 Math.max.apply(null, [14, 3, 77])
 
-// ES6
+// ES6的写法
 Math.max(...[14, 3, 77])
 
 // 等同于
@@ -204,6 +273,24 @@ Math.max(14, 3, 77);
 ```
 
 上面代码表示，由于JavaScript不提供求数组最大元素的函数，所以只能套用Math.max函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用Math.max了。
+
+另一个例子是通过push函数，将一个数组添加到另一个数组的尾部。
+
+```javascript
+
+// ES5的写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+Array.prototype.push.apply(arr1, arr2);
+
+// ES6的写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+arr1.push(...arr2);
+
+```
+
+上面代码的ES5写法中，push方法的参数不能是数组，所以只好通过apply方法变通使用push方法。有了扩展运算符，就可以直接将数组传入push方法。
 
 扩展运算符还可以用于数组的赋值。
 
@@ -219,6 +306,19 @@ d
 
 ```
 
+上面代码其实也提供了，将一个数组拷贝进另一个数组的便捷方法。
+
+JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
+
+```javascript
+
+var dateFields = readDateFields(database);
+var d = new Date(...dateFields);
+
+```
+
+上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数Date。
+
 扩展运算符还可以将字符串转为真正的数组。
 
 ```javascript
@@ -227,6 +327,17 @@ d
 // [ "h", "e", "l", "l", "o" ]    
 
 ```
+
+任何类似数组的对象，都可以用扩展运算符转为真正的数组。
+
+```javascript
+
+var nodeList = document.querySelectorAll('div');
+var array = [...nodeList];
+
+```
+
+上面代码中，querySelectorAll方法返回的是一个nodeList对象，扩展运算符可以将其转为真正的数组。
 
 扩展运算符内部调用的是数据结构的Iterator接口，因此只要具有Iterator接口的对象，都可以使用扩展运算符，比如Map结构。
 
