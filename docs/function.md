@@ -208,6 +208,16 @@ function f(a, ...b, c) {
 
 ```
 
+函数的length属性，不包括rest参数。
+
+```javascript
+
+(function(a) {}).length  // 1
+(function(...a) {}).length  // 0
+(function(a, ...b) {}).length  // 1
+
+```
+
 ## 扩展运算符
 
 扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。该运算符主要用于函数调用。

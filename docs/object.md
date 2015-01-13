@@ -6,6 +6,42 @@ ES6允许直接写入变量和函数，作为对象的属性和方法。这样�
 
 ```javascript
 
+function f( x, y ) {
+  return { x, y };
+}
+
+// 等同于
+
+function f( x, y ) {
+  return { x: x, y: y };
+}
+
+```
+
+上面是属性简写的例子，方法也可以简写。
+
+```javascript
+
+var o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+var o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+
+```
+
+下面是一个更实际的例子。
+
+```javascript
+
 var Person = {
 
   name: '张三',
@@ -33,18 +69,6 @@ function getPoint() {
 
 getPoint()
 // {x:1, y:10}
-
-```
-
-下面是一个类似的例子。
-
-```javascript
-
-let x = 4;
-let y = 1;
-
-// 下行等同于 let obj = { x: x, y: y };
-let obj = { x, y };
 
 ```
 
@@ -130,6 +154,26 @@ NaN === NaN // false
 
 Object.is(+0, -0) // false
 Object.is(NaN, NaN) // true
+
+```
+
+ES5可以通过下面的代码，部署Object.is()。
+
+```javascript
+
+Object.defineProperty(Object, 'is', {
+  value: function(x, y) {
+    if (x === y) {
+      // 针对+0 不等于 -0的情况
+      return x !== 0 || 1 / x === 1 / y;
+    }
+    // 针对NaN的情况
+    return x !== x && y !== y;
+  },
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
 
 ```
 

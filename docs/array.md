@@ -16,6 +16,27 @@ Array.from(ps).forEach(function (p) {
 
 上面代码中，querySelectorAll方法返回的是一个类似数组的对象，只有将这个对象转为真正的数组，才能使用forEach方法。
 
+Array.from方法可以将函数的arguments对象，转为数组。
+
+```javascript
+
+function foo() {
+  var args = Array.from( arguments );
+}
+
+foo( "a", "b", "c" );
+
+```
+
+任何有length属性的对象，都可以通过Array.from方法转为数组。
+
+```javascript
+
+Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
+// [ "a", "b" , "c" ]
+
+```
+
 Array.from()还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理。
 
 ```JavaScript
@@ -43,11 +64,12 @@ Array.of()方法用于将一组值，转换为数组。
 ```javaScript
 
 Array.of(3, 11, 8) // [3,11,8]
+Array.of(3) // [3]
 Array.of(3).length // 1
 
 ```
 
-这个函数的主要目的，是弥补数组构造函数Array()的不足。因为参数个数的不同，会导致Array()的行为有差异。
+这个方法的主要目的，是弥补数组构造函数Array()的不足。因为参数个数的不同，会导致Array()的行为有差异。
 
 ```javascript
 
