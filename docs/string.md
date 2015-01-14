@@ -265,11 +265,11 @@ normalize方法可以接受四个参数。
 
 不过，normalize方法目前不能识别三个或三个以上字符的合成。这种情况下，还是只能使用正则表达式，通过Unicode编号区间判断。
 
-## contains(), startsWith(), endsWith()
+## includes(), startsWith(), endsWith()
 
 传统上，JavaScript只有indexOf方法，可以用来确定一个字符串是否包含在另一个字符串中。ES6又提供了三种新方法。
 
-- **contains()**：返回布尔值，表示是否找到了参数字符串。
+- **includes()**：返回布尔值，表示是否找到了参数字符串。
 - **startsWith()**：返回布尔值，表示参数字符串是否在源字符串的头部。
 - **endsWith()**：返回布尔值，表示参数字符串是否在源字符串的尾部。
 
@@ -279,7 +279,7 @@ var s = "Hello world!";
 
 s.startsWith("Hello") // true
 s.endsWith("!") // true
-s.contains("o") // true
+s.includes("o") // true
 
 ```
 
@@ -291,7 +291,7 @@ var s = "Hello world!";
 
 s.startsWith("o", 4) // true
 s.endsWith("o", 8) // true
-s.contains("o", 8) // false
+s.includes("o", 8) // false
 
 ```
 
