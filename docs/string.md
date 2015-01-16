@@ -289,9 +289,9 @@ s.includes("o") // true
 
 var s = "Hello world!";
 
-s.startsWith("o", 4) // true
-s.endsWith("o", 8) // true
-s.includes("o", 8) // false
+s.startsWith("world", 6) // true
+s.endsWith("Hello", 5) // true
+s.includes("Hello", 6) // false
 
 ```
 
