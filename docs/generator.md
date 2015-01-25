@@ -74,6 +74,59 @@ setTimeout(function () {
 
 上面代码中，函数f如果是普通函数，在为变量generator赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
 
+另外需要注意，yield语句不能用在普通函数中，否则会报错。
+
+```javascript
+
+(function (){
+  yield 1;
+})()
+// SyntaxError: Unexpected number
+
+```
+
+上面代码在一个普通函数中使用yield语句，结果产生一个句法错误。
+
+下面是另外一个例子。
+
+```javascript
+
+var arr = [1, [[2, 3], 4], [5, 6]];
+
+var flat = function* (a){
+  a.forEach(function(item){
+    if (typeof item !== 'number'){
+      yield* flat(item);  
+    } else {
+      yield item;
+    }
+  }
+};
+
+for (var f of flat(arr)){
+  console.log(f);
+}
+
+```
+
+上面代码也会产生句法错误，因为forEach方法的参数是一个普通函数，但是在里面使用了yield语句。一种修改方法是改用for循环。
+
+```javascript
+
+var flat = function* (a){
+  var length = a.length;
+  for(var i =0;i<length;i++){
+    var item = a[i];
+    if (typeof item !== 'number'){
+      yield* flat(item);  
+    } else {
+      yield item;
+    }
+  }
+};
+
+```
+
 ### next方法的参数
 
 yield语句本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield语句的返回值。
