@@ -113,6 +113,8 @@ for (var f of flat(arr)){
 
 ```javascript
 
+var arr = [1, [[2, 3], 4], [5, 6]];
+
 var flat = function* (a){
   var length = a.length;
   for(var i =0;i<length;i++){
@@ -124,6 +126,11 @@ var flat = function* (a){
     }
   }
 };
+
+for (var f of flat(arr)){
+  console.log(f);
+}
+// 1, 2, 3, 4, 5, 6
 
 ```
 
@@ -301,6 +308,53 @@ function* g(){
 }
 
 ```
+
+一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将一直返回发生错误前的那个值。
+
+```javascript
+
+function* g() {
+  yield 1;
+  console.log('throwing an exception');
+  throw new Error('generator broke!');
+  yield 2;
+}
+
+function log(generator) {
+  var v;
+  console.log('starting generator');
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  console.log('caller done');
+}
+
+log(g());
+// starting generator
+// got back { value: 1, done: false }
+// throwing an exception
+// fixing generator { value: 1, done: false }
+// fixing generator { value: 1, done: false }
+// caller done
+ 
+```
+
+上面代码在Generator函数g抛出错误以后，再调用next方法，就不再执行下去了，一直停留在上一次的状态。
 
 ### yield*语句
 
