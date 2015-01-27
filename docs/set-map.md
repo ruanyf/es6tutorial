@@ -256,6 +256,16 @@ WeakSet结构与Set类似，也是不重复的值的集合。但是，它与Set�
 
 首先，WeakSet的成员只能是对象，而不能是其他类型的值。其次，WeakSet中的对象都是弱引用，即垃圾回收机制不考虑WeakSet对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于WeakSet之中。这个特点意味着，无法引用WeakSet的成员，因此WeakSet是不可遍历的。
 
+```javascript
+
+var ws = new WeakSet();
+ws.add(1)
+// TypeError: Invalid value used in weak set
+
+```
+
+上面代码试图向WeakSet添加一个数值，结果报错。
+
 WeakSet是一个构造函数，可以使用new命令，创建WeakSet数据结构。
 
 ```javascript
@@ -302,6 +312,25 @@ ws.has(window);    // false
 ws.clear();
 
 ```
+
+WeakSet没有size属性，没有办法遍历它的成员。
+
+```javascript
+
+ws.size
+// undefined
+
+ws.forEach(function(item){ console.log('WeakSet has ' + item)})
+// TypeError: undefined is not a function
+
+ws.forEach
+// undefined
+
+```
+
+上面代码试图获取size和forEach属性，结果都不能成功。
+
+WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍历机制无法保存成员的存在，很可能刚刚遍历结束，成员就取不到了。WeakSet的一个用处，是储存DOM节点，而不用担心这些节点从文档移除时，会引发内存泄漏。
 
 ## Map
 
@@ -611,23 +640,35 @@ WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制�
 
 ```javascript
 
-var map = new WeakMap();
+var wm = new WeakMap();
 var element = document.querySelector(".element");
 
-map.set(element, "Original");
+wm.set(element, "Original");
 
-var value = map.get(element);
+var value = wm.get(element);
 console.log(value); // "Original"
 
 element.parentNode.removeChild(element);
 element = null;
 
-value = map.get(element);
+value = wm.get(element);
 console.log(value); // undefined
 
 ```
 
 WeakMap与Map在API上的区别主要是两个，一是没有遍历操作（即没有key()、values()和entries()方法），也没有size属性；二是无法清空，即不支持clear方法。这与WeakMap的键不被计入引用、被垃圾回收机制忽略有关。因此，WeakMap只有四个方法可用：get()、set()、has()、delete()。
+
+```javascript
+
+var wm = new WeakMap();
+
+wm.size
+// undefined
+
+wm.forEach
+// undefined
+
+```
 
 WeakMap的一个用处是部署私有属性。
 

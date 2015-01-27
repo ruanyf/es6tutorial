@@ -402,6 +402,15 @@ console.log(`${obj.x + obj.y}`)
 
 ```
 
+如果模板字符串中的变量没有声明，将报错。
+
+```javascript
+
+var msg = `Hello, ${place}`;    
+// throws error
+
+```
+
 模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
 
 ```javascript
@@ -410,5 +419,114 @@ if (x > MAX) {
 	throw new Error(`Most ${MAX} allowed: ${x}!`);
 	// 传统写法为'Most '+MAX+' allowed: '+x+'!'
 }
+
+```
+
+模板字符串可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。
+
+```javascript
+
+var a = 5;
+var b = 10;
+
+tag`Hello ${ a + b } world ${ a * b}`;
+
+```
+
+上面代码中，模板字符串前面有一个函数tag，整个表达式将返回tag处理模板字符串后的返回值。
+
+函数tag依次接受三个参数。第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。第一个参数之后的参数，都是模板字符串各个变量被替换后的值。 
+
+- 第一个参数：['Hello ', ' world ']
+- 第二个参数: 15
+- 第三个参数：50
+
+```javascript
+
+var a = 5;
+var b = 10;
+
+function tag(s, v1, v2) {
+  console.log(s[0]); // "Hello "
+  console.log(s[1]); // " world "
+  console.log(v1);  // 15
+  console.log(v2);  // 50
+
+  return "OK";
+}
+
+tag`Hello ${ a + b } world ${ a * b}`;
+// "OK"
+
+```
+
+下面是一个更复杂的例子。
+
+```javascript
+
+var total = 30;
+var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
+
+function passthru(literals) {
+  var result = "";
+  var i = 0;
+        
+  while (i < literals.length) {
+    result += literals[i++];
+    if (i < arguments.length) {
+      result += arguments[i];
+    }
+  }
+
+  return result;
+
+}
+
+msg
+// "The total is 30 (31.5 with tax)"
+
+```
+
+上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
+
+处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
+
+```javascript
+
+tag`First line\nSecond line`
+
+```
+
+上面代码中，tag函数的第一个参数是一个数组`["First line\nSecond line"]`，这个数组有一个raw属性，等于`["First line\\nSecond line"]`，两者唯一的区别就是斜杠被转义了。
+
+function tag(strings) {
+  console.log(strings.raw[0]); 
+  // "First line\\nSecond line"
+}
+
+## String.raw()
+
+String.raw方法，往往用来充当模板字符串的处理函数，返回字符串被转义前的原始格式。
+
+```javascript
+
+String.raw`Hi\n${2+3}!`;
+// "Hi\\n5!"
+
+String.raw`Hi\u000A!`;
+// 'Hi\\u000A!'
+
+```
+
+String.raw方法也可以正常的函数形式使用。这时，它的第一个参数，应该是一个具有raw属性的对象，且raw属性的值应该是一个数组。
+
+```javascript
+
+String.raw({ raw: 'test' }, 0, 1, 2);
+// 't0e1s2t'
+
+
+// 等同于
+String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
 
 ```

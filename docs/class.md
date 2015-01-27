@@ -153,6 +153,24 @@ import { lastName as surname } from './profile';
 
 ```
 
+ES6支持多重加载，即所加载的模块中又加载其他模块。
+
+```javascript
+
+import { Vehicle } from './Vehicle';
+
+class Car extends Vehicle {
+  move () {
+    console.log(this.name + ' is spinning wheels...')
+  }
+}
+
+export { Car }
+
+```
+
+上面的模块先加载Vehicle模块，然后在其基础上添加了move方法，再作为一个新模块输出。
+
 **（2）模块的整体输入，module命令**
 
 export命令除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法area和circumference。
