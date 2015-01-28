@@ -324,6 +324,48 @@ function* g(){
 
 ```
 
+如果Generator函数内部没有定义catch，那么throw方法抛出的错误，将被函数体的catch捕获。
+
+```javascript
+
+function *foo() { }
+
+var it = foo();
+try {
+  it.throw( "Oops!" );
+} catch (err) {
+    console.log( "Error: " + err ); // Error: Oops!
+}
+
+```
+
+上面代码中，foo函数内部没有任何语句，throw抛出的错误被函数体外的catch捕获。
+
+反过来，Generator函数内抛出的错误，也可以被函数体外的catch捕获。
+
+```javascript
+
+function *foo() {
+    var x = yield 3;
+    var y = x.toUpperCase(); 
+    yield y;
+}
+
+var it = foo();
+
+it.next(); // { value:3, done:false }
+
+try {
+  it.next( 42 ); 
+}
+catch (err) {
+  console.log( err );
+}
+
+```
+
+上面代码中，第二个next方法向函数体内传入一个参数42，数值是没有toUpperCase方法的，所以会抛出一个TypeError错误，被函数体外的catch捕获。
+
 一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将一直返回发生错误前的那个值。
 
 ```javascript
@@ -413,6 +455,35 @@ gen().next() // { value:"a", done:false }
 ```
 
 上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
+
+如果被代理的Generator函数有return语句，那么就可以向代理它的Generator函数返回数据。
+
+```javascript
+
+function *foo() {
+    yield 2;
+    yield 3;
+    return "foo";
+}
+
+function *bar() {
+    yield 1;
+    var v = yield *foo();
+    console.log( "v: " + v );
+    yield 4;
+}
+
+var it = bar();
+
+it.next(); //
+it.next(); //
+it.next(); //
+it.next(); // "v: foo" 
+it.next(); //
+
+```
+
+上面代码在第四次调用next方法的时候，屏幕上会有输出，这是因为函数foo的return语句，向函数bar提供了返回值。
 
 `yield*`命令可以很方便地取出嵌套数组的所有成员。
 
