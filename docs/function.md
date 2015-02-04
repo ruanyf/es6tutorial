@@ -239,6 +239,14 @@ add(...numbers) // 42
 
 上面代码中，`array.push(...items)`和`add(...numbers)`这两行，都是函数的调用，它们的都使用了扩展运算符。该运算符将一个数组，变为参数序列。
 
+下面是Date函数的参数使用扩展运算符的例子。
+
+```javascript
+
+const date = new Date(...[2015, 1, 1]);
+
+```
+
 由于扩展运算符可以展开数组，所以不再需要apply方法，将数组转为函数的参数了。
 
 ```javascript
@@ -317,6 +325,44 @@ d
 ```
 
 上面代码其实也提供了，将一个数组拷贝进另一个数组的便捷方法。
+
+扩展运算符也可以与解构赋值结合起来，用于生成数组。
+
+```javascript
+
+const [first, ...rest] = [1, 2, 3, 4, 5];
+first // 1
+rest  // [2, 3, 4, 5]
+
+const [first, ...rest] = [];
+first // undefined
+rest  // []:
+
+const [first, ...rest] = ["foo"];
+first  // "foo"
+rest   // []
+
+const [first, ...rest] = ["foo", "bar"];
+first // "foo"
+rest  // ["bar"]
+
+const [first, ...rest] = ["foo", "bar", "baz"];
+first // "foo"
+rest  // ["bar","baz"]
+
+```
+
+如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。
+
+```javascript
+
+const [...butLast, last] = [1, 2, 3, 4, 5];
+// 报错
+  
+const [first, ..., last] = [1, 2, 3, 4, 5];
+// 报错
+
+```  
 
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
@@ -432,6 +478,7 @@ var sum = (num1, num2) => { return num1 + num2; }
 var getTempItem = id => ({ id: id, name: "Temp" });
 
 ```
+
 箭头函数的一个用处是简化回调函数。
 
 ```javascript
@@ -459,6 +506,22 @@ var result = values.sort(function(a, b) {
 var result = values.sort((a, b) => a - b);
 
 ```
+
+下面是rest参数与箭头函数结合的例子。
+
+```javascript
+
+const numbers = (...nums) => nums;
+
+numbers(1, 2, 3, 4, 5)
+// [1,2,3,4,5]
+  
+const headAndTail = (head, ...tail) => [head, tail];
+
+headAndTail(1, 2, 3, 4, 5)
+// [1,[2,3,4,5]]
+
+```  
 
 箭头函数有几个使用注意点。
 
