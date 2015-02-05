@@ -590,7 +590,7 @@ obj.time // 35
 
 上面代码中，proxy对象是obj对象的原型，obj对象本身并没有time属性，所有根据原型链，会在proxy对象上读取该属性，导致被拦截。
 
-对于没有设置拦截的操作，则直接落在目标函数上，按照原先的方式产生结果。
+对于没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
 
 下面是另一个拦截读取操作的例子。
 
@@ -616,6 +616,39 @@ proxy.age // 抛出一个错误
 ```
 
 上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。
+
+利用proxy，可以将读取属性的操作（get），转变为执行某个函数。
+
+```javascript
+
+var pipe = (function () {
+  var pipe;
+  return function (value) {
+    pipe = [];
+    return new Proxy({}, {
+      get: function (pipeObject, fnName) {
+        if (fnName == "get") {
+          return pipe.reduce(function (val, fn) { 
+            return fn(val); 
+          }, value);
+        }
+        pipe.push(window[fnName]);
+        return pipeObject;
+      }
+    });
+  }
+}());
+
+var double = function (n) { return n*2 };  
+var pow = function (n) { return n*n };
+var reverseInt = function (n) { return n.toString().split('').reverse().join('')|0 };
+
+pipe(3) . double . pow . reverseInt . get  
+// 63 
+
+```
+
+上面代码设置Proxy以后，达到了将函数名链式使用的效果。
 
 除了取值函数get，Proxy还可以设置存值函数set，用来拦截某个属性的赋值行为。假定Person对象有一个age属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证age的属性值符合要求。
 

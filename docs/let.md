@@ -75,6 +75,19 @@ function do_something() {
 
 上面代码在声明foo之前，就使用这个变量，结果会抛出一个错误。
 
+这也意味着typeof不再是一个百分之百安全的操作。
+
+```javascript
+
+if (1) { 
+  typeof x; // ReferenceError 
+  let x; 
+}
+
+```
+
+上面代码中，由于块级作用域内typeof运行时，x还没有声明，所以会抛出一个ReferenceError。
+
 注意，let不允许在相同作用域内，重复声明同一个变量。
 
 ```javascript
