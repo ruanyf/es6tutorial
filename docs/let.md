@@ -88,20 +88,85 @@ if (1) {
 
 上面代码中，由于块级作用域内typeof运行时，x还没有声明，所以会抛出一个ReferenceError。
 
+总之，在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称TDZ）。
+
+```javascript
+
+if (true) {
+  // TDZ开始
+  tmp = 'abc'; // ReferenceError
+  console.log(tmp); // ReferenceError
+    
+  let tmp; // TDZ结束
+  console.log(tmp); // undefined
+    
+  tmp = 123;
+  console.log(tmp); // 123
+}
+
+```
+
+上面代码中，在let命令声明变量tmp之前，都属于变量tmp的“死区”。
+
+有些“死区”比较隐蔽，不太容易发现。
+
+```javascript
+
+function bar(x=y, y=2) {
+  return [x, y];
+}
+
+bar(); // 报错
+
+```
+
+上面代码中，调用bar函数之所以报错，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。
+
+```javascript
+
+let foo = 'outer';
+
+function bar(func = x => foo) {
+  let foo = 'inner';
+  console.log(func()); // outer
+}
+
+bar();
+
+```
+
+上面代码中，函数bar的参数func，默认是一个匿名函数，返回值为foo。这个匿名函数运行时，foo只在函数体外声明，内层的声明还没执行，因此foo指向函数体外的声明，输出outer。
+
 注意，let不允许在相同作用域内，重复声明同一个变量。
 
 ```javascript
 
 // 报错
 {
-    let a = 10;
-    var a = 1;
+  let a = 10;
+  var a = 1;
 }
 
 // 报错
 {
-    let a = 10;
-    let a = 1;
+  let a = 10;
+  let a = 1;
+}
+
+```
+
+因此，不能在函数内部重新声明参数。
+
+```javascript
+
+function func(arg) {
+  let arg; // 报错
+}
+
+function func(arg) {
+  {
+    let arg; // 不报错
+  }
 }
 
 ```
@@ -205,3 +270,28 @@ const message = "Goodbye!";
 const age = 30;
 
 ```
+
+由于const命令只是指向变量所在的地址，所以将一个对象声明为常量必须非常小心。
+
+```javascript
+
+const foo = {};
+foo.prop = 123;
+
+foo.prop
+// 123
+
+foo = {} // 不起作用
+
+```
+
+上面代码中，常量foo储存的是一个地址，这个地址指向一个对象。不可变的只是这个地址，即不能把foo指向另一个地址，但对象本身是可变的，所以依然可以为其添加新属性。如果真的想将对象冻结，应该使用Object.freeze方法。
+
+```javascript
+
+const foo = Object.freeze({});
+foo.prop = 123; // 不起作用
+
+```
+
+上面代码中，常量foo指向一个冻结的对象，所以添加新属性不起作用。
