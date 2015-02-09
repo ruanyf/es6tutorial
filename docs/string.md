@@ -375,13 +375,22 @@ r.sticky // true
 `In JavaScript this is
  not legal.`
 
+console.log(`string text line 1
+string text line 2`);
+
 // 字符串中嵌入变量
 var name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
 
 ```
 
-上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。
+上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
+
+```javascript
+
+var greeting = `\`Yo\` World!`;
+
+```
 
 大括号内部可以进行运算，以及引用对象属性。
 
@@ -399,6 +408,19 @@ console.log(`${x} + ${y*2} = ${x+y*2}`)
 var obj = {x: 1, y: 2};
 console.log(`${obj.x + obj.y}`)
 // 3
+
+```
+
+模板字符串之中还能调用函数。
+
+```javascript
+
+function fn() { 
+  return "Hello World"; 
+}
+
+console.log(`foo ${fn()} bar`);
+// foo Hello World bar
 
 ```
 
@@ -441,21 +463,35 @@ tag`Hello ${ a + b } world ${ a * b}`;
 - 第二个参数: 15
 - 第三个参数：50
 
+也就是说，tag函数实际的参数如下。
+
+```javascript
+
+tag(['Hello ', ' world '], 15, 50)
+
+```
+
+下面是tag函数的代码，以及运行结果。
+
 ```javascript
 
 var a = 5;
 var b = 10;
 
 function tag(s, v1, v2) {
-  console.log(s[0]); // "Hello "
-  console.log(s[1]); // " world "
-  console.log(v1);  // 15
-  console.log(v2);  // 50
+  console.log(s[0]); 
+  console.log(s[1]); 
+  console.log(v1);  
+  console.log(v2);  
 
   return "OK";
 }
 
 tag`Hello ${ a + b } world ${ a * b}`;
+// "Hello "
+// " world "
+// 15
+// 50
 // "OK"
 
 ```
