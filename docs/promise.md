@@ -96,7 +96,7 @@ var p2 = new Promise(function(resolve, reject){
 
 上面代码中，p1和p2都是Promise的实例，但是p2的resolve方法将p1作为参数，这时p1的状态就会传递给p2。如果调用的时候，p1的状态是pending，那么p2的回调函数就会等待p1的状态改变；如果p1的状态已经是fulfilled或者rejected，那么p2的回调函数将会立刻执行。
 
-## Promise.prototype.then方法：链式操作
+## Promise.prototype.then()
 
 Promise.prototype.then方法返回的是一个新的Promise对象，因此可以采用链式写法。
 
@@ -126,9 +126,9 @@ getJSON("/post/1.json").then(function(post) {
 
 这种设计使得嵌套的异步操作，可以被很容易得改写，从回调函数的“横向发展”改为“向下发展”。
 
-## Promise.prototype.catch方法：捕捉错误
+## Promise.prototype.catch()
 
-Promise.prototype.catch方法是Promise.prototype.then(null, rejection)的别名，用于指定发生错误时的回调函数。
+Promise.prototype.catch方法是`Promise.prototype.then(null, rejection)`的别名，用于指定发生错误时的回调函数。
 
 ```javascript
 
@@ -141,6 +141,8 @@ getJSON("/posts.json").then(function(posts) {
 
 ```
 
+上面代码中，getJSON方法返回一个Promise对象，如果该对象运行正常，则会调用then方法指定的回调函数；如果该方法抛出错误，则会调用catch方法指定的回调函数，处理这个错误。
+
 Promise对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个catch语句捕获。
 
 ```javascript
@@ -150,12 +152,102 @@ getJSON("/post/1.json").then(function(post) {
 }).then(function(comments) {
   // some code
 }).catch(function(error) {
-  // 处理前两个回调函数的错误
+  // 处理前面三个Promise产生的错误
 });
 
 ```
 
-## Promise.all方法，Promise.race方法
+上面代码中，一共有三个Promise对象：一个由getJSON产生，两个由then产生。它们之中任何一个抛出的错误，都会被最后一个catch捕获。
+
+跟传统的try/catch代码块不同的是，如果没有使用catch方法指定错误处理的回调函数，Promise对象抛出的错误不会传递到外层代码，即不会有任何反应。
+
+```javascript
+
+var someAsyncThing = function() {
+  return new Promise(function(resolve, reject) {
+    // 下面一行会报错，因为x没有声明
+    resolve(x + 2);
+  });
+};
+
+someAsyncThing().then(function() {
+  console.log('everything is great');
+});
+
+```
+
+上面代码中，someAsyncThing函数产生的Promise对象会报错，但是由于没有调用catch方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。
+
+需要注意的是，catch方法返回的还是一个Promise对象，因此后面还可以接着调用then方法。
+
+```javascript
+
+var someAsyncThing = function() {
+  return new Promise(function(resolve, reject) {
+    // 下面一行会报错，因为x没有声明
+    resolve(x + 2);
+  });
+};
+
+someAsyncThing().then(function() {
+  return someOtherAsyncThing();
+}).catch(function(error) {
+  console.log('oh no', error);
+}).then(function() {
+  console.log('carry on');
+});
+// oh no [ReferenceError: x is not defined]
+// carry on
+
+```
+
+上面代码运行完catch方法指定的回调函数，会接着运行后面那个then方法指定的回调函数。
+
+catch方法之中，还能再抛出错误。
+
+```javascript
+
+var someAsyncThing = function() {
+  return new Promise(function(resolve, reject) {
+    // 下面一行会报错，因为x没有声明
+    resolve(x + 2);
+  });
+};
+
+someAsyncThing().then(function() {
+  return someOtherAsyncThing();
+}).catch(function(error) {
+  console.log('oh no', error);
+  // 下面一行会报错，因为y没有声明
+  y + 2;
+}).then(function() {
+  console.log('carry on');
+});
+// oh no [ReferenceError: x is not defined]
+
+```
+
+上面代码中，catch方法抛出一个错误，因为后面没有别的catch方法了，导致这个错误不会被捕获，也不会到传递到外层。如果改写一下，结果就不一样了。
+
+```javascript
+
+someAsyncThing().then(function() {
+  return someOtherAsyncThing();
+}).catch(function(error) {
+  console.log('oh no', error);
+  // 下面一行会报错，因为y没有声明
+  y + 2;
+}).catch(function(error) {
+  console.log('carry on', error);
+});
+// oh no [ReferenceError: x is not defined]
+// carry on [ReferenceError: y is not defined]
+
+```
+
+上面代码中，第二个catch方法用来捕获，前一个catch方法抛出的错误。
+
+## Promise.all()，Promise.race()
 
 Promise.all方法用于将多个Promise实例，包装成一个新的Promise实例。
 
@@ -202,7 +294,7 @@ var p = Promise.race([p1,p2,p3]);
 
 如果Promise.all方法和Promise.race方法的参数，不是Promise实例，就会先调用下面讲到的Promise.resolve方法，将参数转为Promise实例，再进一步处理。
 
-## Promise.resolve方法，Promise.reject方法
+## Promise.resolve()，Promise.reject()
 
 有时需要将现有对象转为Promise对象，Promise.resolve方法就起到这个作用。
 
