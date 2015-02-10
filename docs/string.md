@@ -256,8 +256,8 @@ normalize方法可以接受四个参数。
 
 ```javascript
 
-'\u004F\u030C'.normalize(NFC).length // 1
-'\u004F\u030C'.normalize(NFD).length // 2
+'\u004F\u030C'.normalize('NFC').length // 1
+'\u004F\u030C'.normalize('NFD').length // 2
 
 ```
 

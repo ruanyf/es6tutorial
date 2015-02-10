@@ -155,6 +155,14 @@ let obj = {
 
 ```
 
+对于类似数组的对象，部署Iterator接口，有一个简便方法，就是`Symbol.iterator`方法直接引用数值的Iterator接口。
+
+```javascript
+
+NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+
+```
+
 如果`Symbol.iterator`方法返回的不是遍历器，解释引擎将会报错。
 
 ```javascript
