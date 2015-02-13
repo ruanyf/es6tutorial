@@ -17,7 +17,7 @@ Point.prototype.toString = function () {
 
 ```
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。上面的代码用“类”改写，就是下面这样。
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，没有引进任何ES5做不到的新功能，只是让对象原型的写法更加清晰而已。上面的代码用“类”改写，就是下面这样。
 
 ```javascript
 
@@ -35,14 +35,59 @@ class Point {
 
 }
 
-var point = new Point(2,3);
-point.toString() // (2, 3)
-
 ```
 
 上面代码定义了一个“类”，可以看到里面有一个constructor函数，这就是构造函数，而this关键字则代表实例对象。这个类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
 
-Class之间可以通过extends关键字，实现继承。
+生成实例对象的写法，与ES5完全一样，也是使用new命令。
+
+```javascript
+
+var point = new Point(2,3);
+
+point.toString() // (2, 3)
+
+point.hasOwnProperty('x') // true
+point.hasOwnProperty('y') // true
+point.hasOwnProperty('toString') // false
+point.__proto__.hasOwnProperty('toString') // false 
+
+```
+
+上面代码中，x和y都是point自身的属性，所以hasOwnProperty方法返回true，而toString是原型对象的属性，所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
+
+```javascript
+
+var p1 = new Point(2,3);
+var p2 = new Point(3,2);
+
+p1.__proto__ === p2.__proto__
+//true
+
+```
+
+上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\__proto__属性是相等的。
+
+这也意味着，可以通过\__proto__属性为Class添加方法。
+
+```javascript
+
+var p1 = new Point(2,3);
+var p2 = new Point(3,2);
+
+p1.__proto__.printName = function () { return 'Oops' };
+
+p1.printName() // "Oops"
+p2.printName() // "Oops"
+
+var p3 = new Point(4,2); 
+p3.printName() // "Oops"
+
+```
+
+上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，新建的实例p3也可以调用这个方法。这意味着，使用实例的\__proto__属性改写原型，必须相当谨慎，不推荐使用，因为这会不可逆转地改变Class。
+
+Class之间可以通过extends关键字，实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
 ```javascript
 
@@ -57,12 +102,12 @@ class ColorPoint extends Point {}
 class ColorPoint extends Point {
 
   constructor(x, y, color) {
-    super(x, y); // 等同于super.constructor(x, y)
+    super(x, y); // 等同于parent.constructor(x, y)
     this.color = color;
   }
 
   toString() {
-    return this.color+' '+super();
+    return this.color+' '+super(); // 等同于parent.toString()
   }
 
 }
@@ -71,7 +116,33 @@ class ColorPoint extends Point {
 
 上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的同名方法。在constructor方法内，super指代父类的constructor方法；在toString方法内，super指代父类的toString方法。
 
-有一个地方，需要注意。类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+父类和子类的\__proto__属性，指向是不一样的。
+
+```javascript
+
+var p1 = new Point(2,3);
+var p2 = new ColorPoint(2,3,red);
+
+p2.__proto__ === p1.__proto // false
+p2.__proto__.__proto__ === p1.__proto__ // true
+
+```
+
+通过子类的\__proto__属性，可以修改父类。
+
+```javascript
+
+p2.__proto__.__proto__.printName = function () { 
+  console.log('Ha'); 
+};
+
+p1.printName() // Ha
+
+```
+
+上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
+
+有一个地方需要注意，类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
 
 ## Module的基本用法
 
