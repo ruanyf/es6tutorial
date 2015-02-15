@@ -142,6 +142,23 @@ p1.printName() // Ha
 
 上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
 
+下面是一个继承原生的Array构造函数的例子。
+
+```javascript
+
+class MyArray extends Array {
+  constructor(...args) { 
+    super(...args); 
+  }
+}
+
+var arr = new MyArray();
+arr[1] = 12;
+
+```
+
+上面代码定义了一个MyArray的类，继承了Array构造函数。因此，就可以从MyArray生成数组的实例。
+
 有一个地方需要注意，类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
 
 ## Module的基本用法

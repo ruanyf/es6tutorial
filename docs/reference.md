@@ -16,7 +16,7 @@
 - Nicholas C. Zakas, [Understanding ECMAScript 6](https://github.com/nzakas/understandinges6)
 - Justin Drake, [ECMAScript 6 in Node.JS](https://github.com/JustinDrake/node-es6-examples)
 - Ryan Dao, [Summary of ECMAScript 6 major features](http://ryandao.net/portal/content/summary-ecmascript-6-major-features)
-- Luke Hoban, [ES6 features](https://github.com/lukehoban/es6features)
+- Luke Hoban, [ES6 features](https://github.com/lukehoban/es6features): ES6新语法点的罗列
 - Traceur-compiler, [Language Features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures): Traceur文档列出的一些ES6例子
 - Axel Rauschmayer, [ECMAScript 6: what’s next for JavaScript?](https://speakerdeck.com/rauschma/ecmascript-6-whats-next-for-javascript-august-2014): 关于ES6新增语法的综合介绍，有很多例子
 - Toby Ho, [ES6 in io.js](http://davidwalsh.name/es6-io)
