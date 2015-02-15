@@ -52,7 +52,7 @@ hw.next()
 
 总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
 
-由于Generator函数本身就能生成遍历器，所以它的Symbol.iterator属性指向自身。
+上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，即调用该函数会返回该对象的一个遍历器。由于Generator函数调用后返回自身的遍历器，所以Generator函数就是自身的遍历器函数，即它的Symbol.iterator属性指向自身。
 
 ```javascript
 
