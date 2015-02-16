@@ -754,9 +754,12 @@ function* longRunningTask() {
 scheduler(longRunningTask());
 
 function scheduler(task) {
-	setTimeout(function () {
-		if (!task.next(task.value).done) {
-			scheduler(task);
+  setTimeout(function() {
+    var taskObj = task.next(task.value);
+    // 如果Generator函数未结束，就继续调用
+    if (!taskObj.done) {
+      task.value = taskObj.value
+      scheduler(task);
     }
   }, 0);
 }
