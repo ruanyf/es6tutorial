@@ -2,6 +2,10 @@
 
 ## Class
 
+### 基本语法
+
+**（1）概述**
+
 ES5通过构造函数，定义并生成新对象。下面是一个例子。
 
 ```javascript
@@ -17,7 +21,7 @@ Point.prototype.toString = function () {
 
 ```
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，没有引进任何ES5做不到的新功能，只是让对象原型的写法更加清晰而已。上面的代码用“类”改写，就是下面这样。
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰而已。上面的代码用“类”改写，就是下面这样。
 
 ```javascript
 
@@ -37,13 +41,68 @@ class Point {
 
 ```
 
-上面代码定义了一个“类”，可以看到里面有一个constructor函数，这就是构造函数，而this关键字则代表实例对象。这个类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
+上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。Point类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
 
-生成实例对象的写法，与ES5完全一样，也是使用new命令。
+**（2）constructor方法**
+
+constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，该方法会被默认添加，代码如下。
 
 ```javascript
 
-var point = new Point(2,3);
+constructor() {}
+
+```
+
+constructor方法默认返回实例对象（即this），完全可以指定返回另外一个对象。
+
+```javascript
+
+class Foo {
+  constructor() {
+    return Object.create(null);
+  }
+}
+
+new Foo() instanceof Foo
+// false
+
+```
+
+上面代码中，constructor函数返回一个全新的对象，结果导致实例对象不是Foo类的实例。
+
+**（3）实例对象**
+
+生成实例对象的写法，与ES5完全一样，也是使用new命令。如果忘记加上new，像函数那样调用Class，将会报错。
+
+```javascript
+
+// 报错
+var point = Point(2, 3);
+
+// 正确
+var point = new Point(2, 3);
+
+```
+
+与ES5一样，实例的属性除非显式定义在其本身（即定义在this对象上），否则都是定义在原型上（即定义在class上）。
+
+```javascript
+
+//定义类
+class Point {
+
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  toString() {
+    return '('+this.x+', '+this.y+')';
+  }
+
+}
+
+var point = Point(2, 3);
 
 point.toString() // (2, 3)
 
@@ -54,7 +113,7 @@ point.__proto__.hasOwnProperty('toString') // false
 
 ```
 
-上面代码中，x和y都是point自身的属性，所以hasOwnProperty方法返回true，而toString是原型对象的属性，所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
+上面代码中，x和y都是实例对象point自身的属性（因为定义在this变量上），所以hasOwnProperty方法返回true，而toString是原型对象的属性（因为定义在Point类上），所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
 
 ```javascript
 
@@ -85,7 +144,77 @@ p3.printName() // "Oops"
 
 ```
 
-上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，新建的实例p3也可以调用这个方法。这意味着，使用实例的\__proto__属性改写原型，必须相当谨慎，不推荐使用，因为这会不可逆转地改变Class。
+上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，此后新建的实例p3也可以调用这个方法。这意味着，使用实例的\__proto\__属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
+
+**（4）name属性**
+
+由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括name属性。
+
+```javascript
+
+class Point {}
+
+Point.name // "Point"
+
+```
+
+name属性总是返回紧跟在class关键字后面的类名。
+
+**（5）Class表达式**
+
+与函数一样，Class也可以使用表达式的形式定义。
+
+```javascript
+
+const MyClass = class Me {
+  getClassName() {
+    return Me.name;
+  }
+};
+
+```
+
+上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是MyClass而不是Me，Me只在Class的内部代码可用，指代当前类。
+
+```javascript
+
+let inst = new MyClass();
+inst.getClassName() // Me
+Me.name // ReferenceError: Me is not defined
+
+```
+
+上面代码表示，Me只在Class内部有定义。
+
+如果Class内部没用到的话，可以省略Me，也就是可以写成下面的形式。
+
+```javascript
+
+const MyClass = class { /* ... */ };
+
+```
+
+**（6）不存在变量提升**
+
+Class不存在变量提升（hoist），这一点与ES5完全不同。
+
+```javascript
+
+new Foo(); // ReferenceError
+
+class Foo {}
+
+```
+
+上面代码中，Foo类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+
+**（7）严格模式**
+
+类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+
+### Class的继承
+
+**（1）基本用法**
 
 Class之间可以通过extends关键字，实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
@@ -116,19 +245,121 @@ class ColorPoint extends Point {
 
 上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的同名方法。在constructor方法内，super指代父类的constructor方法；在toString方法内，super指代父类的toString方法。
 
-父类和子类的\__proto__属性，指向是不一样的。
+子类必须在constructor方法中调用super方法，否则新建实例时会报错。
 
 ```javascript
 
-var p1 = new Point(2,3);
-var p2 = new ColorPoint(2,3,red);
+class Point { /* ... */ }
+
+class ColorPoint extends Foo {
+  constructor() {
+  }
+}
+    
+let cp = new ColorPoint(); // ReferenceError
+
+```
+
+如果子类没有定义constructor方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有constructor方法。
+
+```javascript
+
+constructor(...args) {
+  super(...args);
+}
+
+```
+
+另一个需要注意的地方是，只有调用super方法之后，才可以使用this关键字，否则会报错。
+
+```javascript
+
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+    
+class ColorPoint extends Point {
+  constructor(x, y, color) {
+    this.color = color; // ReferenceError
+    super(x, y);
+    this.color = color; // 正确
+  }
+}
+
+```
+
+上面代码中，子类的constructor方法没有调用super方法之前，就使用this关键字，结果报错，而放在super方法之后就是正确的。
+
+下面是生成子类实例的代码。
+
+```javascript
+
+let cp = new ColorPoint(25, 8, 'green');
+
+cp instanceof ColorPoint // true
+cp instanceof Point // true
+
+```
+
+上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
+
+**（2）prototype属性**
+
+Class作为构造函数的升级，也有自己的prototype属性，其规则与ES5构造函数的prototype属性一致。
+
+```javascript
+
+class A {
+}
+
+A.prototype === Function.prototype
+// true
+
+class B extends A {
+}
+
+B.prototype === C
+// true
+
+class C extends Object {
+}
+
+C.prototype === Object
+// true
+
+```
+
+上面代码中，子类的prototype属性都指向父类。如果一个类是基类（即不存在任何继承），那么它的原型指向`Function.prototype`。
+
+**（3）Object.getPrototypeOf方法**
+
+Object.getPrototypeOf方法可以用来从子类上获取父类。
+
+```javascript
+
+Object.getPrototypeOf(ColorPoint) === Point
+// true
+
+```
+
+**（4）\__proto\__属性**
+
+父类和子类的\__proto\__属性，指向是不一样的。
+
+```javascript
+
+var p1 = new Point(2, 3);
+var p2 = new ColorPoint(2, 3, 'red');
 
 p2.__proto__ === p1.__proto // false
 p2.__proto__.__proto__ === p1.__proto__ // true
 
 ```
 
-通过子类的\__proto__属性，可以修改父类。
+通过子类的\__proto\__属性，可以修改父类。
 
 ```javascript
 
@@ -136,11 +367,13 @@ p2.__proto__.__proto__.printName = function () {
   console.log('Ha'); 
 };
 
-p1.printName() // Ha
+p1.printName() // "Ha"
 
 ```
 
 上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
+
+**（5）构造函数的继承**
 
 下面是一个继承原生的Array构造函数的例子。
 
@@ -157,13 +390,119 @@ arr[1] = 12;
 
 ```
 
-上面代码定义了一个MyArray的类，继承了Array构造函数。因此，就可以从MyArray生成数组的实例。
+上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
 
-有一个地方需要注意，类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承构造函数。下面是一个自定义Error子类的例子。
 
-## Module的基本用法
+```javascript
 
-JavaScript没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的require、Python的import，甚至就连CSS都有@import，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
+class MyError extends Error {    
+}
+
+throw new MyError('Something happened!');
+
+```
+
+### 取值函数getter和存值函数setter
+
+与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数。
+
+```javascript
+
+class MyClass {
+  get prop() {
+    return 'getter';
+  }
+  set prop(value) {
+    console.log('setter: '+value);
+  }
+}
+
+let inst = new MyClass();
+
+inst.prop = 123;
+// setter: 123
+
+inst.prop
+// 'getter'
+
+```
+
+上面代码中，prop属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
+
+### Generator方法
+
+如果某个方法之前加上星号（*），就表示该方法是一个Generator函数。
+
+```javascript
+
+class Foo {
+  constructor(...args) {
+    this.args = args;
+  }
+  * [Symbol.iterator]() {
+    for (let arg of this.args) {
+      yield arg;
+    }
+  }
+}
+    
+for (let x of new Foo('hello', 'world')) {
+  console.log(x);
+}
+// hello
+// world
+
+```
+
+上面代码中，Foo类的Symbol.iterator方法前有一个星号，表示该方法是一个Generator函数。Symbol.iterator方法返回一个Foo类的默认遍历器，for...of循环会自动调用这个遍历器。
+
+### 静态方法
+
+类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上static关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
+
+```javascript
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+
+Foo.classMethod() // 'hello'
+
+var foo = new Foo();
+foo.classMethod()
+// TypeError: undefined is not a function
+
+```
+
+上面代码中，Foo类的classMethod方法前有static关键字，表明该方法是一个静态方法，可以直接在Foo类上调用（`Foo.classMethod()`），而不是在Foo类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
+
+父类的静态方法，可以被子类继承。
+
+```javascript
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+    
+class Bar extends Foo {
+}
+
+Bar.classMethod(); // 'hello'
+
+```
+
+上面代码中，父类Foo有一个静态方法，子类Bar可以调用这个方法。
+
+## Module
+
+ES6的Class只是面向对象编程的语法糖，升级了ES5的对象定义的写法，并没有解决模块化问题。Module功能就是为了解决这个问题而提出的。
+
+历史上，JavaScript一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的require、Python的import，甚至就连CSS都有@import，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
 
 在ES6之前，社区制定了一些模块加载方案，最主要的有CommonJS和AMD两种。前者用于服务器，后者用于浏览器。ES6在语言规格的层面上，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
 
