@@ -754,9 +754,9 @@ function* longRunningTask() {
 scheduler(longRunningTask());
 
 function scheduler(task) {
-	setTimeout(function () {
-		if (!task.next(task.value).done) {
-			scheduler(task);
+  setTimeout(function () {
+    if (!task.next(task.value).done) {
+      scheduler(task);
     }
   }, 0);
 }
