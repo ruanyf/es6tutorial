@@ -2,17 +2,19 @@
 
 ## let命令
 
+### 基本用法
+
 ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
 
 ```javascript
 
 {
-    let a = 10;
-    var b = 1;
+  let a = 10;
+  var b = 1;
 }
 
 a // ReferenceError: a is not defined.
-b //1
+b // 1
 
 ```
 
@@ -32,18 +34,17 @@ console.log(i)
 
 上面代码的计数器i，只在for循环体内有效。
 
-下面的代码如果使用var，最后输出的是9。
+下面的代码如果使用var，最后输出的是10。
 
 ```javascript
 
 var a = [];
 for (var i = 0; i < 10; i++) {
-  var c = i;
   a[i] = function () {
-    console.log(c);
+    console.log(i);
   };
 }
-a[6](); // 9
+a[6](); // 10
 
 ```
 
@@ -52,15 +53,16 @@ a[6](); // 9
 ```javascript
 
 var a = [];
-for (var i = 0; i < 10; i++) {
-  let c = i;
+for (let i = 0; i < 10; i++) {
   a[i] = function () {
-    console.log(c);
+    console.log(i);
   };
 }
 a[6](); // 6
 
 ```
+
+### 不存在变量提升
 
 let不像var那样，会发生“变量提升”现象。
 
@@ -88,6 +90,21 @@ if (1) {
 
 上面代码中，由于块级作用域内typeof运行时，x还没有声明，所以会抛出一个ReferenceError。
 
+只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
+
+```javascript
+
+var tmp = 123; 
+
+if (true) {
+  tmp = 'abc'; // ReferenceError
+  let tmp; 
+}
+
+```
+
+上面代码中，存在全局量tmp，但是块级作用域内let又声明了一个局部变量tmp，导致后者绑定这个块级作用域，所以在let声明变量前，对tmp赋值会报错。 
+
 总之，在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称TDZ）。
 
 ```javascript
@@ -112,15 +129,13 @@ if (true) {
 
 ```javascript
 
-function bar(x=y, y=2) {
-  return [x, y];
-}
-
-bar(); // 报错
+// 报错
 
 ```
 
 上面代码中，调用bar函数之所以报错，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。
+
+需要注意的是，函数参数的作用域与函数体的作用域是分离的。
 
 ```javascript
 
@@ -135,9 +150,11 @@ bar();
 
 ```
 
-上面代码中，函数bar的参数func，默认是一个匿名函数，返回值为foo。这个匿名函数运行时，foo只在函数体外声明，内层的声明还没执行，因此foo指向函数体外的声明，输出outer。
+上面代码中，函数bar的参数func，默认是一个匿名函数，返回值为变量foo。这个匿名函数运行时，foo只在函数体外声明，内层的声明还没执行，因此foo指向函数体外的声明，输出outer。
 
-注意，let不允许在相同作用域内，重复声明同一个变量。
+### 不允许重复声明
+
+let不允许在相同作用域内，重复声明同一个变量。
 
 ```javascript
 
@@ -250,13 +267,26 @@ const的作用域与let命令相同：只在声明所在的块级作用域内有
 
 ```javascript
 
-if (condition) {
-    const MAX = 5;
+if (true) {
+  const MAX = 5;
 }
 
 // 常量MAX在此处不可得
 
 ```
+
+const命令也不存在提升，只能在声明的位置后面使用。
+
+```javascript
+
+if (true) {
+  console.log(MAX); // ReferenceError
+  const MAX = 5;
+}
+
+```
+
+上面代码在常量MAX声明之前就调用，结果报错。
 
 const声明的常量，也与let一样不可重复声明。
 
@@ -295,3 +325,23 @@ foo.prop = 123; // 不起作用
 ```
 
 上面代码中，常量foo指向一个冻结的对象，所以添加新属性不起作用。
+
+## 全局对象的属性
+
+全局对象是最顶层的对象，在浏览器环境指的是window对象，在Node.js指的是global对象。ES5规定，所有全局变量都是全局对象的属性。
+
+ES6规定，var命令和function命令声明的全局变量，属于全局对象的属性；let命令、const命令、class命令声明的全局变量，不属于全局对象的属性。
+
+```javascript
+
+var a = 1;
+// 如果在node环境，可以写成global.a
+// 或者采用通用方法，写成this.a
+window.a // 1
+
+let b = 1;
+window.b // undefined
+
+```
+
+上面代码中，全家变量a由var命令声明，所以它是全局对象的属性；全局变量b由let命令声明，所以它不是全局对象的属性，返回undefined。
