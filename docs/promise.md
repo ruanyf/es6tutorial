@@ -143,6 +143,37 @@ getJSON("/posts.json").then(function(posts) {
 
 上面代码中，getJSON方法返回一个Promise对象，如果该对象运行正常，则会调用then方法指定的回调函数；如果该方法抛出错误，则会调用catch方法指定的回调函数，处理这个错误。
 
+下面是一个例子。
+
+```javascript
+
+var promise = new Promise(function(resolve, reject) {
+  throw new Error('test')
+});
+promise.catch(function(error) { console.log(error) });
+// Error: test
+
+```
+
+上面代码中，Promise抛出一个错误，就被catch方法指定的回调函数捕获。
+
+如果Promise状态已经变成“已完成”，再抛出错误是无效的。
+
+```javascript
+
+var promise = new Promise(function(resolve, reject) {
+  resolve("ok");
+  throw new Error('test');
+});
+promise
+  .then(function(value) { console.log(value) })
+  .catch(function(error) { console.log(error) });
+// ok
+
+```
+
+上面代码中，Promise在resolve语句后面，再抛出错误，不会被捕获，等于没有抛出。
+
 Promise对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个catch语句捕获。
 
 ```javascript
@@ -177,6 +208,20 @@ someAsyncThing().then(function() {
 ```
 
 上面代码中，someAsyncThing函数产生的Promise对象会报错，但是由于没有调用catch方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。
+
+```javascript
+
+var promise = new Promise(function(resolve, reject) {
+  resolve("ok");
+  setTimeout(function() { throw new Error('test') }, 0)
+});
+promise.then(function(value) { console.log(value) });
+// ok
+// Uncaught Error: test
+
+```
+
+上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定catch语句，就冒泡到最外层，成了未捕获的错误。
 
 需要注意的是，catch方法返回的还是一个Promise对象，因此后面还可以接着调用then方法。
 
