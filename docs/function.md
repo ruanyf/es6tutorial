@@ -28,12 +28,10 @@ if (typeof y === 'undefined') {
   y = 'World';
 }
 
-
 // 写法二
 if (arguments.length === 1) {
   y = 'World';
 }
-
 
 ```
 
@@ -64,6 +62,30 @@ var p = new Point();
 // p = { x:0, y:0 }
 
 ```
+
+默认值的写法非常灵活，下面是一个为对象属性设置默认值的例子。
+
+```javascript
+
+fetch(url, { body='', method='GET', headers={} }){
+  console.log(method); 
+}
+
+```
+
+上面代码中，传入函数fetch的第二个参数是一个对象，调用的时候可以为它的三个属性设置默认值。这个例子也说明，不仅函数定义时，可以设置参数默认值，而且函数调用时，也可以设置参数默认值。
+
+甚至还可以设置双重默认值。
+
+```javascript
+
+fetch(url, { method='GET' } = {}){
+  console.log(method);
+}
+
+```
+
+上面代码中，调用函数fetch时，如果不含第二个参数，则默认值为一个空对象；如果包含第二个参数，则它的method属性默认值为GET。
 
 定义了默认值的参数，必须是函数的尾部参数，其后不能再有其他无默认值的参数。这是因为有了默认值以后，该参数可以省略，只有位于尾部，才可能判断出到底省略了哪些参数。
 
@@ -111,11 +133,11 @@ foo(undefined, null)
 ```javascript
 
 function throwIfMissing() {
-    throw new Error('Missing parameter');
+  throw new Error('Missing parameter');
 }
 
 function foo(mustBeProvided = throwIfMissing()) {
-    return mustBeProvided;
+  return mustBeProvided;
 }
 
 foo()

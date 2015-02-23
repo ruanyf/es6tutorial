@@ -694,6 +694,20 @@ customName(); // 'foo'
 
 上面代码的import命令，可以用任意名称指向输出的匿名函数。需要注意的是，这时import命令后面，不使用大括号。
 
+```javascript
+
+// 第一组
+import crc32 from 'crc32';
+export default function crc32(){}
+
+// 第二组
+import { crc32 } from 'crc32';
+export function crc32(){};
+
+```
+
+上面代码的两组写法，第一组是使用export default时，对应的import语句不需要使用大括号；第二组是不使用export default时，对应的import语句需要使用大括号。
+
 export default命令用在非匿名函数前，也是可以的。
 
 ```javascript

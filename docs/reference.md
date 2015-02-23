@@ -20,7 +20,7 @@
 - Traceur-compiler, [Language Features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures): Traceur文档列出的一些ES6例子
 - Axel Rauschmayer, [ECMAScript 6: what’s next for JavaScript?](https://speakerdeck.com/rauschma/ecmascript-6-whats-next-for-javascript-august-2014): 关于ES6新增语法的综合介绍，有很多例子
 - Toby Ho, [ES6 in io.js](http://davidwalsh.name/es6-io)
-
+- Guillermo Rauch, [ECMAScript 6](http://rauchg.com/2015/ecmascript-6/)
 
 ## 语法点
 
@@ -104,3 +104,4 @@
 - esnext, [ES6 Module Transpiler](https://github.com/esnext/es6-module-transpiler)：基于node.js的将ES6模块转为ES5代码的命令行工具
 - Sebastian McKenzie, [6to5](https://github.com/sebmck/6to5): 将ES6转为ES5代码的Node模块，支持source map
 - SystemJS, [SystemJS](https://github.com/systemjs/systemjs): 在浏览器中加载AMD、CJS、ES6模块的一个垫片库
+- Facebook, [regenerator](https://github.com/facebook/regenerator): 将Generator函数转为ES5的转码器
