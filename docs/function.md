@@ -203,7 +203,22 @@ add(2, 5, 3) // 10
 
 上面代码的add函数是一个求和函数，利用rest参数，可以向该函数传入任意数目的参数。
 
-前面说过，rest参数中的变量代表一个数组，所以数组特有的方法都可以用于这个变量。下面是一个利用rest参数改写数组push方法的例子。
+下面是一个rest参数代替arguments变量的例子。
+
+```javascript
+
+// arguments变量的写法
+const sortNumbers = () =>
+  Array.prototype.slice.call(arguments).sort();
+
+// rest参数的写法
+const sortNumbers = (...numbers) => numbers.sort();
+
+```
+
+上面代码的两种写法，比较后可以发现，rest参数的写法更自然也更简洁。
+
+rest参数中的变量代表一个数组，所以数组特有的方法都可以用于这个变量。下面是一个利用rest参数改写数组push方法的例子。
 
 ```javascript
 
@@ -510,6 +525,17 @@ var getTempItem = id => ({ id: id, name: "Temp" });
 
 ```
 
+箭头函数使得表达更加简洁。
+
+```javascript
+
+const isEven = n => n % 2 == 0;
+const square = n => n * n;
+
+```
+
+上面代码只用了两行，就定义了两个简单的工具函数。如果不用箭头函数，可能就要占用多行，而且还不如现在这样写醒目。
+
 箭头函数的一个用处是简化回调函数。
 
 ```javascript
@@ -585,3 +611,31 @@ var handler = {
 由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
 
 长期以来，JavaScript语言的this对象一直是一个令人头痛的问题，在对象方法中使用this，必须非常小心。箭头函数绑定this，很大程度上解决了这个困扰。
+
+箭头函数内部，还可以再使用箭头函数。下面是一个部署管道机制（pipeline）的例子。
+
+```javascript
+
+const pipeline = (...funcs) =>
+  val => funcs.reduce((a, b) => b(a), val);
+
+const plus1 = a => a + 1;
+const mult2 = a => a * 2;
+const addThenMult = pipeline(plus1, mult2);
+
+addThenMult(5)
+// 12
+
+```
+
+上面的代码等同于下面的写法。
+
+```javascript
+
+const plus1 = a => a + 1;
+const mult2 = a => a * 2;
+
+mult2(plus1(5))
+// 12
+
+```

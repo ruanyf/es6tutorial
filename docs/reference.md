@@ -21,6 +21,8 @@
 - Axel Rauschmayer, [ECMAScript 6: what’s next for JavaScript?](https://speakerdeck.com/rauschma/ecmascript-6-whats-next-for-javascript-august-2014): 关于ES6新增语法的综合介绍，有很多例子
 - Toby Ho, [ES6 in io.js](http://davidwalsh.name/es6-io)
 - Guillermo Rauch, [ECMAScript 6](http://rauchg.com/2015/ecmascript-6/)
+- Charles King, [The power of ECMAScript 6](http://charlesbking.com/power_of_es6/#/)
+- Benjamin De Cock, [Frontend Guidelines](https://github.com/bendc/frontend-guidelines): ES6最佳实践
 
 ## 语法点
 

@@ -37,6 +37,16 @@ Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
 
 ```
 
+对于还没有部署该方法的浏览器，可以用Array.prototyp.slice方法替代。
+
+```javascript
+
+const toArray = (() =>
+  Array.from ? Array.from : obj => [].slice.call(obj)
+)();
+
+```
+
 Array.from()还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理。
 
 ```JavaScript
@@ -167,6 +177,40 @@ for (let [index, elem] of ['a', 'b'].entries()) {
 }
 // 0 "a"
 // 1 "b"
+
+```
+
+## 数组实例的includes()
+
+Array.protypeto.includes方法返回一个布尔值，表示某个数组是否包含给定的值。该方法属于ES7。
+
+```javascript
+
+[1, 2, 3].includes(2);     // true
+[1, 2, 3].includes(4);     // false
+[1, 2, NaN].includes(NaN); // true
+
+```
+
+该方法的第二个参数表示搜索的起始位置，默认为0。
+
+```javascript
+
+[1, 2, 3].includes(3, 3);  // false
+[1, 2, 3].includes(3, -1); // true
+
+```
+
+下面代码用来检查当前环境是否支持该方法，如果不支持，部署一个简易的替代版本。
+
+```javascript
+
+const contains = (() =>
+  Array.prototype.includes
+    ? (arr, value) => arr.includes(value)
+    : (arr, value) => arr.some(el => el === value)
+)();
+contains(["foo", "bar"], "baz"); // => false
 
 ```
 
