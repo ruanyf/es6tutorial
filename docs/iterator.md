@@ -62,13 +62,32 @@ it.next().value // '2'
 
 总之，所谓Iterator接口，就是指调用这个接口，会返回一个遍历器对象。该对象具备next方法，每次调用该方法，会返回一个具有value和done两个属性的新对象，指向部署了Iterator接口的数据结构的一个成员。
 
+如果使用TypeScript的写法，遍历器接口、遍历器和遍历器返回值的规格可以描述如下。
+
+```javascript
+
+interface Iterable {
+  [System.iterator]() : Iterator,
+}
+
+interface Iterator {
+  next(value?: any) : IterationResult,
+}
+
+interface IterationResult {
+  value: any,
+  done: boolean,
+}
+
+```
+
 ### 默认的Iterator接口
 
 Iterator接口的开发目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（见后文的介绍）。当使用for...of循环，遍历某种数据结构时，该循环会自动去寻找Iterator接口。
 
 ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
 
-在ES6中，有三类数据结构原生具备Iterator接口：数组、类似数组的对象、Set和Map结构。
+在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象、Set和Map结构。
 
 ```javascript
 
@@ -202,6 +221,62 @@ obj[Symbol.iterator] = () => 1;
 
 上面代码中，变量obj的Symbol.iterator方法返回的不是遍历器，因此报错。
 
+### 调用默认iterator接口的场合
+
+有一些场合会默认调用iterator接口（即Symbol.iterator方法），除了下文会介绍的for...of循环，还有几个别的场合。
+
+**（1）解构赋值**
+
+对数组和Set结构进行解构赋值时，会默认调用iterator接口。
+
+```javascript
+
+let set = new Set().add('a').add('b').add('c');
+    
+let [x,y] = set;
+// x='a'; y='b'
+    
+let [first, ...rest] = set;
+// first='a'; rest=['b','c'];
+
+```
+
+**（2）扩展运算符**
+
+扩展运算符（...）也会调用默认的iterator接口。
+
+```javascript
+
+// 例一
+var str = 'hello';
+[...str] //  ['h','e','l','l','o']
+
+// 例二
+let arr = ['b', 'c'];
+['a', ...arr, 'd']
+// ['a', 'b', 'c', 'd']
+
+```
+
+上面代码的扩展运算符内部就调用iterator接口。
+
+实际上，这提供了一种简便机制，可以将任何部署了iterator接口的对象，转为对象。
+
+```javascript
+
+let arr = [...iterable];
+
+```
+
+**（3）其他场合**
+
+以下场合也会用到默认的iterator接口，可以查阅相关章节。
+
+- yield*
+- Array.from()
+- Map(), Set(), WeakMap(), WeakSet()
+- Promise.all(), Promise.race()
+
 ### 原生具备iterator接口的数据结构
 
 《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个遍历器。
@@ -221,7 +296,7 @@ arrEntries === arrEntries[Symbol.iterator]()
 
 上面代码中，entries方法返回的是一个遍历器（iterator），本质上就是调用了`Symbol.iterator`方法。
 
-字符串是一个类似数组的对象，因此也原生具有Iterator接口。
+字符串是一个类似数组的对象，也原生具有Iterator接口。
 
 ```javascript
 
@@ -304,23 +379,30 @@ for (let x of obj) {
 
 ES6中，一个数据结构只要部署了Symbol.iterator方法，就被视为具有iterator接口，就可以用for...of循环遍历它的成员。也就是说，for...of循环内部调用的是数据结构的Symbol.iterator方法。
 
-for...of循环可以使用的范围包括数组、Set和Map结构、类似数组的对象（比如arguments对象、DOM NodeList对象）、后文的Generator对象，以及字符串。
+for...of循环可以使用的范围包括数组、Set和Map结构、某些类似数组的对象（比如arguments对象、DOM NodeList对象）、后文的Generator对象，以及字符串。
 
 ### 数组
 
-数组原生具备iterator接口。
+数组原生具备iterator接口，for...of循环本质上就是调用这个接口产生的遍历器，可以用下面的代码证明。
 
 ```javascript
 
 const arr = ['red', 'green', 'blue'];
+let iterator  = arr[Symbol.iterator]();
 
 for(let v of arr) {
 	console.log(v); // red green blue
 }
 
+for(let v of iterator) {
+	console.log(v); // red green blue
+}
+
 ```
 
-上面代码说明，for...of循环可以代替数组实例的forEach方法。
+上面代码的for...of循环的两种写法是等价的。
+
+for...of循环可以代替数组实例的forEach方法。
 
 ```javascript
 
@@ -457,6 +539,24 @@ for (let x of 'a\uD83D\uDC0A') {
 
 ```
 
+并不是所有类似数组的对象都具有iterator接口，一个简便的解决方法，就是使用Array.from方法将其转为数组。
+
+```javascript
+
+let arrayLike = { length: 2, 0: 'a', 1: 'b' };
+
+// 报错
+for (let x of arrayLike) { 
+  console.log(x);
+}
+
+// 正确
+for (let x of Array.from(arrayLike)) { 
+  console.log(x);
+}
+
+```
+
 ### 对象
 
 对于普通的对象，for...of结构不能直接使用，会报错，必须部署了iterator接口后才能使用。但是，这样情况下，for...in循环依然可以用来遍历键名。
@@ -484,3 +584,5 @@ for (e of es6) {
 ```
 
 上面代码表示，对于普通的对象，for...in循环可以遍历键名，for...of循环会报错。
+
+在对象上部署iterator接口的代码，参见本章前面部分。
