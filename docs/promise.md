@@ -439,9 +439,15 @@ async函数并不属于ES6，而是被列入了ES7，但是traceur编译器和re
 ```javascript
 
 async function getStockPrice(symbol, currency) {
-	let price = await getStockPrice(symbol);
-	return convert(price, currency);
+  let price = await getStockPrice(symbol);
+  return convert(price, currency);
 }
+
+getStockPrice("JNJ")
+  .then(
+    price => console.log(price),
+    error => console.error(error)
+  );
 
 ```
 

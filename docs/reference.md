@@ -67,6 +67,7 @@
 - jmar777, [What's the Big Deal with Generators?](http://devsmash.com/blog/whats-the-big-deal-with-generators)
 - Marc Harter, [Generators in Node.js: Common Misconceptions and Three Good Use Cases](http://strongloop.com/strongblog/how-to-generators-node-js-yield-use-cases/): 讨论Generator函数的作用
 - Axel Rauschmayer, [Iterators and generators in ECMAScript 6](http://www.2ality.com/2013/06/iterators-generators.html): 探讨Iterator和Generator的设计目的
+- Axel Rauschmayer, [Iterables and iterators in ECMAScript 6](http://www.2ality.com/2015/02/es6-iteration.html): Iterator的详细介绍
 - StackOverflow, [ES6 yield : what happens to the arguments of the first call next()?](http://stackoverflow.com/questions/20977379/es6-yield-what-happens-to-the-arguments-of-the-first-call-next): 第一次使用next方法时不能带有参数
 - Kyle Simpson, [ES6 Generators: Complete Series](http://davidwalsh.name/es6-generators): 由浅入深探讨Generator的系列文章，共四篇
 - Gajus Kuizinas, [The Definitive Guide to the JavaScript Generators](http://gajus.com/blog/2/the-definetive-guide-to-the-javascript-generators): 对Generator的综合介绍
@@ -84,6 +85,7 @@
 - Axel Rauschmayer, [ECMAScript 6 promises (2/2): the API](http://www.2ality.com/2014/10/es6-promises-api.html): 对ES6 Promise规格和用法的详细介绍
 - Jack Franklin, [Embracing Promises in JavaScript](http://javascriptplayground.com/blog/2015/02/promises/): catch方法的例子
 - Luke Hoban, [Async Functions for ECMAScript](https://github.com/lukehoban/ecmascript-asyncawait): Async函数的设计思想，与Promise、Gernerator函数的关系
+- Jafar Husain, [Asynchronous Generators for ES7](https://github.com/jhusain/asyncgenerator): Async函数的深入讨论
 
 ## Class与模块
 
