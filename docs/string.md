@@ -535,10 +535,14 @@ tag`First line\nSecond line`
 
 上面代码中，tag函数的第一个参数是一个数组`["First line\nSecond line"]`，这个数组有一个raw属性，等于`["First line\\nSecond line"]`，两者唯一的区别就是斜杠被转义了。
 
+```javascript
+
 function tag(strings) {
   console.log(strings.raw[0]); 
   // "First line\\nSecond line"
 }
+
+```
 
 ## String.raw()
 

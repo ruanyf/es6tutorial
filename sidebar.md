@@ -19,6 +19,7 @@
 1. [Generator函数](#docs/generator)
 1. [Promise对象](#docs/promise)
 1. [Class和Module](#docs/class)
+1. [编程风格](#docs/style)
 1. [参考链接](#docs/reference)
 
 ## 其他
