@@ -221,7 +221,7 @@ var React = require('react');
 
 var Breadcrumbs = React.createClass({
   render() {
-    return &lt;nav />;
+    return <nav />;
   }
 });
 
@@ -232,7 +232,7 @@ import React from 'react';
 
 const Breadcrumbs = React.createClass({
   render() {
-    return &lt;nav />;
+    return <nav />;
   }
 });
 
