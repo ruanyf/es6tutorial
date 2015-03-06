@@ -472,6 +472,8 @@ async function asyncValue(value) {
 
 上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。
 
+ES6将await增加为保留字。使用这个词作为标识符，在ES5是合法的，在ES6将抛出SyntaxError。
+
 ### 与Promise、Generator的比较
 
 我们通过一个例子，来看Async函数与Promise、Generator函数的区别。
