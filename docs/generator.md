@@ -729,7 +729,7 @@ Q.fcall(step1)
 
 ```
 
-上面代码已经把回调函数，改成了直线执行的形式。Generator函数可以进一步改善代码运行流程。
+上面代码已经把回调函数，改成了直线执行的形式，但是加入了大量Promise的语法。Generator函数可以进一步改善代码运行流程。
 
 ```javascript
 
@@ -785,6 +785,22 @@ function* f(){
 ```
 
 上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
+
+多个任务按顺序一个接一个执行时，yield语句可以按顺序排列。多个任务需要并列执行时（比如只有A任务和B任务都执行完，才能执行C任务），可以采用数组的写法。
+
+```javascript
+
+function* parallelDownloads() {
+  let [text1,text2] = yield [
+    taskA(),
+    taskB()
+  ];
+  console.log(text1, text2);
+}
+
+```
+
+上面代码中，yield语句的参数是一个数组，成员就是两个任务taskA和taskB，只有等这两个任务都完成了，才会接着执行下面的语句。
 
 ### （3）部署iterator接口
 
