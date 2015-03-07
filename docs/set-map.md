@@ -167,18 +167,18 @@ for (let x of set) {
 
 ```
 
-Set结构的foreach方法，用于对每个成员执行某种操作，返回修改后的Set结构。
+Set结构的forEach方法，用于对每个成员执行某种操作，返回修改后的Set结构。
 
 ```javascript
 
 let set = new Set([1, 2, 3]);
 
-set.foreach((value, key) => value*2 )
+set.forEach((value, key) => value*2 )
 // 返回Set结构{2, 4, 6}
 
 ```
 
-上面代码说明，foreach方法的参数就是一个处理函数。该函数的参数依次为键值、键名、集合本身（上例省略了该参数）。另外，foreach方法还可以有第二个参数，表示绑定的this对象。
+上面代码说明，forEach方法的参数就是一个处理函数。该函数的参数依次为键值、键名、集合本身（上例省略了该参数）。另外，forEach方法还可以有第二个参数，表示绑定的this对象。
 
 为了与Map结构保持一致，Set结构也有keys和entries方法，这时每个值的键名就是键值。
 
