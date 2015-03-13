@@ -333,7 +333,7 @@ A.prototype === Function.prototype
 class B extends A {
 }
 
-B.prototype === C
+B.prototype === A
 // true
 
 class C extends Object {
