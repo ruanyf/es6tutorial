@@ -6,7 +6,7 @@
 
 所谓Generator，有多种理解角度。首先，可以把它理解成一个函数的内部状态的遍历器，每调用一次，函数的内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制函数的内部状态的变化，依次遍历这些状态。
 
-在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
+在形式上，Generator是一个普通函数，但是有两个特征。一是，function指令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
 
@@ -26,7 +26,7 @@ var hw = helloWorldGenerator();
 
 ```javascript
 
-hw.next() 
+hw.next()
 // { value: 'hello', done: false }
 
 hw.next()
@@ -82,7 +82,7 @@ function* f() {
 var generator = f();
 
 setTimeout(function () {
-  generator.next() 
+  generator.next()
 }, 2000);
 
 ```
@@ -111,7 +111,7 @@ var arr = [1, [[2, 3], 4], [5, 6]];
 var flat = function* (a){
   a.forEach(function(item){
     if (typeof item !== 'number'){
-      yield* flat(item);  
+      yield* flat(item);
     } else {
       yield item;
     }
@@ -135,7 +135,7 @@ var flat = function* (a){
   for(var i =0;i<length;i++){
     var item = a[i];
     if (typeof item !== 'number'){
-      yield* flat(item);  
+      yield* flat(item);
     } else {
       yield item;
     }
@@ -287,17 +287,17 @@ foo('a', function (a) {
     if (a.error) {
         throw new Error(a.error);
     }
- 
+
     foo('b', function (b) {
         if (b.error) {
             throw new Error(b.error);
         }
- 
+
         foo('c', function (c) {
             if (c.error) {
                 throw new Error(c.error);
             }
- 
+
             console.log(a, b, c);
         });
     });
@@ -347,7 +347,7 @@ try {
 
 function *foo() {
     var x = yield 3;
-    var y = x.toUpperCase(); 
+    var y = x.toUpperCase();
     yield y;
 }
 
@@ -356,7 +356,7 @@ var it = foo();
 it.next(); // { value:3, done:false }
 
 try {
-  it.next( 42 ); 
+  it.next( 42 );
 }
 catch (err) {
   console.log( err );
@@ -408,14 +408,14 @@ log(g());
 // fixing generator { value: 1, done: false }
 // fixing generator { value: 1, done: false }
 // caller done
- 
+
 ```
 
 上面代码在Generator函数g抛出错误以后，再调用next方法，就不再执行下去了，一直停留在上一次的状态。
 
 ### yield*语句
 
-如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
+如果yield指令后面跟的是一个遍历器，需要在yield指令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
 
 ```javascript
 
@@ -454,7 +454,7 @@ gen().next() // { value:"a", done:false }
 
 ```
 
-上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
+上面代码中，yield指令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
 
 如果被代理的Generator函数有return语句，那么就可以向代理它的Generator函数返回数据。
 
@@ -478,14 +478,14 @@ var it = bar();
 it.next(); //
 it.next(); //
 it.next(); //
-it.next(); // "v: foo" 
+it.next(); // "v: foo"
 it.next(); //
 
 ```
 
 上面代码在第四次调用next方法的时候，屏幕上会有输出，这是因为函数foo的return语句，向函数bar提供了返回值。
 
-`yield*`命令可以很方便地取出嵌套数组的所有成员。
+`yield*`指令可以很方便地取出嵌套数组的所有成员。
 
 ```javascript
 
@@ -546,7 +546,7 @@ let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
 // 遍历二叉树
 var result = [];
 for (let node of inorder(tree)) {
-  result.push(node); 
+  result.push(node);
 }
 
 result
@@ -636,14 +636,14 @@ Generator函数的暂停执行的效果，意味着可以把异步操作写在yi
 
 ```javascript
 
-function* loadUI() { 
-	showLoadingScreen(); 
-	yield loadUIDataAsynchronously(); 
-	hideLoadingScreen(); 
-} 
+function* loadUI() {
+	showLoadingScreen();
+	yield loadUIDataAsynchronously();
+	hideLoadingScreen();
+}
 var loader = loadUI();
 // 加载UI
-loader.next() 
+loader.next()
 
 // 卸载UI
 loader.next()
@@ -734,7 +734,7 @@ Q.fcall(step1)
 ```javascript
 
 function* longRunningTask() {
-  try {	
+  try {
     var value1 = yield step1();
     var value2 = yield step2(value1);
     var value3 = yield step3(value2);
@@ -771,7 +771,7 @@ function scheduler(task) {
 ```javascript
 
 var Q = require('q');
- 
+
 function delay(milliseconds) {
   var deferred = Q.defer();
   setTimeout(deferred.resolve, milliseconds);
@@ -835,7 +835,7 @@ for (let [key, value] of iterEntries(myObj)) {
 
 function* makeSimpleGenerator(array){
   var nextIndex = 0;
-    
+
   while(nextIndex < array.length){
     yield array[nextIndex++];
   }
@@ -888,4 +888,3 @@ function doStuff() {
 ```
 
 上面的函数，可以用一模一样的for...of循环处理！两相一比较，就不难看出Generator使得数据或者操作，具备了类似数组的接口。
-

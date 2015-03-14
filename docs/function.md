@@ -45,7 +45,7 @@ function log(x, y = 'World') {
 
 log('Hello') // Hello World
 log('Hello', 'China') // Hello China
-log('Hello', '') // Hello 
+log('Hello', '') // Hello
 
 ```
 
@@ -58,7 +58,7 @@ function Point(x = 0, y = 0) {
   this.y = y;
 }
 
-var p = new Point(); 
+var p = new Point();
 // p = { x:0, y:0 }
 
 ```
@@ -70,7 +70,7 @@ var p = new Point();
 ```javascript
 
 fetch(url, { body='', method='GET', headers={} }){
-  console.log(method); 
+  console.log(method);
 }
 
 ```
@@ -107,8 +107,8 @@ function f(x, y=5, z) {
 
 ```javascript
 
-function foo(x=5, y=6){ 
-  console.log(x,y); 
+function foo(x=5, y=6){
+  console.log(x,y);
 }
 
 foo(undefined, null)
@@ -237,15 +237,15 @@ rest参数中的变量代表一个数组，所以数组特有的方法都可以�
 
 ```javascript
 
-function push(array, ...items) { 
+function push(array, ...items) {
   items.forEach(function(item) {
     array.push(item);
     console.log(item);
   });
 }
- 
+
 var a = [];
-push(a, 1, 2, 3) 
+push(a, 1, 2, 3)
 
 ```
 
@@ -254,7 +254,7 @@ push(a, 1, 2, 3)
 ```javascript
 
 // 报错
-function f(a, ...b, c) { 
+function f(a, ...b, c) {
   // ...
 }
 
@@ -410,11 +410,11 @@ rest  // ["bar","baz"]
 
 const [...butLast, last] = [1, 2, 3, 4, 5];
 // 报错
-  
+
 const [first, ..., last] = [1, 2, 3, 4, 5];
 // 报错
 
-```  
+```
 
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
@@ -440,8 +440,8 @@ var d = new Date(...dateFields);
 
 ```javascript
 
-[..."hello"] 
-// [ "h", "e", "l", "l", "o" ]    
+[..."hello"]
+// [ "h", "e", "l", "l", "o" ]
 
 ```
 
@@ -512,7 +512,7 @@ var f = function(v) {
 
 ```javascript
 
-var f = () => 5; 
+var f = () => 5;
 // 等同于
 var f = function (){ return 5 };
 
@@ -587,19 +587,19 @@ const numbers = (...nums) => nums;
 
 numbers(1, 2, 3, 4, 5)
 // [1,2,3,4,5]
-  
+
 const headAndTail = (head, ...tail) => [head, tail];
 
 headAndTail(1, 2, 3, 4, 5)
 // [1,[2,3,4,5]]
 
-```  
+```
 
 箭头函数有几个使用注意点。
 
 - 函数体内的this对象，绑定定义时所在的对象，而不是使用时所在的对象。
-- 不可以当作构造函数，也就是说，不可以使用new命令，否则会抛出一个错误。
-- 不可以使用arguments对象，该对象在函数体内不存在。 
+- 不可以当作构造函数，也就是说，不可以使用new指令，否则会抛出一个错误。
+- 不可以使用arguments对象，该对象在函数体内不存在。
 
 上面三点中，第一点尤其值得注意。this对象的指向是可变的，但是在箭头函数中，它是固定的。下面的代码是一个例子，将this对象绑定定义时所在的对象。
 

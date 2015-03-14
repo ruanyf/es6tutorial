@@ -89,7 +89,7 @@ foo // true
 
 ```
 
-解构赋值不仅适用于var命令，也适用于let和const命令。
+解构赋值不仅适用于var指令，也适用于let和const指令。
 
 ```javascript
 
@@ -217,7 +217,7 @@ let { log, sin, cos } = Math;
 
 ```javascript
 
-[x, y] = [y, x]; 
+[x, y] = [y, x];
 
 ```
 

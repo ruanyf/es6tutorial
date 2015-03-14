@@ -45,7 +45,7 @@ class Point {
 
 **（2）constructor方法**
 
-constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，该方法会被默认添加，代码如下。
+constructor方法是类的默认方法，通过new指令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，该方法会被默认添加，代码如下。
 
 ```javascript
 
@@ -72,7 +72,7 @@ new Foo() instanceof Foo
 
 **（3）实例对象**
 
-生成实例对象的写法，与ES5完全一样，也是使用new命令。如果忘记加上new，像函数那样调用Class，将会报错。
+生成实例对象的写法，与ES5完全一样，也是使用new指令。如果忘记加上new，像函数那样调用Class，将会报错。
 
 ```javascript
 
@@ -109,7 +109,7 @@ point.toString() // (2, 3)
 point.hasOwnProperty('x') // true
 point.hasOwnProperty('y') // true
 point.hasOwnProperty('toString') // false
-point.__proto__.hasOwnProperty('toString') // false 
+point.__proto__.hasOwnProperty('toString') // false
 
 ```
 
@@ -139,7 +139,7 @@ p1.__proto__.printName = function () { return 'Oops' };
 p1.printName() // "Oops"
 p2.printName() // "Oops"
 
-var p3 = new Point(4,2); 
+var p3 = new Point(4,2);
 p3.printName() // "Oops"
 
 ```
@@ -210,15 +210,15 @@ class Foo {}
 
 ```javascript
 
-{ 
-  let Foo = class {};    
+{
+  let Foo = class {};
   class Bar extends Foo {
   }
 }
 
 ```
 
-如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
+如果存在Class的提升，上面代码将报错，因为let指令也是不提升的。
 
 **（7）严格模式**
 
@@ -267,7 +267,7 @@ class ColorPoint extends Foo {
   constructor() {
   }
 }
-    
+
 let cp = new ColorPoint(); // ReferenceError
 
 ```
@@ -292,7 +292,7 @@ class Point {
     this.y = y;
   }
 }
-    
+
 class ColorPoint extends Point {
   constructor(x, y, color) {
     this.color = color; // ReferenceError
@@ -375,8 +375,8 @@ p2.__proto__.__proto__ === p1.__proto__ // true
 
 ```javascript
 
-p2.__proto__.__proto__.printName = function () { 
-  console.log('Ha'); 
+p2.__proto__.__proto__.printName = function () {
+  console.log('Ha');
 };
 
 p1.printName() // "Ha"
@@ -392,8 +392,8 @@ p1.printName() // "Ha"
 ```javascript
 
 class MyArray extends Array {
-  constructor(...args) { 
-    super(...args); 
+  constructor(...args) {
+    super(...args);
   }
 }
 
@@ -408,7 +408,7 @@ arr[1] = 12;
 
 ```javascript
 
-class MyError extends Error {    
+class MyError extends Error {
 }
 
 throw new MyError('Something happened!');
@@ -458,7 +458,7 @@ class Foo {
     }
   }
 }
-    
+
 for (let x of new Foo('hello', 'world')) {
   console.log(x);
 }
@@ -500,7 +500,7 @@ class Foo {
     return 'hello';
   }
 }
-    
+
 class Bar extends Foo {
 }
 
@@ -526,7 +526,7 @@ var { stat, exists, readFile } = require('fs');
 
 ```
 
-ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
+ES6模块不是对象，而是通过export指令显式指定输出的代码，输入时也采用静态指令的形式。
 
 ```javascript
 
@@ -536,9 +536,9 @@ import { stat, exists, readFile } from 'fs';
 
 所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
 
-**（1）export命令，import命令**
+**（1）export指令，import指令**
 
-模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
+模块功能主要由两个指令构成：export和import。export指令用于用户自定义模块，规定对外接口；import指令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
 ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
 
@@ -551,7 +551,7 @@ export var year = 1958;
 
 ```
 
-上面代码是profile.js文件，保存了用户信息。ES6将其视为一个模块，里面用export命令对外部输出了三个变量。
+上面代码是profile.js文件，保存了用户信息。ES6将其视为一个模块，里面用export指令对外部输出了三个变量。
 
 export的写法，除了像上面这样，还有另外一种。
 
@@ -566,9 +566,9 @@ export {firstName, lastName, year};
 
 ```
 
-上面代码在export命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
+上面代码在export指令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
 
-使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
+使用export指令定义了模块的对外接口以后，其他JS文件就可以通过import指令加载这个模块（文件）。
 
 ```javascript
 
@@ -582,7 +582,7 @@ function sfirsetHeader(element) {
 
 ```
 
-上面代码属于另一个文件main.js，import命令就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
+上面代码属于另一个文件main.js，import指令就用于加载profile.js文件，并从中输入变量。import指令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
 
 如果想为输入的变量重新取一个名字，import语句中要使用as关键字，将输入的变量重命名。
 
@@ -610,9 +610,9 @@ export { Car }
 
 上面的模块先加载Vehicle模块，然后在其基础上添加了move方法，再作为一个新模块输出。
 
-**（2）模块的整体输入，module命令**
+**（2）模块的整体输入，module指令**
 
-export命令除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法area和circumference。
+export指令除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法area和circumference。
 
 ```javascript
 
@@ -652,7 +652,7 @@ console.log("圆周长：" + circle.circumference(14));
 
 ```
 
-module命令可以取代import语句，达到整体输入模块的作用。
+module指令可以取代import语句，达到整体输入模块的作用。
 
 ```javascript
 
@@ -665,11 +665,11 @@ console.log("圆周长：" + circle.circumference(14));
 
 ```
 
-module命令后面跟一个变量，表示输入的模块定义在该变量上。
+module指令后面跟一个变量，表示输入的模块定义在该变量上。
 
-**（3）export default命令**
+**（3）export default指令**
 
-如果想要输出匿名函数，可以使用export default命令。
+如果想要输出匿名函数，可以使用export default指令。
 
 ```javascript
 
@@ -681,7 +681,7 @@ export default function () {
 
 ```
 
-其他模块输入该模块时，import命令可以为该匿名函数指定任意名字。
+其他模块输入该模块时，import指令可以为该匿名函数指定任意名字。
 
 ```javascript
 
@@ -692,7 +692,7 @@ customName(); // 'foo'
 
 ```
 
-上面代码的import命令，可以用任意名称指向输出的匿名函数。需要注意的是，这时import命令后面，不使用大括号。
+上面代码的import指令，可以用任意名称指向输出的匿名函数。需要注意的是，这时import指令后面，不使用大括号。
 
 ```javascript
 
@@ -708,7 +708,7 @@ export function crc32(){};
 
 上面代码的两组写法，第一组是使用export default时，对应的import语句不需要使用大括号；第二组是不使用export default时，对应的import语句需要使用大括号。
 
-export default命令用在非匿名函数前，也是可以的。
+export default指令用在非匿名函数前，也是可以的。
 
 ```javascript
 
@@ -730,9 +730,9 @@ export default foo;
 
 上面代码中，foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
 
-export default命令用于指定模块的默认输出。如果模块加载时，只能输出一个值或方法，那就是export default所指定的那个值或方法。所以，import命令后面才不用加大括号。显然，一个模块只能有一个默认输出，因此export deault命令只能使用一次。
+export default指令用于指定模块的默认输出。如果模块加载时，只能输出一个值或方法，那就是export default所指定的那个值或方法。所以，import指令后面才不用加大括号。显然，一个模块只能有一个默认输出，因此export deault指令只能使用一次。
 
-有了export default命令，输入模块时就非常直观了，以输入jQuery模块为例。
+有了export default指令，输入模块时就非常直观了，以输入jQuery模块为例。
 
 ```javascript
 
@@ -752,7 +752,7 @@ import customName, { otherMethod } from './export-default';
 
 ```javascript
 
-export default 42;  
+export default 42;
 
 ```
 
@@ -787,7 +787,7 @@ export default function(x) {
 
 ```
 
-上面代码中的“export *”，表示输出circle模块的所有属性和方法，export default命令定义模块的默认方法。
+上面代码中的“export *”，表示输出circle模块的所有属性和方法，export default指令定义模块的默认方法。
 
 这时，也可以将circle的属性或方法，改名后再输出。
 
@@ -795,7 +795,7 @@ export default function(x) {
 
 // circleplus.js
 
-export { area as circleArea } from 'circle';  
+export { area as circleArea } from 'circle';
 
 ```
 
@@ -831,7 +831,7 @@ $ npm install -g es6-module-transpiler
 
 ```
 
-然后，使用`compile-modules convert`命令，将ES6模块文件转码。
+然后，使用`compile-modules convert`指令，将ES6模块文件转码。
 
 ```bash
 

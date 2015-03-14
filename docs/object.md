@@ -276,14 +276,14 @@ function clone(origin) {
 将多个对象合并到某个对象。
 
 ```javascript
-const merge = 
+const merge =
   (target, ...sources) => Object.assign(target, ...sources);
 ```
 
 如果希望合并后返回一个新对象，可以改写上面函数，对一个空对象合并。
 
 ```javascript
-const merge = 
+const merge =
   (...sources) => Object.assign({}, ...sources);
 ```
 
@@ -382,7 +382,7 @@ typeof s
 
 上面代码中，变量s就是一个独一无二的ID。typeof运算符的结果，表明变量s是Symbol数据类型，而不是字符串之类的其他类型。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
+注意，Symbol函数前不能使用new指令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
 
 Symbol函数可以接受一个字符串作为参数，表示Symbol实例的名称。
 
@@ -516,7 +516,7 @@ Symbol.for方法在全局环境中搜索指定key的Symbol值，如果存在就�
 
 ```javascript
 
-Symbol.for("bar") === Symbol.for("bar") 
+Symbol.for("bar") === Symbol.for("bar")
 // true
 
 Symbol("bar") === Symbol("bar")
@@ -530,7 +530,7 @@ Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
 
 ```javascript
 
-var s1 = Symbol.for("foo"); 
+var s1 = Symbol.for("foo");
 Symbol.keyFor(s1) // "foo"
 
 var s2 = Symbol("foo");
@@ -741,8 +741,8 @@ var pipe = (function () {
     return new Proxy({}, {
       get: function (pipeObject, fnName) {
         if (fnName == "get") {
-          return pipe.reduce(function (val, fn) { 
-            return fn(val); 
+          return pipe.reduce(function (val, fn) {
+            return fn(val);
           }, value);
         }
         pipe.push(window[fnName]);
@@ -752,12 +752,12 @@ var pipe = (function () {
   }
 }());
 
-var double = function (n) { return n*2 };  
+var double = function (n) { return n*2 };
 var pow = function (n) { return n*n };
 var reverseInt = function (n) { return n.toString().split('').reverse().join('')|0 };
 
-pipe(3) . double . pow . reverseInt . get  
-// 63 
+pipe(3) . double . pow . reverseInt . get
+// 63
 
 ```
 
@@ -855,7 +855,7 @@ let {proxy, revoke} = Proxy.revocable(target, handler);
 
 proxy.foo = 123;
 proxy.foo // 123
-    
+
 revoke();
 proxy.foo // TypeError: Revoked
 
@@ -870,9 +870,9 @@ Object.observe方法用来监听对象（以及数组）的变化。一旦监听
 ```javascript
 
 var user = {};
-Object.observe(user, function(changes){    
+Object.observe(user, function(changes){
   changes.forEach(function(change) {
-    user.fullName = user.firstName+" "+user.lastName;         
+    user.fullName = user.firstName+" "+user.lastName;
   });
 });
 
@@ -890,9 +890,9 @@ user.fullName // 'Michael Jackson'
 
 var div = $("#foo");
 
-Object.observe(user, function(changes){    
+Object.observe(user, function(changes){
   changes.forEach(function(change) {
-    var fullName = user.firstName+" "+user.lastName;         
+    var fullName = user.firstName+" "+user.lastName;
     div.text(fullName);
   });
 });
@@ -925,9 +925,9 @@ Object.observe(o, observer);
 ```javascript
 
 var change = {
-  object: {...}, 
-  type: 'update', 
-  name: 'p2', 
+  object: {...},
+  type: 'update',
+  name: 'p2',
   oldValue: 'Property 2'
 }
 
