@@ -366,6 +366,20 @@ p.then(function (s){
 
 上面代码生成一个新的Promise对象的实例p，它的状态为fulfilled，所以回调函数会立即执行，Promise.resolve方法的参数就是回调函数的参数。
 
+所以，如果希望得到一个Promise对象，比较方便的方法就是直接调用Promise.resolve方法。
+
+```javascript
+
+var p = Promise.resolve();
+
+p.then(function () {
+  // ...
+});
+
+```
+
+上面代码的变量p就是一个Promise对象。
+
 如果Promise.resolve方法的参数是一个Promise对象的实例，则会被原封不动地返回。
 
 Promise.reject(reason)方法也会返回一个新的Promise实例，该实例的状态为rejected。Promise.reject方法的参数reason，会被传递给实例的回调函数。
@@ -430,9 +444,7 @@ run(g);
 
 ### 概述
 
-async函数与Promise、Generator函数一样，是用来取代回调函数、解决异步操作的另一种方法。它可以写出比Promise和Generator更简洁易读的代码，但是依赖这两者来实现。
-
-async函数并不属于ES6，而是被列入了ES7，但是traceur编译器和regenerator转码器已经实现了这个功能。
+async函数与Promise、Generator函数一样，是用来取代回调函数、解决异步操作的另一种方法。它可以写出比Promise和Generator更简洁易读的代码，但是依赖这两者来实现。async函数并不属于ES6，而是被列入了ES7，但是traceur、Babel.js、regenerator等转码器已经支持这个功能，转码后立刻就能使用。
 
 在用法上，只要函数名之前加上async关键字，就表明该函数内部有异步操作。该异步操作应该返回一个Promise对象，前面用await关键字注明。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
 
@@ -453,6 +465,8 @@ getStockPrice("JNJ")
 
 上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数将返回一个Promise对象。调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockPrice函数）产生的Promise对象，不再执行函数体内后面的语句。等到getStockPrice完成，再自动回到函数体内，执行剩下的语句。
 
+仔细观察getStockPrice函数，你会发现除了添加async、await这两个命令，整个代码与同步操作的流程一模一样。这就是async函数的本意，尽可能地用同步的流程，表达异步操作。
+
 下面是一个更一般性的例子。
 
 ```javascript
@@ -471,6 +485,91 @@ async function asyncValue(value) {
 ```
 
 上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。
+
+总之，async函数的关键就是，await命令后面，必须是一个返回Promise对象的操作。因为Promise对象的运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
+
+```javascript
+
+async function myFunction() {
+  try {
+    await somethingThatReturnsAPromise();
+  } catch (err) { 
+    console.log(err); 
+  }
+}
+
+```
+
+await命令只能用在async函数之中，如果用在普通函数，就会报错。
+
+```javascript
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  // 报错
+  docs.forEach(function (doc) {
+    await db.post(doc);
+  });
+}
+
+```
+
+上面代码会报错，因为await用在普通函数之中了。但是，如果将forEach方法的参数改成async函数，也有问题。
+
+```javascript
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  // 可能得到错误结果
+  docs.forEach(async function (doc) {
+    await db.post(doc);
+  });
+}
+
+```
+
+上面代码可能不会正常工作，原因是这时三个db.post操作将是并发执行，也就是同时执行，而不是继发执行。正确的写法是采用for循环。
+
+```javascript
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  for (let doc of docs) {
+    await db.post(doc);
+  }
+}
+
+```
+
+如果确实希望多个请求并发执行，可以使用Promise.all方法。
+
+```javascript
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+  let promises = docs.map((doc) => db.post(doc));
+
+  let results = await Promise.all(promises);
+  console.log(results);
+}
+
+// 或者使用下面的写法
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+  let promises = docs.map((doc) => db.post(doc));
+
+  let results = [];
+  for (let promise of promises) {
+    results.push(await promise);
+  }
+  console.log(results);
+}
+
+```
 
 ES6将await增加为保留字。使用这个词作为标识符，在ES5是合法的，在ES6将抛出SyntaxError。
 

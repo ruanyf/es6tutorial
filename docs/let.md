@@ -25,7 +25,7 @@ for循环的计数器，就很合适使用let命令。
 ```javascript
 
 for(let i = 0; i < arr.length; i++){}
- 
+
 console.log(i)
 //ReferenceError: i is not defined
 
@@ -80,9 +80,9 @@ function do_something() {
 
 ```javascript
 
-if (1) { 
-  typeof x; // ReferenceError 
-  let x; 
+if (1) {
+  typeof x; // ReferenceError
+  let x;
 }
 
 ```
@@ -93,16 +93,16 @@ if (1) {
 
 ```javascript
 
-var tmp = 123; 
+var tmp = 123;
 
 if (true) {
   tmp = 'abc'; // ReferenceError
-  let tmp; 
+  let tmp;
 }
 
 ```
 
-上面代码中，存在全局变量tmp，但是块级作用域内let又声明了一个局部变量tmp，导致后者绑定这个块级作用域，所以在let声明变量前，对tmp赋值会报错。 
+上面代码中，存在全局变量tmp，但是块级作用域内let又声明了一个局部变量tmp，导致后者绑定这个块级作用域，所以在let声明变量前，对tmp赋值会报错。
 
 ES6明确规定，如果区块中存在let和const命令，这个区块对这些命令声明的变量，从一开始就形成了封闭作用域。凡是在声明之前就使用这些命令，就会报错。
 
@@ -114,10 +114,10 @@ if (true) {
   // TDZ开始
   tmp = 'abc'; // ReferenceError
   console.log(tmp); // ReferenceError
-    
+
   let tmp; // TDZ结束
   console.log(tmp); // undefined
-    
+
   tmp = 123;
   console.log(tmp); // 123
 }
