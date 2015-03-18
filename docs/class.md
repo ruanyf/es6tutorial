@@ -102,7 +102,7 @@ class Point {
 
 }
 
-var point = Point(2, 3);
+var point = new Point(2, 3);
 
 point.toString() // (2, 3)
 
