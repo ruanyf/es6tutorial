@@ -17,7 +17,71 @@ ES6提供了二进制和八进制数值的新的写法，分别用前缀0b和0o�
 
 ES6在Number对象上，新提供了Number.isFinite()和Number.isNaN()两个方法，用来检查Infinite和NaN这两个特殊值。
 
-它们与传统的isFinite()和isNaN()的区别在于，传统方法先调用Number()将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回false。
+Number.isFinite()用来检查一个数值是否非无穷（infinity）。
+
+```javascript
+
+Number.isFinite(15); // true
+Number.isFinite(0.8); // true
+Number.isFinite(NaN); // false
+Number.isFinite(Infinity); // false
+Number.isFinite(-Infinity); // false
+Number.isFinite("foo"); // false
+Number.isFinite("15"); // false
+Number.isFinite(true); // false
+
+```
+
+ES5通过下面的代码，部署Number.isFinite方法。
+
+```javascript
+
+(function (global) {
+  var global_isFinite = global.isFinite;
+
+  Object.defineProperty(Number, 'isFinite', {
+    value: function isFinite(value) {
+      return typeof value === 'number' && global_isFinite(value);
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+})(this);
+
+```
+
+Number.isNaN()用来检查一个值是否为NaN。
+
+```javascript
+
+Number.isNaN(NaN); // true
+Number.isNaN(15); // false
+Number.isNaN("15"); // false
+Number.isNaN(true); // false
+
+```
+
+ES5通过下面的代码，部署Number.isNaN()。
+
+```javascript
+
+(function (global) {
+  var global_isNaN = global.isNaN;
+
+  Object.defineProperty(Number, 'isNaN', {
+    value: function isNaN(value) {
+      return typeof value === 'number' && global_isNaN(value);
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+})(this);
+
+```
+
+它们与传统的全局方法isFinite()和isNaN()的区别在于，传统方法先调用Number()将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回false。
 
 ```javascript
 
@@ -60,6 +124,30 @@ Number.isInteger()用来判断一个值是否为整数。需要注意的是，�
 Number.isInteger(25) // true
 Number.isInteger(25.0) // true
 Number.isInteger(25.1) // false
+Number.isInteger("15") // false
+Number.isInteger(true) // false
+
+```
+
+ES5通过下面的代码，部署Number.isInteger()。
+
+```javascript
+
+(function (global) {
+  var floor = Math.floor,
+    isFinite = global.isFinite;
+
+  Object.defineProperty(Number, 'isInteger', {
+    value: function isInteger(value) {
+      return typeof value === 'number' && isFinite(value) &&
+        value > -9007199254740992 && value < 9007199254740992 &&
+        floor(value) === value;
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+})(this);
 
 ```
 
@@ -93,7 +181,47 @@ Math.trunc(-4.9) // -4
 
 ```
 
-**（2）数学方法**
+**（2）Math.sign()**
+
+Math.sign方法用来判断一个数到底是正数、负数、还是零。如果参数为正数，返回+1；参数为负数，返回-1；参数为0，返回0；参数为NaN，返回NaN。
+
+```javascript
+
+Math.sign(-5) // -1
+Math.sign(5) // +1
+Math.sign(0) // +0
+Math.sign(-) // -0
+Math.sign(NaN) // NaN
+
+```
+
+ES5通过下面的代码，可以部署Math.sign()。
+
+```javascript
+
+(function (global) {
+  var isNaN = Number.isNaN;
+
+  Object.defineProperty(Math, 'sign', {
+    value: function sign(value) {
+      var n = +value;
+      if (isNaN(n))
+        return n /* NaN */;
+
+      if (n === 0)
+        return n; // Keep the sign of the zero.
+
+      return (n < 0) ? -1 : 1;
+    },
+    configurable: true,
+    enumerable: false,
+    writable: true
+  });
+})(this);
+
+```
+
+**（3）数学方法**
 
 ES6在Math对象上还提供了许多新的数学方法。
 
@@ -110,5 +238,4 @@ ES6在Math对象上还提供了许多新的数学方法。
 - Math.log1p(x)	返回1 + x的自然对数
 - Math.log10(x) 返回以10为底的x的对数
 - Math.log2(x) 返回以2为底的x的对数
-- Math.sign(x) 如果x为负返回-1，x为0返回0，x为正返回1
 - Math.tanh(x)	返回x的双曲正切（hyperbolic tangent）

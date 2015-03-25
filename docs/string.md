@@ -256,8 +256,8 @@ normalize方法可以接受四个参数。
 
 ```javascript
 
-'\u004F\u030C'.normalize(NFC).length // 1
-'\u004F\u030C'.normalize(NFD).length // 2
+'\u004F\u030C'.normalize('NFC').length // 1
+'\u004F\u030C'.normalize('NFD').length // 2
 
 ```
 
@@ -265,11 +265,11 @@ normalize方法可以接受四个参数。
 
 不过，normalize方法目前不能识别三个或三个以上字符的合成。这种情况下，还是只能使用正则表达式，通过Unicode编号区间判断。
 
-## contains(), startsWith(), endsWith()
+## includes(), startsWith(), endsWith()
 
 传统上，JavaScript只有indexOf方法，可以用来确定一个字符串是否包含在另一个字符串中。ES6又提供了三种新方法。
 
-- **contains()**：返回布尔值，表示是否找到了参数字符串。
+- **includes()**：返回布尔值，表示是否找到了参数字符串。
 - **startsWith()**：返回布尔值，表示参数字符串是否在源字符串的头部。
 - **endsWith()**：返回布尔值，表示参数字符串是否在源字符串的尾部。
 
@@ -279,7 +279,7 @@ var s = "Hello world!";
 
 s.startsWith("Hello") // true
 s.endsWith("!") // true
-s.contains("o") // true
+s.includes("o") // true
 
 ```
 
@@ -289,9 +289,9 @@ s.contains("o") // true
 
 var s = "Hello world!";
 
-s.startsWith("o", 4) // true
-s.endsWith("o", 8) // true
-s.contains("o", 8) // false
+s.startsWith("world", 6) // true
+s.endsWith("Hello", 5) // true
+s.includes("Hello", 6) // false
 
 ```
 
@@ -375,13 +375,22 @@ r.sticky // true
 `In JavaScript this is
  not legal.`
 
+console.log(`string text line 1
+string text line 2`);
+
 // 字符串中嵌入变量
 var name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
 
 ```
 
-上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。
+上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
+
+```javascript
+
+var greeting = `\`Yo\` World!`;
+
+```
 
 大括号内部可以进行运算，以及引用对象属性。
 
@@ -402,6 +411,28 @@ console.log(`${obj.x + obj.y}`)
 
 ```
 
+模板字符串之中还能调用函数。
+
+```javascript
+
+function fn() { 
+  return "Hello World"; 
+}
+
+console.log(`foo ${fn()} bar`);
+// foo Hello World bar
+
+```
+
+如果模板字符串中的变量没有声明，将报错。
+
+```javascript
+
+var msg = `Hello, ${place}`;    
+// throws error
+
+```
+
 模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
 
 ```javascript
@@ -410,5 +441,132 @@ if (x > MAX) {
 	throw new Error(`Most ${MAX} allowed: ${x}!`);
 	// 传统写法为'Most '+MAX+' allowed: '+x+'!'
 }
+
+```
+
+模板字符串可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。
+
+```javascript
+
+var a = 5;
+var b = 10;
+
+tag`Hello ${ a + b } world ${ a * b}`;
+
+```
+
+上面代码中，模板字符串前面有一个函数tag，整个表达式将返回tag处理模板字符串后的返回值。
+
+函数tag依次接受三个参数。第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。第一个参数之后的参数，都是模板字符串各个变量被替换后的值。 
+
+- 第一个参数：['Hello ', ' world ']
+- 第二个参数: 15
+- 第三个参数：50
+
+也就是说，tag函数实际的参数如下。
+
+```javascript
+
+tag(['Hello ', ' world '], 15, 50)
+
+```
+
+下面是tag函数的代码，以及运行结果。
+
+```javascript
+
+var a = 5;
+var b = 10;
+
+function tag(s, v1, v2) {
+  console.log(s[0]); 
+  console.log(s[1]); 
+  console.log(v1);  
+  console.log(v2);  
+
+  return "OK";
+}
+
+tag`Hello ${ a + b } world ${ a * b}`;
+// "Hello "
+// " world "
+// 15
+// 50
+// "OK"
+
+```
+
+下面是一个更复杂的例子。
+
+```javascript
+
+var total = 30;
+var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
+
+function passthru(literals) {
+  var result = "";
+  var i = 0;
+        
+  while (i < literals.length) {
+    result += literals[i++];
+    if (i < arguments.length) {
+      result += arguments[i];
+    }
+  }
+
+  return result;
+
+}
+
+msg
+// "The total is 30 (31.5 with tax)"
+
+```
+
+上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
+
+处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
+
+```javascript
+
+tag`First line\nSecond line`
+
+```
+
+上面代码中，tag函数的第一个参数是一个数组`["First line\nSecond line"]`，这个数组有一个raw属性，等于`["First line\\nSecond line"]`，两者唯一的区别就是斜杠被转义了。
+
+```javascript
+
+function tag(strings) {
+  console.log(strings.raw[0]); 
+  // "First line\\nSecond line"
+}
+
+```
+
+## String.raw()
+
+String.raw方法，往往用来充当模板字符串的处理函数，返回字符串被转义前的原始格式。
+
+```javascript
+
+String.raw`Hi\n${2+3}!`;
+// "Hi\\n5!"
+
+String.raw`Hi\u000A!`;
+// 'Hi\\u000A!'
+
+```
+
+String.raw方法也可以正常的函数形式使用。这时，它的第一个参数，应该是一个具有raw属性的对象，且raw属性的值应该是一个数组。
+
+```javascript
+
+String.raw({ raw: 'test' }, 0, 1, 2);
+// 't0e1s2t'
+
+
+// 等同于
+String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
 
 ```

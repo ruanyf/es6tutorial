@@ -52,6 +52,21 @@ hw.next()
 
 总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
 
+上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，即调用该函数会返回该对象的一个遍历器。由于Generator函数调用后返回自身的遍历器，所以Generator函数就是自身的遍历器函数，即它的Symbol.iterator属性指向自身。
+
+```javascript
+
+function* gen(){
+  // some code
+}
+
+gen[Symbol.iterator]() === gen
+// true
+
+```
+
+上面代码中，gen是一个Generator函数，它的Symbol.iterator属性就指向它自己。
+
 由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个成员，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。另一方面，由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
 yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。一个函数里面，只能执行一次（或者说一个）return语句，但是可以执行多次（或者说多个）yield语句。正常函数只能返回一个值，因为只能执行一次return；Generator函数可以返回一系列的值，因为可以有任意多个yield。从另一个角度看，也可以说Generator生成了一系列的值，这也就是它的名称的来历（在英语中，generator这个词是“生成器”的意思）。
@@ -73,6 +88,66 @@ setTimeout(function () {
 ```
 
 上面代码中，函数f如果是普通函数，在为变量generator赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
+
+另外需要注意，yield语句不能用在普通函数中，否则会报错。
+
+```javascript
+
+(function (){
+  yield 1;
+})()
+// SyntaxError: Unexpected number
+
+```
+
+上面代码在一个普通函数中使用yield语句，结果产生一个句法错误。
+
+下面是另外一个例子。
+
+```javascript
+
+var arr = [1, [[2, 3], 4], [5, 6]];
+
+var flat = function* (a){
+  a.forEach(function(item){
+    if (typeof item !== 'number'){
+      yield* flat(item);  
+    } else {
+      yield item;
+    }
+  }
+};
+
+for (var f of flat(arr)){
+  console.log(f);
+}
+
+```
+
+上面代码也会产生句法错误，因为forEach方法的参数是一个普通函数，但是在里面使用了yield语句。一种修改方法是改用for循环。
+
+```javascript
+
+var arr = [1, [[2, 3], 4], [5, 6]];
+
+var flat = function* (a){
+  var length = a.length;
+  for(var i =0;i<length;i++){
+    var item = a[i];
+    if (typeof item !== 'number'){
+      yield* flat(item);  
+    } else {
+      yield item;
+    }
+  }
+};
+
+for (var f of flat(arr)){
+  console.log(f);
+}
+// 1, 2, 3, 4, 5, 6
+
+```
 
 ### next方法的参数
 
@@ -249,6 +324,95 @@ function* g(){
 
 ```
 
+如果Generator函数内部没有定义catch，那么throw方法抛出的错误，将被函数体的catch捕获。
+
+```javascript
+
+function *foo() { }
+
+var it = foo();
+try {
+  it.throw( "Oops!" );
+} catch (err) {
+    console.log( "Error: " + err ); // Error: Oops!
+}
+
+```
+
+上面代码中，foo函数内部没有任何语句，throw抛出的错误被函数体外的catch捕获。
+
+反过来，Generator函数内抛出的错误，也可以被函数体外的catch捕获。
+
+```javascript
+
+function *foo() {
+    var x = yield 3;
+    var y = x.toUpperCase(); 
+    yield y;
+}
+
+var it = foo();
+
+it.next(); // { value:3, done:false }
+
+try {
+  it.next( 42 ); 
+}
+catch (err) {
+  console.log( err );
+}
+
+```
+
+上面代码中，第二个next方法向函数体内传入一个参数42，数值是没有toUpperCase方法的，所以会抛出一个TypeError错误，被函数体外的catch捕获。
+
+一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将一直返回发生错误前的那个值。
+
+```javascript
+
+function* g() {
+  yield 1;
+  console.log('throwing an exception');
+  throw new Error('generator broke!');
+  yield 2;
+}
+
+function log(generator) {
+  var v;
+  console.log('starting generator');
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  try {
+    v = generator.next();
+    console.log('got back', v);
+  } catch (err) {
+    console.log('fixing generator', v);
+  }
+  console.log('caller done');
+}
+
+log(g());
+// starting generator
+// got back { value: 1, done: false }
+// throwing an exception
+// fixing generator { value: 1, done: false }
+// fixing generator { value: 1, done: false }
+// caller done
+ 
+```
+
+上面代码在Generator函数g抛出错误以后，再调用next方法，就不再执行下去了，一直停留在上一次的状态。
+
 ### yield*语句
 
 如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
@@ -291,6 +455,35 @@ gen().next() // { value:"a", done:false }
 ```
 
 上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
+
+如果被代理的Generator函数有return语句，那么就可以向代理它的Generator函数返回数据。
+
+```javascript
+
+function *foo() {
+    yield 2;
+    yield 3;
+    return "foo";
+}
+
+function *bar() {
+    yield 1;
+    var v = yield *foo();
+    console.log( "v: " + v );
+    yield 4;
+}
+
+var it = bar();
+
+it.next(); //
+it.next(); //
+it.next(); //
+it.next(); // "v: foo" 
+it.next(); //
+
+```
+
+上面代码在第四次调用next方法的时候，屏幕上会有输出，这是因为函数foo的return语句，向函数bar提供了返回值。
 
 `yield*`命令可以很方便地取出嵌套数组的所有成员。
 
@@ -536,7 +729,7 @@ Q.fcall(step1)
 
 ```
 
-上面代码已经把回调函数，改成了直线执行的形式。Generator函数可以进一步改善代码运行流程。
+上面代码已经把回调函数，改成了直线执行的形式，但是加入了大量Promise的语法。Generator函数可以进一步改善代码运行流程。
 
 ```javascript
 
@@ -561,9 +754,12 @@ function* longRunningTask() {
 scheduler(longRunningTask());
 
 function scheduler(task) {
-	setTimeout(function () {
-		if (!task.next(task.value).done) {
-			scheduler(task);
+  setTimeout(function() {
+    var taskObj = task.next(task.value);
+    // 如果Generator函数未结束，就继续调用
+    if (!taskObj.done) {
+      task.value = taskObj.value
+      scheduler(task);
     }
   }, 0);
 }
@@ -589,6 +785,22 @@ function* f(){
 ```
 
 上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
+
+多个任务按顺序一个接一个执行时，yield语句可以按顺序排列。多个任务需要并列执行时（比如只有A任务和B任务都执行完，才能执行C任务），可以采用数组的写法。
+
+```javascript
+
+function* parallelDownloads() {
+  let [text1,text2] = yield [
+    taskA(),
+    taskB()
+  ];
+  console.log(text1, text2);
+}
+
+```
+
+上面代码中，yield语句的参数是一个数组，成员就是两个任务taskA和taskB，只有等这两个任务都完成了，才会接着执行下面的语句。
 
 ### （3）部署iterator接口
 

@@ -6,6 +6,42 @@ ES6允许直接写入变量和函数，作为对象的属性和方法。这样�
 
 ```javascript
 
+function f( x, y ) {
+  return { x, y };
+}
+
+// 等同于
+
+function f( x, y ) {
+  return { x: x, y: y };
+}
+
+```
+
+上面是属性简写的例子，方法也可以简写。
+
+```javascript
+
+var o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+var o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+
+```
+
+下面是一个更实际的例子。
+
+```javascript
+
 var Person = {
 
   name: '张三',
@@ -33,18 +69,6 @@ function getPoint() {
 
 getPoint()
 // {x:1, y:10}
-
-```
-
-下面是一个类似的例子。
-
-```javascript
-
-let x = 4;
-let y = 1;
-
-// 下行等同于 let obj = { x: x, y: y };
-let obj = { x, y };
 
 ```
 
@@ -130,6 +154,26 @@ NaN === NaN // false
 
 Object.is(+0, -0) // false
 Object.is(NaN, NaN) // true
+
+```
+
+ES5可以通过下面的代码，部署Object.is()。
+
+```javascript
+
+Object.defineProperty(Object, 'is', {
+  value: function(x, y) {
+    if (x === y) {
+      // 针对+0 不等于 -0的情况
+      return x !== 0 || 1 / x === 1 / y;
+    }
+    // 针对NaN的情况
+    return x !== x && y !== y;
+  },
+  configurable: true,
+  enumerable: false,
+  writable: true
+});
 
 ```
 
@@ -227,7 +271,23 @@ function clone(origin) {
 
 ```
 
-**（4）为属性指定默认值**
+**（4）合并多个对象**
+
+将多个对象合并到某个对象。
+
+```javascript
+const merge =
+  (target, ...sources) => Object.assign(target, ...sources);
+```
+
+如果希望合并后返回一个新对象，可以改写上面函数，对一个空对象合并。
+
+```javascript
+const merge =
+  (...sources) => Object.assign({}, ...sources);
+```
+
+**（5）为属性指定默认值**
 
 ```javascript
 
@@ -305,18 +365,24 @@ Object.getPrototypeOf(obj)
 
 ## Symbol
 
-ES6引入了一种新的原始数据类型Symbol，表示独一无二的ID。它通过Symbol函数生成。
+### 概述
+
+在ES5中，对象的属性名都是字符串，这容易造成属性名的冲突。比如，你使用了一个他人提供的对象，但又想为这个对象添加新的方法，新方法的名字有可能与现有方法产生冲突。如果有一种机制，保证每个属性的名字都是独一无二的就好了，这样就从根本上防止属性名的冲突。这就是ES6引入Symbol的原因。
+
+ES6引入了一种新的原始数据类型Symbol，表示独一无二的ID。它通过Symbol函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的Symbol类型。凡是属性名属于Symbol类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
 
 ```javascript
 
-let symbol1 = Symbol();
+let s = Symbol();
 
-typeof symbol
+typeof s
 // "symbol"
 
 ```
 
-上面代码中，变量symbol1就是一个独一无二的ID。typeof运算符的结果，表明变量symbol1是Symbol数据类型，而不是字符串之类的其他类型。
+上面代码中，变量s就是一个独一无二的ID。typeof运算符的结果，表明变量s是Symbol数据类型，而不是字符串之类的其他类型。
+
+注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
 
 Symbol函数可以接受一个字符串作为参数，表示Symbol实例的名称。
 
@@ -329,9 +395,27 @@ mySymbol.name
 
 ```
 
-上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol的名称，可以通过name属性读取。之所以要新增name属性，是因为键名是Symbol类型，而有些场合需要一个字符串类型的值来指代这个键。
+上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol的名称，可以通过name属性读取。之所以要新增name属性，是因为如果一个对象的属性名是Symbol类型，可能不太方便引用，而有些场合需要一个字符串类型的值来指代这个键。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
+Symbol函数的参数只是表示对当前Symbol类型的值的描述，因此相同参数的Symbol函数的返回值是不相等的。
+
+```javascript
+
+// 没有参数的情况
+var s1 = Symbol();
+var s2 = Symbol();
+
+s1 === s2 // false
+
+// 有参数的情况
+var s1 = Symbol("foo");
+var s2 = Symbol("foo");
+
+s1 === s2 // false
+
+```
+
+上面代码中，s1和s2都是Symbol函数的返回值，而且参数相同，但是它们是不相等的。
 
 Symbol类型的值不能与其他类型的值进行运算，会报错。
 
@@ -355,34 +439,9 @@ sym.toString()
 
 ```
 
-symbol的最大特点，就是每一个Symbol都是不相等的，保证产生一个独一无二的值。
+### 作为属性名的Symbol
 
-```javascript
-
-let w1 = Symbol();
-let w2 = Symbol();
-let w3 = Symbol();
-
-w1 === w2 // false
-w1 === w3 // false
-w2 === w3 // false
-
-function f(w) {
-  switch (w) {
-    case w1:
-      ...
-    case w2:
-      ...
-    case w3:
-      ...
-  }
-}
-
-```
-
-上面代码中，w1、w2、w3三个变量都等于`Symbol()`，但是它们的值是不相等的。
-
-由于这种特点，Symbol类型适合作为标识符，用于对象的属性名，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性，也就防止了键值被不小心改写或覆盖。Symbol类型还可以用于定义一组常量，防止它们的值发生冲突。
+Symbol类型作为标识符，用于对象的属性名时，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性，也就防止了键值被不小心改写或覆盖。Symbol类型还可以用于定义一组常量，防止它们的值发生冲突。
 
 ```javascript
 
@@ -401,11 +460,36 @@ var a = {
 var a = {};
 Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
+// 以上写法都得到同样结果
 a[mySymbol] // "Hello!"
 
 ```
 
-上面代码通过方括号结构和Object.defineProperty两种方法，将对象的属性名指定为一个Symbol值。
+上面代码通过方括号结构和Object.defineProperty，将对象的属性名指定为一个Symbol值。
+
+在对象内部使用Symbol属性名，必须采用属性名表达式，就像上面的第二种写法。
+
+```javascript
+
+let s = Symbol();
+
+let obj = {
+  [s]: function (arg) { ... }
+};
+
+obj[s](123);
+
+```
+
+采用增强的对象写法，上面代码的obj对象可以写得更简洁一些。
+
+```javascript
+
+let obj = {
+  [s](arg) { ... }
+};
+
+```
 
 注意，不能使用点结构，将Symbol值作为对象的属性名。
 
@@ -422,50 +506,63 @@ a[mySymbol] // undefined
 
 上面代码中，mySymbol属性的值为未定义，原因在于`a.mySymbol`这样的写法，并不是把一个Symbol值当作属性名，而是把mySymbol这个字符串当作属性名进行赋值，这是因为点结构中的属性名永远都是字符串。
 
-下面的写法为Map结构添加了一个成员，但是该成员永远无法被引用。
+需要注意的是，Symbol类型作为属性名时，该属性还是公开属性，不是私有属性。
+
+### Symbol.for()，Symbol.keyFor()
+
+Symbol.for方法在全局环境中搜索指定key的Symbol值，如果存在就返回这个Symbol值，否则就新建一个指定key的Symbol值并返回。
+
+`Symbol.for()`与`Symbol()`这两种写法的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查跟定的key是否已经存在，如果不存在才会新建一个值。
 
 ```javascript
 
-let a = Map();
-a.set(Symbol(), 'Noise');
-a.size // 1
+Symbol.for("bar") === Symbol.for("bar")
+// true
+
+Symbol("bar") === Symbol("bar")
+// false
 
 ```
 
-为Symbol函数添加一个参数，就可以引用了。
+上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
+
+Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
 
 ```javascript
 
-let a = Map();
-a.set(Symbol('my_key'), 'Noise');
+var s1 = Symbol.for("foo");
+Symbol.keyFor(s1) // "foo"
+
+var s2 = Symbol("foo");
+Symbol.keyFor(s2) // undefined
 
 ```
 
-如果要在对象内部使用Symbol属性名，必须采用属性名表达式。
+上面代码中，变量s2属于未登记的Symbol值，所以返回undefined。
+
+### 属性名的遍历
+
+Symbol作为属性名，该属性不会出现在for...in循环中，也不会被Object.keys()、Object.getOwnPropertyNames()返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取指定对象的所有Symbol属性名。
+
+Object.getOwnPropertySymbols方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
 
 ```javascript
 
-let specialMethod = Symbol();
+var obj = {};
+var a = Symbol('a');
+var b = Symbol.for('b');
 
-let obj = {
-  [specialMethod]: function (arg) { ... }
-};
+obj[a] = 'Hello';
+obj[b] = 'World';
 
-obj[specialMethod](123);
+var objectSymbols = Object.getOwnPropertySymbols(obj);
 
-```
-
-采用增强的对象写法，上面代码的obj对象可以写得更简洁一些。
-
-```javascript
-
-let obj = {
-  [specialMethod](arg) { ... }
-};
+objectSymbols
+// [Symbol(a), Symbol(b)]
 
 ```
 
-Symbol类型作为属性名，不会出现在for...in循环中，也不会被Object.keys()、Object.getOwnPropertyNames()返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取Symbol属性名。
+下面是另一个例子，Object.getOwnPropertySymbols方法与for...in循环、Object.getOwnPropertyNames方法进行对比的例子。
 
 ```javascript
 
@@ -474,8 +571,12 @@ var obj = {};
 var foo = Symbol("foo");
 
 Object.defineProperty(obj, foo, {
-    value: "foobar",
+  value: "foobar",
 });
+
+for (var i in obj) {
+  console.log(i); // 无输出
+}
 
 Object.getOwnPropertyNames(obj)
 // []
@@ -487,7 +588,7 @@ Object.getOwnPropertySymbols(obj)
 
 上面代码中，使用Object.getOwnPropertyNames方法得不到Symbol属性名，需要使用Object.getOwnPropertySymbols方法。
 
-Reflect.ownKeys方法返回所有类型的键名。
+Reflect.ownKeys方法可以返回所有类型的键名。
 
 ```javascript
 
@@ -502,7 +603,41 @@ Reflect.ownKeys(obj)
 
 ```
 
+### 内置的Symbol值
+
+除了定义自己使用的Symbol值以外，ES6还提供一些内置的Symbol值，指向语言内部使用的方法。
+
+（1）Symbol.hasInstance
+
+该值指向对象的内部方法@@hasInstance（两个@表示这是内部方法，外部无法直接调用，下同），该对象使用instanceof运算符时，会调用这个方法，判断该对象是否为某个构造函数的实例。
+
+（2）Symbol.isConcatSpreadable
+
+该值指向对象的内部方法@@isConcatSpreadable，该对象使用Array.prototype.concat()时，会调用这个方法，返回一个布尔值，表示该对象是否可以扩展成数组。
+
+（3）Symbol.isRegExp
+
+该值指向对象的内部方法@@isRegExp，该对象被用作正则表达式时，会调用这个方法，返回一个布尔值，表示该对象是否为一个正则对象。
+
+（4）Symbol.iterator
+
+该值指向对象的内部方法@@iterator，该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+
+（5）Symbol.toPrimitive
+
+该值指向对象的内部方法@@toPrimitive，该对象被转为原始类型的值时，会调用这个方法，返回该对象对应的原始类型值。
+
+（6）Symbol.toStringTag
+
+该值指向对象的内部属性@@toStringTag，在该对象上调用Object.prototype.toString()时，会返回这个属性，它是一个字符串，表示该对象的字符串形式。
+
+（7）Symbol.unscopables
+
+该值指向对象的内部属性@@unscopables，返回一个数组，成员为该对象使用with关键字时，会被with环境排除在的那些属性值。
+
 ## Proxy
+
+### 概述
 
 Proxy用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”（meta programming），即对编程语言进行编程。
 
@@ -546,9 +681,31 @@ obj.time // 35
 
 上面代码中，proxy对象是obj对象的原型，obj对象本身并没有time属性，所有根据原型链，会在proxy对象上读取该属性，导致被拦截。
 
-对于没有设置拦截的操作，则直接落在目标函数上，按照原先的方式产生结果。
+对于没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
 
-下面是另一个拦截读取操作的例子。
+Proxy支持的拦截操作一览。
+
+- defineProperty(target, propKey, propDesc)：返回一个布尔值，拦截Object.defineProperty(proxy, propKey, propDesc）
+- deleteProperty(target, propKey) ：返回一个布尔值，拦截delete proxy[propKey]
+- enumerate(target)：返回一个遍历器，拦截for (x in proxy)
+- get(target, propKey, receiver)：返回类型不限，拦截对象属性的读取
+- getOwnPropertyDescriptor(target, propKey) ：返回属性的描述对象，拦截Object.getOwnPropertyDescriptor(proxy, propKey)
+- getPrototypeOf(target) ：返回一个对象，拦截Object.getPrototypeOf(proxy)
+- has(target, propKey)：返回一个布尔值，拦截propKey in proxy
+- isExtensible(target)：返回一个布尔值，拦截Object.isExtensible(proxy)
+- ownKeys(target)：返回一个数组，拦截Object.getOwnPropertyPropertyNames(proxy)、Object.getOwnPropertyPropertySymbols(proxy)、Object.keys(proxy)
+- preventExtensions(target)：返回一个布尔值，拦截Object.preventExtensions(proxy)
+- set(target, propKey, value, receiver)：返回一个布尔值，拦截对象属性的设置
+- setPrototypeOf(target, proto)：返回一个布尔值，拦截Object.setPrototypeOf(proxy, proto)
+
+如果目标对象是函数，那么还有两种额外操作可以拦截。
+
+- apply方法：拦截Proxy实例作为函数调用的操作，比如proxy(···)、proxy.call(···)、proxy.apply(···)。
+- construct方法：拦截Proxy实例作为构造函数调用的操作，比如new proxy(···)。
+
+### get
+
+get方法用于拦截某个属性的读取操作。上文已经有一个例子，下面是另一个拦截读取操作的例子。
 
 ```javascript
 
@@ -573,7 +730,42 @@ proxy.age // 抛出一个错误
 
 上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。
 
-除了取值函数get，Proxy还可以设置存值函数set，用来拦截某个属性的赋值行为。假定Person对象有一个age属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证age的属性值符合要求。
+利用proxy，可以将读取属性的操作（get），转变为执行某个函数。
+
+```javascript
+
+var pipe = (function () {
+  var pipe;
+  return function (value) {
+    pipe = [];
+    return new Proxy({}, {
+      get: function (pipeObject, fnName) {
+        if (fnName == "get") {
+          return pipe.reduce(function (val, fn) {
+            return fn(val);
+          }, value);
+        }
+        pipe.push(window[fnName]);
+        return pipeObject;
+      }
+    });
+  }
+}());
+
+var double = function (n) { return n*2 };
+var pow = function (n) { return n*n };
+var reverseInt = function (n) { return n.toString().split('').reverse().join('')|0 };
+
+pipe(3) . double . pow . reverseInt . get
+// 63
+
+```
+
+上面代码设置Proxy以后，达到了将函数名链式使用的效果。
+
+### set
+
+set方法用来拦截某个属性的赋值操作。假定Person对象有一个age属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证age的属性值符合要求。
 
 ```javascript
 
@@ -605,6 +797,30 @@ person.age = 300 // 报错
 
 上面代码中，由于设置了存值函数set，任何不符合要求的age属性赋值，都会抛出一个错误。利用set方法，还可以数据绑定，即每当对象发生变化时，会自动更新DOM。
 
+### apply
+
+apply方法拦截函数的调用、call和apply操作。
+
+```javascript
+
+var target = function () { return 'I am the target'; };
+var handler = {
+  apply: function (receiver, ...args) {
+    return 'I am the proxy';
+  }
+};
+
+var p = new Proxy(target, handler);
+
+p() === 'I am the proxy';
+// true
+
+```
+
+上面代码中，变量p是Proxy的实例，当它作为函数调用时（p()），就会被apply方法拦截，返回一个字符串。
+
+### ownKeys
+
 ownKeys方法用来拦截Object.keys()操作。
 
 ```javascript
@@ -626,25 +842,7 @@ Object.keys(proxy)
 
 上面代码拦截了对于target对象的Object.keys()操作，返回预先设定的数组。
 
-Proxy支持的拦截操作一览。
-
-- defineProperty(target, propKey, propDesc)：返回一个布尔值，拦截Object.defineProperty(proxy, propKey, propDesc）
-- deleteProperty(target, propKey) ：返回一个布尔值，拦截delete proxy[propKey]
-- enumerate(target)：返回一个遍历器，拦截for (x in proxy)
-- get(target, propKey, receiver)：返回类型不限，拦截对象属性的读取
-- getOwnPropertyDescriptor(target, propKey) ：返回属性的描述对象，拦截Object.getOwnPropertyDescriptor(proxy, propKey)
-- getPrototypeOf(target) ：返回一个对象，拦截Object.getPrototypeOf(proxy)
-- has(target, propKey)：返回一个布尔值，拦截propKey in proxy
-- isExtensible(target)：返回一个布尔值，拦截Object.isExtensible(proxy)
-- ownKeys(target)：返回一个数组，拦截Object.getOwnPropertyPropertyNames(proxy)、Object.getOwnPropertyPropertySymbols(proxy)、Object.keys(proxy)
-- preventExtensions(target)：返回一个布尔值，拦截Object.preventExtensions(proxy)
-- set(target, propKey, value, receiver)：返回一个布尔值，拦截对象属性的设置
-- setPrototypeOf(target, proto)：返回一个布尔值，拦截Object.setPrototypeOf(proxy, proto)
-
-如果目标对象是函数，那么还有两种额外操作可以拦截。
-
-- apply方法：拦截Proxy实例作为函数调用的操作，比如proxy(···)、proxy.call(···)、proxy.apply(···)。
-- construct方法：拦截Proxy实例作为构造函数调用的操作，比如new proxy(···)。
+### Proxy.revocable()
 
 Proxy.revocable方法返回一个可取消的Proxy实例。
 
@@ -654,10 +852,10 @@ let target = {};
 let handler = {};
 
 let {proxy, revoke} = Proxy.revocable(target, handler);
-    
+
 proxy.foo = 123;
 proxy.foo // 123
-    
+
 revoke();
 proxy.foo // TypeError: Revoked
 
@@ -672,9 +870,9 @@ Object.observe方法用来监听对象（以及数组）的变化。一旦监听
 ```javascript
 
 var user = {};
-Object.observe(user, function(changes){    
+Object.observe(user, function(changes){
   changes.forEach(function(change) {
-    user.fullName = user.firstName+" "+user.lastName;         
+    user.fullName = user.firstName+" "+user.lastName;
   });
 });
 
@@ -692,9 +890,9 @@ user.fullName // 'Michael Jackson'
 
 var div = $("#foo");
 
-Object.observe(user, function(changes){    
+Object.observe(user, function(changes){
   changes.forEach(function(change) {
-    var fullName = user.firstName+" "+user.lastName;         
+    var fullName = user.firstName+" "+user.lastName;
     div.text(fullName);
   });
 });
@@ -710,12 +908,12 @@ Object.observe(user, function(changes){
 var o = {};
 
 function observer(changes){
-    changes.forEach(function(change) {
-		console.log('发生变动的属性：' + change.name);
-		console.log('变动前的值：' + change.oldValue);
-		console.log('变动后的值：' + change.object[change.name]);
-		console.log('变动类型：' + change.type);
-    });
+  changes.forEach(function(change) {
+    console.log('发生变动的属性：' + change.name);
+    console.log('变动前的值：' + change.oldValue);
+    console.log('变动后的值：' + change.object[change.name]);
+    console.log('变动类型：' + change.type);
+  });
 }
 
 Object.observe(o, observer);
@@ -727,9 +925,9 @@ Object.observe(o, observer);
 ```javascript
 
 var change = {
-  object: {...}, 
-  type: 'update', 
-  name: 'p2', 
+  object: {...},
+  type: 'update',
+  name: 'p2',
   oldValue: 'Property 2'
 }
 

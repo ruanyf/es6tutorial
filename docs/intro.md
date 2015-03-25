@@ -38,19 +38,21 @@ ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负
 
 由于ES6还没有定案，有些语法规则还会变动，目前支持ES6的软件和开发环境还不多。各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。
 
-Google公司的V8引擎已经部署了ES6的部分特性。使用Node.js 0.11版，就可以体验这些特性。
+Google公司的V8引擎已经部署了ES6的部分特性。使用Node.js 0.12版，就可以体验这些特性。
 
-Node.js的0.11版还不是稳定版本，要使用版本管理工具[nvm](https://github.com/creationix/nvm)切换。下载nvm以后，进入项目目录，运行下面的命令。
+可以使用版本管理工具[nvm](https://github.com/creationix/nvm)，安装Node.js 0.12版。下载nvm以后，进入项目目录，运行下面的命令。
 
 ```bash
 
 $ source nvm.sh
-$ nvm use 0.11
+$ nvm use 0.12
 $ node --harmony
 
 ```
 
-启动命令中的`--harmony`选项可以打开所有已经部署的ES6功能。使用下面的命令，可以查看所有与ES6有关的单个选项。
+上面最后一个命令的`--harmony`选项，可以进入REPL环境，打开所有已经部署的ES6功能。
+
+使用下面的命令，可以查看Node.js所有与ES6有关的单个选项。
 
 ```bash
 
@@ -73,9 +75,39 @@ $ node --v8-options | grep harmony
 
 ```
 
-## Traceur编译器
+从Node.js分立的[io.js](https://iojs.org)项目，对ES6的支持更彻底。不用打开任何参数，它就支持8项ES6特性。
 
-Google公司的[Traceur](https://github.com/google/traceur-compiler)编译器，可以将ES6代码编译为ES5代码。这意味着，你可以用ES6的方式编写程序，又不用担心浏览器是否支持。
+- 块级作用域：let，const
+- 集合型数据类型：Map，Set，WeakMap，WeakSet
+- Promise
+- Iterator
+- Generator
+- 模板字符串
+- Symbol
+- 二进制和八进制表示法，新的字符串方法
+
+使用 --es_staging 参数或 --harmony 参数，打开另外两项ES6特性。
+
+- Class
+- 对象的简易表示法
+
+还有一些开发没有结束的特性，需要使用特定的参数，逐一打开。使用下面的命令，查看这些参数。
+
+```bash
+$ iojs --v8-options | grep "in progress"
+- --harmony_modules
+- --harmony_arrays
+- --harmony_array_includes
+- --harmony_regexps
+- --harmony_arrow_functions
+- --harmony_proxies
+- --harmony_sloppy
+- --harmony_unicode
+```
+
+## Traceur转码器
+
+Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，可以将ES6代码转为ES5代码。这意味着，你可以用ES6的方式编写程序，又不用担心浏览器是否支持。
 
 它有多种使用方式。
 
@@ -144,7 +176,7 @@ Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/de
 <script src="http://google.github.io/traceur-compiler/bin/traceur.js"
         type="text/javascript"></script>
 <script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
-        type="text/javascript"></script> 
+        type="text/javascript"></script>
 <script>
         traceur.options.experimental = true;
 </script>
@@ -239,6 +271,48 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 ```
 
+## Babel转码器
+
+[Babel](https://babeljs.io/)是另一个广泛使用的ES6转码器，安装命令如下。
+
+```bash
+$ npm install --global babel
+```
+
+Babel自带一个 `babel-node` 命令，与Node命令行完全一致，而且可以直接运行ES6代码。
+
+```bash
+$ babel-node
+>
+> console.log([1,2,3].map(x => x * x))
+    [ 1, 4, 9 ]
+>
+```
+
+`babel-node` 命令也可以直接运行ES6脚本。假定将上面的代码放入脚本文件 es6.js 。
+
+```bash
+$ babel-node es6.js
+[1, 4, 9]
+```
+
+babel 命令可以将ES6代码转为ES5代码。
+
+```bash
+$ babel es6.js
+"use strict";
+
+console.log([1, 2, 3].map(function (x) {
+  return x * x;
+}));
+```
+
+`-o` 参数将转换后的代码，从标准输出导入文件。
+
+```bash
+$ babel es6.js -o es5.js
+```
+
 ## ECMAScript 7
 
 2013年3月，ES6的草案封闭，不再接受新功能了。新的功能将被加入ES7。
@@ -247,8 +321,10 @@ ES7可能包括的功能有：
 
 （1）**Object.observe**：用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
 
-（2）**Multi-Threading**：多线程支持。目前，Intel和Mozilla有一个共同的研究项目RiverTrail，致力于让JavaScript多线程运行。预计这个项目的研究成果会被纳入ECMAScript标准。
+（2）**Async函数**：在Promise和Generator函数基础上，提出的异步操作解决方案。
 
-（3）**Traits**：它将是“类”功能（class）的一个替代。通过它，不同的对象可以分享同样的特性。
+（3）**Multi-Threading**：多线程支持。目前，Intel和Mozilla有一个共同的研究项目RiverTrail，致力于让JavaScript多线程运行。预计这个项目的研究成果会被纳入ECMAScript标准。
+
+（4）**Traits**：它将是“类”功能（class）的一个替代。通过它，不同的对象可以分享同样的特性。
 
 其他可能包括的功能还有：更精确的数值计算、改善的内存回收、增强的跨站点安全、类型化的更贴近硬件的低级别操作、国际化支持（Internationalization Support）、更多的数据结构等等。

@@ -108,7 +108,7 @@ a // "a"
 
 ```
 
-事实上，只要某种数据结构具有Iterator接口，都可以采用数组形式的结构赋值。
+事实上，只要某种数据结构具有Iterator接口，都可以采用数组形式的解构赋值。
 
 ## 对象的解构赋值
 
@@ -144,6 +144,11 @@ baz // undefined
 var { foo: baz } = { foo: "aaa", bar: "bbb" };
 baz // "aaa"
 
+let obj = { first: 'hello', last: 'world' };
+let { first: f, last: l } = obj; 
+f // 'hello'
+l // 'world'
+
 ```
 
 和数组一样，解构也可以用于嵌套结构的对象。
@@ -175,6 +180,40 @@ console.log(x, y) // 1, 5
 
 ```
 
+对象解构可以与函数参数的默认值一起使用。
+
+```javascript
+
+function move({x=0, y=0} = {}) {
+  return [x, y];
+}
+
+move({x: 3, y: 8}); // [3, 8]
+move({x: 3}); // [3, 0]
+move({}); // [0, 0]
+move(); // [0, 0]
+
+```
+
+上面代码中，函数move的参数是一个对象，通过对这个对象进行解构，得到变量x和y的值。如果解构失败，x和y等于默认值。
+
+注意，指定函数参数的默认值时，不能采用下面的写法。
+
+```javascript
+
+function move({x, y} = { x: 0, y: 0 }) {
+  return [x, y];
+}
+
+move({x: 3, y: 8}); // [3, 8]
+move({x: 3}); // [3, undefined]
+move({}); // [undefined, undefined]
+move(); // [0, 0]
+
+```
+
+上面代码是为函数move的参数指定默认值，而不是为变量x和y指定默认值，所以会得到与前一种写法不同的结果。
+
 如果要将一个已经声明的变量用于解构赋值，必须非常小心。
 
 ```javascript
@@ -198,6 +237,16 @@ var x;
 ({x} = {x:1});
 
 ```
+
+对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
+
+```javascript
+
+let { log, sin, cos } = Math;
+
+```
+
+上面代码将Math对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
 
 ## 用途
 
@@ -274,7 +323,7 @@ jQuery.ajax = function (url, {
 
 **（5）遍历Map结构**
 
-任何部署了Iterator接口的对象，都可以用for...of循环遍历。Map结构原生支持Iterator接口，配合变量的结构赋值，获取键名和键值就非常方便。
+任何部署了Iterator接口的对象，都可以用for...of循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
 
 ```javascript
 
