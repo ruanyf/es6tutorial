@@ -108,6 +108,7 @@
 - Paul Miller, [es6-shim](https://github.com/paulmillr/es6-shim): 一个针对老式浏览器，模拟ES6部分功能的垫片库（shim）
 - army8735, [Javascript Downcast](https://github.com/army8735/jsdc): 国产的ES6到ES5的转码器
 - esnext, [ES6 Module Transpiler](https://github.com/esnext/es6-module-transpiler)：基于node.js的将ES6模块转为ES5代码的命令行工具
-- Sebastian McKenzie, [6to5](https://github.com/sebmck/6to5): 将ES6转为ES5代码的Node模块，支持source map
+- Sebastian McKenzie, [BabelJS](http://babeljs.io/): ES6转译器
 - SystemJS, [SystemJS](https://github.com/systemjs/systemjs): 在浏览器中加载AMD、CJS、ES6模块的一个垫片库
+- Modernizr, [HTML5 Cross Browser Polyfills](https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills#ecmascript-6-harmony): ES6垫片库清单
 - Facebook, [regenerator](https://github.com/facebook/regenerator): 将Generator函数转为ES5的转码器

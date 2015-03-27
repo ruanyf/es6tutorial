@@ -67,7 +67,7 @@ ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了
 
 ```javascript
 
-String.fromCodePoint(0x20BB7) 
+String.fromCodePoint(0x20BB7)
 // "𠮷"
 
 ```
@@ -242,7 +242,7 @@ ES6提供String.prototype.normalize()方法，用来将字符的不同表示方�
 
 ```javascript
 
-'\u01D1'.normalize() === '\u004F\u030C'.normalize() 
+'\u01D1'.normalize() === '\u004F\u030C'.normalize()
 // true
 
 ```
@@ -358,11 +358,32 @@ r.exec(s) // ["aa_"]
 ```javascript
 
 var r = /hello\d/y;
-r.sticky // true 
+r.sticky // true
 
 ```
 
 ## 模板字符串
+
+在ES6，输出模板通常是这样写的。
+
+```js
+$("#result").append(
+  "There are <b>" + basket.count + "</b> " +
+  "items in your basket, " +
+  "<em>" + basket.onSale +
+  "</em> are on sale!"
+);
+```
+
+上面这种写法相当繁琐不方便，ES6引入了模板字符串解决这个问题。
+
+```js
+$("#result").append(`
+  There are <b>${basket.count}</b> items
+   in your basket, <em>${basket.onSale}</em>
+  are on sale!
+`);
+```
 
 模板字符串（template string）是增强版的字符串，用反引号（`）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
 
@@ -399,10 +420,10 @@ var greeting = `\`Yo\` World!`;
 var x = 1;
 var y = 2;
 
-console.log(`${x} + ${y} = ${x+y}`) 
+console.log(`${x} + ${y} = ${x+y}`)
 // "1 + 2 = 3"
 
-console.log(`${x} + ${y*2} = ${x+y*2}`) 
+console.log(`${x} + ${y*2} = ${x+y*2}`)
 // "1 + 4 = 5"
 
 var obj = {x: 1, y: 2};
@@ -415,8 +436,8 @@ console.log(`${obj.x + obj.y}`)
 
 ```javascript
 
-function fn() { 
-  return "Hello World"; 
+function fn() {
+  return "Hello World";
 }
 
 console.log(`foo ${fn()} bar`);
@@ -428,7 +449,7 @@ console.log(`foo ${fn()} bar`);
 
 ```javascript
 
-var msg = `Hello, ${place}`;    
+var msg = `Hello, ${place}`;
 // throws error
 
 ```
@@ -438,8 +459,8 @@ var msg = `Hello, ${place}`;
 ```javascript
 
 if (x > MAX) {
-	throw new Error(`Most ${MAX} allowed: ${x}!`);
-	// 传统写法为'Most '+MAX+' allowed: '+x+'!'
+  throw new Error(`Most ${MAX} allowed: ${x}!`);
+  // 传统写法为'Most '+MAX+' allowed: '+x+'!'
 }
 
 ```
@@ -457,7 +478,7 @@ tag`Hello ${ a + b } world ${ a * b}`;
 
 上面代码中，模板字符串前面有一个函数tag，整个表达式将返回tag处理模板字符串后的返回值。
 
-函数tag依次接受三个参数。第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。第一个参数之后的参数，都是模板字符串各个变量被替换后的值。 
+函数tag依次接受三个参数。第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。第一个参数之后的参数，都是模板字符串各个变量被替换后的值。
 
 - 第一个参数：['Hello ', ' world ']
 - 第二个参数: 15
@@ -479,10 +500,10 @@ var a = 5;
 var b = 10;
 
 function tag(s, v1, v2) {
-  console.log(s[0]); 
-  console.log(s[1]); 
-  console.log(v1);  
-  console.log(v2);  
+  console.log(s[0]);
+  console.log(s[1]);
+  console.log(v1);
+  console.log(v2);
 
   return "OK";
 }
@@ -506,7 +527,7 @@ var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
 function passthru(literals) {
   var result = "";
   var i = 0;
-        
+
   while (i < literals.length) {
     result += literals[i++];
     if (i < arguments.length) {
@@ -538,7 +559,7 @@ tag`First line\nSecond line`
 ```javascript
 
 function tag(strings) {
-  console.log(strings.raw[0]); 
+  console.log(strings.raw[0]);
   // "First line\\nSecond line"
 }
 
