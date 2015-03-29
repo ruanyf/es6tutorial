@@ -27,7 +27,7 @@ Set函数可以接受一个数组作为参数，用来初始化。
 
 var items = new Set([1,2,3,4,5,5,5,5]);
 
-items.size 
+items.size
 // 5
 
 ```
@@ -40,7 +40,7 @@ let set = new Set();
 
 set.add({})
 set.size // 1
-    
+
 set.add({})
 set.size // 2
 
@@ -66,7 +66,7 @@ Set数据结构有以下方法。
 
 ```javascript
 
-s.add(1).add(2).add(2); 
+s.add(1).add(2).add(2);
 // 注意2被加入了两次
 
 s.size // 2
@@ -129,7 +129,7 @@ function dedupe(array) {
 
 ### 遍历操作
 
-Set结构有一个values方法，返回一个遍历器。
+Set结构有一个values方法，返回一个迭代器。
 
 ```javascript
 
@@ -143,7 +143,7 @@ for ( let item of set.values() ){
 
 ```
 
-Set结构的默认遍历器就是它的values方法。
+Set结构的默认迭代器就是它的values方法。
 
 ```javascript
 
@@ -206,7 +206,7 @@ for ( let [key, value] of set.entries() ){
 ```javascript
 
 let set = new Set(['red', 'green', 'blue']);
-let arr = [...set]; 
+let arr = [...set];
 // ['red', 'green', 'blue']
 
 ```
@@ -216,7 +216,7 @@ let arr = [...set];
 ```javascript
 
 let arr = [3, 5, 2, 2, 5, 5];
-let unique = [...new Set(arr)]; 
+let unique = [...new Set(arr)];
 // [3, 5, 2]
 
 ```
@@ -245,7 +245,7 @@ let b = new Set([4,3,2]);
 let union = new Set([...a, ...b]);
 // [1,2,3,4]
 
-let intersect = new Set([...a].filter(x => b.has(x))); 
+let intersect = new Set([...a].filter(x => b.has(x)));
 // [2,3]
 
 ```
@@ -306,7 +306,7 @@ ws.add(obj);
 ws.has(window); // true
 ws.has(foo);    // false
 
-ws.delete(window); 
+ws.delete(window);
 ws.has(window);    // false
 
 ws.clear();
@@ -387,7 +387,7 @@ map.get("title") // "Author"
 
 var map = new Map();
 
-map.set(['a'], 555); 
+map.set(['a'], 555);
 map.get(['a']) // undefined
 
 ```
@@ -420,7 +420,7 @@ map.get(k2) // 222
 ```javascript
 
 let map = new Map();
-    
+
 map.set(NaN, 123);
 map.get(NaN) // 123
 
@@ -464,7 +464,7 @@ let map = new Map()
 
 ```javascript
 
-var m = new Map(); 
+var m = new Map();
 
 m.set("edition", 6)        // 键是字符串
 m.set(262, "standard")     // 键是数值
@@ -494,20 +494,20 @@ m.get("edition")  // 6
 let map = new Map();
 map.set('foo', true);
 map.set('bar', false);
-    
+
 map.size // 2
 map.clear()
 map.size // 0
 
-```    
+```
 
 **（3）遍历**
 
-Map原生提供三个遍历器。
+Map原生提供三个迭代器。
 
-- keys()：返回键名的遍历器。
-- values()：返回键值的遍历器。
-- entries()：返回所有成员的遍历器。
+- keys()：返回键名的迭代器。
+- values()：返回键值的迭代器。
+- entries()：返回所有成员的迭代器。
 
 下面是使用实例。
 
@@ -548,7 +548,7 @@ for (let [key, value] of map) {
 
 ```
 
-上面代码最后的那个例子，表示Map结构的默认遍历器接口（Symbol.iterator属性），就是entries方法。
+上面代码最后的那个例子，表示Map结构的默认迭代器接口（Symbol.iterator属性），就是entries方法。
 
 ```javascript
 
@@ -589,12 +589,12 @@ let map0 = new Map()
   .set(1, 'a')
   .set(2, 'b')
   .set(3, 'c');
-    
+
 let map1 = new Map(
-  [...map0].filter(([k, v]) => k < 3) 
+  [...map0].filter(([k, v]) => k < 3)
 );
 // 产生Map结构 {1 => 'a', 2 => 'b'}
-    
+
 let map2 = new Map(
   [...map0].map(([k, v]) => [k * 2, '_' + v])
     );
@@ -634,7 +634,7 @@ map.forEach(function(value, key, map) {
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
 
-WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。 
+WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。
 
 下面是WeakMap结构的一个例子，可以看到用法上与Map几乎一样。
 

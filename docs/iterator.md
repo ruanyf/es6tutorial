@@ -1,14 +1,14 @@
 # Iterator和for...of循环
 
-## Iterator（遍历器）
+## Iterator（迭代器）
 
 ### 概念
 
 JavaScript原有的数据结构，主要是数组（Array）和对象（Object），ES6又添加了Map和Set，用户还可以组合使用它们，定义自己的数据结构。这就需要一种统一的接口机制，来处理所有不同的数据结构。
 
-遍历器（Iterator）就是这样一种机制。它属于一种接口规格，任何数据结构只要部署这个接口，就可以完成遍历操作，即依次处理该结构的所有成员。它的作用有两个，一是为各种数据结构，提供一个统一的、简便的接口，二是使得数据结构的成员能够按某种次序排列。在ES6中，遍历操作特指for...of循环，即Iterator接口主要供for...of消费。
+迭代器（Iterator）就是这样一种机制。它属于一种接口规格，任何数据结构只要部署这个接口，就可以完成遍历操作，即依次处理该结构的所有成员。它的作用有两个，一是为各种数据结构，提供一个统一的、简便的接口，二是使得数据结构的成员能够按某种次序排列。在ES6中，遍历操作特指for...of循环，即Iterator接口主要供for...of消费。
 
-遍历器的遍历过程是这样的：它提供了一个指针，默认指向当前数据结构的起始位置。第一次调用遍历器的next方法，可以将指针指向到第一个成员，第二次调用就指向第二个成员，直至指向数据结构的结束位置。每一次调用，都会返回当前成员的信息，具体来说，就是返回一个包含value和done两个属性的对象。其中，value属性是当前成员的值，done属性是一个布尔值，表示遍历是否结束。
+迭代器的遍历过程是这样的：它提供了一个指针，默认指向当前数据结构的起始位置。第一次调用迭代器的next方法，可以将指针指向到第一个成员，第二次调用就指向第二个成员，直至指向数据结构的结束位置。每一次调用，都会返回当前成员的信息，具体来说，就是返回一个包含value和done两个属性的对象。其中，value属性是当前成员的值，done属性是一个布尔值，表示遍历是否结束。
 
 下面是一个模拟next方法返回值的例子。
 
@@ -33,15 +33,15 @@ it.next() // { value: undefined, done: true }
 
 ```
 
-上面代码定义了一个makeIterator函数，它的参数是一个数组。调用该函数，就会返回一个对象。这个对象具有一个next方法，每次调用next方法，它的内部指针就会指向数组的下一个成员，并返回一个该成员信息的对象。请特别注意，next方法的返回值的构造：一个具有value和done两个属性的对象。通过这个返回值，我们就可以知道当前成员的值是什么，以及遍历是否结束。在这个例子中，makeIterator函数用来生成遍历器，它返回的那个具有next方法的对象就是遍历器，调用遍历器的next方法，就可以遍历事先给定的数组。
+上面代码定义了一个makeIterator函数，它的参数是一个数组。调用该函数，就会返回一个对象。这个对象具有一个next方法，每次调用next方法，它的内部指针就会指向数组的下一个成员，并返回一个该成员信息的对象。请特别注意，next方法的返回值的构造：一个具有value和done两个属性的对象。通过这个返回值，我们就可以知道当前成员的值是什么，以及遍历是否结束。在这个例子中，makeIterator函数用来生成迭代器，它返回的那个具有next方法的对象就是迭代器，调用迭代器的next方法，就可以遍历事先给定的数组。
 
-因为遍历器的作用，只是把接口规格加到数据结构之上。所以，遍历器与它所遍历的那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的遍历器，或者说用遍历器模拟出数据结构。下面是一个无限运行的遍历器例子。
+因为迭代器的作用，只是把接口规格加到数据结构之上。所以，迭代器与它所遍历的那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的迭代器，或者说用迭代器模拟出数据结构。下面是一个无限运行的迭代器例子。
 
 ```javascript
 
 function idMaker(){
   var index = 0;
-    
+
   return {
     next: function(){
       return {value: index++, done: false};
@@ -58,11 +58,11 @@ it.next().value // '2'
 
 ```
 
-上面的例子中，idMaker函数返回的对象就是遍历器，但是并没有对应的数据结构，或者说遍历器自己描述了一个数据结构出来。
+上面的例子中，idMaker函数返回的对象就是迭代器，但是并没有对应的数据结构，或者说迭代器自己描述了一个数据结构出来。
 
-总之，所谓Iterator接口，就是指调用这个接口，会返回一个遍历器对象。该对象具备next方法，每次调用该方法，会返回一个具有value和done两个属性的新对象，指向部署了Iterator接口的数据结构的一个成员。
+总之，所谓Iterator接口，就是指调用这个接口，会返回一个迭代器对象。该对象具备next方法，每次调用该方法，会返回一个具有value和done两个属性的新对象，指向部署了Iterator接口的数据结构的一个成员。
 
-如果使用TypeScript的写法，遍历器接口、遍历器和遍历器返回值的规格可以描述如下。
+如果使用TypeScript的写法，迭代器接口、迭代器和迭代器返回值的规格可以描述如下。
 
 ```javascript
 
@@ -85,7 +85,7 @@ interface IterationResult {
 
 Iterator接口的开发目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（见后文的介绍）。当使用for...of循环，遍历某种数据结构时，该循环会自动去寻找Iterator接口。
 
-ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
+ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认迭代器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
 
 在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象、Set和Map结构。
 
@@ -101,19 +101,19 @@ iter.next() // { value: undefined, done: true }
 
 ```
 
-上面代码中，变量arr是一个数组，原生就具有遍历器接口，部署在arr的Symbol.iterator属性上面。所以，调用这个属性，就得到遍历器。
+上面代码中，变量arr是一个数组，原生就具有迭代器接口，部署在arr的Symbol.iterator属性上面。所以，调用这个属性，就得到迭代器。
 
-上面提到，原生就部署iterator接口的数据结构有三类，对于这三类数据结构，不用自己写遍历器，for...of循环会自动遍历它们。除此之外，其他数据结构（主要是对象）的Iterator接口，都需要自己在Symbol.iterator属性上面部署，这样才会被for...of循环遍历。
+上面提到，原生就部署iterator接口的数据结构有三类，对于这三类数据结构，不用自己写迭代器，for...of循环会自动遍历它们。除此之外，其他数据结构（主要是对象）的Iterator接口，都需要自己在Symbol.iterator属性上面部署，这样才会被for...of循环遍历。
 
-对象（Object）之所以没有默认部署Iterator接口，是因为对象的哪个属性先遍历，哪个属性后遍历是不确定的，需要开发者手动指定。本质上，遍历器是一种线性处理，对于任何非线性的数据结构，部署遍历器接口，就等于部署一种线性转换。不过，严格地说，对象部署遍历器接口并不是很必要，因为这时对象实际上被当作Map结构使用，ES5没有Map结构，而ES6原生提供了。
+对象（Object）之所以没有默认部署Iterator接口，是因为对象的哪个属性先遍历，哪个属性后遍历是不确定的，需要开发者手动指定。本质上，迭代器是一种线性处理，对于任何非线性的数据结构，部署迭代器接口，就等于部署一种线性转换。不过，严格地说，对象部署迭代器接口并不是很必要，因为这时对象实际上被当作Map结构使用，ES5没有Map结构，而ES6原生提供了。
 
-一个对象如果要有可被for...of循环调用的Iterator接口，就必须在Symbol.iterator的属性上部署遍历器方法（原型链上的对象具有该方法也可）。
+一个对象如果要有可被for...of循环调用的Iterator接口，就必须在Symbol.iterator的属性上部署迭代器方法（原型链上的对象具有该方法也可）。
 
 ```javascript
 
 class MySpecialTree {
   // ...
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     // ...
     return theIterator;
   }
@@ -121,7 +121,7 @@ class MySpecialTree {
 
 ```
 
-上面代码是一个类部署Iterator接口的写法。Symbol.iterator属性对应一个函数，执行后返回当前对象的遍历器。下面是一个例子。
+上面代码是一个类部署Iterator接口的写法。Symbol.iterator属性对应一个函数，执行后返回当前对象的迭代器。下面是一个例子。
 
 ```javascript
 
@@ -131,11 +131,11 @@ function Obj(value){
 }
 
 Obj.prototype[Symbol.iterator] = function(){
-  
+
   var iterator = {
     next: next
   };
-  
+
   var current = this;
 
   function next(){
@@ -171,7 +171,7 @@ for (var i of one){
 
 ```
 
-上面代码首先在构造函数的原型链上部署Symbol.iterator方法，调用该方法会返回遍历器对象iterator，调用该对象的next方法，在返回一个值的同时，自动将内部指针移到下一个实例。
+上面代码首先在构造函数的原型链上部署Symbol.iterator方法，调用该方法会返回迭代器对象iterator，调用该对象的next方法，在返回一个值的同时，自动将内部指针移到下一个实例。
 
 下面是另一个为对象添加Iterator接口的例子。
 
@@ -207,7 +207,7 @@ NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
 
 ```
 
-如果Symbol.iterator方法返回的不是遍历器，解释引擎将会报错。
+如果Symbol.iterator方法返回的不是迭代器，解释引擎将会报错。
 
 ```javascript
 
@@ -219,7 +219,7 @@ obj[Symbol.iterator] = () => 1;
 
 ```
 
-上面代码中，变量obj的Symbol.iterator方法返回的不是遍历器，因此报错。
+上面代码中，变量obj的Symbol.iterator方法返回的不是迭代器，因此报错。
 
 ### 调用默认iterator接口的场合
 
@@ -232,10 +232,10 @@ obj[Symbol.iterator] = () => 1;
 ```javascript
 
 let set = new Set().add('a').add('b').add('c');
-    
+
 let [x,y] = set;
 // x='a'; y='b'
-    
+
 let [first, ...rest] = set;
 // first='a'; rest=['b','c'];
 
@@ -279,14 +279,14 @@ let arr = [...iterable];
 
 ### 原生具备iterator接口的数据结构
 
-《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个遍历器。
+《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个迭代器。
 
 ```javascript
 
 var arr = [1, 5, 7];
 var arrEntries = arr.entries();
 
-arrEntries.toString() 
+arrEntries.toString()
 // "[object Array Iterator]"
 
 arrEntries === arrEntries[Symbol.iterator]()
@@ -294,14 +294,14 @@ arrEntries === arrEntries[Symbol.iterator]()
 
 ```
 
-上面代码中，entries方法返回的是一个遍历器（iterator），本质上就是调用了`Symbol.iterator`方法。
+上面代码中，entries方法返回的是一个迭代器（iterator），本质上就是调用了`Symbol.iterator`方法。
 
 字符串是一个类似数组的对象，也原生具有Iterator接口。
 
 ```javascript
 
 var someString = "hi";
-typeof someString[Symbol.iterator] 
+typeof someString[Symbol.iterator]
 // "function"
 
 var iterator = someString[Symbol.iterator]();
@@ -312,9 +312,9 @@ iterator.next()  // { value: undefined, done: true }
 
 ```
 
-上面代码中，调用`Symbol.iterator`方法返回一个遍历器，在这个遍历器上可以调用next方法，实现对于字符串的遍历。
+上面代码中，调用`Symbol.iterator`方法返回一个迭代器，在这个迭代器上可以调用next方法，实现对于字符串的遍历。
 
-可以覆盖原生的`Symbol.iterator`方法，达到修改遍历器行为的目的。
+可以覆盖原生的`Symbol.iterator`方法，达到修改迭代器行为的目的。
 
 ```javascript
 
@@ -323,7 +323,7 @@ var str = new String("hi");
 [...str] // ["h", "i"]
 
 str[Symbol.iterator] = function() {
-  return { 
+  return {
     next: function() {
       if (this._first) {
         this._first = false;
@@ -336,7 +336,7 @@ str[Symbol.iterator] = function() {
   };
 };
 
-[...str] // ["bye"]  
+[...str] // ["bye"]
 str // "hi"
 
 ```
@@ -383,7 +383,7 @@ for...of循环可以使用的范围包括数组、Set和Map结构、某些类似
 
 ### 数组
 
-数组原生具备iterator接口，for...of循环本质上就是调用这个接口产生的遍历器，可以用下面的代码证明。
+数组原生具备iterator接口，for...of循环本质上就是调用这个接口产生的迭代器，可以用下面的代码证明。
 
 ```javascript
 
@@ -475,13 +475,13 @@ for (let pair of map) {
 
 ### 计算生成的数据结构
 
-ES6的数组、Set、Map都部署了以下三个方法，调用后都返回遍历器。
+ES6的数组、Set、Map都部署了以下三个方法，调用后都返回迭代器。
 
-- entries() 返回一个遍历器，用来遍历 [键名, 键值] 组成的数组。对于数组，键名就是索引值；对于Set，键名与键值相同。Map结构的iterator接口，默认就是调用entries方法。
-- keys() 返回一个遍历器，用来遍历所有的键名。
-- values() 返回一个遍历器，用来遍历所有的键值。
+- entries() 返回一个迭代器，用来遍历 [键名, 键值] 组成的数组。对于数组，键名就是索引值；对于Set，键名与键值相同。Map结构的iterator接口，默认就是调用entries方法。
+- keys() 返回一个迭代器，用来遍历所有的键名。
+- values() 返回一个迭代器，用来遍历所有的键值。
 
-这三个方法调用后生成的遍历器，所遍历的都是计算生成的数据结构。
+这三个方法调用后生成的迭代器，所遍历的都是计算生成的数据结构。
 
 ```javascript
 
@@ -546,12 +546,12 @@ for (let x of 'a\uD83D\uDC0A') {
 let arrayLike = { length: 2, 0: 'a', 1: 'b' };
 
 // 报错
-for (let x of arrayLike) { 
+for (let x of arrayLike) {
   console.log(x);
 }
 
 // 正确
-for (let x of Array.from(arrayLike)) { 
+for (let x of Array.from(arrayLike)) {
   console.log(x);
 }
 

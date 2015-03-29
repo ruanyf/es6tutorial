@@ -86,7 +86,7 @@ Array.of(3).length // 1
 Array() // []
 Array(3) // [undefined, undefined, undefined]
 Array(3,11,8) // [3, 11, 8]
-		
+
 ```
 
 上面代码说明，只有当参数个数不少于2个，Array()才会返回由参数组成的新数组。
@@ -99,7 +99,7 @@ Array(3,11,8) // [3, 11, 8]
 
 [1, 5, 10, 15].find(function(value, index, arr) {
 	return value > 9;
-}) // 10 
+}) // 10
 
 ```
 
@@ -111,7 +111,7 @@ Array(3,11,8) // [3, 11, 8]
 
 [1, 5, 10, 15].findIndex(function(value, index, arr) {
 	return value > 9;
-}) // 2 
+}) // 2
 
 ```
 
@@ -121,7 +121,7 @@ Array(3,11,8) // [3, 11, 8]
 
 ```javascript
 
-[NaN].indexOf(NaN) 
+[NaN].indexOf(NaN)
 // -1
 
 [NaN].findIndex(y => Object.is(NaN, y))
@@ -156,7 +156,7 @@ fill()还可以接受第二个和第三个参数，用于指定填充的起始�
 
 ## 数组实例的entries()，keys()和values()
 
-ES6提供三个新的方法——entries()，keys()和values()——用于遍历数组。它们都返回一个遍历器，可以用for...of循环进行遍历，唯一的区别是keys()是对键名的遍历、values()是对键值的遍历，entries()是对键值对的遍历。
+ES6提供三个新的方法——entries()，keys()和values()——用于遍历数组。它们都返回一个迭代器，可以用for...of循环进行遍历，唯一的区别是keys()是对键名的遍历、values()是对键值的遍历，entries()是对键值对的遍历。
 
 ```javascript
 
