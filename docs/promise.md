@@ -450,22 +450,31 @@ async函数与Promise、Generator函数一样，是用来取代回调函数、�
 
 ```javascript
 
-async function getStockPrice(symbol, currency) {
-  let price = await getStockPrice(symbol);
-  return convert(price, currency);
+async function getStockPriceByName(name) {
+  var symbol = await getStockSymbol(name);
+  var stockPrice = await getStockPrice(symbol);
+  return stockPrice;
 }
-
-getStockPrice("JNJ")
-  .then(
-    price => console.log(price),
-    error => console.error(error)
-  );
 
 ```
 
-上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数将返回一个Promise对象。调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockPrice函数）产生的Promise对象，不再执行函数体内后面的语句。等到getStockPrice完成，再自动回到函数体内，执行剩下的语句。
+上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数内部有异步操作。调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockSymbol函数）产生的Promise对象，不再执行函数体内后面的语句。等到getStockSymbol完成，再自动回到函数体内，执行剩下的语句。
 
 仔细观察getStockPrice函数，你会发现除了添加async、await这两个命令，整个代码与同步操作的流程一模一样。这就是async函数的本意，尽可能地用同步的流程，表达异步操作。
+
+实际上，上面的例子可以用Generator函数表达。
+
+```javascript
+function getStockPriceByName(name) {
+  return async(function*(name) {
+    var symbol = yield getStockSymbol(name);
+    var stockPrice = yield getStockPrice(symbol);
+    return stockPrice;
+  });
+}
+```
+
+上面的例子中，async函数是一个自动任务运行器，需要自己定义，它的参数是一个Generator函数。async函数的具体实现，后文有例子，这里只要知道，async...await结构本质上，是在语言层面提供的一种多个异步任务的自动运行器。
 
 下面是一个更一般性的例子。
 
@@ -493,8 +502,8 @@ async function asyncValue(value) {
 async function myFunction() {
   try {
     await somethingThatReturnsAPromise();
-  } catch (err) { 
-    console.log(err); 
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -624,8 +633,8 @@ function chainAnimationsGenerator(elem, animations) {
       for(var anim of animations) {
         ret = yield anim(elem);
       }
-    } catch(e) { 
-      /* 忽略错误，继续执行 */ 
+    } catch(e) {
+      /* 忽略错误，继续执行 */
     }
       return ret;
   });
@@ -651,17 +660,17 @@ function spawn(genF) {
         next = nextF();
       } catch(e) {
         // 如果任务执行出错，Promise状态变为已失败
-        reject(e); 
+        reject(e);
         return;
       }
       if(next.done) {
         // 所有任务执行完毕，Promise状态变为已完成
         resolve(next.value);
         return;
-      } 
+      }
       // 如果还有下一个任务，就继续调用step方法
       Promise.resolve(next.value).then(function(v) {
-        step(function() { return gen.next(v); });      
+        step(function() { return gen.next(v); });
       }, function(e) {
         step(function() { return gen.throw(e); });
       });
