@@ -1,8 +1,6 @@
 # Generator 函数
 
-## 语法
-
-### 简介
+## 简介
 
 所谓Generator，有多种理解角度。首先，可以把它理解成一个函数的内部状态的遍历器，每调用一次，函数的内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制函数的内部状态的变化，依次遍历这些状态。
 
@@ -13,7 +11,7 @@
 function* helloWorldGenerator() {
   yield 'hello';
   yield 'world';
-	return 'ending';
+  return 'ending';
 }
 
 var hw = helloWorldGenerator();
@@ -26,7 +24,7 @@ var hw = helloWorldGenerator();
 
 ```javascript
 
-hw.next() 
+hw.next()
 // { value: 'hello', done: false }
 
 hw.next()
@@ -52,7 +50,7 @@ hw.next()
 
 总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
 
-上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，即调用该函数会返回该对象的一个遍历器。由于Generator函数调用后返回自身的遍历器，所以Generator函数就是自身的遍历器函数，即它的Symbol.iterator属性指向自身。
+上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，即调用该函数会返回该对象的一个遍历器。遍历器本身也是一个对象，它的Symbol.iterator属性执行后，返回自身。
 
 ```javascript
 
@@ -60,12 +58,14 @@ function* gen(){
   // some code
 }
 
-gen[Symbol.iterator]() === gen
+var g = gen();
+
+g[Symbol.iterator]() === g
 // true
 
 ```
 
-上面代码中，gen是一个Generator函数，它的Symbol.iterator属性就指向它自己。
+上面代码中，gen是一个Generator函数，调用它会生成一个遍历器g。遍历器g的Symbol.iterator属性是一个遍历器函数，执行后返回它自己。
 
 由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个成员，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。另一方面，由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
@@ -82,7 +82,7 @@ function* f() {
 var generator = f();
 
 setTimeout(function () {
-  generator.next() 
+  generator.next()
 }, 2000);
 
 ```
@@ -111,7 +111,7 @@ var arr = [1, [[2, 3], 4], [5, 6]];
 var flat = function* (a){
   a.forEach(function(item){
     if (typeof item !== 'number'){
-      yield* flat(item);  
+      yield* flat(item);
     } else {
       yield item;
     }
@@ -135,7 +135,7 @@ var flat = function* (a){
   for(var i =0;i<length;i++){
     var item = a[i];
     if (typeof item !== 'number'){
-      yield* flat(item);  
+      yield* flat(item);
     } else {
       yield item;
     }
@@ -149,7 +149,7 @@ for (var f of flat(arr)){
 
 ```
 
-### next方法的参数
+## next方法的参数
 
 yield语句本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield语句的返回值。
 
@@ -199,7 +199,7 @@ it.next(13)
 
 注意，由于next方法的参数表示上一个yield语句的返回值，所以第一次使用next方法时，不能带有参数。V8引擎直接忽略第一次使用next方法时的参数，只有从第二次使用next方法开始，参数才是有效的。
 
-### for...of循环
+## for...of循环
 
 for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
 
@@ -228,49 +228,49 @@ for (let v of foo()) {
 ```javascript
 
 function* fibonacci() {
-    let [prev, curr] = [0, 1];
-    for (;;) {
-        [prev, curr] = [curr, prev + curr];
-        yield curr;
-    }
+  let [prev, curr] = [0, 1];
+  for (;;) {
+    [prev, curr] = [curr, prev + curr];
+    yield curr;
+  }
 }
 
 for (let n of fibonacci()) {
-    if (n > 1000) break;
-    console.log(n);
+  if (n > 1000) break;
+  console.log(n);
 }
 
 ```
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
 
-### throw方法
+## throw方法
 
 Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
 
 ```javascript
 
 var g = function* () {
-    while (true) {
-        try {
-            yield;
-        } catch (e) {
-            if (e != 'a') {
-                throw e;
-            }
-            console.log('内部捕获', e);
-        }
+  while (true) {
+    try {
+      yield;
+    } catch (e) {
+      if (e != 'a') {
+        throw e;
+      }
+      console.log('内部捕获', e);
     }
+  }
 };
 
 var i = g();
 i.next();
 
 try {
-    i.throw('a');
-    i.throw('b');
+  i.throw('a');
+  i.throw('b');
 } catch (e) {
-    console.log('外部捕获', e);
+  console.log('外部捕获', e);
 }
 // 内部捕获 a
 // 外部捕获 b
@@ -278,6 +278,101 @@ try {
 ```
 
 上面代码中，遍历器i连续抛出两个错误。第一个错误被Generator函数体内的catch捕获，然后Generator函数执行完成，于是第二个错误被函数体外的catch捕获。
+
+注意，上面代码的错误，是用遍历器的throw方法抛出的，而不是用throw命令抛出的。后者只能被函数体外的catch语句捕获。
+
+```javascript
+var g = function* () {
+  while (true) {
+    try {
+      yield;
+    } catch (e) {
+      if (e != 'a') {
+        throw e;
+      }
+      console.log('内部捕获', e);
+    }
+  }
+};
+
+var i = g();
+i.next();
+
+try {
+  throw new Error('a');
+  throw new Error('b');
+} catch (e) {
+  console.log('外部捕获', e);
+}
+// 外部捕获 [Error: a]
+```
+
+上面代码之所以只捕获了a，是因为函数体外的catch语句块，捕获了抛出的a错误以后，就不会再继续执行try语句块了。
+
+如果遍历器函数内部没有部署try...catch代码块，那么throw方法抛出的错误，将被外部try...catch代码块捕获。
+
+```javascript
+var g = function* () {
+  while (true) {
+    yield;
+    console.log('内部捕获', e);
+  }
+};
+
+var i = g();
+i.next();
+
+try {
+  i.throw('a');
+  i.throw('b');
+} catch (e) {
+  console.log('外部捕获', e);
+}
+// 外部捕获 a
+```
+
+上面代码中，遍历器函数g内部，没有部署try...catch代码块，所以抛出的错误直接被外部catch代码块捕获。
+
+如果遍历器函数内部部署了try...catch代码块，那么遍历器的throw方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
+
+```javascript
+var gen = function* gen(){
+  yield console.log('hello');
+  yield console.log('world');
+}
+
+var g = gen();
+g.next();
+
+try {
+  g.throw();
+} catch (e) {
+  g.next();
+}
+// hello
+```
+
+上面代码只输出hello就结束了，因为第二次调用next方法时，遍历器状态已经变成终止了。但是，如果使用throw方法抛出错误，不会影响遍历器状态。
+
+```javascript
+var gen = function* gen(){
+  yield console.log('hello');
+  yield console.log('world');
+}
+
+var g = gen();
+g.next();
+
+try {
+  throw new Error();
+} catch (e) {
+  g.next();
+}
+// hello
+// world
+```
+
+上面代码中，throw命令抛出的错误不会影响到遍历器的状态，所以两次执行next方法，都取到了正确的操作。
 
 这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
 
@@ -287,17 +382,17 @@ foo('a', function (a) {
     if (a.error) {
         throw new Error(a.error);
     }
- 
+
     foo('b', function (b) {
         if (b.error) {
             throw new Error(b.error);
         }
- 
+
         foo('c', function (c) {
             if (c.error) {
                 throw new Error(c.error);
             }
- 
+
             console.log(a, b, c);
         });
     });
@@ -324,31 +419,14 @@ function* g(){
 
 ```
 
-如果Generator函数内部没有定义catch，那么throw方法抛出的错误，将被函数体的catch捕获。
-
-```javascript
-
-function *foo() { }
-
-var it = foo();
-try {
-  it.throw( "Oops!" );
-} catch (err) {
-    console.log( "Error: " + err ); // Error: Oops!
-}
-
-```
-
-上面代码中，foo函数内部没有任何语句，throw抛出的错误被函数体外的catch捕获。
-
 反过来，Generator函数内抛出的错误，也可以被函数体外的catch捕获。
 
 ```javascript
 
 function *foo() {
-    var x = yield 3;
-    var y = x.toUpperCase(); 
-    yield y;
+  var x = yield 3;
+  var y = x.toUpperCase();
+  yield y;
 }
 
 var it = foo();
@@ -356,10 +434,10 @@ var it = foo();
 it.next(); // { value:3, done:false }
 
 try {
-  it.next( 42 ); 
+  it.next(42);
 }
 catch (err) {
-  console.log( err );
+  console.log(err);
 }
 
 ```
@@ -408,12 +486,12 @@ log(g());
 // fixing generator { value: 1, done: false }
 // fixing generator { value: 1, done: false }
 // caller done
- 
+
 ```
 
 上面代码在Generator函数g抛出错误以后，再调用next方法，就不再执行下去了，一直停留在上一次的状态。
 
-### yield*语句
+## yield*语句
 
 如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
 
@@ -478,7 +556,7 @@ var it = bar();
 it.next(); //
 it.next(); //
 it.next(); //
-it.next(); // "v: foo" 
+it.next(); // "v: foo"
 it.next(); //
 
 ```
@@ -546,7 +624,7 @@ let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
 // 遍历二叉树
 var result = [];
 for (let node of inorder(tree)) {
-  result.push(node); 
+  result.push(node);
 }
 
 result
@@ -554,7 +632,7 @@ result
 
 ```
 
-### 作为对象属性的Generator函数
+## 作为对象属性的Generator函数
 
 如果一个对象的属性是Generator函数，可以简写成下面的形式。
 
