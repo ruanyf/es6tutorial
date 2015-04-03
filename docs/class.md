@@ -327,19 +327,19 @@ Class作为构造函数的升级，也有自己的prototype属性，其规则与
 class A {
 }
 
-A.prototype === Function.prototype
+A.__proto__ === Function.__proto__
 // true
 
 class B extends A {
 }
 
-B.prototype === A
+B.__proto__ === A
 // true
 
 class C extends Object {
 }
 
-C.prototype === Object
+C.__proto__ === Object
 // true
 
 ```
