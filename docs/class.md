@@ -102,14 +102,14 @@ class Point {
 
 }
 
-var point = Point(2, 3);
+var point = new Point(2, 3);
 
 point.toString() // (2, 3)
 
 point.hasOwnProperty('x') // true
 point.hasOwnProperty('y') // true
 point.hasOwnProperty('toString') // false
-point.__proto__.hasOwnProperty('toString') // false 
+point.__proto__.hasOwnProperty('toString') // true 
 
 ```
 
@@ -263,7 +263,7 @@ class ColorPoint extends Point {
 
 class Point { /* ... */ }
 
-class ColorPoint extends Foo {
+class ColorPoint extends Point {
   constructor() {
   }
 }
