@@ -19,7 +19,7 @@ Point.prototype.toString = function () {
 
 ```
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰而已。上面的代码用“类”改写，就是下面这样。
+ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用“类”改写，就是下面这样。
 
 ```javascript
 
@@ -39,7 +39,20 @@ class Point {
 
 ```
 
-上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。Point类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
+上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
+
+Point类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。ES5的`Point.prototype`在ES6继续存在，也就是说，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
+
+```javascript
+
+Point.prototype.constructor === Point // true
+
+Point.prototype.toString
+// function toString() {
+//   return '(' + this.x + ', ' + this.y + ')';
+// }
+
+```
 
 **（2）constructor方法**
 
@@ -100,7 +113,7 @@ class Point {
 
 }
 
-var point = Point(2, 3);
+var point = new Point(2, 3);
 
 point.toString() // (2, 3)
 
@@ -142,7 +155,7 @@ p3.printName() // "Oops"
 
 ```
 
-上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，此后新建的实例p3也可以调用这个方法。这意味着，使用实例的\__proto\__属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
+上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，此后新建的实例p3也可以调用这个方法。这意味着，使用实例的\_\_proto\_\_属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
 
 **（4）name属性**
 
@@ -261,7 +274,7 @@ class ColorPoint extends Point {
 
 class Point { /* ... */ }
 
-class ColorPoint extends Foo {
+class ColorPoint extends Point {
   constructor() {
   }
 }
@@ -316,33 +329,99 @@ cp instanceof Point // true
 
 上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
 
-### prototype属性
+### 类的prototype属性和\_\_proto\_\_属性
 
-Class作为构造函数的升级，也有自己的prototype属性，其规则与ES5构造函数的prototype属性一致。
+在ES5中，每一个对象都有\_\_proto\_\_属性，指向对应的构造函数的prototype属性。Class作为构造函数的语法糖，也有自己的prototype属性和\_\_proto\_\_属性，因此同时存在两条继承链。
+
+- 子类的\_\_proto\_\_属性，表示构造函数的继承，总是指向父类
+- 子类prototype属性的\_\_proto\_\_属性，表示方法的继承，总是指向父类的prototype属性
+
+```javascript
+
+class B extends A {
+}
+
+B.__proto__ === A // true
+B.prototype.__proto__ === A.prototype // true
+
+```
+
+上面代码中，子类A的`__proto__`属性指向父类B，子类A的prototype属性的__proto__属性指向父类B的prototype属性。
+
+第一条继承链，实质如下。
+
+```javascript
+
+class B extends A {
+  constructor() {
+    return A.call(this);
+  }
+}
+
+// 等同于
+
+class B extends A {
+  constructor() {
+    return B.__proto__.call(this);
+  }
+}
+
+```
+
+第二条继承链，实质如下。
+
+```javascript
+
+B.prototype = new A();
+// 等同于
+B.prototype.__proto__ = A.prototype;
+
+```
+
+此外，还有三种特殊情况。
+
+```javascript
+
+class A extends Object {
+}
+
+A.__proto__ === Object // true
+A.prototype.__proto__ === Object.prototype // true
+
+```
+
+第一种特殊情况，子类A继承Object。这种情况下，A其实就是构造函数Object的复制，A的实例就是Object的实例。
 
 ```javascript
 
 class A {
 }
 
-A.prototype === Function.prototype
-// true
-
-class B extends A {
-}
-
-B.prototype === A
-// true
-
-class C extends Object {
-}
-
-C.prototype === Object
-// true
+A.__proto__ === Function.prototype // true
+A.prototype.__proto__ === Object.prototype // true
 
 ```
 
-上面代码中，子类的prototype属性都指向父类。如果一个类是基类（即不存在任何继承），那么它的原型指向`Function.prototype`。
+第二种特殊情况，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回一个空对象（即Object实例），所以`A.prototype.__proto__`指向构造函数（Object）的prototype属性。
+
+
+```javascript
+
+class A extends null {
+}
+
+A.__proto__ === Function.prototype // true
+A.prototype.__proto__ === null // true
+
+```
+
+第三种特殊情况，与第二种情况非常像。A也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+
+```javascript
+class C extends null {
+  constructor() { return Object.create(null); }
+}
+```
 
 ### Object.getPrototypeOf()
 
@@ -355,7 +434,7 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 ```
 
-### \_\_proto\_\_属性
+### 实例的\_\_proto\_\_属性
 
 父类和子类的\_\_proto\_\_属性，指向是不一样的。
 
@@ -507,6 +586,26 @@ Bar.classMethod(); // 'hello'
 ```
 
 上面代码中，父类Foo有一个静态方法，子类Bar可以调用这个方法。
+
+静态方法也是可以从super对象上调用的。
+
+```javascript
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+
+class Bar extends Foo {
+  static classMethod() {
+    return super.classMethod() + ', too';
+  }
+}
+
+Bar.classMethod();
+
+```
 
 ## Module
 
