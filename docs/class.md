@@ -1,8 +1,6 @@
 # Class和Module
 
-## Class
-
-### 基本语法
+## Class基本语法
 
 **（1）概述**
 
@@ -11,12 +9,12 @@ ES5通过构造函数，定义并生成新对象。下面是一个例子。
 ```javascript
 
 function Point(x,y){
-	this.x = x;
-	this.y = y;
+  this.x = x;
+  this.y = y;
 }
 
 Point.prototype.toString = function () {
-	return '('+this.x+', '+this.y+')';
+  return '('+this.x+', '+this.y+')';
 }
 
 ```
@@ -109,7 +107,7 @@ point.toString() // (2, 3)
 point.hasOwnProperty('x') // true
 point.hasOwnProperty('y') // true
 point.hasOwnProperty('toString') // false
-point.__proto__.hasOwnProperty('toString') // false 
+point.__proto__.hasOwnProperty('toString') // true
 
 ```
 
@@ -125,9 +123,9 @@ p1.__proto__ === p2.__proto__
 
 ```
 
-上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\__proto__属性是相等的。
+上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\_\_proto\_\_属性是相等的。
 
-这也意味着，可以通过\__proto__属性为Class添加方法。
+这也意味着，可以通过\_\_proto\_\_属性为Class添加方法。
 
 ```javascript
 
@@ -139,7 +137,7 @@ p1.__proto__.printName = function () { return 'Oops' };
 p1.printName() // "Oops"
 p2.printName() // "Oops"
 
-var p3 = new Point(4,2); 
+var p3 = new Point(4,2);
 p3.printName() // "Oops"
 
 ```
@@ -210,8 +208,8 @@ class Foo {}
 
 ```javascript
 
-{ 
-  let Foo = class {};    
+{
+  let Foo = class {};
   class Bar extends Foo {
   }
 }
@@ -224,9 +222,9 @@ class Foo {}
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
 
-### Class的继承
+## Class的继承
 
-**（1）基本用法**
+### 基本用法
 
 Class之间可以通过extends关键字，实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
@@ -248,14 +246,14 @@ class ColorPoint extends Point {
   }
 
   toString() {
-    return this.color+' '+super(); // 等同于parent.toString()
+    return this.color + ' ' + super.toString(); // 等同于parent.toString()
   }
 
 }
 
 ```
 
-上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的同名方法。在constructor方法内，super指代父类的constructor方法；在toString方法内，super指代父类的toString方法。
+上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的实例（即父类的this对象）。
 
 子类必须在constructor方法中调用super方法，否则新建实例时会报错。
 
@@ -267,7 +265,7 @@ class ColorPoint extends Foo {
   constructor() {
   }
 }
-    
+
 let cp = new ColorPoint(); // ReferenceError
 
 ```
@@ -282,7 +280,7 @@ constructor(...args) {
 
 ```
 
-另一个需要注意的地方是，只有调用super方法之后，才可以使用this关键字，否则会报错。
+另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用this关键字，否则会报错。这是因为没有调用父类的构造函数，就无法子类实例的构建。
 
 ```javascript
 
@@ -292,7 +290,7 @@ class Point {
     this.y = y;
   }
 }
-    
+
 class ColorPoint extends Point {
   constructor(x, y, color) {
     this.color = color; // ReferenceError
@@ -303,7 +301,7 @@ class ColorPoint extends Point {
 
 ```
 
-上面代码中，子类的constructor方法没有调用super方法之前，就使用this关键字，结果报错，而放在super方法之后就是正确的。
+上面代码中，子类的constructor方法没有调用super之前，就使用this关键字，结果报错，而放在super方法之后就是正确的。
 
 下面是生成子类实例的代码。
 
@@ -318,7 +316,7 @@ cp instanceof Point // true
 
 上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
 
-**（2）prototype属性**
+### prototype属性
 
 Class作为构造函数的升级，也有自己的prototype属性，其规则与ES5构造函数的prototype属性一致。
 
@@ -346,7 +344,7 @@ C.prototype === Object
 
 上面代码中，子类的prototype属性都指向父类。如果一个类是基类（即不存在任何继承），那么它的原型指向`Function.prototype`。
 
-**（3）Object.getPrototypeOf方法**
+### Object.getPrototypeOf()
 
 Object.getPrototypeOf方法可以用来从子类上获取父类。
 
@@ -357,9 +355,9 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 ```
 
-**（4）\__proto\__属性**
+### \_\_proto\_\_属性
 
-父类和子类的\__proto\__属性，指向是不一样的。
+父类和子类的\_\_proto\_\_属性，指向是不一样的。
 
 ```javascript
 
@@ -371,12 +369,12 @@ p2.__proto__.__proto__ === p1.__proto__ // true
 
 ```
 
-通过子类的\__proto\__属性，可以修改父类。
+通过子类的\_\_proto\_\_属性，可以修改父类。
 
 ```javascript
 
-p2.__proto__.__proto__.printName = function () { 
-  console.log('Ha'); 
+p2.__proto__.__proto__.printName = function () {
+  console.log('Ha');
 };
 
 p1.printName() // "Ha"
@@ -385,15 +383,15 @@ p1.printName() // "Ha"
 
 上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
 
-**（5）构造函数的继承**
+### 构造函数的继承
 
 下面是一个继承原生的Array构造函数的例子。
 
 ```javascript
 
 class MyArray extends Array {
-  constructor(...args) { 
-    super(...args); 
+  constructor(...args) {
+    super(...args);
   }
 }
 
@@ -408,14 +406,14 @@ arr[1] = 12;
 
 ```javascript
 
-class MyError extends Error {    
+class MyError extends Error {
 }
 
 throw new MyError('Something happened!');
 
 ```
 
-### 取值函数getter和存值函数setter
+## class的取值函数（getter）和存值函数（setter）
 
 与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数。
 
@@ -442,7 +440,7 @@ inst.prop
 
 上面代码中，prop属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
 
-### Generator方法
+## Class的Generator方法
 
 如果某个方法之前加上星号（*），就表示该方法是一个Generator函数。
 
@@ -458,7 +456,7 @@ class Foo {
     }
   }
 }
-    
+
 for (let x of new Foo('hello', 'world')) {
   console.log(x);
 }
@@ -469,7 +467,7 @@ for (let x of new Foo('hello', 'world')) {
 
 上面代码中，Foo类的Symbol.iterator方法前有一个星号，表示该方法是一个Generator函数。Symbol.iterator方法返回一个Foo类的默认遍历器，for...of循环会自动调用这个遍历器。
 
-### 静态方法
+## Class的静态方法
 
 类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上static关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
@@ -500,7 +498,7 @@ class Foo {
     return 'hello';
   }
 }
-    
+
 class Bar extends Foo {
 }
 
