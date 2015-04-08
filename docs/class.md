@@ -331,10 +331,11 @@ cp instanceof Point // true
 
 ### 类的prototype属性和\_\_proto\_\_属性
 
-在ES5中，每一个对象都有\_\_proto\_\_属性，指向对应的构造函数的prototype属性。Class作为构造函数的语法糖，也有自己的prototype属性和\_\_proto\_\_属性，因此同时存在两条继承链。
+在ES5中，每一个对象都有`__proto__`属性，指向对应的构造函数的prototype属性。Class作为构造函数的语法糖，同时有prototype属性和`__proto__`属性，因此同时存在两条继承链。
 
-- 子类的\_\_proto\_\_属性，表示构造函数的继承，总是指向父类
-- 子类prototype属性的\_\_proto\_\_属性，表示方法的继承，总是指向父类的prototype属性
+- 子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
+
+- 子类prototype属性的`__proto__`属性，表示方法的继承，总是指向父类的prototype属性。
 
 ```javascript
 
