@@ -708,16 +708,18 @@ function f(x) {
 尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用记录，因为调用位置、内部变量等信息都不会再用到了，只要直接用内层函数的调用记录，取代外层函数的调用记录就可以了。
 
 ```javascript
-function f(x) {
+function f() {
   let m = 1;
   let n = 2;
   return g(m + n);
 }
+f();
 
 // 等同于
-function f(x) {
+function f() {
   return g(3);
 }
+f();
 
 // 等同于
 g(3);
