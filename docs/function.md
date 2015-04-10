@@ -254,7 +254,7 @@ push(a, 1, 2, 3)
 ```javascript
 
 // 报错
-function f(a, ...b, c) { 
+function f(a, ...b, c) {
   // ...
 }
 
@@ -410,11 +410,11 @@ rest  // ["bar","baz"]
 
 const [...butLast, last] = [1, 2, 3, 4, 5];
 // 报错
-  
+
 const [first, ..., last] = [1, 2, 3, 4, 5];
 // 报错
 
-```  
+```
 
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
@@ -440,8 +440,8 @@ var d = new Date(...dateFields);
 
 ```javascript
 
-[..."hello"] 
-// [ "h", "e", "l", "l", "o" ]    
+[..."hello"]
+// [ "h", "e", "l", "l", "o" ]
 
 ```
 
@@ -512,7 +512,7 @@ var f = function(v) {
 
 ```javascript
 
-var f = () => 5; 
+var f = () => 5;
 // 等同于
 var f = function (){ return 5 };
 
@@ -587,19 +587,19 @@ const numbers = (...nums) => nums;
 
 numbers(1, 2, 3, 4, 5)
 // [1,2,3,4,5]
-  
+
 const headAndTail = (head, ...tail) => [head, tail];
 
 headAndTail(1, 2, 3, 4, 5)
 // [1,[2,3,4,5]]
 
-```  
+```
 
 箭头函数有几个使用注意点。
 
 - 函数体内的this对象，绑定定义时所在的对象，而不是使用时所在的对象。
 - 不可以当作构造函数，也就是说，不可以使用new命令，否则会抛出一个错误。
-- 不可以使用arguments对象，该对象在函数体内不存在。 
+- 不可以使用arguments对象，该对象在函数体内不存在。
 
 上面三点中，第一点尤其值得注意。this对象的指向是可变的，但是在箭头函数中，它是固定的。下面的代码是一个例子，将this对象绑定定义时所在的对象。
 
@@ -654,3 +654,163 @@ mult2(plus1(5))
 // 12
 
 ```
+
+## 尾调用优化
+
+### 什么是尾调用？
+
+尾调用（Tail Call）是函数式编程的一个重要概念，本身非常简单，一句话就能说清楚，就是指某个函数的最后一步是调用另一个函数。
+
+```javascript
+function f(x){
+  return g(x);
+}
+```
+
+上面代码中，函数f的最后一步是调用函数g，这就叫尾调用。
+
+以下两种情况，都不属于尾调用。
+
+```javascript
+// 情况一
+function f(x){
+  let y = g(x);
+  return y;
+}
+
+// 情况二
+function f(x){
+  return g(x)+1;
+}
+```
+
+上面代码中，情况一是调用函数g之后，还有别的操作，所以不属于尾调用，即使语义完全一样。情况二也属于调用后还有操作，即使写在一行内。
+
+尾调用不一定出现在函数尾部，只要是最后一步操作即可。
+
+```javascript
+function f(x) {
+  if (x>0) {
+    return m(x)
+  }
+  return n(x);
+}
+```
+
+上面代码中，函数m和n都属于尾调用，因为它们都是函数f的最后一步操作。
+
+### 尾调用优化
+
+尾调用之所以与其他调用不同，就在于它的特殊的调用位置。
+
+我们知道，函数调用会在内存形成一个“调用栈”（call stack），保存调用位置和内部变量等信息。如果在函数A的内部调用函数B，就会在A的调用栈上方，再形成一个B的调用栈。等到B运行结束，将结果返回到A，B的调用栈才会消失。如果函数B内部还调用函数C，那就还有一个C的调用栈，以此类推。
+
+尾调用由于是函数的最后一步操作，所以不需要保留外层函数的调用栈，因为调用位置、内部变量等信息都不会再用到了，只要直接用内层函数的调用栈，取代外层函数的调用栈就可以了。
+
+```javascript
+function f(x) {
+  let m = 1;
+  let n = 2;
+  return g(m+n);
+}
+
+// 等同于
+function f(x) {
+  return g(3);
+}
+
+// 等同于
+g(3);
+```
+
+上面代码中，如果函数g不是尾调用，函数f就需要保存内部变量m和n的值、g的调用位置等信息。但由于调用g之后，函数f就结束了，所以执行到最后一步，完全可以删除 f(x) 的调用栈，只保留 g(3) 的调用栈。
+
+这就叫做“尾调用优化”（Tail call optimization），即只保留内层函数的调用栈。如果所有函数都是尾调用，那么完全可以做到每次执行时，调用栈只有一项，这将大大节省内存。这就是“尾调用优化”的意义。
+
+### 尾递归
+
+函数调用自身，称为递归。如果尾调用自身，就称为尾递归。
+
+递归非常耗费内存，因为需要同时保存成千上百个调用栈，很容易发生“栈溢出”错误（stack overflow）。但对于尾递归来说，由于只存在一个调用栈，所以永远不会发生“栈溢出”错误。
+
+```javascript
+function factorial(n) {
+  if (n === 1) return 1;
+  return n * factorial(n-1);
+}
+
+factorial(5) // 120
+```
+
+上面代码是一个阶乘函数，计算n的阶乘，最多需要保存n个调用栈，复杂度 O(n) 。
+
+如果改写成尾递归，只保留一个调用栈，复杂度 O(1) 。
+
+```javascript
+function factorial(n, total) {
+  if (n === 1) return total;
+  return factorial(n-1, n * total);
+}
+
+factorial(5, 1) // 120
+```
+
+由此可见，“尾调用优化”对递归操作意义重大，所以一些函数式编程语言将其写入了语言规格。ES6也是如此，第一次明确规定，所有 ECMAScript 的实现，都必须部署“尾调用优化”。这就是说，在 ES6 中，只要使用尾递归，就不会发生栈溢出，相对节省内存。
+
+### 递归函数的改写
+
+尾递归的实现，往往需要改写递归函数，确保最后一步只调用自身。做到这一点的方法，就是把所有用到的内部变量改写成函数的参数。比如上面的例子，阶乘函数 factorial 需要用到一个中间变量 total ，那就把这个中间变量改写成函数的参数。这样做的缺点就是不太直观，第一眼很难看出来，为什么计算5的阶乘，需要传入两个参数5和1？
+
+两个方法可以解决这个问题。方法一是在尾递归函数之外，再提供一个正常形式的函数。
+
+```javascript
+function tailFactorial(n, total) {
+  if (n === 1) return total;
+  return tailFactorial(n-1, n * total);
+}
+
+function factorial(n) {
+  return tailFactorial(n, 1);
+}
+
+factorial(5) // 120
+```
+
+上面代码通过一个正常形式的阶乘函数 factorial ，调用尾递归函数 tailFactorial ，看起来就正常多了。
+
+函数式编程有一个概念，叫做柯里化（currying），意思是将多参数的函数转换成单参数的形式。这里也可以使用柯里化。
+
+```javascript
+
+function currying(fn, n) {
+  return function (m) {
+    return fn.call(this, m, n);
+  };
+}
+
+function tailFactorial(n, total) {
+  if (n === 1) return total;
+  return tailFactorial(n-1, n * total);
+}
+
+const factorial = currying(tailFactorial, 1);
+
+factorial(5) // 120
+```
+
+上面代码通过柯里化，将尾递归函数 tailFactorial 变为只接受1个参数的 factorial 。
+
+第二种方法就简单多了，就是采用ES6的函数默认值。
+
+```javascript
+function factorial(n, total = 1) {
+  if (n === 1) return total;
+  return factorial(n-1, n * total);
+}
+
+factorial(5) // 120
+```
+
+上面代码中，参数 total 有默认值1，所以调用时不用提供这个值。
+
+总结一下，递归本质上是一种循环操作。纯粹的函数式编程语言没有循环操作命令，所有的循环都用递归实现，这就是为什么尾递归对这些语言极其重要。对于其他支持“尾调用优化”的语言（比如Lua，ES6），只需要知道循环可以用递归代替，而一旦使用递归，就最好使用尾递归。
