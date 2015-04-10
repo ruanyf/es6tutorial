@@ -680,7 +680,7 @@ function f(x){
 
 // 情况二
 function f(x){
-  return g(x)+1;
+  return g(x) + 1;
 }
 ```
 
@@ -690,7 +690,7 @@ function f(x){
 
 ```javascript
 function f(x) {
-  if (x>0) {
+  if (x > 0) {
     return m(x)
   }
   return n(x);
@@ -711,7 +711,7 @@ function f(x) {
 function f(x) {
   let m = 1;
   let n = 2;
-  return g(m+n);
+  return g(m + n);
 }
 
 // 等同于
@@ -736,7 +736,7 @@ g(3);
 ```javascript
 function factorial(n) {
   if (n === 1) return 1;
-  return n * factorial(n-1);
+  return n * factorial(n - 1);
 }
 
 factorial(5) // 120
@@ -749,7 +749,7 @@ factorial(5) // 120
 ```javascript
 function factorial(n, total) {
   if (n === 1) return total;
-  return factorial(n-1, n * total);
+  return factorial(n - 1, n * total);
 }
 
 factorial(5, 1) // 120
@@ -766,7 +766,7 @@ factorial(5, 1) // 120
 ```javascript
 function tailFactorial(n, total) {
   if (n === 1) return total;
-  return tailFactorial(n-1, n * total);
+  return tailFactorial(n - 1, n * total);
 }
 
 function factorial(n) {
@@ -790,7 +790,7 @@ function currying(fn, n) {
 
 function tailFactorial(n, total) {
   if (n === 1) return total;
-  return tailFactorial(n-1, n * total);
+  return tailFactorial(n - 1, n * total);
 }
 
 const factorial = currying(tailFactorial, 1);
@@ -805,7 +805,7 @@ factorial(5) // 120
 ```javascript
 function factorial(n, total = 1) {
   if (n === 1) return total;
-  return factorial(n-1, n * total);
+  return factorial(n - 1, n * total);
 }
 
 factorial(5) // 120
