@@ -2,6 +2,8 @@
 
 ## let命令
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#let>
+
 ### 基本用法
 
 ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
@@ -208,6 +210,8 @@ function func(arg) {
 
 ## 块级作用域
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#block-level_function_declaration>
+
 let实际上为JavaScript新增了块级作用域。
 
 ```javascript
@@ -263,6 +267,8 @@ function f() { console.log('I am outside!'); }
 需要注意的是，如果在严格模式下，函数只能在顶层作用域和函数内声明，其他情况（比如if代码块、循环代码块）的声明都会报错。
 
 ## const命令
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#const>
 
 const也用来声明变量，但是声明的是常量。一旦声明，常量的值就不能改变。
 
