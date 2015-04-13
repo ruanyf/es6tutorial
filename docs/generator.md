@@ -712,6 +712,8 @@ var clock = function*(_) {
 
 Generator函数是ECMAScript 6对协程的实现，但属于不完全实现。Generator函数被称为“半协程”（semi-coroutine），意思是它还要借助yield语句，将执行权给它的调用者。执行权可以发生转移的地方，都要靠yield语句注明，没有yield语句的地方，执行权就不能转移。完全实现的协程没有yield语句，任意位置都可以暂停，将执行权转移出去。
 
+如果将Generator函数当作协程，完全可以将多个需要互相协作的任务写成Generator函数，它们之间使用yield语句交换控制权。
+
 ## 应用
 
 Generator可以暂停函数执行，返回任意表达式的值。这种特点使得Generator有多种应用场景。
