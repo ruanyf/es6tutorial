@@ -2,6 +2,8 @@
 
 ## 函数参数的默认值
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#default_function_parameters>
+
 在ES6之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
 
 ```javascript
@@ -198,6 +200,8 @@ foo({x: 1, y: 2}) // 1, 2
 
 ## rest参数
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#rest_parameters>
+
 ES6引入rest参数（...变量名），用于获取函数的多余参数，这样就不需要使用arguments对象了。rest参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
 
 ```javascript
@@ -271,6 +275,8 @@ function f(a, ...b, c) {
 ```
 
 ## 扩展运算符
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#spread_(...)_operator>
 
 扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。该运算符主要用于函数调用。
 
@@ -490,6 +496,8 @@ var go = function*(){
 
 ## 箭头函数
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#arrow_functions>
+
 ES6允许使用“箭头”（=>）定义函数。
 
 ```javascript
@@ -656,6 +664,8 @@ mult2(plus1(5))
 ```
 
 ## 尾调用优化
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#proper_tail_calls_(tail_call_optimisation)>
 
 ### 什么是尾调用？
 
