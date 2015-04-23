@@ -28,15 +28,19 @@ var [a, b, c] = [1, 2, 3];
 
 ```javascript
 
-var [foo, [[bar], baz]] = [1, [[2], 3]];
+let [foo, [[bar], baz]] = [1, [[2], 3]];
 foo // 1
 bar // 2
 baz // 3
 
-var [,,third] = ["foo", "bar", "baz"];
+let [,,third] = ["foo", "bar", "baz"];
 third // "baz"
 
-var [head, ...tail] = [1, 2, 3, 4];
+let [x, , y] = [1, 2, 3];
+x // 1
+y // 3
+
+let [head, ...tail] = [1, 2, 3, 4];
 head // 1
 tail // [2, 3, 4]
 
@@ -55,15 +59,21 @@ var [bar, foo] = [1];
 
 ```
 
-以上几种情况都属于解构不成功，foo的值都会等于undefined。另一种情况是不完全解构。
+以上几种情况都属于解构不成功，foo的值都会等于undefined。
+
+另一种情况是不完全解构，即等号左边的模式，只匹配一部分的等号右边的数组。这种情况下，解构依然可以成功。
 
 ```javascript
 
-var [x, y] = [1, 2, 3];
+let [x, y] = [1, 2, 3];
+x // 1
+y // 2
 
+let [a, [b], d] = [1, [2, 3], 4];
+a // 1
+b // 2
+d // 4
 ```
-
-上面代码中，x和y可以顺利取到值。
 
 如果对undefined或null进行解构，会报错。
 
@@ -155,14 +165,14 @@ l // 'world'
 
 ```javascript
 
-var o = {
+var obj = {
   p: [
     "Hello",
     { y: "World" }
   ]
 };
 
-var { p: [x, { y }] } = o;
+var { p: [x, { y }] } = obj;
 x // "Hello"
 y // "World"
 
@@ -260,7 +270,7 @@ let { log, sin, cos } = Math;
 
 ```
 
-上面代码交换变量x和y的值，这样的写法不仅简洁，而且语义非常清晰。
+上面代码交换变量x和y的值，这样的写法不仅简洁，而且易读，语义非常清晰。
 
 **（2）从函数返回多个值**
 
@@ -271,7 +281,7 @@ let { log, sin, cos } = Math;
 // 返回一个数组
 
 function example() {
-    return [1, 2, 3];
+  return [1, 2, 3];
 }
 var [a, b, c] = example();
 
