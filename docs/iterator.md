@@ -41,7 +41,7 @@ it.next() // { value: undefined, done: true }
 
 function idMaker(){
   var index = 0;
-    
+
   return {
     next: function(){
       return {value: index++, done: false};
@@ -85,7 +85,7 @@ interface IterationResult {
 
 Iterator接口的开发目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（见后文的介绍）。当使用for...of循环，遍历某种数据结构时，该循环会自动去寻找Iterator接口。
 
-ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
+ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性，或者一个数据结构只要具有Symbol.iterator属性，就可以认为是“可遍历的”（iterable）。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
 
 在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象、Set和Map结构。
 
@@ -113,7 +113,7 @@ iter.next() // { value: undefined, done: true }
 
 class MySpecialTree {
   // ...
-  [Symbol.iterator]() { 
+  [Symbol.iterator]() {
     // ...
     return theIterator;
   }
@@ -131,11 +131,11 @@ function Obj(value){
 }
 
 Obj.prototype[Symbol.iterator] = function(){
-  
+
   var iterator = {
     next: next
   };
-  
+
   var current = this;
 
   function next(){
@@ -221,6 +221,20 @@ obj[Symbol.iterator] = () => 1;
 
 上面代码中，变量obj的Symbol.iterator方法返回的不是遍历器，因此报错。
 
+有了遍历器接口，数据结构就可以用for...of循环遍历（详见下文），也可以使用while循环遍历。
+
+```javascript
+var $iterator = ITERABLE[Symbol.iterator]();
+var $result = $iterator.next();
+while (!$result.done) {
+  var x = $result.value;
+  // ...
+  $result = $iterator.next();
+}
+```
+
+上面代码中，ITERABLE代表某种可遍历的数据结构，$iterator是它的遍历器。遍历器每次移动指针（next方法），都检查一下返回值的done属性，如果遍历还没结束，就移动遍历器的指针到下一步（next方法），不断循环。
+
 ### 调用默认iterator接口的场合
 
 有一些场合会默认调用iterator接口（即Symbol.iterator方法），除了下文会介绍的for...of循环，还有几个别的场合。
@@ -232,10 +246,10 @@ obj[Symbol.iterator] = () => 1;
 ```javascript
 
 let set = new Set().add('a').add('b').add('c');
-    
+
 let [x,y] = set;
 // x='a'; y='b'
-    
+
 let [first, ...rest] = set;
 // first='a'; rest=['b','c'];
 
@@ -286,7 +300,7 @@ let arr = [...iterable];
 var arr = [1, 5, 7];
 var arrEntries = arr.entries();
 
-arrEntries.toString() 
+arrEntries.toString()
 // "[object Array Iterator]"
 
 arrEntries === arrEntries[Symbol.iterator]()
@@ -301,7 +315,7 @@ arrEntries === arrEntries[Symbol.iterator]()
 ```javascript
 
 var someString = "hi";
-typeof someString[Symbol.iterator] 
+typeof someString[Symbol.iterator]
 // "function"
 
 var iterator = someString[Symbol.iterator]();
@@ -323,7 +337,7 @@ var str = new String("hi");
 [...str] // ["h", "i"]
 
 str[Symbol.iterator] = function() {
-  return { 
+  return {
     next: function() {
       if (this._first) {
         this._first = false;
@@ -336,7 +350,7 @@ str[Symbol.iterator] = function() {
   };
 };
 
-[...str] // ["bye"]  
+[...str] // ["bye"]
 str // "hi"
 
 ```
@@ -352,9 +366,9 @@ str // "hi"
 var myIterable = {};
 
 myIterable[Symbol.iterator] = function* () {
-    yield 1;
-    yield 2;
-    yield 3;
+  yield 1;
+  yield 2;
+  yield 3;
 };
 [...myIterable] // [1, 2, 3]
 
@@ -375,9 +389,17 @@ for (let x of obj) {
 
 ```
 
+### return()，throw()
+
+遍历器除了具有next方法（必备），还可以具有return方法和throw方法（可选）。
+
+for...of循环如果提前退出（通常是因为出错，或者有break语句或continue语句），就会调用return方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署return方法。
+
+throw方法主要是配合Generator函数使用，一般的遍历器用不到这个方法。请参阅《Generator函数》的章节。
+
 ## for...of循环
 
-ES6中，一个数据结构只要部署了Symbol.iterator方法，就被视为具有iterator接口，就可以用for...of循环遍历它的成员。也就是说，for...of循环内部调用的是数据结构的Symbol.iterator方法。
+ES6借鉴C++、Java、C#和Python语言，引入了for...of循环，作为遍历所有数据结构的统一的方法。一个数据结构只要部署了`Symbol.iterator`方法，就被视为具有iterator接口，就可以用for...of循环遍历它的成员。也就是说，for...of循环内部调用的是数据结构的`Symbol.iterator`方法。
 
 for...of循环可以使用的范围包括数组、Set和Map结构、某些类似数组的对象（比如arguments对象、DOM NodeList对象）、后文的Generator对象，以及字符串。
 
@@ -391,11 +413,11 @@ const arr = ['red', 'green', 'blue'];
 let iterator  = arr[Symbol.iterator]();
 
 for(let v of arr) {
-	console.log(v); // red green blue
+  console.log(v); // red green blue
 }
 
 for(let v of iterator) {
-	console.log(v); // red green blue
+  console.log(v); // red green blue
 }
 
 ```
@@ -471,11 +493,16 @@ for (let pair of map) {
 // ['a', 1]
 // ['b', 2]
 
+for (let [key, value] of map) {
+  console.log(key + ' : ' + value);
+}
+// a : 1
+// b : 2
 ```
 
 ### 计算生成的数据结构
 
-ES6的数组、Set、Map都部署了以下三个方法，调用后都返回遍历器。
+有些数据结构是在现有数据结构的基础上，计算生成的。比如，ES6的数组、Set、Map都部署了以下三个方法，调用后都返回遍历器。
 
 - entries() 返回一个遍历器，用来遍历 [键名, 键值] 组成的数组。对于数组，键名就是索引值；对于Set，键名与键值相同。Map结构的iterator接口，默认就是调用entries方法。
 - keys() 返回一个遍历器，用来遍历所有的键名。
@@ -546,12 +573,12 @@ for (let x of 'a\uD83D\uDC0A') {
 let arrayLike = { length: 2, 0: 'a', 1: 'b' };
 
 // 报错
-for (let x of arrayLike) { 
+for (let x of arrayLike) {
   console.log(x);
 }
 
 // 正确
-for (let x of Array.from(arrayLike)) { 
+for (let x of Array.from(arrayLike)) {
   console.log(x);
 }
 
@@ -585,4 +612,68 @@ for (e of es6) {
 
 上面代码表示，对于普通的对象，for...in循环可以遍历键名，for...of循环会报错。
 
-在对象上部署iterator接口的代码，参见本章前面部分。
+一种解决方法是，使用`Object.keys`方法将对象的键名生成一个数组，然后遍历这个数组。
+
+```javascript
+for (var key of Object.keys(someObject)) {
+  console.log(key + ": " + someObject[key]);
+}
+```
+
+在对象上部署iterator接口的代码，参见本章前面部分。一个方便的方法是将数组的`Symbol.iterator`属性，直接赋值给其他对象的`Symbol.iterator`属性。比如，想要让for...of循环遍历jQuery对象，只要加上下面这一行就可以了。
+
+```javascript
+jQuery.prototype[Symbol.iterator] =
+  Array.prototype[Symbol.iterator];
+```
+
+### 与其他遍历语法的比较
+
+以数组为例，JavaScript提供多种遍历语法。最原始的写法就是for循环。
+
+```javascript
+for (var index = 0; index < myArray.length; index++) {
+  console.log(myArray[index]);
+}
+```
+
+这种写法比较麻烦，因此数组提供内置的forEach方法。
+
+```javascript
+myArray.forEach(function (value) {
+  console.log(value);
+});
+```
+
+这种写法的问题在于，无法中途跳出forEach循环，break命令或return命令都不能奏效。
+
+for...in循环可以遍历数组的键名。
+
+```javascript
+for (var index in myArray) {
+  console.log(myArray[index]);
+}
+```
+
+for...in循环有几个缺点。
+
+1）数组的键名是数字，但是for...in循环是以字符串作为键名“0”、“1”、“2”等等。
+
+2）for...in循环不仅遍历数字键名，还会遍历手动添加的其他键，甚至包括原型链上的键。
+
+3）某些情况下，for...in循环会以任意顺序遍历键名。
+
+总之，for...in循环主要是为遍历对象而设计的，不适用于遍历数组。
+
+for...of循环相比上面几种做法，有一些显著的优点。
+
+```javascript
+for (let value of myArray) {
+  console.log(value);
+}
+```
+
+- 有着同for...in一样的简洁语法，但是没有for...in那些缺点。
+- 不同用于forEach方法，它可以与break、continue和return配合使用。
+- 提供了遍历所有数据结构的统一操作接口。
+
