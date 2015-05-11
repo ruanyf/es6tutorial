@@ -444,9 +444,108 @@ run(g);
 
 ### 概述
 
-async函数与Promise、Generator函数一样，是用来取代回调函数、解决异步操作的另一种方法。它可以写出比Promise和Generator更简洁易读的代码，但是依赖这两者来实现。async函数并不属于ES6，而是被列入了ES7，但是traceur、Babel.js、regenerator等转码器已经支持这个功能，转码后立刻就能使用。
+async函数与Promise、Generator函数一样，是用来取代回调函数、解决异步操作的一种方法。它本质上是Generator函数的语法糖。async函数并不属于ES6，而是被列入了ES7，但是traceur、Babel.js、regenerator等转码器已经支持这个功能，转码后立刻就能使用。
 
-在用法上，只要函数名之前加上async关键字，就表明该函数内部有异步操作。该异步操作应该返回一个Promise对象，前面用await关键字注明。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+下面是一个Generator函数，依次读取两个文件。
+
+```javascript
+var fs = require('fs');
+
+var readFile = function (fileName){
+  return new Promise(function (resolve, reject){
+    fs.readFile(fileName, function(error, data){
+      if (error) reject(error);
+      resolve(data);
+    });
+  });
+};
+
+var gen = function* (){
+  var f1 = yield readFile('/etc/fstab');
+  var f2 = yield readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+上面代码中，readFile函数是`fs.readFile`的Promise版本。
+
+写成async函数，就是下面这样。
+
+```javascript
+var asyncReadFile = async function (){
+  var f1 = await readFile('/etc/fstab');
+  var f2 = await readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+一比较就会发现，async函数就是将Generator函数的星号（*）替换成async，将yield替换成await，仅此而已。
+
+async函数对Generator函数的改进，体现在以下三点。
+
+（1）内置执行器。Generator函数的执行必须靠执行器，而async函数自带执行器。也就是说，async函数的执行，与普通函数一模一样，只要一行。
+
+```javascript
+var result = asyncReadFile();
+```
+
+（2）更好的语义。async和await，比起星号和yield，语义更清楚了。async表示函数里有异步操作，await表示紧跟在后面的表达式需要等待结果。
+
+（3）更广的适用性。co函数库约定，yield命令后面只能是Thunk函数或Promise对象，而async函数的await命令后面，可以跟Promise对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+
+### 实现
+
+async函数的实现，就是将Generator函数和自动执行器，包装在一个函数里。
+
+```javascript
+async function fn(args){
+  // ...
+}
+
+// 等同于
+
+function fn(args){
+  return spawn(function*() {
+    // ...
+  });
+}
+```
+
+所有的async函数都可以写成上面的第二种形式，其中的spawn函数就是自动执行器。
+
+下面给出spawn函数的实现，基本就是前文自动执行器的翻版。
+
+```javascript
+function spawn(genF) {
+  return new Promise(function(resolve, reject) {
+    var gen = genF();
+    function step(nextF) {
+      try {
+        var next = nextF();
+      } catch(e) {
+        return reject(e);
+      }
+      if(next.done) {
+        return resolve(next.value);
+      }
+      Promise.resolve(next.value).then(function(v) {
+        step(function() { return gen.next(v); });
+      }, function(e) {
+        step(function() { return gen.throw(e); });
+      });
+    }
+    step(function() { return gen.next(undefined); });
+  });
+}
+```
+
+### 用法
+
+同Generator函数一样，async函数返回一个Promise对象，可以使用then方法添加回调函数。当函数执行的时候，一旦遇到await就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+
+下面是一个例子。
 
 ```javascript
 
@@ -456,17 +555,19 @@ async function getStockPriceByName(name) {
   return stockPrice;
 }
 
+getStockPriceByName('goog').then(function (result){
+  console.log(result);
+});
+
 ```
 
-上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数内部有异步操作。调用该函数时，当遇到await关键字，立即返回它后面的表达式（getStockSymbol函数）产生的Promise对象，不再执行函数体内后面的语句。等到getStockSymbol完成，再自动回到函数体内，执行剩下的语句。
+上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数内部有异步操作。调用该函数时，会立即返回一个Promise对象。
 
-仔细观察getStockPrice函数，你会发现除了添加async、await这两个命令，整个代码与同步操作的流程一模一样。这就是async函数的本意，尽可能地用同步的流程，表达异步操作。
-
-实际上，上面的例子可以用Generator函数表达。
+上面的例子用Generator函数表达，就是下面这样。
 
 ```javascript
 function getStockPriceByName(name) {
-  return async(function*(name) {
+  return spawn(function*(name) {
     var symbol = yield getStockSymbol(name);
     var stockPrice = yield getStockPrice(symbol);
     return stockPrice;
@@ -474,9 +575,9 @@ function getStockPriceByName(name) {
 }
 ```
 
-上面的例子中，async函数是一个自动任务运行器，需要自己定义，它的参数是一个Generator函数。async函数的具体实现，后文有例子，这里只要知道，async...await结构本质上，是在语言层面提供的一种多个异步任务的自动运行器。
+上面的例子中，spawn函数是一个自动执行器，由JavaScript引擎内置。它的参数是一个Generator函数。async...await结构本质上，是在语言层面提供的异步任务的自动执行器。
 
-下面是一个更一般性的例子。
+下面是一个更一般性的例子，指定多少毫秒后输出一个值。
 
 ```javascript
 
@@ -486,16 +587,20 @@ function timeout(ms) {
   });
 }
 
-async function asyncValue(value) {
-  await timeout(50);
-  return value;
+async function asyncPrint(value, ms) {
+  await timeout(ms);
+  console.log(value)
 }
+
+asyncPrint('hello world', 50);
 
 ```
 
-上面代码中，asyncValue函数前面有async关键字，表明函数体内有异步操作。执行的时候，遇到await语句就会先返回，等到timeout函数执行完毕，再返回value。
+上面代码指定50毫秒以后，输出“hello world”。
 
-总之，async函数的关键就是，await命令后面，必须是一个返回Promise对象的操作。因为Promise对象的运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
+### 注意点
+
+await命令后面的Promise对象，运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
 
 ```javascript
 
@@ -505,6 +610,14 @@ async function myFunction() {
   } catch (err) {
     console.log(err);
   }
+}
+
+// 另一种写法
+
+async function myFunction() {
+  await somethingThatReturnsAPromise().catch(function (err){
+    console.log(err);
+  };
 }
 
 ```
@@ -643,44 +756,7 @@ function chainAnimationsGenerator(elem, animations) {
 
 ```
 
-上面代码使用Generator函数遍历了每个动画，语义比Promise写法更清晰，用户定义的操作全部都出现在spawn函数的内部。这个写法的问题在于，必须有一个任务运行器，自动执行Generator函数，上面代码的spawn函数就是任务运行器，它返回一个Promise对象，而且必须保证yield语句后面的表达式，必须返回一个Promise。下面是spawn函数的代码。
-
-```javascript
-
-function spawn(genF) {
-  // 返回一个Promise
-  return new Promise(function(resolve, reject) {
-    // 执行Generator函数，返回一个遍历器
-    var gen = genF();
-
-    // 定义一个函数，执行每一个任务
-    function step(nextF) {
-      var next;
-      try {
-        next = nextF();
-      } catch(e) {
-        // 如果任务执行出错，Promise状态变为已失败
-        reject(e);
-        return;
-      }
-      if(next.done) {
-        // 所有任务执行完毕，Promise状态变为已完成
-        resolve(next.value);
-        return;
-      }
-      // 如果还有下一个任务，就继续调用step方法
-      Promise.resolve(next.value).then(function(v) {
-        step(function() { return gen.next(v); });
-      }, function(e) {
-        step(function() { return gen.throw(e); });
-      });
-    }
-
-    step(function() { return gen.next(undefined); });
-  });
-}
-
-```
+上面代码使用Generator函数遍历了每个动画，语义比Promise写法更清晰，用户定义的操作全部都出现在spawn函数的内部。这个写法的问题在于，必须有一个任务运行器，自动执行Generator函数，上面代码的spawn函数就是自动执行器，它返回一个Promise对象，而且必须保证yield语句后面的表达式，必须返回一个Promise。
 
 最后是Async函数的写法。
 
@@ -692,12 +768,12 @@ async function chainAnimationsAsync(elem, animations) {
     for(var anim of animations) {
       ret = await anim(elem);
     }
-  } catch(e) { 
-    /* 忽略错误，继续执行 */ 
+  } catch(e) {
+    /* 忽略错误，继续执行 */
   }
   return ret;
 }
 
 ```
 
-可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它实际上将Generator写法中的任务运行器，改在语言层面提供，因此代码量最少。Generator写法的spawn函数本质是将Generator函数转为Promise对象，Async函数将这个过程在语言内部处理掉了，不暴露给用户。
+可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将Generator写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用Generator写法，自动执行器需要用户自己提供。
