@@ -364,9 +364,9 @@ r.sticky // true
 
 ## 模板字符串
 
-在ES6，输出模板通常是这样写的。
+以前的JavaScript语言，输出模板通常是这样写的。
 
-```js
+```javascript
 $("#result").append(
   "There are <b>" + basket.count + "</b> " +
   "items in your basket, " +
@@ -377,7 +377,7 @@ $("#result").append(
 
 上面这种写法相当繁琐不方便，ES6引入了模板字符串解决这个问题。
 
-```js
+```javascript
 $("#result").append(`
   There are <b>${basket.count}</b> items
    in your basket, <em>${basket.onSale}</em>
@@ -385,7 +385,7 @@ $("#result").append(`
 `);
 ```
 
-模板字符串（template string）是增强版的字符串，用反引号（`）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
+模板字符串（template string）是增强版的字符串，用反引号（&#96;）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
 
 ```javascript
 
@@ -405,15 +405,40 @@ var name = "Bob", time = "today";
 
 ```
 
-上面代码中的字符串，都是用反引号表示。如果在模板字符串中嵌入变量，需要将变量名写在`${}`之中。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
+上面代码中的字符串，都是用反引号表示。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
 
 ```javascript
-
 var greeting = `\`Yo\` World!`;
-
 ```
 
-大括号内部可以进行运算，以及引用对象属性。
+如果使用模板字符串表示多行字符串，所有的空格和缩进都会被保留在输出之中。
+
+```javascript
+$("#warning").html(`
+  <h1>Watch out!</h1>
+  <p>Unauthorized hockeying can result in penalties
+  of up to ${maxPenalty} minutes.</p>
+`);
+```
+
+模板字符串中嵌入变量，需要将变量名写在`${}`之中。
+
+```javascript
+function authorize(user, action) {
+  if (!user.hasPrivilege(action)) {
+    throw new Error(
+      // 传统写法为
+      // 'User '
+      // + user.name
+      // + ' is not authorized to do '
+      // + action
+      // + '.'
+      `User ${user.name} is not authorized to do ${action}.`);
+  }
+}
+```
+
+大括号内部可以放入任意的JavaScript表达式，可以进行运算，以及引用对象属性。
 
 ```javascript
 
@@ -445,34 +470,25 @@ console.log(`foo ${fn()} bar`);
 
 ```
 
+如果大括号中的值不是字符串，将按照一般的规则转为字符串。比如，默认会调用对象的toString方法。
+
 如果模板字符串中的变量没有声明，将报错。
 
 ```javascript
-
 var msg = `Hello, ${place}`;
 // throws error
-
 ```
 
-模板字符串使得字符串与变量的结合，变得容易。下面是一个例子。
+## 标签模板
 
-```javascript
-
-if (x > MAX) {
-  throw new Error(`Most ${MAX} allowed: ${x}!`);
-  // 传统写法为'Most '+MAX+' allowed: '+x+'!'
-}
-
-```
-
-模板字符串可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。
+模板字符串的功能，不仅仅是上面这些。它可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。这被称为“标签模板”功能（tagged template）。
 
 ```javascript
 
 var a = 5;
 var b = 10;
 
-tag`Hello ${ a + b } world ${ a * b}`;
+tag`Hello ${ a + b } world ${ a * b }`;
 
 ```
 
@@ -546,7 +562,66 @@ msg
 
 上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
 
-处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
+“标签模板”的一个重要应用，就是过滤HTML字符串，防止用户输入恶意内容。
+
+```javascript
+var message =
+  SaferHTML`<p>${sender} has sent you a message.</p>`;
+
+function SaferHTML(templateData) {
+  var s = templateData[0];
+  for (var i = 1; i < arguments.length; i++) {
+    var arg = String(arguments[i]);
+
+    // Escape special characters in the substitution.
+    s += arg.replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
+    // Don't escape special characters in the template.
+    s += templateData[i];
+  }
+  return s;
+}
+```
+
+上面代码中，经过SaferHTML函数处理，HTML字符串的特殊字符都会被转义。
+
+标签模板的另一个应用，就是多语言转换（国际化处理）。
+
+```javascript
+i18n`Hello ${name}, you have ${amount}:c(CAD) in your bank account.`
+// Hallo Bob, Sie haben 1.234,56 $CA auf Ihrem Bankkonto.
+```
+
+模板字符串并不能取代Mustache之类的模板函数，因为没有条件判断和循环处理功能，但是通过标签函数，你可以自己添加这些功能。
+
+```javascript
+// 下面的hashTemplate函数
+// 是一个自定义的模板处理函数
+var libraryHtml = hashTemplate`
+  <ul>
+    #for book in ${myBooks}
+      <li><i>#{book.title}</i> by #{book.author}</li>
+    #end
+  </ul>
+`;
+```
+
+除此之外，你甚至可以使用标签模板，在JavaScript语言之中嵌入其他语言。
+
+```javascript
+java`
+class HelloWorldApp {
+  public static void main(String[] args) {
+    System.out.println(“Hello World!”); // Display the string.
+  }
+}
+`
+HelloWorldApp.main();
+```
+
+模板处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
 
 ```javascript
 

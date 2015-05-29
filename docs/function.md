@@ -69,19 +69,19 @@ var p = new Point();
 
 ```javascript
 
-fetch(url, { body='', method='GET', headers={} }){
+fetch(url, { body = '', method = 'GET', headers = {} }){
   console.log(method);
 }
 
 ```
 
-上面代码中，传入函数fetch的第二个参数是一个对象，调用的时候可以为它的三个属性设置默认值。这个例子也说明，不仅函数定义时，可以设置参数默认值，而且函数调用时，也可以设置参数默认值。
+上面代码中，传入函数fetch的第二个参数是一个对象，调用的时候可以为它的三个属性设置默认值。
 
 甚至还可以设置双重默认值。
 
 ```javascript
 
-fetch(url, { method='GET' } = {}){
+fetch(url, { method = 'GET' } = {}){
   console.log(method);
 }
 
@@ -95,10 +95,10 @@ fetch(url, { method='GET' } = {}){
 
 // 以下两种写法都是错的
 
-function f(x=5, y) {
+function f(x = 5, y) {
 }
 
-function f(x, y=5, z) {
+function f(x, y = 5, z) {
 }
 
 ```
@@ -107,7 +107,7 @@ function f(x, y=5, z) {
 
 ```javascript
 
-function foo(x=5, y=6){
+function foo(x = 5, y = 6){
   console.log(x,y);
 }
 
@@ -123,8 +123,8 @@ foo(undefined, null)
 ```javascript
 
 (function(a){}).length // 1
-(function(a=5){}).length // 0
-(function(a, b, c=5){}).length // 2
+(function(a = 5){}).length // 0
+(function(a, b, c = 5){}).length // 2
 
 ```
 
@@ -249,7 +249,7 @@ push(a, 1, 2, 3)
 
 ```
 
-注意，rest参数之后不能再有其他参数，否则会报错。
+注意，rest参数之后不能再有其他参数（即只能是最后一个参数），否则会报错。
 
 ```javascript
 

@@ -8,7 +8,7 @@ JavaScript原有的数据结构，主要是数组（Array）和对象（Object�
 
 遍历器（Iterator）就是这样一种机制。它属于一种接口规格，任何数据结构只要部署这个接口，就可以完成遍历操作，即依次处理该结构的所有成员。它的作用有两个，一是为各种数据结构，提供一个统一的、简便的接口，二是使得数据结构的成员能够按某种次序排列。在ES6中，遍历操作特指for...of循环，即Iterator接口主要供for...of消费。
 
-遍历器的遍历过程是这样的：它提供了一个指针，默认指向当前数据结构的起始位置。第一次调用遍历器的next方法，可以将指针指向到第一个成员，第二次调用就指向第二个成员，直至指向数据结构的结束位置。每一次调用，都会返回当前成员的信息，具体来说，就是返回一个包含value和done两个属性的对象。其中，value属性是当前成员的值，done属性是一个布尔值，表示遍历是否结束。
+遍历器的遍历过程是这样的：它提供了一个指针，默认指向当前数据结构的起始位置。也就是说，遍历器返回一个内部指针。第一次调用遍历器的next方法，可以将指针指向到第一个成员，第二次调用next方法，就指向第二个成员，直至指向数据结构的结束位置。每一次调用，都会返回当前成员的信息，具体来说，就是返回一个包含value和done两个属性的对象。其中，value属性是当前成员的值，done属性是一个布尔值，表示遍历是否结束。
 
 下面是一个模拟next方法返回值的例子。
 
@@ -33,9 +33,15 @@ it.next() // { value: undefined, done: true }
 
 ```
 
-上面代码定义了一个makeIterator函数，它的参数是一个数组。调用该函数，就会返回一个对象。这个对象具有一个next方法，每次调用next方法，它的内部指针就会指向数组的下一个成员，并返回一个该成员信息的对象。请特别注意，next方法的返回值的构造：一个具有value和done两个属性的对象。通过这个返回值，我们就可以知道当前成员的值是什么，以及遍历是否结束。在这个例子中，makeIterator函数用来生成遍历器，它返回的那个具有next方法的对象就是遍历器，调用遍历器的next方法，就可以遍历事先给定的数组。
+上面代码定义了一个makeIterator函数，它的作用就是返回数组的遍历器。对数组`['a', 'b']`执行这个函数，就会返回该数组的遍历器it。
 
-因为遍历器的作用，只是把接口规格加到数据结构之上。所以，遍历器与它所遍历的那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的遍历器，或者说用遍历器模拟出数据结构。下面是一个无限运行的遍历器例子。
+遍历器it的next方法，用来移动指针。开始时，指针指向数组的开始位置。然后，每次调用next方法，指针就会指向数组的下一个成员。第一次调用，指向a；第二次调用，指向b。
+
+next方法返回一个对象，表示当前位置的信息。这个对象具有value和done两个属性，value属性返回当前位置的成员，done属性是一个布尔值，表示遍历是否结束，即是否还有必要再一次调用next方法。
+
+总之，遍历器是一个对象，具有next方法。调用next方法，就可以遍历事先给定的数据结构。
+
+由于遍历器只是把接口规格加到数据结构之上，所以，遍历器与它所遍历的那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的遍历器，或者说用遍历器模拟出数据结构。下面是一个无限运行的遍历器例子。
 
 ```javascript
 
@@ -60,9 +66,9 @@ it.next().value // '2'
 
 上面的例子中，idMaker函数返回的对象就是遍历器，但是并没有对应的数据结构，或者说遍历器自己描述了一个数据结构出来。
 
-总之，所谓Iterator接口，就是指调用这个接口，会返回一个遍历器对象。该对象具备next方法，每次调用该方法，会返回一个具有value和done两个属性的新对象，指向部署了Iterator接口的数据结构的一个成员。
+在ES6中，有些数据结构原生提供遍历器（比如数组），即不用任何处理，就可以被for...of循环遍历，有些就不行（比如对象）。原因在于，这些数据结构部署了System.iterator属性（详见下文）。凡是部署了System.iterator属性的数据结构，就称为部署了遍历器接口。调用这个接口，就会返回一个遍历器。
 
-如果使用TypeScript的写法，遍历器接口、遍历器和遍历器返回值的规格可以描述如下。
+如果使用TypeScript的写法，遍历器接口、遍历器和next方法返回值的规格可以描述如下。
 
 ```javascript
 
@@ -83,9 +89,9 @@ interface IterationResult {
 
 ### 默认的Iterator接口
 
-Iterator接口的开发目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（见后文的介绍）。当使用for...of循环，遍历某种数据结构时，该循环会自动去寻找Iterator接口。
+Iterator接口的目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（详见下文）。当使用for...of循环遍历某种数据结构时，该循环会自动去寻找Iterator接口。
 
-ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性，或者一个数据结构只要具有Symbol.iterator属性，就可以认为是“可遍历的”（iterable）。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
+ES6规定，默认的Iterator接口部署在数据结构的Symbol.iterator属性，或者一个数据结构只要具有Symbol.iterator属性，就可以认为是“可遍历的”（iterable）。也就是说，调用Symbol.iterator方法，就会得到当前数据结构的默认遍历器。Symbol.iterator本身是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
 
 在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象、Set和Map结构。
 
@@ -111,17 +117,38 @@ iter.next() // { value: undefined, done: true }
 
 ```javascript
 
-class MySpecialTree {
-  // ...
-  [Symbol.iterator]() {
-    // ...
-    return theIterator;
+class RangeIterator {
+  constructor(start, stop) {
+    this.value = start;
+    this.stop = stop;
   }
+
+  [Symbol.iterator]() { return this; }
+
+  next() {
+    var value = this.value;
+    if (value < this.stop) {
+      this.value++;
+      return {done: false, value: value};
+    } else {
+      return {done: true, value: undefined};
+    }
+  }
+}
+
+function range(start, stop) {
+  return new RangeIterator(start, stop);
+}
+
+for (var value of range(0, 3)) {
+  console.log(value);
 }
 
 ```
 
-上面代码是一个类部署Iterator接口的写法。Symbol.iterator属性对应一个函数，执行后返回当前对象的遍历器。下面是一个例子。
+上面代码是一个类部署Iterator接口的写法。Symbol.iterator属性对应一个函数，执行后返回当前对象的遍历器。
+
+下面是通过遍历器实现指针结构的例子。
 
 ```javascript
 
@@ -159,6 +186,7 @@ Obj.prototype[Symbol.iterator] = function(){
 var one = new Obj(1);
 var two = new Obj(2);
 var three = new Obj(3);
+
 one.next = two;
 two.next = three;
 

@@ -59,7 +59,7 @@ var [bar, foo] = [1];
 
 ```
 
-以上几种情况都属于解构不成功，foo的值都会等于undefined。
+以上几种情况都属于解构不成功，foo的值都会等于undefined。这是因为原始类型的值，会自动转为对象，比如数值1转为`new Number(1)`，从而导致foo取到undefined。
 
 另一种情况是不完全解构，即等号左边的模式，只匹配一部分的等号右边的数组。这种情况下，解构依然可以成功。
 
@@ -121,6 +121,22 @@ a // "a"
 ```
 
 事实上，只要某种数据结构具有Iterator接口，都可以采用数组形式的解构赋值。
+
+```javascript
+function* fibs() {
+  var a = 0;
+  var b = 1;
+  while (true) {
+    yield a;
+    [a, b] = [b, a + b];
+  }
+}
+
+var [first, second, third, fourth, fifth, sixth] = fibs();
+sixth // 5
+```
+
+上面代码中，fibs是一个Generator函数，原生具有Iterator接口。解构赋值会依次从这个接口获取值。
 
 ## 对象的解构赋值
 
@@ -189,6 +205,9 @@ x // 3
 
 var {x, y = 5} = {x: 1};
 console.log(x, y) // 1, 5
+
+var { message: msg = "Something went wrong" } = {};
+console.log(msg); // "Something went wrong"
 
 ```
 

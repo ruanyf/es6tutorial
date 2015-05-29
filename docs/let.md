@@ -349,13 +349,24 @@ a = ["Dave"];    // 报错
 如果真的想将对象冻结，应该使用Object.freeze方法。
 
 ```javascript
-
 const foo = Object.freeze({});
 foo.prop = 123; // 不起作用
-
 ```
 
 上面代码中，常量foo指向一个冻结的对象，所以添加新属性不起作用。
+
+除了将对象本身冻结，对象的属性也应该冻结。下面是一个将对象彻底冻结的函数。
+
+```javascript
+var constantize = (obj) => {
+  Object.freeze(obj);
+  Object.keys(obj).forEach( (key, value) => {
+    if ( typeof obj[key] === 'object' ) {
+      constantize( obj[key] );
+    }
+  });
+};
+```
 
 ## 全局对象的属性
 
