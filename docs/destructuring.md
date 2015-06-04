@@ -44,17 +44,14 @@ let [head, ...tail] = [1, 2, 3, 4];
 head // 1
 tail // [2, 3, 4]
 
+var [foo] = 'Hello'; // 会将字符串识别成字符数组进行赋值
 ```
 
-如果解构不成功，变量的值就等于undefined。
+如果没定义，变量的值就等于undefined。
 
 ```javascript
 
 var [foo] = [];
-var [foo] = 1;
-var [foo] = 'Hello';
-var [foo] = false;
-var [foo] = NaN;
 var [bar, foo] = [1];
 
 ```
@@ -77,14 +74,16 @@ d // 4
 
 上面代码的两个例子，都属于不完全解构，但是可以成功。
 
-如果对undefined或null进行解构，会报错。
+如果赋值格式不正确，会直接报错
 
 ```javascript
 
 // 报错
 var [foo] = undefined;
 var [foo] = null;
-
+var [foo] = 1;
+var [foo] = false;
+var [foo] = NaN;
 ```
 
 这是因为解构只能用于数组或对象。其他原始类型的值都可以转为相应的对象，但是，undefined和null不能转为对象，因此报错。
