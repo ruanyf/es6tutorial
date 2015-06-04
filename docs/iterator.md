@@ -655,6 +655,23 @@ jQuery.prototype[Symbol.iterator] =
   Array.prototype[Symbol.iterator];
 ```
 
+另一个方法是使用Generator函数将对象重新包装一下。
+
+```javascript
+function* entries(obj) {
+  for (let key of Object.keys(obj)) {
+    yield [key, obj[key]];
+  }
+}
+
+for (let [key, value] of entries(obj)) {
+  console.log(key, "->", value);
+}
+// a -> 1
+// b -> 2
+// c -> 3
+```
+
 ### 与其他遍历语法的比较
 
 以数组为例，JavaScript提供多种遍历语法。最原始的写法就是for循环。

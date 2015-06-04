@@ -2,7 +2,7 @@
 
 ## Array.from()
 
-Array.from()用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象，其中包括ES6新增的Set和Map结构。
+Array.from方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
 
 ```javascript
 
@@ -57,19 +57,24 @@ Array.from(arrayLike).map(x => x * x);
 
 ```
 
+下面的例子将数组中布尔值为false的成员转为0。
+
+```javascript
+Array.from([1, , 2, , 3], (n) => n || 0)
+// [1, 0, 2, 0, 3]
+```
+
 Array.from()的一个应用是，将字符串转为数组，然后返回字符串的长度。这样可以避免JavaScript将大于\uFFFF的Unicode字符，算作两个字符的bug。
 
 ```javascript
-
 function countSymbols(string) {
   return Array.from(string).length;
 }
-
 ```
 
 ## Array.of()
 
-Array.of()方法用于将一组值，转换为数组。
+Array.of方法用于将一组值，转换为数组。
 
 ```javaScript
 
@@ -82,52 +87,63 @@ Array.of(3).length // 1
 这个方法的主要目的，是弥补数组构造函数Array()的不足。因为参数个数的不同，会导致Array()的行为有差异。
 
 ```javascript
-
 Array() // []
 Array(3) // [undefined, undefined, undefined]
 Array(3,11,8) // [3, 11, 8]
-		
 ```
 
 上面代码说明，只有当参数个数不少于2个，Array()才会返回由参数组成的新数组。
 
-## 数组实例的find()和findIndex()
-
-数组实例的find()用于找出第一个符合条件的数组元素。它的参数是一个回调函数，所有数组元素依次遍历该回调函数，直到找出第一个返回值为true的元素，然后返回该元素，否则返回undefined。
+Array.of方法可以用下面的代码模拟实现。
 
 ```javascript
-
-[1, 5, 10, 15].find(function(value, index, arr) {
-	return value > 9;
-}) // 10 
-
+function ArrayOf(){
+  return [].slice.call(arguments);
+}
 ```
 
-从上面代码可以看到，回调函数接受三个参数，依次为当前的值、当前的位置和原数组。
+## 数组实例的find()和findIndex()
 
-数组实例的findIndex()的用法与find()非常类似，返回第一个符合条件的数组元素的位置，如果所有元素都不符合条件，则返回-1。
+数组实例的find方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为true的成员，然后返回该成员。如果没有符合条件的成员，则返回undefined。
+
+```javascript
+var found = [1, 4, -5, 10].find((n) => n < 0);
+console.log("found:", found);
+```
+
+上面代码找出数组中第一个小于0的成员。
+
+```javascript
+[1, 5, 10, 15].find(function(value, index, arr) {
+  return value > 9;
+}) // 10
+```
+
+上面代码中，find方法的回调函数可以接受三个参数，依次为当前的值、当前的位置和原数组。
+
+数组实例的findIndex方法的用法与find方法非常类似，返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回-1。
 
 ```javascript
 
 [1, 5, 10, 15].findIndex(function(value, index, arr) {
-	return value > 9;
-}) // 2 
+  return value > 9;
+}) // 2
 
 ```
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的this对象。
 
-另外，这两个方法都可以发现NaN，弥补了IndexOf()的不足。
+另外，这两个方法都可以发现NaN，弥补了数组的IndexOf方法的不足。
 
 ```javascript
-
-[NaN].indexOf(NaN) 
+[NaN].indexOf(NaN)
 // -1
 
 [NaN].findIndex(y => Object.is(NaN, y))
 // 0
-
 ```
+
+上面代码中，indexOf方法无法识别数组的NaN成员，但是findIndex方法可以借助Object.is方法做到。
 
 ## 数组实例的fill()
 
