@@ -520,7 +520,39 @@ for(let value of delegatingIterator) {
 
 上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
 
-如果`yield*`后面跟着一个数组，就表示该数组会返回一个遍历器，因此就会遍历数组成员。
+再来看一个对比的例子。
+
+```javascript
+function* inner() {
+  yield 'hello!'
+}
+
+function* outer1() {
+  yield 'open'
+  yield inner()
+  yield 'close'
+}
+
+var gen = outer1()
+gen.next() // -> 'open'
+gen.next() // -> a generator
+gen.next() // -> 'close'
+
+function* outer2() {
+  yield 'open'
+  yield* inner()
+  yield 'close'
+}
+
+var gen = outer2()
+gen.next() // -> 'open'
+gen.next() // -> 'hello!'
+gen.next() // -> 'close'
+```
+
+上面例子中，outer2使用了`yield*`，outer1没使用。结果就是，outer1返回一个遍历器，outer2返回该遍历器的内部值。
+
+如果`yield*`后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
 
 ```javascript
 
@@ -539,16 +571,16 @@ gen().next() // { value:"a", done:false }
 ```javascript
 
 function *foo() {
-    yield 2;
-    yield 3;
-    return "foo";
+  yield 2;
+  yield 3;
+  return "foo";
 }
 
 function *bar() {
-    yield 1;
-    var v = yield *foo();
-    console.log( "v: " + v );
-    yield 4;
+  yield 1;
+  var v = yield *foo();
+  console.log( "v: " + v );
+  yield 4;
 }
 
 var it = bar();
