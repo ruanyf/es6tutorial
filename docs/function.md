@@ -411,7 +411,7 @@ rest  // ["bar","baz"]
 const [...butLast, last] = [1, 2, 3, 4, 5];
 // 报错
 
-const [first, ..., last] = [1, 2, 3, 4, 5];
+const [first, ...middle, last] = [1, 2, 3, 4, 5];
 // 报错
 
 ```
