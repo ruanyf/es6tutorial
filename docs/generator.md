@@ -377,52 +377,46 @@ try {
 这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
 
 ```javascript
-
 foo('a', function (a) {
-    if (a.error) {
-        throw new Error(a.error);
+  if (a.error) {
+    throw new Error(a.error);
+  }
+
+  foo('b', function (b) {
+    if (b.error) {
+      throw new Error(b.error);
     }
 
-    foo('b', function (b) {
-        if (b.error) {
-            throw new Error(b.error);
-        }
+    foo('c', function (c) {
+      if (c.error) {
+        throw new Error(c.error);
+      }
 
-        foo('c', function (c) {
-            if (c.error) {
-                throw new Error(c.error);
-            }
-
-            console.log(a, b, c);
-        });
+      console.log(a, b, c);
     });
+  });
 });
-
 ```
 
 使用Generator函数可以大大简化上面的代码。
 
 ```javascript
-
 function* g(){
   try {
-        var a = yield foo('a');
-        var b = yield foo('b');
-        var c = yield foo('c');
-    } catch (e) {
-        console.log(e);
-    }
+    var a = yield foo('a');
+    var b = yield foo('b');
+    var c = yield foo('c');
+  } catch (e) {
+    console.log(e);
+  }
 
   console.log(a, b, c);
-
 }
-
 ```
 
 反过来，Generator函数内抛出的错误，也可以被函数体外的catch捕获。
 
 ```javascript
-
 function *foo() {
   var x = yield 3;
   var y = x.toUpperCase();
@@ -435,11 +429,9 @@ it.next(); // { value:3, done:false }
 
 try {
   it.next(42);
-}
-catch (err) {
+} catch (err) {
   console.log(err);
 }
-
 ```
 
 上面代码中，第二个next方法向函数体内传入一个参数42，数值是没有toUpperCase方法的，所以会抛出一个TypeError错误，被函数体外的catch捕获。
@@ -669,25 +661,70 @@ result
 如果一个对象的属性是Generator函数，可以简写成下面的形式。
 
 ```javascript
-
 let obj = {
   * myGeneratorMethod() {
     ···
   }
 };
-
 ```
 
-它的完整形式如下，两者是等价的。
+上面代码中，myGeneratorMethod属性前面有一个星号，表示这个属性是一个Generator函数。
+
+它的完整形式如下，与上面的写法是等价的。
 
 ```javascript
-
 let obj = {
   myGeneratorMethod: function* () {
-    ···
+    // ···
   }
 };
+```
 
+## Generator函数推导
+
+ES7在数组推导的基础上，提出了Generator函数推导（Generator comprehension）。
+
+```javascript
+let generator = function* () {
+  for (let i = 0; i < 6; i++) {
+    yield i;
+  }
+}
+
+let squared = ( for (n of generator()) n * n );
+// 等同于
+// let squared = Array.from(generator()).map(n => n * n);
+
+console.log(...squared);
+// 0 1 4 9 16 25
+```
+
+“推导”这种语法结构，在ES6只能用于数组，ES7将其推广到了Generator函数。for...of循环会自动调用遍历器的next方法，将返回值的value属性作为数组的一个成员。
+
+Generator函数推导是对数组结构的一种模拟，它的最大优点是惰性求值，即直到真正用到时才会求值，这样可以保证效率。请看下面的例子。
+
+```javascript
+let bigArray = new Array(100000);
+for (let i = 0; i < 100000; i++) {
+  bigArray[i] = i;
+}
+
+let first = bigArray.map(n => n * n)[0];
+console.log(first);
+```
+
+上面例子遍历一个大数组，但是在真正遍历之前，这个数组已经生成了，占用了系统资源。如果改用Generator函数推导，就能避免这一点。下面代码只在用到时，才会生成一个大数组。
+
+```javascript
+let bigGenerator = function* () {
+  for (let i = 0; i < 100000; i++) {
+    yield i;
+  }
+}
+
+let squared = ( for (n of bigGenerator()) n * n );
+
+console.log(squared.next());
 ```
 
 ## 含义
