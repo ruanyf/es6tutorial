@@ -4,10 +4,9 @@
 
 **（1）概述**
 
-ES5通过构造函数，定义并生成新对象。下面是一个例子。
+JavaScript语言的传统方法是通过构造函数，定义并生成新对象。下面是一个例子。
 
 ```javascript
-
 function Point(x,y){
   this.x = x;
   this.y = y;
@@ -16,13 +15,13 @@ function Point(x,y){
 Point.prototype.toString = function () {
   return '('+this.x+', '+this.y+')';
 }
-
 ```
 
-ES6引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用“类”改写，就是下面这样。
+上面这种写法跟传统的面向对象语言（比如C++和Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
+
+ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，ES6的class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
 
 ```javascript
-
 //定义类
 class Point {
 
@@ -36,12 +35,13 @@ class Point {
   }
 
 }
-
 ```
 
 上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
 
-Point类除了构造方法，还定义了一个toString方法。注意，定义方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。ES5的`Point.prototype`在ES6继续存在，也就是说，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
+Point类除了构造方法，还定义了一个toString方法。注意，定义“类”的方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
+
+构造函数的prototype属性，在ES6的“类”上面继续存在。除了constructor方法以外，类的方法都定义在类的prototype属性上面。prototype对象的constructor属性，直接指向“类”的本身。
 
 ```javascript
 
@@ -56,18 +56,15 @@ Point.prototype.toString
 
 **（2）constructor方法**
 
-constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，该方法会被默认添加，代码如下。
+constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，一个空的constructor方法会被默认添加。
 
 ```javascript
-
 constructor() {}
-
 ```
 
 constructor方法默认返回实例对象（即this），完全可以指定返回另外一个对象。
 
 ```javascript
-
 class Foo {
   constructor() {
     return Object.create(null);
@@ -76,7 +73,6 @@ class Foo {
 
 new Foo() instanceof Foo
 // false
-
 ```
 
 上面代码中，constructor函数返回一个全新的对象，结果导致实例对象不是Foo类的实例。
