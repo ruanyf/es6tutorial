@@ -382,20 +382,18 @@ typeof s
 
 上面代码中，变量s就是一个独一无二的ID。typeof运算符的结果，表明变量s是Symbol数据类型，而不是字符串之类的其他类型。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。
+注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。也就是说，由于Symbol值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。
 
-Symbol函数可以接受一个字符串作为参数，表示Symbol实例的名称。
+Symbol函数可以接受一个字符串作为参数，表示对Symbol实例的描述。
 
 ```javascript
-
 var mySymbol = Symbol('Test');
 
 mySymbol.name
 // Test
-
 ```
 
-上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol的名称，可以通过name属性读取。之所以要新增name属性，是因为如果一个对象的属性名是Symbol类型，可能不太方便引用，而有些场合需要一个字符串类型的值来指代这个键。
+上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol值的描述。该描述可以通过name属性读取。之所以要对Symbol添加描述，是因为如果一个对象的属性名是Symbol类型，可能不太方便引用，而有些场合需要一个字符串类型的值来指代这个键。
 
 Symbol函数的参数只是表示对当前Symbol类型的值的描述，因此相同参数的Symbol函数的返回值是不相等的。
 
@@ -420,23 +418,21 @@ s1 === s2 // false
 Symbol类型的值不能与其他类型的值进行运算，会报错。
 
 ```javascript
-
 var sym = Symbol('My symbol');
-'' + sym
-// TypeError: Cannot convert a Symbol value to a string
-
+"your symbol is " + sym
+// TypeError: can't convert symbol to string
+`your symbol is ${sym}`
+// TypeError: can't convert symbol to string
 ```
 
 但是，Symbol类型的值可以转为字符串。
 
 ```javascript
-
 String(sym)
 // 'Symbol(My symbol)'
 
 sym.toString()
 // 'Symbol(My symbol)'
-
 ```
 
 ### 作为属性名的Symbol
@@ -512,16 +508,14 @@ a[mySymbol] // undefined
 
 Symbol.for方法在全局环境中搜索指定key的Symbol值，如果存在就返回这个Symbol值，否则就新建一个指定key的Symbol值并返回。
 
-`Symbol.for()`与`Symbol()`这两种写法的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查跟定的key是否已经存在，如果不存在才会新建一个值。
+`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查跟定的key是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个Symbol值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
 
 ```javascript
-
 Symbol.for("bar") === Symbol.for("bar")
 // true
 
 Symbol("bar") === Symbol("bar")
 // false
-
 ```
 
 上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
@@ -529,25 +523,22 @@ Symbol("bar") === Symbol("bar")
 Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
 
 ```javascript
-
 var s1 = Symbol.for("foo");
 Symbol.keyFor(s1) // "foo"
 
 var s2 = Symbol("foo");
 Symbol.keyFor(s2) // undefined
-
 ```
 
 上面代码中，变量s2属于未登记的Symbol值，所以返回undefined。
 
 ### 属性名的遍历
 
-Symbol作为属性名，该属性不会出现在for...in循环中，也不会被Object.keys()、Object.getOwnPropertyNames()返回，但是有一个对应的Object.getOwnPropertySymbols方法，以及Object.getOwnPropertyKeys方法都可以获取指定对象的所有Symbol属性名。
+Symbol作为属性名，该属性不会出现在for...in循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个Object.getOwnPropertySymbols方法，可以获取指定对象的所有Symbol属性名。
 
 Object.getOwnPropertySymbols方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
 
 ```javascript
-
 var obj = {};
 var a = Symbol('a');
 var b = Symbol.for('b');
@@ -559,13 +550,11 @@ var objectSymbols = Object.getOwnPropertySymbols(obj);
 
 objectSymbols
 // [Symbol(a), Symbol(b)]
-
 ```
 
 下面是另一个例子，Object.getOwnPropertySymbols方法与for...in循环、Object.getOwnPropertyNames方法进行对比的例子。
 
 ```javascript
-
 var obj = {};
 
 var foo = Symbol("foo");
@@ -583,15 +572,13 @@ Object.getOwnPropertyNames(obj)
 
 Object.getOwnPropertySymbols(obj)
 // [Symbol(foo)]
-
 ```
 
 上面代码中，使用Object.getOwnPropertyNames方法得不到Symbol属性名，需要使用Object.getOwnPropertySymbols方法。
 
-Reflect.ownKeys方法可以返回所有类型的键名。
+另一个新的API，Reflect.ownKeys方法可以返回所有类型的键名，包括常规键名和Symbol键名。
 
 ```javascript
-
 let obj = {
   [Symbol('my_key')]: 1,
   enum: 2,
@@ -600,7 +587,6 @@ let obj = {
 
 Reflect.ownKeys(obj)
 // [Symbol(my_key), 'enum', 'nonEnum']
-
 ```
 
 ### 内置的Symbol值
@@ -619,21 +605,25 @@ Reflect.ownKeys(obj)
 
 该值指向对象的内部方法@@isRegExp，该对象被用作正则表达式时，会调用这个方法，返回一个布尔值，表示该对象是否为一个正则对象。
 
-（4）Symbol.iterator
+（4）Symbol.match
+
+该值作为属性名时，返回对象的正则表达式形式。当执行`str.match(myObject)`时，如果该属性存在，会先查看`myObject[Symbol.match]`属性是否存在。
+
+（5）Symbol.iterator
 
 该值指向对象的内部方法@@iterator，该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
 
-（5）Symbol.toPrimitive
+（6）Symbol.toPrimitive
 
 该值指向对象的内部方法@@toPrimitive，该对象被转为原始类型的值时，会调用这个方法，返回该对象对应的原始类型值。
 
-（6）Symbol.toStringTag
+（7）Symbol.toStringTag
 
 该值指向对象的内部属性@@toStringTag，在该对象上调用Object.prototype.toString()时，会返回这个属性，它是一个字符串，表示该对象的字符串形式。
 
-（7）Symbol.unscopables
+（8）Symbol.unscopables
 
-该值指向对象的内部属性@@unscopables，返回一个数组，成员为该对象使用with关键字时，会被with环境排除在的那些属性值。
+该值指向对象的内部属性@@unscopables，返回一个数组，成员为该对象使用with关键字时，会被with环境排除的那些属性值。
 
 ## Proxy
 
