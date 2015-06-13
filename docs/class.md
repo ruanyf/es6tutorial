@@ -763,51 +763,43 @@ module命令后面跟一个变量，表示输入的模块定义在该变量上�
 
 **（3）export default命令**
 
-如果想要输出匿名函数，可以使用export default命令。
+为了给用户提供方便，有时我们希望，用户不用知道输入哪个方法，就能加载模块。这时就要用到`export default`命令，为所要加载的模块指定默认输出。
 
 ```javascript
-
 // export-default.js
-
 export default function () {
-    console.log('foo');
+  console.log('foo');
 }
-
 ```
 
-其他模块输入该模块时，import命令可以为该匿名函数指定任意名字。
+上面代码是一个模块文件`export-default.js`，它的默认输出是一个函数。
+
+其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
 
 ```javascript
-
 // import-default.js
-
 import customName from './export-default';
 customName(); // 'foo'
-
 ```
 
-上面代码的import命令，可以用任意名称指向输出的匿名函数。需要注意的是，这时import命令后面，不使用大括号。
+上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法。需要注意的是，这时import命令后面，不使用大括号。
 
 ```javascript
-
-// 第一组
 import crc32 from 'crc32';
+// 对应的输出
 export default function crc32(){}
 
-// 第二组
 import { crc32 } from 'crc32';
+// 对应的输出
 export function crc32(){};
-
 ```
 
-上面代码的两组写法，第一组是使用export default时，对应的import语句不需要使用大括号；第二组是不使用export default时，对应的import语句需要使用大括号。
+上面代码的两组写法，第一组是使用`export default`时，对应的import语句不需要使用大括号；第二组是不使用`export default`时，对应的import语句需要使用大括号。
 
 export default命令用在非匿名函数前，也是可以的。
 
 ```javascript
-
 // export-default.js
-
 export default function foo() {
   console.log('foo');
 }
@@ -819,48 +811,39 @@ function foo() {
 }
 
 export default foo;
-
 ```
 
 上面代码中，foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
 
-export default命令用于指定模块的默认输出。如果模块加载时，只能输出一个值或方法，那就是export default所指定的那个值或方法。所以，import命令后面才不用加大括号。显然，一个模块只能有一个默认输出，因此export deault命令只能使用一次。
+`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export deault`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能对应一个方法。
 
-有了export default命令，输入模块时就非常直观了，以输入jQuery模块为例。
+有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
 
 ```javascript
-
 import $ from 'jquery';
-
 ```
 
 如果想在一条import语句中，同时输入默认方法和其他变量，可以写成下面这样。
 
 ```javascript
-
 import customName, { otherMethod } from './export-default';
-
 ```
 
 如果要输出默认的值，只需将值跟在`export default`之后即可。
 
 ```javascript
-
-export default 42;  
-
+export default 42;
 ```
 
-export default也可以用来输出类。
+`export default`也可以用来输出类。
 
 ```javascript
-
 // MyClass.js
 export default class { ... }
 
 // main.js
 import MyClass from 'MyClass'
 let o = new MyClass();
-
 ```
 
 ## 模块的继承
