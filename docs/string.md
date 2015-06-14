@@ -356,7 +356,7 @@ r.sticky // true
 
 ```
 
-## Regexp.escape
+## Regexp.escape()
 
 字符串必须转义，才能作为正则模式。
 
