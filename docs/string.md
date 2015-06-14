@@ -7,15 +7,13 @@ ES6加强了对Unicode的支持，并且扩展了字符串对象。
 JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode码点大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
 ```javascript
-
 var s = "𠮷";
 
 s.length // 2
 s.charAt(0) // ''
-s.charAt(1)	// ''
-s.charCodeAt(0) // 55362		
+s.charAt(1) // ''
+s.charCodeAt(0) // 55362
 s.charCodeAt(1) // 57271
-		
 ```
 
 上面代码中，汉字“𠮷”的码点是0x20BB7，UTF-16编码为0xD842 0xDFB7（十进制为55362 57271），需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
@@ -23,14 +21,12 @@ s.charCodeAt(1) // 57271
 ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的码点。
 
 ```javascript
-
 var s = "𠮷a";
 
 s.codePointAt(0) // 134071
 s.codePointAt(1) // 57271
-		
-s.charCodeAt(2) // 97
 
+s.charCodeAt(2) // 97
 ```
 
 codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
@@ -40,14 +36,12 @@ codePointAt方法的参数，是字符在字符串中的位置（从0开始）�
 codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
 ```javascript
-
 function is32Bit(c) {
     return c.codePointAt(0) > 0xFFFF;
 }
 
 is32Bit("𠮷") // true
 is32Bit("a") // false
-
 ```
 
 ## String.fromCodePoint()
@@ -360,6 +354,51 @@ r.exec(s) // ["aa_"]
 var r = /hello\d/y;
 r.sticky // true
 
+```
+
+## Regexp.escape
+
+字符串必须转义，才能作为正则模式。
+
+```javascript
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+let str = '/path/to/resource.html?search=query';
+escapeRegExp(str)
+// "\/path\/to\/resource\.html\?search=query"
+```
+
+上面代码中，str是一个正常字符串，必须使用反斜杠对其中的特殊字符转义，才能用来作为一个正则匹配的模式。
+
+已经有[提议](https://esdiscuss.org/topic/regexp-escape)将这个需求标准化，作为[`Regexp.escape()`](https://github.com/benjamingr/RexExp.escape)，放入ES7。
+
+```javascript
+RegExp.escape("The Quick Brown Fox");
+// "The Quick Brown Fox"
+
+RegExp.escape("Buy it. use it. break it. fix it.")
+// "Buy it\. use it\. break it\. fix it\."
+
+RegExp.escape("(*.*)");
+// "\(\*\.\*\)"
+```
+
+字符串转义以后，可以使用RegExp构造函数生成正则模式。
+
+```javascript
+var str = 'hello. how are you?';
+var regex = new RegExp(RegExp.escape(str), 'g');
+assert.equal(String(regex), '/hello\. how are you\?/g');
+```
+
+目前，该方法可以用上文的escapeRegExp函数或者垫片模块[`regexp.escape`](https://github.com/ljharb/regexp.escape)实现。
+
+```javascript
+var escape = require('regexp.escape');
+escape('hi. how are you?')
+"hi\\. how are you\\?"
 ```
 
 ## 模板字符串
