@@ -41,17 +41,50 @@ class Point {
 
 Point类除了构造方法，还定义了一个toString方法。注意，定义“类”的方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
 
-构造函数的prototype属性，在ES6的“类”上面继续存在。除了constructor方法以外，类的方法都定义在类的prototype属性上面。prototype对象的constructor属性，直接指向“类”的本身。
+构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
 
 ```javascript
+Class Point {
+  constructor(){
+    // ...
+  }
 
+  toString(){
+    // ...
+  }
+
+  toValue(){
+    // ...
+  }
+}
+
+// 等同于
+
+Point.prototype = {
+  toString(){},
+  toValue(){}
+}
+```
+
+由于类的方法（除constructor以外）都定义在prototype对象上面，所以类的新方法可以添加在prototype对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
+
+```javascript
+Class Point {
+  constructor(){
+    // ...
+  }
+}
+
+Object.assign(Point.prototype, {
+  toString(){},
+  toValue(){}
+})
+```
+
+prototype对象的constructor属性，直接指向“类”的本身，这与ES5的行为是一致的。
+
+```javascript
 Point.prototype.constructor === Point // true
-
-Point.prototype.toString
-// function toString() {
-//   return '(' + this.x + ', ' + this.y + ')';
-// }
-
 ```
 
 **（2）constructor方法**
@@ -82,19 +115,16 @@ new Foo() instanceof Foo
 生成实例对象的写法，与ES5完全一样，也是使用new命令。如果忘记加上new，像函数那样调用Class，将会报错。
 
 ```javascript
-
 // 报错
 var point = Point(2, 3);
 
 // 正确
 var point = new Point(2, 3);
-
 ```
 
 与ES5一样，实例的属性除非显式定义在其本身（即定义在this对象上），否则都是定义在原型上（即定义在class上）。
 
 ```javascript
-
 //定义类
 class Point {
 
@@ -117,19 +147,16 @@ point.hasOwnProperty('x') // true
 point.hasOwnProperty('y') // true
 point.hasOwnProperty('toString') // false
 point.__proto__.hasOwnProperty('toString') // true
-
 ```
 
 上面代码中，x和y都是实例对象point自身的属性（因为定义在this变量上），所以hasOwnProperty方法返回true，而toString是原型对象的属性（因为定义在Point类上），所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
 
 ```javascript
-
 var p1 = new Point(2,3);
 var p2 = new Point(3,2);
 
 p1.__proto__ === p2.__proto__
 //true
-
 ```
 
 上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\_\_proto\_\_属性是相等的。
@@ -137,7 +164,6 @@ p1.__proto__ === p2.__proto__
 这也意味着，可以通过\_\_proto\_\_属性为Class添加方法。
 
 ```javascript
-
 var p1 = new Point(2,3);
 var p2 = new Point(3,2);
 
@@ -148,7 +174,6 @@ p2.printName() // "Oops"
 
 var p3 = new Point(4,2);
 p3.printName() // "Oops"
-
 ```
 
 上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，此后新建的实例p3也可以调用这个方法。这意味着，使用实例的\_\_proto\_\_属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
@@ -615,17 +640,13 @@ ES6的Class只是面向对象编程的语法糖，升级了ES5的对象定义的
 ES6模块的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS和AMD模块，都只能在运行时确定这些东西。比如，CommonJS模块就是对象，输入时必须查找对象属性。
 
 ```javascript
-
 var { stat, exists, readFile } = require('fs');
-
 ```
 
 ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
 
 ```javascript
-
 import { stat, exists, readFile } from 'fs';
-
 ```
 
 所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
