@@ -9,14 +9,12 @@ ES6提供了新的数据结构Set。它类似于数组，但是成员的值都�
 Set本身是一个构造函数，用来生成Set数据结构。
 
 ```javascript
-
 var s = new Set();
 
 [2,3,5,4,5,2,2].map(x => s.add(x))
 
 for (i of s) {console.log(i)}
-// 2 3 4 5
-
+// 2 3 5 4
 ```
 
 上面代码通过add方法向Set结构加入成员，结果表明Set结构不会添加重复的值。
