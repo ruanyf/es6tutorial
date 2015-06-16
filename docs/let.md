@@ -7,7 +7,6 @@
 ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
 
 ```javascript
-
 {
   let a = 10;
   var b = 1;
@@ -15,7 +14,6 @@ ES6新增了let命令，用来声明变量。它的用法类似于var，但是�
 
 a // ReferenceError: a is not defined.
 b // 1
-
 ```
 
 上面代码在代码块之中，分别用let和var声明了两个变量。然后在代码块之外调用这两个变量，结果let声明的变量报错，var声明的变量返回了正确的值。这表明，let声明的变量只在它所在的代码块有效。
@@ -23,12 +21,10 @@ b // 1
 for循环的计数器，就很合适使用let命令。
 
 ```javascript
-
 for(let i = 0; i < arr.length; i++){}
 
 console.log(i)
 //ReferenceError: i is not defined
-
 ```
 
 上面代码的计数器i，只在for循环体内有效。
@@ -36,7 +32,6 @@ console.log(i)
 下面的代码如果使用var，最后输出的是10。
 
 ```javascript
-
 var a = [];
 for (var i = 0; i < 10; i++) {
   a[i] = function () {
@@ -44,13 +39,11 @@ for (var i = 0; i < 10; i++) {
   };
 }
 a[6](); // 10
-
 ```
 
 如果使用let，声明的变量仅在块级作用域内有效，最后输出的是6。
 
 ```javascript
-
 var a = [];
 for (let i = 0; i < 10; i++) {
   a[i] = function () {
@@ -58,7 +51,6 @@ for (let i = 0; i < 10; i++) {
   };
 }
 a[6](); // 6
-
 ```
 
 ### 不存在变量提升
@@ -370,12 +362,11 @@ var constantize = (obj) => {
 
 ## 全局对象的属性
 
-全局对象是最顶层的对象，在浏览器环境指的是window对象，在Node.js指的是global对象。ES5规定，所有全局变量都是全局对象的属性。
+全局对象是最顶层的对象，在浏览器环境指的是window对象，在Node.js指的是global对象。在JavaScript语言中，所有全局变量都是全局对象的属性。
 
 ES6规定，var命令和function命令声明的全局变量，属于全局对象的属性；let命令、const命令、class命令声明的全局变量，不属于全局对象的属性。
 
 ```javascript
-
 var a = 1;
 // 如果在node环境，可以写成global.a
 // 或者采用通用方法，写成this.a
@@ -383,7 +374,6 @@ window.a // 1
 
 let b = 1;
 window.b // undefined
-
 ```
 
 上面代码中，全局变量a由var命令声明，所以它是全局对象的属性；全局变量b由let命令声明，所以它不是全局对象的属性，返回undefined。

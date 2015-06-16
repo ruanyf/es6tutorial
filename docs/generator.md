@@ -7,7 +7,6 @@
 在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
-
 function* helloWorldGenerator() {
   yield 'hello';
   yield 'world';
@@ -15,7 +14,6 @@ function* helloWorldGenerator() {
 }
 
 var hw = helloWorldGenerator();
-
 ```
 
 上面代码定义了一个Generator函数helloWorldGenerator，它的遍历器有两个成员“hello”和“world”。调用这个函数，就会得到遍历器。
@@ -127,7 +125,6 @@ for (var f of flat(arr)){
 上面代码也会产生句法错误，因为forEach方法的参数是一个普通函数，但是在里面使用了yield语句。一种修改方法是改用for循环。
 
 ```javascript
-
 var arr = [1, [[2, 3], 4], [5, 6]];
 
 var flat = function* (a){
@@ -146,7 +143,6 @@ for (var f of flat(arr)){
   console.log(f);
 }
 // 1, 2, 3, 4, 5, 6
-
 ```
 
 ## next方法的参数
@@ -154,7 +150,6 @@ for (var f of flat(arr)){
 yield语句本身没有返回值，或者说总是返回undefined。next方法可以带一个参数，该参数就会被当作上一个yield语句的返回值。
 
 ```javascript
-
 function* f() {
   for(var i=0; true; i++) {
     var reset = yield i;
@@ -167,7 +162,6 @@ var g = f();
 g.next() // { value: 0, done: false }
 g.next() // { value: 1, done: false }
 g.next(true) // { value: 0, done: false }
-
 ```
 
 上面代码先定义了一个可以无限运行的Generator函数f，如果next方法没有参数，每次运行到yield语句，变量reset的值总是undefined。当next方法带一个参数true时，当前的变量reset就被重置为这个参数（即true），因此i会等于-1，下一轮循环就会从-1开始递增。
@@ -177,7 +171,24 @@ g.next(true) // { value: 0, done: false }
 再看一个例子。
 
 ```javascript
+function* foo(x) {
+  var y = 2 * (yield (x + 1));
+  var z = yield (y / 3);
+  return (x + y + z);
+}
 
+var a = foo(5);
+
+a.next() // Object{value:6, done:false}
+a.next() // Object{value:NaN, done:false}
+a.next() // Object{value:NaN, done:false}
+```
+
+上面代码中，第二次运行next方法的时候不带参数，导致y的值等于`2 * undefined`（即NaN），除以3以后还是NaN，因此返回对象的value属性也等于NaN。第三次运行Next方法的时候不带参数，所以z等于undefined，返回对象的value属性等于`5 + NaN + undefined`，即NaN。
+
+如果向next方法提供参数，返回结果就完全不一样了。
+
+```javascript
 function* foo(x) {
   var y = 2 * (yield (x + 1));
   var z = yield (y / 3);
@@ -192,7 +203,6 @@ it.next(12)
 // { value:8, done:false }
 it.next(13)
 // { value:42, done:true }
-
 ```
 
 上面代码第一次调用next方法时，返回`x+1`的值6；第二次调用next方法，将上一次yield语句的值设为12，因此y等于24，返回`y / 3`的值8；第三次调用next方法，将上一次yield语句的值设为13，因此z等于13，这时x等于5，y等于24，所以return语句的值等于42。
@@ -249,15 +259,12 @@ for (let n of fibonacci()) {
 Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
 
 ```javascript
-
 var g = function* () {
   while (true) {
     try {
       yield;
     } catch (e) {
-      if (e != 'a') {
-        throw e;
-      }
+      if (e != 'a') throw e;
       console.log('内部捕获', e);
     }
   }
@@ -274,7 +281,6 @@ try {
 }
 // 内部捕获 a
 // 外部捕获 b
-
 ```
 
 上面代码中，遍历器i连续抛出两个错误。第一个错误被Generator函数体内的catch捕获，然后Generator函数执行完成，于是第二个错误被函数体外的catch捕获。
@@ -287,9 +293,7 @@ var g = function* () {
     try {
       yield;
     } catch (e) {
-      if (e != 'a') {
-        throw e;
-      }
+      if (e != 'a') throw e;
       console.log('内部捕获', e);
     }
   }
@@ -436,15 +440,15 @@ try {
 
 上面代码中，第二个next方法向函数体内传入一个参数42，数值是没有toUpperCase方法的，所以会抛出一个TypeError错误，被函数体外的catch捕获。
 
-一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将一直返回发生错误前的那个值。
+一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将返回一个value属性等于undefined、done属性等于true的对象，即JavaScript引擎认为这个Generator已经运行结束了。
 
 ```javascript
-
 function* g() {
   yield 1;
   console.log('throwing an exception');
   throw new Error('generator broke!');
   yield 2;
+  yield 3;
 }
 
 function log(generator) {
@@ -452,36 +456,35 @@ function log(generator) {
   console.log('starting generator');
   try {
     v = generator.next();
-    console.log('got back', v);
+    console.log('第一次运行next方法', v);
   } catch (err) {
-    console.log('fixing generator', v);
+    console.log('捕捉错误', v);
   }
   try {
     v = generator.next();
-    console.log('got back', v);
+    console.log('第二次运行next方法', v);
   } catch (err) {
-    console.log('fixing generator', v);
+    console.log('捕捉错误', v);
   }
   try {
     v = generator.next();
-    console.log('got back', v);
+    console.log('第三次运行next方法', v);
   } catch (err) {
-    console.log('fixing generator', v);
+    console.log('捕捉错误', v);
   }
   console.log('caller done');
 }
 
 log(g());
 // starting generator
-// got back { value: 1, done: false }
+// 第一次运行next方法 { value: 1, done: false }
 // throwing an exception
-// fixing generator { value: 1, done: false }
-// fixing generator { value: 1, done: false }
+// 捕捉错误 { value: 1, done: false }
+// 第三次运行next方法 { value: undefined, done: true }
 // caller done
-
 ```
 
-上面代码在Generator函数g抛出错误以后，再调用next方法，就不再执行下去了，一直停留在上一次的状态。
+上面代码一共三次运行next方法，第二次运行的时候会抛出错误，然后第三次运行的时候，Generator函数就已经结束了，不再执行下去了。
 
 ## yield*语句
 

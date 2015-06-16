@@ -64,7 +64,7 @@ Set数据结构有以下方法。
 
 ```javascript
 
-s.add(1).add(2).add(2); 
+s.add(1).add(2).add(2);
 // 注意2被加入了两次
 
 s.size // 2
@@ -165,18 +165,31 @@ for (let x of set) {
 
 ```
 
-Set结构的forEach方法，用于对每个成员执行某种操作，返回修改后的Set结构。
+Set结构的forEach方法，用于对每个成员执行某种操作，不影响原来的Set结构。
 
 ```javascript
-
 let set = new Set([1, 2, 3]);
-
-set.forEach((value, key) => value*2 )
-// 返回Set结构{2, 4, 6}
-
+set.forEach((value, key) => value * 2 )
+// set的值还是1, 2, 3
 ```
 
 上面代码说明，forEach方法的参数就是一个处理函数。该函数的参数依次为键值、键名、集合本身（上例省略了该参数）。另外，forEach方法还可以有第二个参数，表示绑定的this对象。
+
+如果想在遍历操作中，同步改变原来的Set结构，目前没有直接的方法，但有两种变通方法。一种是利用原Set结构映射出一个新的结构，然后赋值给原来的Set结构；另一种是利用Array.from方法。
+
+```javascript
+// 方法一
+let set = new Set([1, 2, 3]);
+set = new Set([...set].map(val => val * 2));
+// set的值是2, 4, 6
+
+// 方法二
+let set = new Set([1, 2, 3]);
+set = new Set(Array.from(set, val => val * 2));
+// set的值是2, 4, 6
+```
+
+上面代码提供了两种方法，直接在遍历操作中改变原来的Set结构。
 
 为了与Map结构保持一致，Set结构也有keys和entries方法，这时每个值的键名就是键值。
 
@@ -204,7 +217,7 @@ for ( let [key, value] of set.entries() ){
 ```javascript
 
 let set = new Set(['red', 'green', 'blue']);
-let arr = [...set]; 
+let arr = [...set];
 // ['red', 'green', 'blue']
 
 ```
@@ -293,7 +306,6 @@ WeakSet结构有以下三个方法。
 下面是一个例子。
 
 ```javascript
-
 var ws = new WeakSet();
 var obj = {};
 var foo = {};
@@ -304,26 +316,18 @@ ws.add(obj);
 ws.has(window); // true
 ws.has(foo);    // false
 
-ws.delete(window); 
+ws.delete(window);
 ws.has(window);    // false
-
-ws.clear();
-
 ```
 
 WeakSet没有size属性，没有办法遍历它的成员。
 
 ```javascript
-
-ws.size
-// undefined
+ws.size // undefined
+ws.forEach // undefined
 
 ws.forEach(function(item){ console.log('WeakSet has ' + item)})
 // TypeError: undefined is not a function
-
-ws.forEach
-// undefined
-
 ```
 
 上面代码试图获取size和forEach属性，结果都不能成功。
@@ -418,7 +422,7 @@ map.get(k2) // 222
 ```javascript
 
 let map = new Map();
-    
+
 map.set(NaN, 123);
 map.get(NaN) // 123
 
@@ -492,12 +496,12 @@ m.get("edition")  // 6
 let map = new Map();
 map.set('foo', true);
 map.set('bar', false);
-    
+
 map.size // 2
 map.clear()
 map.size // 0
 
-```    
+```
 
 **（3）遍历**
 

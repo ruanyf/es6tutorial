@@ -304,10 +304,9 @@ repeat()返回一个新字符串，表示将原字符串重复n次。
 
 ## 正则表达式的y修饰符
 
-除了u修饰符，ES6还为正则表达式添加了y修饰符，叫做“粘连”（sticky）修饰符。它的作用与g修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始，不同之处在于，g修饰符只确保剩余位置中存在匹配，而y修饰符确保匹配必须从剩余的第一个位置开始，这也就是“粘连”的涵义。
+除了u修饰符，ES6还为正则表达式添加了y修饰符，叫做“粘连”（sticky）修饰符。它的作用与g修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始，不同之处在于，g修饰符只要剩余位置中存在匹配就可，而y修饰符确保匹配必须从剩余的第一个位置开始，这也就是“粘连”的涵义。
 
 ```javascript
-
 var s = "aaa_aa_a";
 var r1 = /a+/g;
 var r2 = /a+/y;
@@ -317,7 +316,6 @@ r2.exec(s) // ["aaa"]
 
 r1.exec(s) // ["aa"]
 r2.exec(s) // null
-
 ```
 
 上面代码有两个正则表达式，一个使用g修饰符，另一个使用y修饰符。这两个正则表达式各执行了两次，第一次执行的时候，两者行为相同，剩余字符串都是“_aa_a”。由于g修饰没有位置要求，所以第二次执行会返回结果，而y修饰符要求匹配必须从头部开始，所以返回null。
@@ -325,13 +323,11 @@ r2.exec(s) // null
 如果改一下正则表达式，保证每次都能头部匹配，y修饰符就会返回结果了。
 
 ```javascript
-
 var s = "aaa_aa_a";
 var r = /a+_/y;
 
 r.exec(s) // ["aaa_"]
 r.exec(s) // ["aa_"]
-
 ```
 
 上面代码每次匹配，都是从剩余字符串的头部开始。
@@ -339,10 +335,8 @@ r.exec(s) // ["aa_"]
 进一步说，y修饰符号隐含了头部匹配的标志&#710;。
 
 ```javascript
-
 /b/y.exec("aba")
 // null
-
 ```
 
 上面代码由于不能保证头部匹配，所以返回null。y修饰符的设计本意，就是让头部匹配的标志&#710;在全局匹配中都有效。
@@ -350,10 +344,8 @@ r.exec(s) // ["aa_"]
 与y修饰符相匹配，ES6的正则对象多了sticky属性，表示是否设置了y修饰符。
 
 ```javascript
-
 var r = /hello\d/y;
 r.sticky // true
-
 ```
 
 ## Regexp.escape()
@@ -663,20 +655,16 @@ HelloWorldApp.main();
 模板处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
 
 ```javascript
-
 tag`First line\nSecond line`
-
 ```
 
 上面代码中，tag函数的第一个参数是一个数组`["First line\nSecond line"]`，这个数组有一个raw属性，等于`["First line\\nSecond line"]`，两者唯一的区别就是斜杠被转义了。
 
 ```javascript
-
 function tag(strings) {
   console.log(strings.raw[0]);
   // "First line\\nSecond line"
 }
-
 ```
 
 ## String.raw()
@@ -684,13 +672,11 @@ function tag(strings) {
 String.raw方法，往往用来充当模板字符串的处理函数，返回字符串被转义前的原始格式。
 
 ```javascript
-
 String.raw`Hi\n${2+3}!`;
 // "Hi\\n5!"
 
 String.raw`Hi\u000A!`;
 // 'Hi\\u000A!'
-
 ```
 
 String.raw方法也可以正常的函数形式使用。这时，它的第一个参数，应该是一个具有raw属性的对象，且raw属性的值应该是一个数组。

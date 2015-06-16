@@ -413,10 +413,8 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
 ```javascript
-
 var dateFields = readDateFields(database);
 var d = new Date(...dateFields);
-
 ```
 
 上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数Date。
@@ -424,10 +422,8 @@ var d = new Date(...dateFields);
 除了展开数组，扩展运算符还可以将一个数值扩展成数组。
 
 ```javascript
-
 [...5]
 // [0, 1, 2, 3, 4, 5]
-
 ```
 
 扩展运算符还可以将字符串转为真正的数组。
