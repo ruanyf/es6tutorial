@@ -5,7 +5,6 @@
 在ES6之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
 
 ```javascript
-
 function log(x, y) {
   y = y || 'World';
   console.log(x, y);
@@ -14,7 +13,6 @@ function log(x, y) {
 log('Hello') // Hello World
 log('Hello', 'China') // Hello China
 log('Hello', '') // Hello World
-
 ```
 
 上面代码检查函数log的参数y有没有赋值，如果没有，则指定默认值为World。这种写法的缺点在于，如果参数y赋值了，但是对应的布尔值为false，则该赋值不起作用。就像上面代码的最后一行，参数y等于空字符，结果被改为默认值。
@@ -22,7 +20,6 @@ log('Hello', '') // Hello World
 为了避免这个问题，通常需要先判断一下参数y是否被赋值，如果没有，再等于默认值。这有两种写法。
 
 ```javascript
-
 // 写法一
 if (typeof y === 'undefined') {
   y = 'World';
@@ -32,7 +29,6 @@ if (typeof y === 'undefined') {
 if (arguments.length === 1) {
   y = 'World';
 }
-
 ```
 
 ES6允许为函数的参数设置默认值，即直接写在参数定义的后面。
@@ -407,13 +403,11 @@ rest  // ["bar","baz"]
 如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。
 
 ```javascript
-
 const [...butLast, last] = [1, 2, 3, 4, 5];
 // 报错
 
-const [first, ..., last] = [1, 2, 3, 4, 5];
+const [first, ...middle, last] = [1, 2, 3, 4, 5];
 // 报错
-
 ```
 
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
@@ -599,21 +593,18 @@ headAndTail(1, 2, 3, 4, 5)
 上面三点中，第一点尤其值得注意。this对象的指向是可变的，但是在箭头函数中，它是固定的。下面的代码是一个例子，将this对象绑定定义时所在的对象。
 
 ```javascript
-
 var handler = {
+  id: "123456",
 
-    id: "123456",
+  init: function() {
+    document.addEventListener("click",
+      event => this.doSomething(event.type), false);
+  },
 
-    init: function() {
-        document.addEventListener("click",
-            event => this.doSomething(event.type), false);
-    },
-
-    doSomething: function(type) {
-        console.log("Handling " + type  + " for " + this.id);
-    }
+  doSomething: function(type) {
+    console.log("Handling " + type  + " for " + this.id);
+  }
 };
-
 ```
 
 上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，this.doSomething这一行会报错，因为此时this指向全局对象。
