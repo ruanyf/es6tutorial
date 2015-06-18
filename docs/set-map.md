@@ -2,6 +2,8 @@
 
 ## Set
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#Set>
+
 ### 基本用法
 
 ES6提供了新的数据结构Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
@@ -263,6 +265,8 @@ let intersect = new Set([...a].filter(x => b.has(x)));
 
 ## WeakSet
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#WeakSet>
+
 WeakSet结构与Set类似，也是不重复的值的集合。但是，它与Set有两个区别。
 
 首先，WeakSet的成员只能是对象，而不能是其他类型的值。其次，WeakSet中的对象都是弱引用，即垃圾回收机制不考虑WeakSet对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于WeakSet之中。这个特点意味着，无法引用WeakSet的成员，因此WeakSet是不可遍历的。
@@ -335,6 +339,8 @@ ws.forEach(function(item){ console.log('WeakSet has ' + item)})
 WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍历机制无法保存成员的存在，很可能刚刚遍历结束，成员就取不到了。WeakSet的一个用处，是储存DOM节点，而不用担心这些节点从文档移除时，会引发内存泄漏。
 
 ## Map
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#Map>
 
 **（1）基本用法**
 
@@ -633,6 +639,8 @@ map.forEach(function(value, key, map) {
 上面代码中，forEach方法的回调函数的this，就指向reporter。
 
 ## WeakMap
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#WeakMap>
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
 
