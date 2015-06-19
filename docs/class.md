@@ -743,7 +743,7 @@ export function circumference(radius) {
 
 ```
 
-然后，main.js输入circlek.js模块。
+然后，main.js输入circle.js模块。
 
 ```javascript
 
