@@ -217,14 +217,12 @@ add(2, 5, 3) // 10
 下面是一个rest参数代替arguments变量的例子。
 
 ```javascript
-
 // arguments变量的写法
 const sortNumbers = () =>
   Array.prototype.slice.call(arguments).sort();
 
 // rest参数的写法
 const sortNumbers = (...numbers) => numbers.sort();
-
 ```
 
 上面代码的两种写法，比较后可以发现，rest参数的写法更自然也更简洁。

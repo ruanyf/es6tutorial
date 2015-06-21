@@ -23,7 +23,6 @@ var [a, b, c] = [1, 2, 3];
 本质上，这种写法属于“模式匹配”，只要等号两边的模式相同，左边的变量就会被赋予对应的值。下面是一些使用嵌套数组进行解构的例子。
 
 ```javascript
-
 let [foo, [[bar], baz]] = [1, [[2], 3]];
 foo // 1
 bar // 2
@@ -39,7 +38,6 @@ y // 3
 let [head, ...tail] = [1, 2, 3, 4];
 head // 1
 tail // [2, 3, 4]
-
 ```
 
 如果解构不成功，变量的值就等于undefined。
@@ -74,8 +72,8 @@ d // 4
 
 ```javascript
 // 报错
-var [foo] = undefined;
-var [foo] = null;
+let [foo] = undefined;
+let [foo] = null;
 ```
 
 这是因为解构只能用于数组或对象。其他原始类型的值都可以转为相应的对象，但是，undefined和null不能转为对象，因此报错。
@@ -89,6 +87,18 @@ foo // true
 [x, y='b'] = ['a'] // x='a', y='b'
 [x, y='b'] = ['a', undefined] // x='a', y='b'
 ```
+
+注意，ES6内部使用严格相等运算符（===），判断一个位置是否有值。所以，如果一个数组成员不严格等于undefined，默认值是不会生效的。
+
+```javascript
+var [x = 1] = [undefined];
+x // 1
+
+var [x = 1] = [null];
+x // null
+```
+
+上面代码中，如果一个数组成员是null，默认值就不会生效，因为null不严格等于undefined。
 
 解构赋值不仅适用于var命令，也适用于let和const命令。
 
@@ -158,14 +168,12 @@ bar // "bbb"
 对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。
 
 ```javascript
-
 var { bar, foo } = { foo: "aaa", bar: "bbb" };
 foo // "aaa"
 bar // "bbb"
 
 var { baz } = { foo: "aaa", bar: "bbb" };
 baz // undefined
-
 ```
 
 上面代码的第一个例子，等号左边的两个变量的次序，与等号右边两个同名属性的次序不一致，但是对取值完全没有影响。第二个例子的变量没有对应的同名属性，导致取不到值，最后等于`undefined`。
@@ -173,7 +181,6 @@ baz // undefined
 如果变量名与属性名不一致，必须写成下面这样。
 
 ```javascript
-
 var { foo: baz } = { foo: "aaa", bar: "bbb" };
 baz // "aaa"
 
@@ -181,13 +188,11 @@ let obj = { first: 'hello', last: 'world' };
 let { first: f, last: l } = obj;
 f // 'hello'
 l // 'world'
-
 ```
 
 和数组一样，解构也可以用于嵌套结构的对象。
 
 ```javascript
-
 var obj = {
   p: [
     "Hello",
@@ -198,14 +203,12 @@ var obj = {
 var { p: [x, { y }] } = obj;
 x // "Hello"
 y // "World"
-
 ```
 
 对象的解构也可以指定默认值。
 
 ```javascript
-
-var { x = 3 } = {};
+var {x = 3} = {};
 x // 3
 
 var {x, y = 5} = {x: 1};
@@ -213,14 +216,66 @@ console.log(x, y) // 1, 5
 
 var { message: msg = "Something went wrong" } = {};
 console.log(msg); // "Something went wrong"
-
 ```
 
-对象解构可以与函数参数的默认值一起使用。
+默认值生效的条件是，对象的属性值严格等于undefined。
 
 ```javascript
+var {x = 3} = {x: undefined};
+x // 3
 
-function move({x=0, y=0} = {}) {
+var {x = 3} = {x: null};
+x // null
+```
+
+上面代码中，如果x属性等于null，就不严格相等于undefined，导致默认值不会生效。
+
+如果要将一个已经声明的变量用于解构赋值，必须非常小心。
+
+```javascript
+// 错误的写法
+
+var x;
+{x} = {x:1};
+// SyntaxError: syntax error
+```
+
+上面代码的写法会报错，因为JavaScript引擎会将`{x}`理解成一个代码块，从而发生语法错误。只有不将大括号写在行首，避免JavaScript将其解释为代码块，才能解决这个问题。
+
+```javascript
+// 正确的写法
+
+({x}) = {x:1};
+// 或者
+({x} = {x:1});
+```
+
+对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
+
+```javascript
+let { log, sin, cos } = Math;
+```
+
+上面代码将Math对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
+
+## 函数参数的解构
+
+函数的参数也可以使用解构。
+
+```javascript
+function add([x, y]){
+  return x + y;
+}
+
+add([1, 2]) // 3
+```
+
+上面代码中，函数add的参数实际上不是一个数组，而是通过解构得到的变量x和y。
+
+函数参数的解构也可以使用默认值。
+
+```javascript
+function move({x = 0, y = 0} = {}) {
   return [x, y];
 }
 
@@ -228,7 +283,6 @@ move({x: 3, y: 8}); // [3, 8]
 move({x: 3}); // [3, 0]
 move({}); // [0, 0]
 move(); // [0, 0]
-
 ```
 
 上面代码中，函数move的参数是一个对象，通过对这个对象进行解构，得到变量x和y的值。如果解构失败，x和y等于默认值。
@@ -236,7 +290,6 @@ move(); // [0, 0]
 注意，指定函数参数的默认值时，不能采用下面的写法。
 
 ```javascript
-
 function move({x, y} = { x: 0, y: 0 }) {
   return [x, y];
 }
@@ -245,44 +298,9 @@ move({x: 3, y: 8}); // [3, 8]
 move({x: 3}); // [3, undefined]
 move({}); // [undefined, undefined]
 move(); // [0, 0]
-
 ```
 
 上面代码是为函数move的参数指定默认值，而不是为变量x和y指定默认值，所以会得到与前一种写法不同的结果。
-
-如果要将一个已经声明的变量用于解构赋值，必须非常小心。
-
-```javascript
-
-// 错误的写法
-
-var x;
-{x} = {x:1};
-// SyntaxError: syntax error
-
-```
-
-上面代码的写法会报错，因为JavaScript引擎会将`{x}`理解成一个代码块，从而发生语法错误。只有不将大括号写在行首，避免JavaScript将其解释为代码块，才能解决这个问题。
-
-```javascript
-
-// 正确的写法
-
-({x}) = {x:1};
-// 或者
-({x} = {x:1});
-
-```
-
-对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
-
-```javascript
-
-let { log, sin, cos } = Math;
-
-```
-
-上面代码将Math对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
 
 ## 用途
 
