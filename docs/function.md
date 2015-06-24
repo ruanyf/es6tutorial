@@ -607,10 +607,35 @@ var handler = {
 
 长期以来，JavaScript语言的this对象一直是一个令人头痛的问题，在对象方法中使用this，必须非常小心。箭头函数绑定this，很大程度上解决了这个困扰。
 
-箭头函数内部，还可以再使用箭头函数。下面是一个部署管道机制（pipeline）的例子。
+箭头函数内部，还可以再使用箭头函数。下面是一个ES5语法的多重嵌套函数。
 
 ```javascript
+function insert(value) {
+  return {into: function (array) {
+    return {after: function (afterValue) {
+      array.splice(array.indexOf(afterValue) + 1, 0, value);
+      return array;
+    }};
+  }};
+}
 
+insert(2).into([1, 3]).after(1); //[1, 2, 3]
+```
+
+上面这个函数，可以使用箭头函数改写。
+
+```javascript
+let insert = (value) => ({into: (array) => ({after: (afterValue) => {
+  array.splice(array.indexOf(afterValue) + 1, 0, value);
+  return array;
+}})});
+
+insert(2).into([1, 3]).after(1); //[1, 2, 3]
+```
+
+下面是一个部署管道机制（pipeline）的例子，即前一个函数的输出是后一个函数的输入。
+
+```javascript
 const pipeline = (...funcs) =>
   val => funcs.reduce((a, b) => b(a), val);
 
@@ -620,10 +645,9 @@ const addThenMult = pipeline(plus1, mult2);
 
 addThenMult(5)
 // 12
-
 ```
 
-上面的代码等同于下面的写法。
+如果觉得上面的写法可读性比较差，也可以采用下面的写法。
 
 ```javascript
 const plus1 = a => a + 1;

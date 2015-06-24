@@ -310,18 +310,19 @@ WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍�
 
 ### Map结构的目的和基本用法
 
-JavaScript的对象，本质上是键值对的集合，但是只能用字符串当作键。这给它的使用带来了很大的限制。
+JavaScript的对象（Object），本质上是键值对的集合（Hash结构），但是只能用字符串当作键。这给它的使用带来了很大的限制。
 
 ```javascript
 var data = {};
 var element = document.getElementById("myDiv");
 
 data[element] = metadata;
+data["[Object HTMLDivElement]"] // metadata
 ```
 
 上面代码原意是将一个DOM节点作为对象data的键，但是由于对象只接受字符串作为键名，所以element被自动转为字符串`[Object HTMLDivElement]`。
 
-为了解决这个问题，ES6提供了map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应。
+为了解决这个问题，ES6提供了Map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。
 
 ```javascript
 var m = new Map();
@@ -347,6 +348,26 @@ map.has("name") // true
 map.get("name") // "张三"
 map.has("title") // true
 map.get("title") // "Author"
+```
+
+上面代码在新建Map实例时，就指定了两个键name和title。
+
+如果对同一个键多次赋值，后面的值将覆盖前面的值。
+
+```javascript
+let map = new Map();
+map.set(1, 'aaa');
+map.set(1, 'bbb');
+map.get(1) // "bbb"
+```
+
+上面代码对键1连续赋值两次，后一次的值覆盖前一次的值。
+
+如果读取一个未知的键，则返回undefined。
+
+```javascript
+new Map().get('asfddfsasadf')
+// undefined
 ```
 
 注意，只有对同一个对象的引用，Map结构才将其视为同一个键。这一点要非常小心。
@@ -389,13 +410,6 @@ map.get(NaN) // 123
 
 map.set(-0, 123);
 map.get(+0) // 123
-```
-
-如果读取一个未知的键，则返回undefined。
-
-```javascript
-new Map().get('asfddfsasadf')
-// undefined
 ```
 
 ### 实例的属性和操作方法
@@ -576,7 +590,7 @@ map.forEach(function(value, key, map) {
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
 
-WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。 
+WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，WeakMap自动移除对应的键值对。典型应用是，一个对应DOM元素的WeakMap结构，当某个DOM元素被清除，其所对应的WeakMap记录就会自动被移除。基本上，WeakMap的专用场合就是，它的键所对应的对象，可能会在将来消失。WeakMap结构有助于防止内存泄漏。
 
 下面是WeakMap结构的一个例子，可以看到用法上与Map几乎一样。
 
