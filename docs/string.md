@@ -395,7 +395,7 @@ escape('hi. how are you?')
 
 ## 模板字符串
 
-以前的JavaScript语言，输出模板通常是这样写的。
+传统的JavaScript语言，输出模板通常是这样写的。
 
 ```javascript
 $("#result").append(
@@ -419,7 +419,6 @@ $("#result").append(`
 模板字符串（template string）是增强版的字符串，用反引号（&#96;）标识。它可以当作普通字符串使用，也可以用来定义多行字符串，或者在字符串中嵌入变量。
 
 ```javascript
-
 // 普通字符串
 `In JavaScript '\n' is a line-feed.`
 
@@ -433,7 +432,6 @@ string text line 2`);
 // 字符串中嵌入变量
 var name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
-
 ```
 
 上面代码中的字符串，都是用反引号表示。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
@@ -472,7 +470,6 @@ function authorize(user, action) {
 大括号内部可以放入任意的JavaScript表达式，可以进行运算，以及引用对象属性。
 
 ```javascript
-
 var x = 1;
 var y = 2;
 
@@ -485,29 +482,27 @@ console.log(`${x} + ${y*2} = ${x+y*2}`)
 var obj = {x: 1, y: 2};
 console.log(`${obj.x + obj.y}`)
 // 3
-
 ```
 
 模板字符串之中还能调用函数。
 
 ```javascript
-
 function fn() {
   return "Hello World";
 }
 
 console.log(`foo ${fn()} bar`);
 // foo Hello World bar
-
 ```
 
-如果大括号中的值不是字符串，将按照一般的规则转为字符串。比如，默认会调用对象的toString方法。
+如果大括号中的值不是字符串，将按照一般的规则转为字符串。不如，大括号中是一个对象，将默认调用对象的toString方法。
 
 如果模板字符串中的变量没有声明，将报错。
 
 ```javascript
+// 变量place没有声明
 var msg = `Hello, ${place}`;
-// throws error
+// 报错
 ```
 
 ## 标签模板
@@ -515,34 +510,46 @@ var msg = `Hello, ${place}`;
 模板字符串的功能，不仅仅是上面这些。它可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。这被称为“标签模板”功能（tagged template）。
 
 ```javascript
-
 var a = 5;
 var b = 10;
 
 tag`Hello ${ a + b } world ${ a * b }`;
-
 ```
 
-上面代码中，模板字符串前面有一个函数tag，整个表达式将返回tag处理模板字符串后的返回值。
+上面代码中，模板字符串前面有一个标识名tag，它是一个函数。整个表达式的返回值，就是tag函数处理模板字符串后的返回值。
 
-函数tag依次接受三个参数。第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。第一个参数之后的参数，都是模板字符串各个变量被替换后的值。
+函数tag依次会接收到多个参数。
+
+```javascript
+function tag(stringArr, value1, value2){
+  // ...
+}
+
+// 等同于
+function tag(stringArr, ...values){
+  // ...
+}
+```
+
+tag函数的第一个参数是一个数组，该数组的成员是模板字符串中那些没有变量替换的部分，也就是说，变量替换只发生在数组的第一个成员与第二个成员之间、第二个成员与第三个成员之间，以此类推。
+
+tag函数的其他参数，都是模板字符串各个变量被替换后的值。由于本例中，模板字符串含有两个变量，因此tag会接受到value1和value2两个参数。
+
+tag函数所有参数的实际值如下。
 
 - 第一个参数：['Hello ', ' world ']
 - 第二个参数: 15
 - 第三个参数：50
 
-也就是说，tag函数实际的参数如下。
+也就是说，tag函数实际上以下面的形式调用。
 
 ```javascript
-
 tag(['Hello ', ' world '], 15, 50)
-
 ```
 
-下面是tag函数的代码，以及运行结果。
+我们可以按照需要编写tag函数的代码。下面是tag函数的一种写法，以及运行结果。
 
 ```javascript
-
 var a = 5;
 var b = 10;
 
@@ -561,13 +568,11 @@ tag`Hello ${ a + b } world ${ a * b}`;
 // 15
 // 50
 // "OK"
-
 ```
 
 下面是一个更复杂的例子。
 
 ```javascript
-
 var total = 30;
 var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
 
@@ -588,10 +593,23 @@ function passthru(literals) {
 
 msg
 // "The total is 30 (31.5 with tax)"
-
 ```
 
 上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
+
+passthru函数采用rest参数的写法如下。
+
+```javascript
+function passthru(literals,...values) {
+  var output = "";
+  for (var index = 0; index < values.length; index++) {
+    output += literals[index] + values[index];
+  }
+
+  output += literals[index]
+  return output;
+}
+```
 
 “标签模板”的一个重要应用，就是过滤HTML字符串，防止用户输入恶意内容。
 
@@ -625,7 +643,7 @@ i18n`Hello ${name}, you have ${amount}:c(CAD) in your bank account.`
 // Hallo Bob, Sie haben 1.234,56 $CA auf Ihrem Bankkonto.
 ```
 
-模板字符串并不能取代Mustache之类的模板函数，因为没有条件判断和循环处理功能，但是通过标签函数，你可以自己添加这些功能。
+模板字符串本身并不能取代Mustache之类的模板函数，因为没有条件判断和循环处理功能，但是通过标签函数，你可以自己添加这些功能。
 
 ```javascript
 // 下面的hashTemplate函数
@@ -652,24 +670,24 @@ class HelloWorldApp {
 HelloWorldApp.main();
 ```
 
-模板处理函数的第一个参数，还有一个raw属性。它也是一个数组，成员与处理函数的第一个参数完全一致，唯一的区别是字符串被转义前的原始格式，这是为了模板函数处理的方便而提供的。
+模板处理函数的第一个参数（模板字符串数组），还有一个raw属性。
 
 ```javascript
 tag`First line\nSecond line`
-```
 
-上面代码中，tag函数的第一个参数是一个数组`["First line\nSecond line"]`，这个数组有一个raw属性，等于`["First line\\nSecond line"]`，两者唯一的区别就是斜杠被转义了。
-
-```javascript
 function tag(strings) {
   console.log(strings.raw[0]);
   // "First line\\nSecond line"
 }
 ```
 
+上面代码中，tag函数的第一个参数strings，有一个raw属性，也指向一个数组。该数组的成员与strings数组完全一致。比如，strings数组是`["First line\nSecond line"]`，那么strings.raw数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为\和n两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
+
 ## String.raw()
 
-String.raw方法，往往用来充当模板字符串的处理函数，返回字符串被转义前的原始格式。
+ES6还为原生的String对象，提供了一个raw方法。
+
+String.raw方法，往往用来充当模板字符串的处理函数，返回一个斜杠都被转义（即斜杠前面再加一个斜杠）的字符串，对应于替换变量后的模板字符串。
 
 ```javascript
 String.raw`Hi\n${2+3}!`;
@@ -679,15 +697,28 @@ String.raw`Hi\u000A!`;
 // 'Hi\\u000A!'
 ```
 
-String.raw方法也可以正常的函数形式使用。这时，它的第一个参数，应该是一个具有raw属性的对象，且raw属性的值应该是一个数组。
+它的代码基本如下。
 
 ```javascript
+String.raw = function (strings,...values) {
+  var output = "";
+  for (var index = 0; index < values.length; index++) {
+    output += strings.raw[index] + values[index];
+  }
 
+  output += strings.raw[index]
+  return output;
+}
+```
+
+String.raw方法可以作为处理模板字符串的基本方法，它会将所有变量替换，而且对斜杠进行转义，方便下一步作为字符串来使用。
+
+String.raw方法也可以作为正常的函数使用。这时，它的第一个参数，应该是一个具有raw属性的对象，且raw属性的值应该是一个数组。
+
+```javascript
 String.raw({ raw: 'test' }, 0, 1, 2);
 // 't0e1s2t'
 
-
 // 等同于
 String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
-
 ```
