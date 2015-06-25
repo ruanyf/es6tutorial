@@ -565,7 +565,6 @@ var result = values.sort((a, b) => a - b);
 下面是rest参数与箭头函数结合的例子。
 
 ```javascript
-
 const numbers = (...nums) => nums;
 
 numbers(1, 2, 3, 4, 5)
@@ -575,7 +574,6 @@ const headAndTail = (head, ...tail) => [head, tail];
 
 headAndTail(1, 2, 3, 4, 5)
 // [1,[2,3,4,5]]
-
 ```
 
 箭头函数有几个使用注意点。
@@ -673,9 +671,22 @@ foo::bar;
 bar.call(foo);
 
 foo::bar(...arguments);
-// 等同于
+i// 等同于
 bar.apply(foo, arguments);
 ```
+
+箭头函数还有一个功能，就是可以很方便地改写λ微积分。
+
+```javascript
+// λ微积分的写法
+fix = λf.(λx.f(λv.x(x)(v)))(λx.f(λv.x(x)(v)))
+
+// ES6的写法
+var fix = f => (x => f(v => x(x)(v)))
+               (x => f(v => x(x)(v)));
+```
+
+上面两种写法，几乎是一一对应的。由于λ微积分对于计算机科学非常重要，这使得我们可以用ES6作为替代工具，探索计算机科学。
 
 ## 尾调用优化
 
