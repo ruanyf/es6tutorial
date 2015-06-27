@@ -5,7 +5,6 @@
 ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
-
 function f( x, y ) {
   return { x, y };
 }
@@ -15,7 +14,6 @@ function f( x, y ) {
 function f( x, y ) {
   return { x: x, y: y };
 }
-
 ```
 
 上面是属性简写的例子，方法也可以简写。
@@ -372,33 +370,34 @@ Object.getPrototypeOf(obj)
 ES6引入了一种新的原始数据类型Symbol，表示独一无二的ID。它通过Symbol函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的Symbol类型。凡是属性名属于Symbol类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
 
 ```javascript
-
 let s = Symbol();
 
 typeof s
 // "symbol"
-
 ```
 
 上面代码中，变量s就是一个独一无二的ID。typeof运算符的结果，表明变量s是Symbol数据类型，而不是字符串之类的其他类型。
 
 注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。也就是说，由于Symbol值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。
 
-Symbol函数可以接受一个字符串作为参数，表示对Symbol实例的描述。
+Symbol函数可以接受一个字符串作为参数，表示对Symbol实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
 
 ```javascript
-var mySymbol = Symbol('Test');
+var s1 = Symbol('foo');
+var s2 = Symbol('bar');
 
-mySymbol.name
-// Test
+s1 // Symbol(foo)
+s2 // Symbol(bar)
+
+s1.toString() // "Symbol(foo)"
+s2.toString() // "Symbol(bar)"
 ```
 
-上面代码表示，Symbol函数的字符串参数，用来指定生成的Symbol值的描述。该描述可以通过name属性读取。之所以要对Symbol添加描述，是因为如果一个对象的属性名是Symbol类型，可能不太方便引用，而有些场合需要一个字符串类型的值来指代这个键。
+上面代码中，s1和s2是两个Symbol值。如果不加参数，它们在控制台的输出都是`Symbol()`，不利于区分。有了参数以后，就等于为它们加上了描述，输出的时候就能够分清，到底是哪一个值。
 
-Symbol函数的参数只是表示对当前Symbol类型的值的描述，因此相同参数的Symbol函数的返回值是不相等的。
+注意，Symbol函数的参数只是表示对当前Symbol类型的值的描述，因此相同参数的Symbol函数的返回值是不相等的。
 
 ```javascript
-
 // 没有参数的情况
 var s1 = Symbol();
 var s2 = Symbol();
@@ -410,7 +409,6 @@ var s1 = Symbol("foo");
 var s2 = Symbol("foo");
 
 s1 === s2 // false
-
 ```
 
 上面代码中，s1和s2都是Symbol函数的返回值，而且参数相同，但是它们是不相等的。
@@ -419,6 +417,7 @@ Symbol类型的值不能与其他类型的值进行运算，会报错。
 
 ```javascript
 var sym = Symbol('My symbol');
+
 "your symbol is " + sym
 // TypeError: can't convert symbol to string
 `your symbol is ${sym}`
@@ -428,19 +427,17 @@ var sym = Symbol('My symbol');
 但是，Symbol类型的值可以转为字符串。
 
 ```javascript
-String(sym)
-// 'Symbol(My symbol)'
+var sym = Symbol('My symbol');
 
-sym.toString()
-// 'Symbol(My symbol)'
+String(sym) // 'Symbol(My symbol)'
+sym.toString() // 'Symbol(My symbol)'
 ```
 
 ### 作为属性名的Symbol
 
-Symbol类型作为标识符，用于对象的属性名时，保证了属性名之间不会发生冲突。如果一个对象由多个模块构成，这样就不会出现同名的属性，也就防止了键值被不小心改写或覆盖。Symbol类型还可以用于定义一组常量，防止它们的值发生冲突。
+由于每一个Symbol值都是不相等的，这意味着Symbol值可以作为标识符，用于对象的属性名，就能保证不会出现同名的属性。这对于一个对象由多个模块构成的情况非常有用，能防止某一个键被不小心改写或覆盖。
 
 ```javascript
-
 var mySymbol = Symbol();
 
 // 第一种写法
@@ -449,7 +446,7 @@ a[mySymbol] = 'Hello!';
 
 // 第二种写法
 var a = {
-   [mySymbol]: 123
+  [mySymbol]: 123
 };
 
 // 第三种写法
@@ -458,15 +455,26 @@ Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
 // 以上写法都得到同样结果
 a[mySymbol] // "Hello!"
-
 ```
 
 上面代码通过方括号结构和Object.defineProperty，将对象的属性名指定为一个Symbol值。
 
-在对象内部使用Symbol属性名，必须采用属性名表达式，就像上面的第二种写法。
+注意，Symbol值作为对象属性名时，不能用点运算符。
 
 ```javascript
+var mySymbol = Symbol();
+var a = {};
 
+a.mySymbol = 'Hello!';
+a[mySymbol] // undefined
+a['mySymbol'] // "Hello!"
+```
+
+上面代码中，因为点运算符后面总是字符串，所以不会读取mySymbol作为标识名所指代的那个值，导致a的属性名实际上是一个字符串，而不是一个Symbol值。
+
+同理，在对象的内部，使用Symbol值定义属性时，Symbol值必须放在方括号之中。
+
+```javascript
 let s = Symbol();
 
 let obj = {
@@ -474,67 +482,35 @@ let obj = {
 };
 
 obj[s](123);
-
 ```
+
+上面代码中，如果s不放在方括号中，该属性的键名就是字符串s，而不是s所代表的那个Symbol值。
 
 采用增强的对象写法，上面代码的obj对象可以写得更简洁一些。
 
 ```javascript
-
 let obj = {
   [s](arg) { ... }
 };
-
 ```
 
-注意，不能使用点结构，将Symbol值作为对象的属性名。
+Symbol类型还可以用于定义一组常量，保证这组常量的值都是不相等的。
 
 ```javascript
-
-var a = {};
-var mySymbol = Symbol();
-
-a.mySymbol = 'Hello!';
-
-a[mySymbol] // undefined
-
+log.levels = {
+    DEBUG: Symbol('debug'),
+    INFO: Symbol('info'),
+    WARN: Symbol('warn'),
+};
+log(log.levels.DEBUG, 'debug message');
+log(log.levels.INFO, 'info message');
 ```
 
-上面代码中，mySymbol属性的值为未定义，原因在于`a.mySymbol`这样的写法，并不是把一个Symbol值当作属性名，而是把mySymbol这个字符串当作属性名进行赋值，这是因为点结构中的属性名永远都是字符串。
-
-需要注意的是，Symbol类型作为属性名时，该属性还是公开属性，不是私有属性。
-
-### Symbol.for()，Symbol.keyFor()
-
-Symbol.for方法在全局环境中搜索指定key的Symbol值，如果存在就返回这个Symbol值，否则就新建一个指定key的Symbol值并返回。
-
-`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查跟定的key是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个Symbol值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
-
-```javascript
-Symbol.for("bar") === Symbol.for("bar")
-// true
-
-Symbol("bar") === Symbol("bar")
-// false
-```
-
-上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
-
-Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
-
-```javascript
-var s1 = Symbol.for("foo");
-Symbol.keyFor(s1) // "foo"
-
-var s2 = Symbol("foo");
-Symbol.keyFor(s2) // undefined
-```
-
-上面代码中，变量s2属于未登记的Symbol值，所以返回undefined。
+还有一点需要注意，Symbol值作为属性名时，该属性还是公开属性，不是私有属性。
 
 ### 属性名的遍历
 
-Symbol作为属性名，该属性不会出现在for...in循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个Object.getOwnPropertySymbols方法，可以获取指定对象的所有Symbol属性名。
+Symbol作为属性名，该属性不会出现在for...in、for...of循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个Object.getOwnPropertySymbols方法，可以获取指定对象的所有Symbol属性名。
 
 Object.getOwnPropertySymbols方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
 
@@ -589,41 +565,201 @@ Reflect.ownKeys(obj)
 // [Symbol(my_key), 'enum', 'nonEnum']
 ```
 
+由于以Symbol值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
+
+```javascript
+var size = Symbol('size');
+
+class Collection {
+  constructor() {
+    this[size] = 0;
+  }
+
+  add(item) {
+    this[this[size]] = item;
+    this[size]++;
+  }
+
+  static sizeOf(instance) {
+    return instance[size];
+  }
+}
+
+var x = new Collection();
+Collection.sizeOf(x) // 0
+
+x.add('foo');
+Collection.sizeOf(x) // 1
+
+Object.keys(x) // ['0']
+Object.getOwnPropertyNames(x) // ['0']
+Object.getOwnPropertySymbols(x) // [Symbol(size)]
+```
+
+上面代码中，对象x的size属性是一个Symbol值，所以`Object.keys(x)`、`Object.getOwnPropertyNames(x)`都无法获取它。这就造成了一种非私有的内部方法的效果。
+
+### Symbol.for()，Symbol.keyFor()
+
+有时，我们希望重新使用同一个Symbol值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol值。如果有，就返回这个Symbol值，否则就新建并返回一个以该字符串为名称的Symbol值。
+
+```javascript
+var s1 = Symbol.for('foo');
+var s2 = Symbol.for('foo');
+
+s1 === s2 // true
+```
+
+上面代码中，s1和s2都是Symbol值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
+
+`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查给定的key是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个Symbol值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
+
+```javascript
+Symbol.for("bar") === Symbol.for("bar")
+// true
+
+Symbol("bar") === Symbol("bar")
+// false
+```
+
+上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
+
+Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
+
+```javascript
+var s1 = Symbol.for("foo");
+Symbol.keyFor(s1) // "foo"
+
+var s2 = Symbol("foo");
+Symbol.keyFor(s2) // undefined
+```
+
+上面代码中，变量s2属于未登记的Symbol值，所以返回undefined。
+
+需要注意的是，`Symbol.for`为Symbol值登记的名字，是全局环境的，可以在不同的iframe或service worker中取到同一个值。
+
+```javascript
+iframe = document.createElement('iframe');
+iframe.src = String(window.location);
+document.body.appendChild(iframe);
+
+iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
+// true
+```
+
+上面代码中，iframe窗口生成的Symbol值，可以在主页面得到。
+
 ### 内置的Symbol值
 
 除了定义自己使用的Symbol值以外，ES6还提供一些内置的Symbol值，指向语言内部使用的方法。
 
 （1）Symbol.hasInstance
 
-该值指向对象的内部方法@@hasInstance（两个@表示这是内部方法，外部无法直接调用，下同），该对象使用instanceof运算符时，会调用这个方法，判断该对象是否为某个构造函数的实例。
+对象的Symbol.hasInstance属性，指向一个内部方法。该对象使用instanceof运算符时，会调用这个方法，判断该对象是否为某个构造函数的实例。比如，`foo instanceof Foo`在语言内部，实际调用的是`Foo[Symbol.hasInstance](foo)`。
 
 （2）Symbol.isConcatSpreadable
 
-该值指向对象的内部方法@@isConcatSpreadable，该对象使用Array.prototype.concat()时，会调用这个方法，返回一个布尔值，表示该对象是否可以扩展成数组。
+对象的Symbol.isConcatSpreadable属性，指向一个方法。该对象使用Array.prototype.concat()时，会调用这个方法，返回一个布尔值，表示该对象是否可以扩展成数组。
 
 （3）Symbol.isRegExp
 
-该值指向对象的内部方法@@isRegExp，该对象被用作正则表达式时，会调用这个方法，返回一个布尔值，表示该对象是否为一个正则对象。
+对象的Symbol.isRegExp属性，指向一个方法。该对象被用作正则表达式时，会调用这个方法，返回一个布尔值，表示该对象是否为一个正则对象。
 
 （4）Symbol.match
 
-该值作为属性名时，返回对象的正则表达式形式。当执行`str.match(myObject)`时，如果该属性存在，会先查看`myObject[Symbol.match]`属性是否存在。
+对象的Symbol.match属性，指向一个函数。当执行`str.match(myObject)`时，如果该属性存在，会调用它，返回该方法的返回值。
 
 （5）Symbol.iterator
 
-该值指向对象的内部方法@@iterator，该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+对象的Symbol.iterator属性，指向该对象的默认遍历器方法，即该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+
+```javascript
+class Collection {
+  *[Symbol.iterator]() {
+    let i = 0;
+    while(this[i] !== undefined) {
+      yield this[i];
+      ++i;
+    }
+  }
+
+}
+
+let myCollection = new Collection();
+myCollection[0] = 1;
+myCollection[1] = 2;
+
+for(let value of myCollection) {
+  console.log(value);
+}
+// 1
+// 2
+```
 
 （6）Symbol.toPrimitive
 
-该值指向对象的内部方法@@toPrimitive，该对象被转为原始类型的值时，会调用这个方法，返回该对象对应的原始类型值。
+对象的Symbol.toPrimitive属性，指向一个方法。该对象被转为原始类型的值时，会调用这个方法，返回该对象对应的原始类型值。
 
 （7）Symbol.toStringTag
 
-该值指向对象的内部属性@@toStringTag，在该对象上调用Object.prototype.toString()时，会返回这个属性，它是一个字符串，表示该对象的字符串形式。
+对象的Symbol.toStringTag属性，指向一个方法。在该对象上面调用`Object.prototype.toString`方法时，如果这个属性存在，它的返回值会出现在toString方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中object后面的那个字符串。
+
+```javascript
+class Collection {
+  get [Symbol.toStringTag]() {
+    return 'xxx';
+  }
+}
+var x = new Collection();
+Object.prototype.toString.call(x) // "[object xxx]"
+```
 
 （8）Symbol.unscopables
 
-该值指向对象的内部属性@@unscopables，返回一个数组，成员为该对象使用with关键字时，会被with环境排除的那些属性值。
+对象的Symbol.unscopables属性，指向一个对象。该对象指定了使用with关键字时，那些属性会被with环境排除。
+
+```javascript
+Array.prototype[Symbol.unscopables]
+// {
+//   copyWithin: true,
+//   entries: true,
+//   fill: true,
+//   find: true,
+//   findIndex: true,
+//   keys: true
+// }
+
+Object.keys(Array.prototype[Symbol.unscopables])
+// ['copyWithin', 'entries', 'fill', 'find', 'findIndex', 'keys']
+```
+
+上面代码说明，数组有6个属性，会被with命令排除。
+
+```javascript
+// 没有unscopables时
+class MyClass {
+  foo() { return 1; }
+}
+
+var foo = function () { return 2; };
+
+with (MyClass.prototype) {
+    foo(); // 1
+}
+
+// 有unscopables时
+class MyClass {
+  foo() { return 1; }
+  get [Symbol.unscopables]() {
+    return { foo: true };
+  }
+}
+
+var foo = function () { return 2; };
+
+with (MyClass.prototype) {
+  foo(); // 2
+}
+```
 
 ## Proxy
 
