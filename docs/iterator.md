@@ -489,7 +489,7 @@ Set和Map结构也原生具有Iterator接口，可以直接使用for...of循环�
 
 ```javascript
 
-var engines = Set(["Gecko", "Trident", "Webkit", "Webkit"]);
+var engines = new Set(["Gecko", "Trident", "Webkit", "Webkit"]);
 for (var e of engines) {
   console.log(e);
 }
