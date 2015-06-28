@@ -1,14 +1,14 @@
 # ECMAScript 6简介
 
-ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，正处在快速开发之中，大部分已经完成了，预计将在2015年6月正式发布。Mozilla公司将在这个标准的基础上，推出JavaScript 2.0。
+ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经在2015年6月正式发布了。Mozilla公司将在这个标准的基础上，推出JavaScript 2.0。
 
 ES6的目标，是使得JavaScript语言可以用来编写大型的复杂的应用程序，成为企业级开发语言。
 
 ## ECMAScript和JavaScript的关系
 
-ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现。
+很多初学者会感到困惑：ECMAScript和JavaScript到底是什么关系？简单说，ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现。
 
-1996年11月，JavaScript的创造者Netscape公司，决定将JavaScript提交给国际标准化组织ECMA，希望这种语言能够成为国际标准。次年，ECMA发布262号标准文件（ECMA-262）的第一版，规定了浏览器脚本语言的标准，并将这种语言称为ECMAScript。这个版本就是ECMAScript 1.0版。
+要讲清楚这个问题，需要回顾历史。1996年11月，JavaScript的创造者Netscape公司，决定将JavaScript提交给国际标准化组织ECMA，希望这种语言能够成为国际标准。次年，ECMA发布262号标准文件（ECMA-262）的第一版，规定了浏览器脚本语言的标准，并将这种语言称为ECMAScript。这个版本就是ECMAScript 1.0版。
 
 之所以不叫JavaScript，有两个原因。一是商标，Java是Sun公司的商标，根据授权协议，只有Netscape公司可以合法地使用JavaScript这个名字，且JavaScript本身也已经被Netscape公司注册为商标。二是想体现这门语言的制定者是ECMA，不是Netscape，这样有利于保证这门语言的开放性和中立性。因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现。在日常场合，这两个词是可以互换的。
 
@@ -30,32 +30,61 @@ ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现�
 
 2013年12月，ECMAScript 6草案发布。然后是12个月的讨论期，听取各方反馈。
 
-2015年6月，ECMAScript 6预计将发布正式版本。
+2015年6月，ECMAScript 6正式通过，成为国际标准。
 
-ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等大公司。TC39的总体考虑是，ES5与ES3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当前，JavaScript.next指的是ES6，当第六版发布以后，将指ES7。TC39认为，ES5会在2013年的年中成为JavaScript开发的主流标准，并在今后五年中一直保持这个位置。
+ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负责制订ECMAScript标准，成员包括Microsoft、Mozilla、Google等大公司。TC39的总体考虑是，ES5与ES3基本保持兼容，较大的语法修正和新功能加入，将由JavaScript.next完成。当时，JavaScript.next指的是ES6，第六版发布以后，就指ES7。TC39的判断是，ES5会在2013年的年中成为JavaScript开发的主流标准，并在此后五年中一直保持这个位置。
 
 ## 部署进度
 
-由于ES6还没有定案，有些语法规则还会变动，目前支持ES6的软件和开发环境还不多。各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。
+各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。随着时间的推移，支持度已经越来越高了，ES6的大部分特性都实现了。
 
-Google公司的V8引擎已经部署了ES6的部分特性。使用Node.js 0.12版，就可以体验这些特性。
+Node.js和io.js（一个部署新功能更快的Node分支）对ES6的支持度，比浏览器更高。通过它们，可以体验更多ES6的特性。建议使用版本管理工具[nvm](https://github.com/creationix/nvm)，来安装Node.js和io.js。不过，nvm不支持Windows系统，下面的操作可以改用[nvmw](https://github.com/hakobera/nvmw)或[nvm-windows](https://github.com/coreybutler/nvm-windows)代替。
 
-可以使用版本管理工具[nvm](https://github.com/creationix/nvm)，安装Node.js 0.12版。下载nvm以后，进入项目目录，运行下面的命令。
+安装nvm需要打开命令行窗口，运行下面的命令。
 
 ```bash
-
-$ source nvm.sh
-$ nvm use 0.12
-$ node --harmony
-
+$ curl -o- https://raw.githubusercontent.com/creationix/nvm/<version number>/install.sh | bash
 ```
 
-上面最后一个命令的`--harmony`选项，可以进入REPL环境，打开所有已经部署的ES6功能。
+上面命令的version number处，需要用版本号替换。本书写作时的版本号是v0.25.4。
 
-使用下面的命令，可以查看Node.js所有与ES6有关的单个选项。
+该命令运行后，nvm会默认安装在用户主目录的`.nvm`子目录。然后，激活nvm。
 
 ```bash
+$ source ~/.nvm/nvm.sh
+```
 
+激活以后，安装Node或io.js的最新版。
+
+```bash
+$ nvm install node
+# 或
+$ nvm install iojs
+```
+
+安装完成后，就可以在各种版本的node之间自由切换。
+
+```bash
+# 切换到node
+$ nvm use node
+
+# 切换到iojs
+$ nvm use iojs
+```
+
+需要注意的是，Node.js对ES6的支持，需要打开harmony参数，iojs不需要。
+
+```
+$ node --harmony
+# iojs不需要打开harmony参数
+$ node
+```
+
+上面命令执行后，就会进入REPL环境，该环境支持所有已经实现的ES6特性。
+
+使用下面的命令，可以查看Node.js所有已经实现的ES6特性。
+
+```bash
 $ node --v8-options | grep harmony
 
   --harmony_typeof
@@ -72,53 +101,72 @@ $ node --v8-options | grep harmony
   --harmony_arrays
   --harmony_maths
   --harmony
-
 ```
 
-从Node.js分立的[io.js](https://iojs.org)项目，对ES6的支持更彻底。不用打开任何参数，它就支持8项ES6特性。
+上面命令的输出结果，会因为版本的不同而有所不同。
 
-- 块级作用域：let，const
-- 集合型数据类型：Map，Set，WeakMap，WeakSet
-- Promise
-- Iterator
-- Generator
-- 模板字符串
-- Symbol
-- 二进制和八进制表示法，新的字符串方法
+## Babel转码器
 
-使用 --es_staging 参数或 --harmony 参数，打开另外两项ES6特性。
-
-- Class
-- 对象的简易表示法
-
-还有一些开发没有结束的特性，需要使用特定的参数，逐一打开。使用下面的命令，查看这些参数。
+[Babel](https://babeljs.io/)是一个广泛使用的ES6转码器，可以ES6代码转为ES5代码，从而在浏览器或其他环境执行。这意味着，你可以用ES6的方式编写程序，又不用担心现有环境是否支持。它的安装命令如下。
 
 ```bash
-$ iojs --v8-options | grep "in progress"
-- --harmony_modules
-- --harmony_arrays
-- --harmony_array_includes
-- --harmony_regexps
-- --harmony_arrow_functions
-- --harmony_proxies
-- --harmony_sloppy
-- --harmony_unicode
+$ npm install --global babel
 ```
+
+Babel自带一个`babel-node`命令，提供支持ES6的REPL环境。它支持Node的REPL环境的所有功能，而且可以直接运行ES6代码。
+
+```bash
+$ babel-node
+>
+> console.log([1,2,3].map(x => x * x))
+    [ 1, 4, 9 ]
+>
+```
+
+`babel-node`命令也可以直接运行ES6脚本。假定将上面的代码放入脚本文件`es6.js`。
+
+```bash
+$ babel-node es6.js
+[1, 4, 9]
+```
+
+babel命令可以将ES6代码转为ES5代码。
+
+```bash
+$ babel es6.js
+"use strict";
+
+console.log([1, 2, 3].map(function (x) {
+  return x * x;
+}));
+```
+
+`-o` 参数将转换后的代码，从标准输出导入文件。
+
+```bash
+$ babel es6.js -o es5.js
+```
+
+Babel也可以用于浏览器。
+
+```html
+<script src="node_modules/babel-core/browser.js"></script>
+<script type="text/babel">
+// Your ES6 code
+</script>
+```
+
+上面代码中，`browser.js`是Babel提供的转换器脚本，可以在浏览器运行。用户的ES6脚本放在script标签之中，但是要注明`type="text/babel"`。
 
 ## Traceur转码器
 
-Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，可以将ES6代码转为ES5代码。这意味着，你可以用ES6的方式编写程序，又不用担心浏览器是否支持。
+Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，也可以将ES6代码转为ES5代码。
 
-它有多种使用方式。
+### 直接插入网页
 
-**（1）直接插入网页**
-
-Traceur允许将ES6代码直接插入网页。
-
-首先，必须在网页头部加载Traceur库文件。
+Traceur允许将ES6代码直接插入网页。首先，必须在网页头部加载Traceur库文件。
 
 ```javascript
-
 <!-- 加载Traceur编译器 -->
 <script src="http://google.github.io/traceur-compiler/bin/traceur.js"
         type="text/javascript"></script>
@@ -129,27 +177,24 @@ Traceur允许将ES6代码直接插入网页。
 <script>
         traceur.options.experimental = true;
 </script>
-
 ```
 
 接下来，就可以把ES6代码放入上面这些代码的下方。
 
 ```javascript
-
 <script type="module">
-	class Calc {
-		constructor(){
-			console.log('Calc constructor');
-		}
-		add(a, b){
-			return a + b;
-		}
-	}
+  class Calc {
+    constructor(){
+      console.log('Calc constructor');
+    }
+    add(a, b){
+      return a + b;
+    }
+  }
 
-	var c = new Calc();
-	console.log(c.add(4,5));
+  var c = new Calc();
+  console.log(c.add(4,5));
 </script>
-
 ```
 
 正常情况下，上面代码会在控制台打印出9。
@@ -159,20 +204,17 @@ Traceur允许将ES6代码直接插入网页。
 如果ES6代码是一个外部文件，也可以用`script`标签插入网页。
 
 ```javascript
-
 <script type="module" src="calc.js" >
 </script>
-
 ```
 
-**（2）在线转换**
+### 在线转换
 
 Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将ES6代码转为ES5代码。转换后的代码，可以直接作为ES5代码插入网页运行。
 
 上面的例子转为ES5代码运行，就是下面这个样子。
 
 ```javascript
-
 <script src="http://google.github.io/traceur-compiler/bin/traceur.js"
         type="text/javascript"></script>
 <script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
@@ -182,32 +224,29 @@ Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/de
 </script>
 <script>
 $traceurRuntime.ModuleStore.getAnonymousModule(function() {
-	"use strict";
+  "use strict";
 
-	var Calc = function Calc() {
-		console.log('Calc constructor');
-	};
+  var Calc = function Calc() {
+    console.log('Calc constructor');
+  };
 
-	($traceurRuntime.createClass)(Calc, {add: function(a, b) {
-		return a + b;
-	}}, {});
+  ($traceurRuntime.createClass)(Calc, {add: function(a, b) {
+    return a + b;
+  }}, {});
 
-	var c = new Calc();
-	console.log(c.add(4, 5));
-	return {};
+  var c = new Calc();
+  console.log(c.add(4, 5));
+  return {};
 });
 </script>
-
 ```
 
-**（3）命令行转换**
+### 命令行转换
 
-作为命令行工具使用时，Traceur是一个node.js的模块，首先需要用npm安装。
+作为命令行工具使用时，Traceur是一个Node.js的模块，首先需要用npm安装。
 
 ```bash
-
 $ npm install -g traceur
-
 ```
 
 安装成功后，就可以在命令行下使用traceur了。
@@ -215,19 +254,15 @@ $ npm install -g traceur
 traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的calc.js为例。
 
 ```bash
-
 $ traceur calc.js
 Calc constructor
 9
-
 ```
 
 如果要将ES6脚本转为ES5保存，要采用下面的写法
 
 ```bash
-
-$ traceur --script calc.es6.js --out calc.es5.js 
-
+$ traceur --script calc.es6.js --out calc.es5.js
 ```
 
 上面代码的`--script`选项表示指定输入文件，`--out`选项表示指定输出文件。
@@ -235,19 +270,16 @@ $ traceur --script calc.es6.js --out calc.es5.js
 为了防止有些特性编译不成功，最好加上`--experimental`选项。
 
 ```bash
-
 $ traceur --script calc.es6.js --out calc.es5.js --experimental
-
 ```
 
 命令行下转换的文件，就可以放到浏览器中运行。
 
-**（4）Node.js环境的用法**
+###  Node.js环境的用法
 
 Traceur的Node.js用法如下（假定已安装traceur模块）。
 
 ```javascript
-
 var traceur = require('traceur');
 var fs = require('fs');
 
@@ -264,53 +296,10 @@ var result = traceur.compile(contents, {
 if (result.error)
   throw result.error;
 
-// result对象的js属性就是转换后的ES5代码  
+// result对象的js属性就是转换后的ES5代码
 fs.writeFileSync('out.js', result.js);
 // sourceMap属性对应map文件
 fs.writeFileSync('out.js.map', result.sourceMap);
-
-```
-
-## Babel转码器
-
-[Babel](https://babeljs.io/)是另一个广泛使用的ES6转码器，安装命令如下。
-
-```bash
-$ npm install --global babel
-```
-
-Babel自带一个 `babel-node` 命令，与Node命令行完全一致，而且可以直接运行ES6代码。
-
-```bash
-$ babel-node
->
-> console.log([1,2,3].map(x => x * x))
-    [ 1, 4, 9 ]
->
-```
-
-`babel-node` 命令也可以直接运行ES6脚本。假定将上面的代码放入脚本文件 es6.js 。
-
-```bash
-$ babel-node es6.js
-[1, 4, 9]
-```
-
-babel 命令可以将ES6代码转为ES5代码。
-
-```bash
-$ babel es6.js
-"use strict";
-
-console.log([1, 2, 3].map(function (x) {
-  return x * x;
-}));
-```
-
-`-o` 参数将转换后的代码，从标准输出导入文件。
-
-```bash
-$ babel es6.js -o es5.js
 ```
 
 ## ECMAScript 7
