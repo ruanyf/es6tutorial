@@ -4,9 +4,13 @@ ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经�
 
 ES6的目标，是使得JavaScript语言可以用来编写大型的复杂的应用程序，成为企业级开发语言。
 
+标准的制定者计划，以后每年发布一次标准，使用年份作为标准的版本。因为当前版本的ES6是在2015年发布的，所以又称ECMAScript 2015。
+
 ## ECMAScript和JavaScript的关系
 
-很多初学者会感到困惑：ECMAScript和JavaScript到底是什么关系？简单说，ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现。
+很多初学者感到困惑：ECMAScript和JavaScript到底是什么关系？
+
+简单说，ECMAScript是JavaScript语言的国际标准，JavaScript是ECMAScript的实现。
 
 要讲清楚这个问题，需要回顾历史。1996年11月，JavaScript的创造者Netscape公司，决定将JavaScript提交给国际标准化组织ECMA，希望这种语言能够成为国际标准。次年，ECMA发布262号标准文件（ECMA-262）的第一版，规定了浏览器脚本语言的标准，并将这种语言称为ECMAScript。这个版本就是ECMAScript 1.0版。
 

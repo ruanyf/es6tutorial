@@ -232,15 +232,13 @@ contains(["foo", "bar"], "baz"); // => false
 
 ## 数组推导
 
-ES6提供简洁写法，允许直接通过现有数组生成新数组，这被称为数组推导（array comprehension）。
+数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能没有被列入ES6，而是推迟到了ES7。
 
 ```javascript
-
 var a1 = [1, 2, 3, 4];
 var a2 = [for (i of a1) i * 2];
 
 a2 // [2, 4, 6, 8]
-
 ```
 
 上面代码表示，通过for...of结构，数组a2直接在a1的基础上生成。
@@ -250,7 +248,6 @@ a2 // [2, 4, 6, 8]
 for...of后面还可以附加if语句，用来设定循环的限制条件。
 
 ```javascript
-
 var years = [ 1954, 1974, 1990, 2006, 2010, 2014 ];
 
 [for (year of years) if (year > 2000) year];
@@ -261,8 +258,8 @@ var years = [ 1954, 1974, 1990, 2006, 2010, 2014 ];
 
 [for (year of years) if (year > 2000 && year < 2010) year];
 // [ 2006]
-
 ```
+
 上面代码表明，if语句写在for...of与返回的表达式之间，可以使用多个if语句。
 
 数组推导可以替代map和filter方法。

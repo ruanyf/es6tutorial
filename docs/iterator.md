@@ -722,3 +722,14 @@ for (let value of myArray) {
 - 不同用于forEach方法，它可以与break、continue和return配合使用。
 - 提供了遍历所有数据结构的统一操作接口。
 
+下面是一个使用break语句，跳出for...of循环的例子。
+
+```javascript
+for (var n of fibonacci) {
+  if (n > 1000)
+    break;
+  console.log(n);
+}
+```
+
+上面的例子，会输出斐波纳契数列小于等于1000的项。如果当前项大于1000，就会使用break语句跳出for...of循环。

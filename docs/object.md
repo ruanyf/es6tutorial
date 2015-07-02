@@ -989,6 +989,86 @@ proxy.foo // TypeError: Revoked
 
 Proxy.revocable方法返回一个对象，该对象的proxy属性是Proxy实例，revoke属性是一个函数，可以取消Proxy实例。上面代码中，当执行revoke函数之后，再访问Proxy实例，就会抛出一个错误。
 
+## Reflect
+
+Reflect对象与Proxy对象一样，也是ES6为了操作对象而提供的新API。Reflect对象的设计目的有这样几个。
+
+- 将Object对象的一些明显属于语言层面的方法，放到Reflect对象上。现阶段，某些方法同时在Object和Reflect对象上部署。
+- Reflect对象的方法与Proxy对象的方法一一对应，这是为了让Proxy对象可以方便地有一个原始方法，作为修改行为基础。
+
+```javascript
+Proxy(target, {
+  set: function(target, name, value, receiver) {
+    var success = Reflect.set(target,name, value, receiver);
+    if (success) {
+      log('property '+name+' on '+target+' set to '+value);
+    }
+    return success;
+  }
+});
+```
+
+上面代码中，Proxy方法拦截target对象的属性赋值行为。它采用Reflect.set方法将值赋值给对象的属性，然后再部署额外的功能。
+
+下面的例子中，Reflect对象方法基本与Object对象的对应方法一致。
+
+```javascript
+var O = {a: 1};
+Object.defineProperty(O, 'b', {value: 2});
+O[Symbol('c')] = 3;
+
+Reflect.ownKeys(O); // ['a', 'b', Symbol(c)]
+
+function C(a, b){
+  this.c = a + b;
+}
+var instance = Reflect.construct(C, [20, 22]);
+instance.c; // 42
+```
+
+Reflect对象的方法清单如下。
+
+- Reflect.getOwnPropertyDescriptor(target,name)
+- Reflect.defineProperty(target,name,desc)
+- Reflect.getOwnPropertyNames(target)
+- Reflect.getPrototypeOf(target)
+- Reflect.deleteProperty(target,name)
+- Reflect.enumerate(target)
+- Reflect.freeze(target)
+- Reflect.seal(target)
+- Reflect.preventExtensions(target)
+- Reflect.isFrozen(target)
+- Reflect.isSealed(target)
+- Reflect.isExtensible(target)
+- Reflect.has(target,name)
+- Reflect.hasOwn(target,name)
+- Reflect.keys(target)
+- Reflect.get(target,name,receiver)
+- Reflect.set(target,name,value,receiver)
+- Reflect.apply(target,thisArg,args)
+- Reflect.construct(target,args)
+
+上面这些方法中，有几点需要注意。
+
+- Reflect.get(target,name,receiver) 查找target对象的name属性。如果name属性部署了读取函数，则读取函数的this绑定receiver。
+
+- Reflect.set(target, name, value, receiver) 设置target对象的name属性等于value。如果name属性设置了赋值函数，则赋值函数的this绑定receiver。
+
+- Reflect.construct(target, args)等同于`new target(...args)`。
+
+- Reflect.apply(fun,thisArg,args)等同于`Function.prototype.apply.call(fun,thisArg,args)`。
+
+- Reflect.set()、Reflect.defineProperty()、Reflect.freeze()、Reflect.seal()和Reflect.preventExtensions()返回一个布尔值，表示操作是否成功。它们对应的Object方法，失败时都会抛出错误。
+
+```javascript
+// 失败时抛出错误
+Object.defineProperty(obj, name, desc);
+// 失败时返回false
+Reflect.defineProperty(obj, name, desc);
+```
+
+上面代码中，Reflect.defineProperty方法的作用与Object.defineProperty是一样的，都是为对象定义一个属性。但是，Reflect.defineProperty方法失败时，不会抛出错误，只会返回false。
+
 ## Object.observe()，Object.unobserve()
 
 Object.observe方法用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
