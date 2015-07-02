@@ -58,12 +58,10 @@ a[6](); // 6
 let不像var那样，会发生“变量提升”现象。
 
 ```javascript
-
 function do_something() {
   console.log(foo); // ReferenceError
   let foo = 2;
 }
-
 ```
 
 上面代码在声明foo之前，就使用这个变量，结果会抛出一个错误。
@@ -71,12 +69,10 @@ function do_something() {
 这也意味着typeof不再是一个百分之百安全的操作。
 
 ```javascript
-
 if (1) {
   typeof x; // ReferenceError
   let x;
 }
-
 ```
 
 上面代码中，由于块级作用域内typeof运行时，x还没有值，所以会抛出一个ReferenceError。
@@ -84,14 +80,12 @@ if (1) {
 只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
 
 ```javascript
-
 var tmp = 123;
 
 if (true) {
   tmp = 'abc'; // ReferenceError
   let tmp;
 }
-
 ```
 
 上面代码中，存在全局变量tmp，但是块级作用域内let又声明了一个局部变量tmp，导致后者绑定这个块级作用域，所以在let声明变量前，对tmp赋值会报错。
@@ -101,7 +95,6 @@ ES6明确规定，如果区块中存在let和const命令，这个区块对这些
 总之，在代码块内，使用let命令声明变量之前，该变量都是不可用的。这在语法上，称为“暂时性死区”（temporal dead zone，简称TDZ）。
 
 ```javascript
-
 if (true) {
   // TDZ开始
   tmp = 'abc'; // ReferenceError
@@ -113,7 +106,6 @@ if (true) {
   tmp = 123;
   console.log(tmp); // 123
 }
-
 ```
 
 上面代码中，在let命令声明变量tmp之前，都属于变量tmp的“死区”。
@@ -121,13 +113,11 @@ if (true) {
 有些“死区”比较隐蔽，不太容易发现。
 
 ```javascript
-
 function bar(x=y, y=2) {
   return [x, y];
 }
 
 bar(); // 报错
-
 ```
 
 上面代码中，调用bar函数之所以报错，是因为参数x默认值等于另一个参数y，而此时y还没有声明，属于”死区“。
@@ -135,7 +125,6 @@ bar(); // 报错
 需要注意的是，函数的作用域是其声明时所在的作用域。如果函数A的参数是函数B，那么函数B的作用域不是函数A。
 
 ```javascript
-
 let foo = 'outer';
 
 function bar(func = x => foo) {
@@ -144,7 +133,6 @@ function bar(func = x => foo) {
 }
 
 bar();
-
 ```
 
 上面代码中，函数bar的参数func，默认是一个匿名函数，返回值为变量foo。这个匿名函数的作用域就不是bar。这个匿名函数声明时，是处在外层作用域，所以内部的foo指向函数体外的声明，输出outer。它实际上等同于下面的代码。
@@ -167,7 +155,6 @@ bar();
 let不允许在相同作用域内，重复声明同一个变量。
 
 ```javascript
-
 // 报错
 {
   let a = 10;
@@ -179,13 +166,11 @@ let不允许在相同作用域内，重复声明同一个变量。
   let a = 10;
   let a = 1;
 }
-
 ```
 
 因此，不能在函数内部重新声明参数。
 
 ```javascript
-
 function func(arg) {
   let arg; // 报错
 }
@@ -195,7 +180,6 @@ function func(arg) {
     let arg; // 不报错
   }
 }
-
 ```
 
 ## 块级作用域
@@ -259,7 +243,6 @@ function f() { console.log('I am outside!'); }
 const也用来声明变量，但是声明的是常量。一旦声明，常量的值就不能改变。
 
 ```javascript
-
 const PI = 3.1415;
 PI // 3.1415
 
@@ -268,7 +251,6 @@ PI // 3.1415
 
 const PI = 3.1;
 PI // 3.1415
-
 ```
 
 上面代码表明改变常量的值是不起作用的。需要注意的是，对常量重新赋值不会报错，只会默默地失败。
@@ -276,24 +258,20 @@ PI // 3.1415
 const的作用域与let命令相同：只在声明所在的块级作用域内有效。
 
 ```javascript
-
 if (true) {
   const MAX = 5;
 }
 
 // 常量MAX在此处不可得
-
 ```
 
 const命令也不存在提升，只能在声明的位置后面使用。
 
 ```javascript
-
 if (true) {
   console.log(MAX); // ReferenceError
   const MAX = 5;
 }
-
 ```
 
 上面代码在常量MAX声明之前就调用，结果报错。
@@ -301,20 +279,17 @@ if (true) {
 const声明的常量，也与let一样不可重复声明。
 
 ```javascript
-
 var message = "Hello!";
 let age = 25;
 
 // 以下两行都会报错
 const message = "Goodbye!";
 const age = 30;
-
 ```
 
 由于const命令只是指向变量所在的地址，所以将一个对象声明为常量必须非常小心。
 
 ```javascript
-
 const foo = {};
 foo.prop = 123;
 
@@ -322,7 +297,6 @@ foo.prop
 // 123
 
 foo = {} // 不起作用
-
 ```
 
 上面代码中，常量foo储存的是一个地址，这个地址指向一个对象。不可变的只是这个地址，即不能把foo指向另一个地址，但对象本身是可变的，所以依然可以为其添加新属性。
@@ -358,6 +332,27 @@ var constantize = (obj) => {
     }
   });
 };
+```
+
+## 跨模块常量
+
+上面说过，const声明的常量只在当前代码块有效。如果想设置跨模块的常量，可以采用下面的写法。
+
+```javascript
+// constants.js 模块
+export const A = 1;
+export const B = 3;
+export const C = 4;
+
+// test1.js 模块
+import * as constants from './constants';
+console.log(constants.A); // 1
+console.log(constants.B); // 3
+
+// test2.js 模块
+import {A, B} from './constants';
+console.log(A); // 1
+console.log(B); // 3
 ```
 
 ## 全局对象的属性

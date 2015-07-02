@@ -113,6 +113,7 @@
 - Dave Herman, [Static module resolution](http://calculist.org/blog/2012/06/29/static-module-resolution/): ES6模块的静态化设计思想
 - Axel Rauschmayer, [ECMAScript 6: new OOP features besides classes](http://www.2ality.com/2014/12/es6-oop.html)
 - Axel Rauschmayer, [Classes in ECMAScript 6 (final semantics)](http://www.2ality.com/2015/02/es6-classes-final.html): Class语法的详细介绍和设计思想分析
+- Maximiliano Fierro, [Declarative vs Imperative](http://elmasse.github.io/js/decorators-bindings-es7.html): Decorators介绍
 
 ## 工具
 

@@ -13,7 +13,7 @@ function Point(x,y){
 }
 
 Point.prototype.toString = function () {
-  return '('+this.x+', '+this.y+')';
+  return '(' + this.x + ', ' + this.y + ')';
 }
 ```
 
@@ -40,6 +40,18 @@ class Point {
 上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
 
 Point类除了构造方法，还定义了一个toString方法。注意，定义“类”的方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。
+
+ES6的类，完全可以看作构造函数的另一种写法。
+
+```javascript
+Class Point{
+  // ...
+}
+
+typeof Point // "function"
+```
+
+上面代码表明，类的数据类型就是函数。
 
 构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
 
@@ -161,7 +173,7 @@ p1.__proto__ === p2.__proto__
 
 上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\_\_proto\_\_属性是相等的。
 
-这也意味着，可以通过\_\_proto\_\_属性为Class添加方法。
+这也意味着，可以通过实例的\_\_proto\_\_属性为Class添加方法。
 
 ```javascript
 var p1 = new Point(2,3);
@@ -183,11 +195,8 @@ p3.printName() // "Oops"
 由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括name属性。
 
 ```javascript
-
 class Point {}
-
 Point.name // "Point"
-
 ```
 
 name属性总是返回紧跟在class关键字后面的类名。
@@ -197,23 +206,19 @@ name属性总是返回紧跟在class关键字后面的类名。
 与函数一样，Class也可以使用表达式的形式定义。
 
 ```javascript
-
 const MyClass = class Me {
   getClassName() {
     return Me.name;
   }
 };
-
 ```
 
 上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是MyClass而不是Me，Me只在Class的内部代码可用，指代当前类。
 
 ```javascript
-
 let inst = new MyClass();
 inst.getClassName() // Me
 Me.name // ReferenceError: Me is not defined
-
 ```
 
 上面代码表示，Me只在Class内部有定义。
@@ -221,9 +226,7 @@ Me.name // ReferenceError: Me is not defined
 如果Class内部没用到的话，可以省略Me，也就是可以写成下面的形式。
 
 ```javascript
-
 const MyClass = class { /* ... */ };
-
 ```
 
 **（6）不存在变量提升**
@@ -231,23 +234,18 @@ const MyClass = class { /* ... */ };
 Class不存在变量提升（hoist），这一点与ES5完全不同。
 
 ```javascript
-
 new Foo(); // ReferenceError
-
 class Foo {}
-
 ```
 
 上面代码中，Foo类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
 
 ```javascript
-
 {
   let Foo = class {};
   class Bar extends Foo {
   }
 }
-
 ```
 
 如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
@@ -263,36 +261,31 @@ class Foo {}
 Class之间可以通过extends关键字，实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
 ```javascript
-
 class ColorPoint extends Point {}
-
 ```
 
 上面代码定义了一个ColorPoint类，该类通过extends关键字，继承了Point类的所有属性和方法。但是由于没有部署任何代码，所以这两个类完全一样，等于复制了一个Point类。下面，我们在ColorPoint内部加上代码。
 
 ```javascript
-
 class ColorPoint extends Point {
 
   constructor(x, y, color) {
-    super(x, y); // 等同于parent.constructor(x, y)
+    super(x, y); // 调用父类的constructor(x, y)
     this.color = color;
   }
 
   toString() {
-    return this.color + ' ' + super.toString(); // 等同于parent.toString()
+    return this.color + ' ' + super.toString(); // 调用父类的toString()
   }
 
 }
-
 ```
 
 上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的实例（即父类的this对象）。
 
-子类必须在constructor方法中调用super方法，否则新建实例时会报错。
+子类必须在constructor方法中调用super方法，否则新建实例时会报错。这是因为子类没有自己的this对象，而是继承父类的this对象，然后对其进行加工。如果不调用super方法，子类就得不到this对象。
 
 ```javascript
-
 class Point { /* ... */ }
 
 class ColorPoint extends Point {
@@ -301,23 +294,21 @@ class ColorPoint extends Point {
 }
 
 let cp = new ColorPoint(); // ReferenceError
-
 ```
+
+上面代码中，ColorPoint继承了父类Point，但是它的构造函数没有调用super方法，导致新建实例时报错。
 
 如果子类没有定义constructor方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有constructor方法。
 
 ```javascript
-
 constructor(...args) {
   super(...args);
 }
-
 ```
 
-另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用this关键字，否则会报错。这是因为没有调用父类的构造函数，就无法子类实例的构建。
+另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用this关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有super方法才能返回父类实例。
 
 ```javascript
-
 class Point {
   constructor(x, y) {
     this.x = x;
@@ -332,7 +323,6 @@ class ColorPoint extends Point {
     this.color = color; // 正确
   }
 }
-
 ```
 
 上面代码中，子类的constructor方法没有调用super之前，就使用this关键字，结果报错，而放在super方法之后就是正确的。
@@ -340,12 +330,10 @@ class ColorPoint extends Point {
 下面是生成子类实例的代码。
 
 ```javascript
-
 let cp = new ColorPoint(25, 8, 'green');
 
 cp instanceof ColorPoint // true
 cp instanceof Point // true
-
 ```
 
 上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
@@ -359,85 +347,61 @@ cp instanceof Point // true
 （2）子类prototype属性的`__proto__`属性，表示方法的继承，总是指向父类的prototype属性。
 
 ```javascript
+class A {
+}
 
 class B extends A {
 }
 
 B.__proto__ === A // true
 B.prototype.__proto__ === A.prototype // true
-
 ```
 
 上面代码中，子类A的`__proto__`属性指向父类B，子类A的prototype属性的__proto__属性指向父类B的prototype属性。
 
-第一条继承链，实质如下。
+这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__属性`）是父类（A）；作为一个构造函数，子类（B）的原型（prototype属性）是父类的实例。
 
 ```javascript
-
-class B extends A {
-  constructor() {
-    return A.call(this);
-  }
-}
-
-// 等同于
-
-class B extends A {
-  constructor() {
-    return B.__proto__.call(this);
-  }
-}
-
-```
-
-第二条继承链，实质如下。
-
-```javascript
-
 B.prototype = new A();
 // 等同于
 B.prototype.__proto__ = A.prototype;
-
 ```
 
-此外，还有三种特殊情况。
+此外，考虑三种特殊情况。第一种特殊情况，子类继承Object类。
 
 ```javascript
-
 class A extends Object {
 }
 
 A.__proto__ === Object // true
 A.prototype.__proto__ === Object.prototype // true
-
 ```
 
-第一种特殊情况，子类A继承Object。这种情况下，A其实就是构造函数Object的复制，A的实例就是Object的实例。
+这种情况下，A其实就是构造函数Object的复制，A的实例就是Object的实例。
+
+第二种特性情况，不存在任何继承。
 
 ```javascript
-
 class A {
 }
 
 A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === Object.prototype // true
-
 ```
 
-第二种特殊情况，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回一个空对象（即Object实例），所以`A.prototype.__proto__`指向构造函数（Object）的prototype属性。
+这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回一个空对象（即Object实例），所以`A.prototype.__proto__`指向构造函数（Object）的prototype属性。
 
+第三种特殊情况，子类继承null。
 
 ```javascript
-
 class A extends null {
 }
 
 A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === null // true
-
 ```
 
-第三种特殊情况，与第二种情况非常像。A也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+这种情况与第二种情况非常像。A也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
 
 ```javascript
 class C extends null {
@@ -450,46 +414,39 @@ class C extends null {
 Object.getPrototypeOf方法可以用来从子类上获取父类。
 
 ```javascript
-
 Object.getPrototypeOf(ColorPoint) === Point
 // true
-
 ```
 
 ### 实例的\_\_proto\_\_属性
 
-父类和子类的\_\_proto\_\_属性，指向是不一样的。
+父类实例和子类实例的\_\_proto\_\_属性，指向是不一样的。
 
 ```javascript
-
 var p1 = new Point(2, 3);
 var p2 = new ColorPoint(2, 3, 'red');
 
 p2.__proto__ === p1.__proto // false
 p2.__proto__.__proto__ === p1.__proto__ // true
-
 ```
 
-通过子类的\_\_proto\_\_属性，可以修改父类。
+通过子类实例的\_\_proto\_\_属性，可以修改父类实例的行为。
 
 ```javascript
-
 p2.__proto__.__proto__.printName = function () {
   console.log('Ha');
 };
 
 p1.printName() // "Ha"
-
 ```
 
 上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
 
-### 构造函数的继承
+### 原生构造函数的继承
 
 下面是一个继承原生的Array构造函数的例子。
 
 ```javascript
-
 class MyArray extends Array {
   constructor(...args) {
     super(...args);
@@ -498,20 +455,17 @@ class MyArray extends Array {
 
 var arr = new MyArray();
 arr[1] = 12;
-
 ```
 
 上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
 
-上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承构造函数。下面是一个自定义Error子类的例子。
+上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承原生的构造函数。下面是一个自定义Error子类的例子。
 
 ```javascript
-
 class MyError extends Error {
 }
 
 throw new MyError('Something happened!');
-
 ```
 
 ## class的取值函数（getter）和存值函数（setter）
@@ -519,7 +473,6 @@ throw new MyError('Something happened!');
 与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数。
 
 ```javascript
-
 class MyClass {
   get prop() {
     return 'getter';
@@ -536,7 +489,6 @@ inst.prop = 123;
 
 inst.prop
 // 'getter'
-
 ```
 
 上面代码中，prop属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
@@ -546,7 +498,6 @@ inst.prop
 如果某个方法之前加上星号（*），就表示该方法是一个Generator函数。
 
 ```javascript
-
 class Foo {
   constructor(...args) {
     this.args = args;
@@ -563,7 +514,6 @@ for (let x of new Foo('hello', 'world')) {
 }
 // hello
 // world
-
 ```
 
 上面代码中，Foo类的Symbol.iterator方法前有一个星号，表示该方法是一个Generator函数。Symbol.iterator方法返回一个Foo类的默认遍历器，for...of循环会自动调用这个遍历器。
@@ -573,7 +523,6 @@ for (let x of new Foo('hello', 'world')) {
 类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上static关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
 ```javascript
-
 class Foo {
   static classMethod() {
     return 'hello';
@@ -585,7 +534,6 @@ Foo.classMethod() // 'hello'
 var foo = new Foo();
 foo.classMethod()
 // TypeError: undefined is not a function
-
 ```
 
 上面代码中，Foo类的classMethod方法前有static关键字，表明该方法是一个静态方法，可以直接在Foo类上调用（`Foo.classMethod()`），而不是在Foo类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
@@ -593,7 +541,6 @@ foo.classMethod()
 父类的静态方法，可以被子类继承。
 
 ```javascript
-
 class Foo {
   static classMethod() {
     return 'hello';
@@ -604,7 +551,6 @@ class Bar extends Foo {
 }
 
 Bar.classMethod(); // 'hello'
-
 ```
 
 上面代码中，父类Foo有一个静态方法，子类Bar可以调用这个方法。
@@ -612,7 +558,6 @@ Bar.classMethod(); // 'hello'
 静态方法也是可以从super对象上调用的。
 
 ```javascript
-
 class Foo {
   static classMethod() {
     return 'hello';
@@ -626,7 +571,145 @@ class Bar extends Foo {
 }
 
 Bar.classMethod();
+```
 
+## 修饰器
+
+修饰器（Decorator）用于修改类的行为。这是ES7的一个[提案](https://github.com/wycats/javascript-decorators)，目前Babel转码器已经支持。
+
+```javascript
+function testable(target) {
+  target.isTestable = true;
+}
+
+@testable
+class MyTestableClass () {}
+
+console.log(MyTestableClass.isTestable) // true
+```
+
+上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性isTestable。
+
+修饰器函数的参数，就是所要修饰的目标对象。比如上面代码中，testable函数的参数target，就是所要修饰的对象。如果希望修饰器的行为，能够根据目标对象的不同而不同，就要在外面再封装一层函数。
+
+```javascript
+function testable(isTestable) {
+  return function(target) {
+    target.isTestable = isTestable;
+  }
+}
+
+@testable(true) class MyTestableClass () {}
+console.log(MyTestableClass.isTestable) // true
+
+@testable(false) class MyClass () {}
+console.log(MyClass.isTestable) // false
+```
+
+上面代码中，修饰器testable可以接受参数，这就等于可以修改修饰器的行为。
+
+如果想要为类的实例添加方法，可以在修饰器函数中，为目标类的prototype属性添加方法。
+
+```javascript
+function testable(target) {
+  target.prototype.isTestable = true;
+}
+
+@testable
+class MyTestableClass () {}
+
+let obj = new MyClass();
+
+console.log(obj.isTestable) // true
+```
+
+上面代码中，修饰器函数testable是在目标类的prototype属性添加属性，因此就可以在类的实例上调用添加的属性。
+
+下面是另外一个例子。
+
+```javascript
+// mixins.js
+export function mixins(...list) {
+  return function (target) {
+    Object.assign(target.prototype, ...list)
+  }
+}
+
+// main.js
+import { mixins } from './mixins'
+
+const Foo = {
+    foo() { console.log('foo') }
+}
+
+@mixins(Foo)
+class MyClass {}
+
+let obj = new MyClass()
+
+obj.foo() // 'foo'
+```
+
+上面代码通过修饰器mixins，可以为类添加指定的方法。
+
+修饰器可以用`Object.assign()`模拟。
+
+```javascript
+const Foo = {
+  foo() { console.log('foo') }
+}
+
+class MyClass {}
+
+Object.assign(MyClass.prototype, Foo);
+
+let obj = new MyClass();
+obj.foo() // 'foo'
+```
+
+修饰器不仅可以修饰类，还可以修饰类的属性。
+
+```javascript
+class Person {
+  @readonly
+  name() { return `${this.first} ${this.last}` }
+}
+```
+
+上面代码中，修饰器readonly用来修饰”类“的name方法。
+
+此时，修饰器函数一共可以接受三个参数，第一个参数是所要修饰的目标对象，第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
+
+```javascript
+readonly(Person.prototype, 'name', descriptor);
+
+function readonly(target, name, descriptor){
+  // descriptor对象原来的值如下
+  // {
+  //   value: specifiedFunction,
+  //   enumerable: false,
+  //   configurable: true,
+  //   writable: true
+  // };
+  descriptor.writable = false;
+  return descriptor;
+}
+
+Object.defineProperty(Person.prototype, 'name', descriptor);
+```
+
+上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。下面是另一个例子。
+
+```javascript
+class Person {
+  @nonenumerable
+  get kidCount() { return this.children.length; }
+}
+
+function nonenumerable(target, name, descriptor) {
+  descriptor.enumerable = false;
+  return descriptor;
+}
 ```
 
 ## Module

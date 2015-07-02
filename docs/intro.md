@@ -38,7 +38,9 @@ ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负
 
 各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。随着时间的推移，支持度已经越来越高了，ES6的大部分特性都实现了。
 
-Node.js和io.js（一个部署新功能更快的Node分支）对ES6的支持度，比浏览器更高。通过它们，可以体验更多ES6的特性。建议使用版本管理工具[nvm](https://github.com/creationix/nvm)，来安装Node.js和io.js。不过，nvm不支持Windows系统，下面的操作可以改用[nvmw](https://github.com/hakobera/nvmw)或[nvm-windows](https://github.com/coreybutler/nvm-windows)代替。
+Node.js和io.js（一个部署新功能更快的Node分支）是JavaScript语言的服务器运行环境。它们对ES6的支持度，比浏览器更高。通过它们，可以体验更多ES6的特性。
+
+建议使用版本管理工具[nvm](https://github.com/creationix/nvm)，来安装Node.js和io.js。不过，nvm不支持Windows系统，下面的操作可以改用[nvmw](https://github.com/hakobera/nvmw)或[nvm-windows](https://github.com/coreybutler/nvm-windows)代替。
 
 安装nvm需要打开命令行窗口，运行下面的命令。
 
@@ -104,6 +106,13 @@ $ node --v8-options | grep harmony
 ```
 
 上面命令的输出结果，会因为版本的不同而有所不同。
+
+我写了一个[ES-Checker](https://github.com/ruanyf/es-checker)模块，用来检查各种运行环境对ES6的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的浏览器支持ES6的程度。运行下面的命令，可以查看本机支持ES6的程度。
+
+```bash
+$ npm install -g es-checker
+$ es-checker
+```
 
 ## Babel转码器
 
