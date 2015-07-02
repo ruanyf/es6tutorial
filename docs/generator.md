@@ -2,6 +2,8 @@
 
 ## 简介
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#generators>
+
 所谓Generator，有多种理解角度。首先，可以把它理解成一个函数的内部状态的遍历器，每调用一次，函数的内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制函数的内部状态的变化，依次遍历这些状态。
 
 在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
@@ -256,6 +258,8 @@ for (let n of fibonacci()) {
 
 ## throw方法
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#generators_%GeneratorPrototype%.throw>
+
 Generator函数还有一个特点，它可以在函数体外抛出错误，然后在函数体内捕获。
 
 ```javascript
@@ -488,6 +492,8 @@ log(g());
 
 ## yield*语句
 
+> 兼容性：<https://kangax.github.io/compat-table/es6/#generators_yield_operator_precedence>
+
 如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
 
 ```javascript
@@ -660,6 +666,8 @@ result
 ```
 
 ## 作为对象属性的Generator函数
+
+> 兼容性：<https://kangax.github.io/compat-table/es6/#generators_string-keyed_shorthand_generator_methods>
 
 如果一个对象的属性是Generator函数，可以简写成下面的形式。
 
