@@ -345,7 +345,6 @@ arr1.push(...arr2);
 扩展运算符还可以用于数组的赋值。
 
 ```javascript
-
 var a = [1];
 var b = [2, 3, 4];
 var c = [6, 7];
@@ -353,15 +352,17 @@ var d = [0, ...a, ...b, 5, ...c];
 
 d
 // [0, 1, 2, 3, 4, 5, 6, 7]
-
 ```
 
 上面代码其实也提供了，将一个数组拷贝进另一个数组的便捷方法。
 
+```javascript
+const arr2 = [...arr1];
+```
+
 扩展运算符也可以与解构赋值结合起来，用于生成数组。
 
 ```javascript
-
 const [first, ...rest] = [1, 2, 3, 4, 5];
 first // 1
 rest  // [2, 3, 4, 5]
@@ -381,7 +382,6 @@ rest  // ["bar"]
 const [first, ...rest] = ["foo", "bar", "baz"];
 first // "foo"
 rest  // ["bar","baz"]
-
 ```
 
 如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。

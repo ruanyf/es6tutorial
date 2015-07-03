@@ -250,7 +250,27 @@ class Foo {}
 
 如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
 
-**（7）严格模式**
+**（7）存取函数**
+
+Class支持set和get方法，设置赋值函数和取值函数，拦截属性的存取行为。
+
+```javascript
+class Jedi {
+  constructor(options = {}) {
+    // ...
+  }
+
+  set(key, val) {
+    this[key] = val;
+  }
+
+  get(key) {
+    return this[key];
+  }
+}
+```
+
+**（8）严格模式**
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
 
@@ -741,12 +761,10 @@ import { stat, exists, readFile } from 'fs';
 ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
 
 ```javascript
-
 // profile.js
 export var firstName = 'Michael';
 export var lastName = 'Jackson';
 export var year = 1958;
-
 ```
 
 上面代码是profile.js文件，保存了用户信息。ES6将其视为一个模块，里面用export命令对外部输出了三个变量。
@@ -754,14 +772,12 @@ export var year = 1958;
 export的写法，除了像上面这样，还有另外一种。
 
 ```javascript
-
 // profile.js
 var firstName = 'Michael';
 var lastName = 'Jackson';
 var year = 1958;
 
 export {firstName, lastName, year};
-
 ```
 
 上面代码在export命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
@@ -769,7 +785,6 @@ export {firstName, lastName, year};
 使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
 
 ```javascript
-
 // main.js
 
 import {firstName, lastName, year} from './profile';
@@ -777,7 +792,6 @@ import {firstName, lastName, year} from './profile';
 function sfirsetHeader(element) {
   element.textContent = firstName + ' ' + lastName;
 }
-
 ```
 
 上面代码属于另一个文件main.js，import命令就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
@@ -785,15 +799,12 @@ function sfirsetHeader(element) {
 如果想为输入的变量重新取一个名字，import语句中要使用as关键字，将输入的变量重命名。
 
 ```javascript
-
 import { lastName as surname } from './profile';
-
 ```
 
 ES6支持多重加载，即所加载的模块中又加载其他模块。
 
 ```javascript
-
 import { Vehicle } from './Vehicle';
 
 class Car extends Vehicle {
@@ -803,10 +814,21 @@ class Car extends Vehicle {
 }
 
 export { Car }
-
 ```
 
 上面的模块先加载Vehicle模块，然后在其基础上添加了move方法，再作为一个新模块输出。
+
+如果在一个模块之中，先输入后输出同一个模块，import语句可以与export语句写在一起。
+
+```javascript
+export { es6 as default } from './someModule';
+
+// 等同于
+import { es6 } from './someModule';
+export default es6;
+```
+
+上面代码中，export和import语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，h应该采用标准写法。
 
 **（2）模块的整体输入，module命令**
 
