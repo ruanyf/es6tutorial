@@ -187,7 +187,6 @@ function func(arg) {
 let实际上为JavaScript新增了块级作用域。
 
 ```javascript
-
 function f1() {
   let n = 5;
   if (true) {
@@ -195,7 +194,6 @@ function f1() {
   }
   console.log(n); // 5
 }
-
 ```
 
 上面的函数有两个代码块，都声明了变量n，运行后输出5。这表示外层代码块不受内层代码块的影响。如果使用var定义变量n，最后输出的值就是10。
@@ -203,7 +201,6 @@ function f1() {
 块级作用域的出现，实际上使得获得广泛应用的立即执行匿名函数（IIFE）不再必要了。
 
 ```javascript
-
 // IIFE写法
 (function () {
   var tmp = ...;
@@ -215,13 +212,11 @@ function f1() {
   let tmp = ...;
   ...
 }
-
 ```
 
 另外，ES6也规定，函数本身的作用域，在其所在的块级作用域之内。
 
 ```javascript
-
 function f() { console.log('I am outside!'); }
 (function () {
   if(false) {
@@ -231,7 +226,6 @@ function f() { console.log('I am outside!'); }
 
   f();
 }());
-
 ```
 
 上面代码在ES5中运行，会得到“I am inside!”，但是在ES6中运行，会得到“I am outside!”。这是因为ES5存在函数提升，不管会不会进入if代码块，函数声明都会提升到当前作用域的顶部，得到执行；而ES6支持块级作用域，不管会不会进入if代码块，其内部声明的函数皆不会影响到作用域的外部。

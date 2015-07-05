@@ -141,6 +141,47 @@ console.log(obj.hello()); // hi
 
 ```
 
+## 方法的name属性
+
+函数的name属性，返回函数名。ES6为对象方法也添加了name属性。
+
+```javascript
+var person = {
+  sayName: function() {
+    console.log(this.name);
+  },
+  get firstName() {
+    return "Nicholas"
+  }
+}
+
+person.sayName.name   // "sayName"
+person.firstName.name // "get firstName"
+```
+
+上面代码中，方法的name属性返回函数名（即方法名）。如果使用了存值函数，则会在方法名前加上get。如果是存值函数，方法名的前面会加上set。
+
+```javascript
+var doSomething = function() {
+    // ...
+};
+
+console.log(doSomething.bind().name);   // "bound doSomething"
+
+console.log((new Function()).name);     // "anonymous"
+```
+
+有两种特殊情况：bind方法创造的函数，name属性返回“bound”加上原函数的名字；Function构造函数创造的函数，name属性返回“anonymous”。
+
+```javascript
+(new Function()).name // "anonymous"
+
+var doSomething = function() {
+  // ...
+};
+doSomething.bind().name // "bound doSomething"
+```
+
 ## Object.is()
 
 Object.is()用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致，不同之处只有两个：一是+0不等于-0，二是NaN等于自身。
@@ -180,7 +221,6 @@ Object.defineProperty(Object, 'is', {
 Object.assign方法用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
 
 ```javascript
-
 var target = { a: 1 };
 
 var source1 = { b: 2 };
@@ -188,7 +228,6 @@ var source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
-
 ```
 
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。

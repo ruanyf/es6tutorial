@@ -1,4 +1,4 @@
-# Class和Module
+# Class
 
 ## Class基本语法
 
@@ -99,6 +99,61 @@ prototype对象的constructor属性，直接指向“类”的本身，这与ES5
 Point.prototype.constructor === Point // true
 ```
 
+另外，类的内部所有定义的方法，都是不可枚举的（enumerable）。
+
+```javascript
+class Point {
+  constructor(x, y) {
+    // ...
+  }
+
+  toString() {
+    // ...
+  }
+}
+
+Object.keys(Point.prototype)
+// []
+Object.getOwnPropertyNames(Point.prototype)
+// ["constructor","toString"]
+```
+
+上面代码中，toString方法是Point类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
+
+```javascript
+var Point = function (x, y){
+  // ...
+}
+
+Point.prototype.toString = function() {
+  // ...
+}
+
+Object.keys(Point.prototype)
+// ["toString"]
+Object.getOwnPropertyNames(Point.prototype)
+// ["constructor","toString"]
+```
+
+上面代码采用ES5的写法，toString方法就是可枚举的。
+
+类的属性名，可以采用表达式。
+
+```javascript
+let methodName = "getArea";
+class Square{
+  constructor(length) {
+    // ...
+  }
+
+  [methodName]() {
+    // ...
+  }
+}
+```
+
+上面代码中，Square类的方法名getArea，是从表达式得到的。
+
 **（2）constructor方法**
 
 constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，一个空的constructor方法会被默认添加。
@@ -162,6 +217,8 @@ point.__proto__.hasOwnProperty('toString') // true
 ```
 
 上面代码中，x和y都是实例对象point自身的属性（因为定义在this变量上），所以hasOwnProperty方法返回true，而toString是原型对象的属性（因为定义在Point类上），所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
+
+与ES5一样，类的所有实例共享一个原型对象。
 
 ```javascript
 var p1 = new Point(2,3);
@@ -229,6 +286,24 @@ Me.name // ReferenceError: Me is not defined
 const MyClass = class { /* ... */ };
 ```
 
+采用Class表达式，可以写出立即执行的Class。
+
+```javascript
+let person = new class {
+  constructor(name) {
+    this.name = name;
+  }
+
+  sayName() {
+    console.log(this.name);
+  }
+}("张三");
+
+person.sayName(); // "张三"
+```
+
+上面代码中，person是一个立即执行的Class的实例。
+
 **（6）不存在变量提升**
 
 Class不存在变量提升（hoist），这一点与ES5完全不同。
@@ -250,9 +325,9 @@ class Foo {}
 
 如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
 
-**（7）存取函数**
+**（7）存取器**
 
-Class支持set和get方法，设置赋值函数和取值函数，拦截属性的存取行为。
+Class支持set和get方法，设置赋值器和取值器，拦截属性的存取行为。
 
 ```javascript
 class Jedi {
@@ -270,9 +345,37 @@ class Jedi {
 }
 ```
 
+上面代码中，Jedi实例所有属性的存取，都会通过存取器。
+
+下面的例子是针对某个属性，设置存取器。
+
+```javascript
+class CustomHTMLElement {
+  constructor(element) {
+    this.element = element;
+  }
+
+  get html() {
+    return this.element.innerHTML;
+  }
+
+  set html(value) {
+    this.element.innerHTML = value;
+  }
+}
+
+var descriptor = Object.getOwnPropertyDescriptor(CustomHTMLElement.prototype, "html");
+"get" in descriptor  // true
+"set" in descriptor  // true
+```
+
+上面代码中，只有html属性的存取，会通过存取器，而存取器是定义在html属性的描述对象上面，这与ES5完全一致。
+
 **（8）严格模式**
 
-类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
+
+考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
 
 ## Class的继承
 
@@ -317,6 +420,8 @@ let cp = new ColorPoint(); // ReferenceError
 ```
 
 上面代码中，ColorPoint继承了父类Point，但是它的构造函数没有调用super方法，导致新建实例时报错。
+
+ES5的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到this上面（`Parent.apply(this)`）。ES6的继承机制完全不同，实质是先创造父类的实例对象this（所以必须先调用super方法），然后再用子类的构造函数修改this。
 
 如果子类没有定义constructor方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有constructor方法。
 
@@ -464,7 +569,37 @@ p1.printName() // "Ha"
 
 ### 原生构造函数的继承
 
-下面是一个继承原生的Array构造函数的例子。
+原生构造函数是指语言内置的构造函数，通常用来生成数据结构，比如`Array()`。以前，这些原生构造函数是无法继承的，即不能自己定义一个Array的子类。
+
+```javascript
+function MyArray() {
+  Array.apply(this, arguments);
+}
+
+MyArray.prototype = Object.create(Array.prototype, {
+  constructor: {
+    value: MyArray,
+    writable: true,
+    configurable: true,
+    enumerable: true
+  }
+});
+```
+
+上面代码定义了一个继承Array的MyArray类。但是，这个类的行为与Array完全不一致。
+
+```javascript
+var colors = new MyArray();
+colors[0] = "red";
+colors.length  // 0
+
+colors.length = 0;
+colors[0]  // "red"
+```
+
+之所以会发生这种情况，是因为原生构造函数无法外部获取，通过`Array.apply()`或者分配给原型对象都不行。ES5是先新建子类的实例对象this，再将父类的属性添加到子类上，由于父类的属性无法获取，导致无法继承原生的构造函数。
+
+ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象this，然后再用子类的构造函数修饰this，使得父类的所有行为都可以继承。下面是一个继承Array的例子。
 
 ```javascript
 class MyArray extends Array {
@@ -474,7 +609,11 @@ class MyArray extends Array {
 }
 
 var arr = new MyArray();
-arr[1] = 12;
+arr[0] = 12;
+arr.length // 1
+
+arr.length = 0;
+arr[0] // undefined
 ```
 
 上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
@@ -592,6 +731,95 @@ class Bar extends Foo {
 
 Bar.classMethod();
 ```
+
+## new.target属性
+
+new是从构造函数生成实例的命令。ES6为new命令引入了一个`new.target`属性，（在构造函数中）返回new命令作用于的那个构造函数。如果构造函数不是通过new命令调用的，`new.target`会返回undefined，因此这个属性可以用来确定构造函数是怎么调用的。
+
+```javascript
+function Person(name) {
+  if (new.target !== undefined) {
+    this.name = name;
+  } else {
+    throw new Error('必须使用new生成实例');
+  }
+}
+
+// 另一种写法
+function Person(name) {
+  if (new.target === Person) {
+    this.name = name;
+  } else {
+    throw new Error('必须使用new生成实例');
+  }
+}
+
+var person = new Person('张三'); // 正确
+var notAPerson = Person.call(person, '张三');  // 报错
+```
+
+上面代码确保构造函数只能通过new命令调用。
+
+Class内部调用`new.target`，返回当前Class。
+
+```javascript
+class Rectangle {
+  constructor(length, width) {
+    console.log(new.target === Rectangle);
+    this.length = length;
+    this.width = width;
+  }
+}
+
+var obj = new Rectangle(3, 4); // 输出 true
+```
+
+需要注意的是，子类继承父类时，`new.target`会返回子类。
+
+```javascript
+class Rectangle {
+  constructor(length, width) {
+    console.log(new.target === Rectangle);
+    // ...
+  }
+}
+
+class Square extends Rectangle {
+  constructor(length) {
+    super(length, length);
+  }
+}
+
+var obj = new Square(3); // 输出 false
+```
+
+上面代码中，`new.target`会返回子类。
+
+利用这个特点，可以写出不能独立使用、必须继承后才能使用的类。
+
+```javascript
+class Shape {
+  constructor() {
+    if (new.target === Shape) {
+      throw new Error('本类不能实例化');
+    }
+  }
+}
+
+class Rectangle extends Shape {
+  constructor(length, width) {
+    super();
+    // ...
+  }
+}
+
+var x = new Shape();  // 报错
+var y = new Rectangle(3, 4);  // 正确
+```
+
+上面代码中，Shape类不能被实例化，只能用于继承。
+
+注意，在函数外部，使用`new.target`会报错。
 
 ## 修饰器
 
@@ -732,375 +960,3 @@ function nonenumerable(target, name, descriptor) {
 }
 ```
 
-## Module
-
-ES6的Class只是面向对象编程的语法糖，升级了ES5的对象定义的写法，并没有解决模块化问题。Module功能就是为了解决这个问题而提出的。
-
-历史上，JavaScript一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的require、Python的import，甚至就连CSS都有@import，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
-
-在ES6之前，社区制定了一些模块加载方案，最主要的有CommonJS和AMD两种。前者用于服务器，后者用于浏览器。ES6在语言规格的层面上，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
-
-ES6模块的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS和AMD模块，都只能在运行时确定这些东西。比如，CommonJS模块就是对象，输入时必须查找对象属性。
-
-```javascript
-var { stat, exists, readFile } = require('fs');
-```
-
-ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
-
-```javascript
-import { stat, exists, readFile } from 'fs';
-```
-
-所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
-
-**（1）export命令，import命令**
-
-模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
-
-ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
-
-```javascript
-// profile.js
-export var firstName = 'Michael';
-export var lastName = 'Jackson';
-export var year = 1958;
-```
-
-上面代码是profile.js文件，保存了用户信息。ES6将其视为一个模块，里面用export命令对外部输出了三个变量。
-
-export的写法，除了像上面这样，还有另外一种。
-
-```javascript
-// profile.js
-var firstName = 'Michael';
-var lastName = 'Jackson';
-var year = 1958;
-
-export {firstName, lastName, year};
-```
-
-上面代码在export命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
-
-使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
-
-```javascript
-// main.js
-
-import {firstName, lastName, year} from './profile';
-
-function sfirsetHeader(element) {
-  element.textContent = firstName + ' ' + lastName;
-}
-```
-
-上面代码属于另一个文件main.js，import命令就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
-
-如果想为输入的变量重新取一个名字，import语句中要使用as关键字，将输入的变量重命名。
-
-```javascript
-import { lastName as surname } from './profile';
-```
-
-ES6支持多重加载，即所加载的模块中又加载其他模块。
-
-```javascript
-import { Vehicle } from './Vehicle';
-
-class Car extends Vehicle {
-  move () {
-    console.log(this.name + ' is spinning wheels...')
-  }
-}
-
-export { Car }
-```
-
-上面的模块先加载Vehicle模块，然后在其基础上添加了move方法，再作为一个新模块输出。
-
-如果在一个模块之中，先输入后输出同一个模块，import语句可以与export语句写在一起。
-
-```javascript
-export { es6 as default } from './someModule';
-
-// 等同于
-import { es6 } from './someModule';
-export default es6;
-```
-
-上面代码中，export和import语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，h应该采用标准写法。
-
-**（2）模块的整体输入，module命令**
-
-export命令除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法area和circumference。
-
-```javascript
-
-// circle.js
-
-export function area(radius) {
-  return Math.PI * radius * radius;
-}
-
-export function circumference(radius) {
-  return 2 * Math.PI * radius;
-}
-
-```
-
-然后，main.js输入circlek.js模块。
-
-```javascript
-
-// main.js
-
-import { area, circumference } from 'circle';
-
-console.log("圆面积：" + area(4));
-console.log("圆周长：" + circumference(14));
-
-```
-
-上面写法是逐一指定要输入的方法。另一种写法是整体输入。
-
-```javascript
-
-import * as circle from 'circle';
-
-console.log("圆面积：" + circle.area(4));
-console.log("圆周长：" + circle.circumference(14));
-
-```
-
-module命令可以取代import语句，达到整体输入模块的作用。
-
-```javascript
-
-// main.js
-
-module circle from 'circle';
-
-console.log("圆面积：" + circle.area(4));
-console.log("圆周长：" + circle.circumference(14));
-
-```
-
-module命令后面跟一个变量，表示输入的模块定义在该变量上。
-
-**（3）export default命令**
-
-为了给用户提供方便，有时我们希望，用户不用知道输入哪个方法，就能加载模块。这时就要用到`export default`命令，为所要加载的模块指定默认输出。
-
-```javascript
-// export-default.js
-export default function () {
-  console.log('foo');
-}
-```
-
-上面代码是一个模块文件`export-default.js`，它的默认输出是一个函数。
-
-其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
-
-```javascript
-// import-default.js
-import customName from './export-default';
-customName(); // 'foo'
-```
-
-上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法。需要注意的是，这时import命令后面，不使用大括号。
-
-```javascript
-import crc32 from 'crc32';
-// 对应的输出
-export default function crc32(){}
-
-import { crc32 } from 'crc32';
-// 对应的输出
-export function crc32(){};
-```
-
-上面代码的两组写法，第一组是使用`export default`时，对应的import语句不需要使用大括号；第二组是不使用`export default`时，对应的import语句需要使用大括号。
-
-export default命令用在非匿名函数前，也是可以的。
-
-```javascript
-// export-default.js
-export default function foo() {
-  console.log('foo');
-}
-
-// 或者写成
-
-function foo() {
-  console.log('foo');
-}
-
-export default foo;
-```
-
-上面代码中，foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
-
-`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export deault`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能对应一个方法。
-
-有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
-
-```javascript
-import $ from 'jquery';
-```
-
-如果想在一条import语句中，同时输入默认方法和其他变量，可以写成下面这样。
-
-```javascript
-import customName, { otherMethod } from './export-default';
-```
-
-如果要输出默认的值，只需将值跟在`export default`之后即可。
-
-```javascript
-export default 42;
-```
-
-`export default`也可以用来输出类。
-
-```javascript
-// MyClass.js
-export default class { ... }
-
-// main.js
-import MyClass from 'MyClass'
-let o = new MyClass();
-```
-
-## 模块的继承
-
-模块之间也可以继承。
-
-假设有一个circleplus模块，继承了circle模块。
-
-```javascript
-
-// circleplus.js
-
-export * from 'circle';
-export var e = 2.71828182846;
-export default function(x) {
-    return Math.exp(x);
-}
-
-```
-
-上面代码中的“export *”，表示输出circle模块的所有属性和方法，export default命令定义模块的默认方法。
-
-这时，也可以将circle的属性或方法，改名后再输出。
-
-```javascript
-
-// circleplus.js
-
-export { area as circleArea } from 'circle';  
-
-```
-
-上面代码表示，只输出circle模块的area方法，且将其改名为circleArea。
-
-加载上面模块的写法如下。
-
-```javascript
-
-// main.js
-
-module math from "circleplus";
-import exp from "circleplus";
-console.log(exp(math.pi));
-
-```
-
-上面代码中的"import exp"表示，将circleplus模块的默认方法加载为exp方法。
-
-## ES6模块的转码
-
-浏览器目前还不支持ES6模块，为了现在就能使用，可以将转为ES5的写法。
-
-**（1）ES6 module transpiler**
-
-[ES6 module transpiler](https://github.com/esnext/es6-module-transpiler)是square公司开源的一个转码器，可以将ES6模块转为CommonJS模块或AMD模块的写法，从而在浏览器中使用。
-
-首先，安装这个转玛器。
-
-```bash
-
-$ npm install -g es6-module-transpiler
-
-```
-
-然后，使用`compile-modules convert`命令，将ES6模块文件转码。
-
-```bash
-
-$ compile-modules convert file1.js file2.js
-
-```
-
-o参数可以指定转码后的文件名。
-
-```bash
-
-$ compile-modules convert -o out.js file1.js
-
-```
-
-**（2）SystemJS**
-
-另一种解决方法是使用[SystemJS](https://github.com/systemjs/systemjs)。它是一个垫片库（polyfill），可以在浏览器内加载ES6模块、AMD模块和CommonJS模块，将其转为ES5格式。它在后台调用的是Google的Traceur转码器。
-
-使用时，先在网页内载入system.js文件。
-
-```html
-
-<script src="system.js"></script>
-
-```
-
-然后，使用`System.import`方法加载模块文件。
-
-```html
-
-<script>
-  System.import('./app');
-</script>
-
-```
-
-上面代码中的`./app`，指的是当前目录下的app.js文件。它可以是ES6模块文件，`System.import`会自动将其转码。
-
-需要注意的是，`System.import`使用异步加载，返回一个Promise对象，可以针对这个对象编程。下面是一个模块文件。
-
-```javascript
-
-// app/es6-file.js:
-
-export class q {
-  constructor() {
-    this.es6 = 'hello';
-  }
-}
-
-
-```
-
-然后，在网页内加载这个模块文件。
-
-```html
-
-<script>
-
-System.import('app/es6-file').then(function(m) {
-  console.log(new m.q().es6); // hello
-});
-
-</script>
-
-```
-
-上面代码中，`System.import`方法返回的是一个Promise对象，所以可以用then方法指定回调函数。
