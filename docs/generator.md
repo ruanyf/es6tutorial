@@ -2,9 +2,13 @@
 
 ## 简介
 
-所谓Generator，有多种理解角度。首先，可以把它理解成一个函数的内部状态的遍历器，每调用一次，函数的内部状态发生一次改变（可以理解成发生某些事件）。ES6引入Generator函数，作用就是可以完全控制函数的内部状态的变化，依次遍历这些状态。
+### 基本概念
 
-在形式上，Generator是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
+Generator函数是ES6提供的一种异步编程解决方案，语法行为与传统函数完全不同。本章详细介绍Generator函数的语法和API，它的异步编程应用请看《异步操作》一章。
+
+Generator函数有多种理解角度。从语法上，首先可以把它理解成一个函数的内部状态的遍历器（也就是说，Generator函数是一个状态机）。它每调用一次，就进入下一个内部状态。Generator函数可以控制内部状态的变化，依次遍历这些状态。
+
+在形式上，Generator函数是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
 function* helloWorldGenerator() {
@@ -16,12 +20,13 @@ function* helloWorldGenerator() {
 var hw = helloWorldGenerator();
 ```
 
-上面代码定义了一个Generator函数helloWorldGenerator，它的遍历器有两个成员“hello”和“world”。调用这个函数，就会得到遍历器。
+上面代码定义了一个Generator函数helloWorldGenerator，它内部有两个yield语句“hello”和“world”，即该函数有三个状态：hello，world和return语句（结束执行）。
 
-当调用Generator函数的时候，该函数并不执行，而是返回一个遍历器（可以理解成暂停执行）。以后，每次调用这个遍历器的next方法，就从函数体的头部或者上一次停下来的地方开始执行（可以理解成恢复执行），直到遇到下一个yield语句为止。也就是说，next方法就是在遍历yield语句定义的内部状态。
+然后，Generator函数的调用方法与普通函数一样，也是在函数名后面加上一对圆括号。不同的是，调用Generator函数后，该函数并不执行，返回的也不是函数运行结果，而是一个指向内部状态的指针对象，也就是上一章介绍的遍历器对象（Iterator Object）。
+
+下一步，必须调用遍历器对象的next方法，使得指针移向下一个状态。也就是说，每次调用next方法，内部指针就从函数头部或上一次停下来的地方开始执行，直到遇到下一个yield语句（或return语句）为止。换言之，Generator函数是分段执行的，yield命令是暂停执行的标记，而next方法可以恢复执行。
 
 ```javascript
-
 hw.next()
 // { value: 'hello', done: false }
 
@@ -33,46 +38,49 @@ hw.next()
 
 hw.next()
 // { value: undefined, done: true }
-
 ```
 
 上面代码一共调用了四次next方法。
 
-第一次调用，函数开始执行，直到遇到第一句yield语句为止。next方法返回一个对象，它的value属性就是当前yield语句的值hello，done属性的值false，表示遍历还没有结束。
+第一次调用，Generator函数开始执行，直到遇到第一个yield语句为止。next方法返回一个对象，它的value属性就是当前yield语句的值hello，done属性的值false，表示遍历还没有结束。
 
-第二次调用，函数从上次yield语句停下的地方，一直执行到下一个yield语句。next方法返回的对象的value属性就是当前yield语句的值world，done属性的值false，表示遍历还没有结束。
+第二次调用，Generator函数从上次yield语句停下的地方，一直执行到下一个yield语句。next方法返回的对象的value属性就是当前yield语句的值world，done属性的值false，表示遍历还没有结束。
 
-第三次调用，函数从上次yield语句停下的地方，一直执行到return语句（如果没有return语句，就执行到函数结束）。next方法返回的对象的value属性，就是紧跟在return语句后面的表达式的值（如果没有return语句，则value属性的值为undefined），done属性的值true，表示遍历已经结束。
+第三次调用，Generator函数从上次yield语句停下的地方，一直执行到return语句（如果没有return语句，就执行到函数结束）。next方法返回的对象的value属性，就是紧跟在return语句后面的表达式的值（如果没有return语句，则value属性的值为undefined），done属性的值true，表示遍历已经结束。
 
-第四次调用，此时函数已经运行完毕，next方法返回对象的value属性为undefined，done属性为true。以后再调用next方法，返回的都是这个值。
+第四次调用，此时Generator函数已经运行完毕，next方法返回对象的value属性为undefined，done属性为true。以后再调用next方法，返回的都是这个值。
 
-总结一下，Generator函数使用iterator接口，每次调用next方法的返回值，就是一个标准的iterator返回值：有着value和done两个属性的对象。其中，value是yield语句后面那个表达式的值，done是一个布尔值，表示是否遍历结束。
+总结一下，调用Generator函数，返回一个部署了Iterator接口的遍历器对象，用来操作内部指针。以后，每次调用遍历器对象的next方法，就会返回一个有着value和done两个属性的对象。value属性表示当前的内部状态的值，是yield语句后面那个表达式的值；done属性是一个布尔值，表示是否遍历结束。
 
-上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，即调用该函数会返回该对象的一个遍历器。遍历器本身也是一个对象，它的Symbol.iterator属性执行后，返回自身。
+### yield语句
+
+由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个内部状态，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志。
+
+遍历器next方法的运行逻辑如下。
+
+（1）遇到yield语句，就暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回的对象的value属性值。
+
+（2）下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。
+
+（3）如果没有再遇到新的yield语句，就一直运行到函数结束，直到return语句为止，并将return语句后面的表达式的值，作为返回的对象的value属性值。
+
+（4）如果该函数没有return语句，则返回的对象的value属性值为undefined。
+
+需要注意的是，yield语句后面的表达式，只有当调用next方法、内部指针指向该语句时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
 ```javascript
-
-function* gen(){
-  // some code
+function* gen{
+  yield  123 + 456;
 }
-
-var g = gen();
-
-g[Symbol.iterator]() === g
-// true
-
 ```
 
-上面代码中，gen是一个Generator函数，调用它会生成一个遍历器g。遍历器g的Symbol.iterator属性是一个遍历器函数，执行后返回它自己。
+上面代码中，yield后面的表达式`123 + 456`，不会立即求值，只会在next方法将指针移到这一句时，才会求值。
 
-由于Generator函数返回的遍历器，只有调用next方法才会遍历下一个成员，所以其实提供了一种可以暂停执行的函数。yield语句就是暂停标志，next方法遇到yield，就会暂停执行后面的操作，并将紧跟在yield后面的那个表达式的值，作为返回对象的value属性的值。当下一次调用next方法时，再继续往下执行，直到遇到下一个yield语句。如果没有再遇到新的yield语句，就一直运行到函数结束，将return语句后面的表达式的值，作为value属性的值，如果该函数没有return语句，则value属性的值为undefined。另一方面，由于yield后面的表达式，直到调用next方法时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
-
-yield语句与return语句有点像，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。一个函数里面，只能执行一次（或者说一个）return语句，但是可以执行多次（或者说多个）yield语句。正常函数只能返回一个值，因为只能执行一次return；Generator函数可以返回一系列的值，因为可以有任意多个yield。从另一个角度看，也可以说Generator生成了一系列的值，这也就是它的名称的来历（在英语中，generator这个词是“生成器”的意思）。
+yield语句与return语句既有相似之处，也有区别。相似之处在于，都能返回紧跟在语句后面的那个表达式的值。区别在于每次遇到yield，函数暂停执行，下一次再从该位置继续向后执行，而return语句不具备位置记忆的功能。一个函数里面，只能执行一次（或者说一个）return语句，但是可以执行多次（或者说多个）yield语句。正常函数只能返回一个值，因为只能执行一次return；Generator函数可以返回一系列的值，因为可以有任意多个yield。从另一个角度看，也可以说Generator生成了一系列的值，这也就是它的名称的来历（在英语中，generator这个词是“生成器”的意思）。
 
 Generator函数可以不用yield语句，这时就变成了一个单纯的暂缓执行函数。
 
 ```javascript
-
 function* f() {
   console.log('执行了！')
 }
@@ -82,7 +90,6 @@ var generator = f();
 setTimeout(function () {
   generator.next()
 }, 2000);
-
 ```
 
 上面代码中，函数f如果是普通函数，在为变量generator赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
@@ -90,12 +97,10 @@ setTimeout(function () {
 另外需要注意，yield语句不能用在普通函数中，否则会报错。
 
 ```javascript
-
 (function (){
   yield 1;
 })()
 // SyntaxError: Unexpected number
-
 ```
 
 上面代码在一个普通函数中使用yield语句，结果产生一个句法错误。
@@ -103,7 +108,6 @@ setTimeout(function () {
 下面是另外一个例子。
 
 ```javascript
-
 var arr = [1, [[2, 3], 4], [5, 6]];
 
 var flat = function* (a){
@@ -119,7 +123,6 @@ var flat = function* (a){
 for (var f of flat(arr)){
   console.log(f);
 }
-
 ```
 
 上面代码也会产生句法错误，因为forEach方法的参数是一个普通函数，但是在里面使用了yield语句。一种修改方法是改用for循环。
@@ -144,6 +147,25 @@ for (var f of flat(arr)){
 }
 // 1, 2, 3, 4, 5, 6
 ```
+
+### 与Iterator的关系
+
+上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，调用该函数会返回该对象的一个遍历器。
+
+遍历器本身也是一个对象，它的Symbol.iterator属性执行后，返回自身。
+
+```javascript
+function* gen(){
+  // some code
+}
+
+var g = gen();
+
+g[Symbol.iterator]() === g
+// true
+```
+
+上面代码中，gen是一个Generator函数，调用它会生成一个遍历器g。遍历器g的Symbol.iterator属性是一个遍历器函数，执行后返回它自己。
 
 ## next方法的参数
 

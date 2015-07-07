@@ -2,14 +2,15 @@
 
 ## 基本用法
 
-ES6原生提供了Promise对象。所谓Promise对象，就是代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的API，可供进一步处理。
+Promise在JavaScript语言早有实现，ES6将其写进了语言标准，统一了用法，原生提供了Promise对象。
 
-有了Promise对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise对象提供的接口，使得控制异步操作更加容易。Promise对象的概念的详细解释，请参考[《JavaScript标准参考教程》](http://javascript.ruanyifeng.com/)。
+所谓Promise，就是一个对象，用来传递异步操作的消息。它代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的API，可供进一步处理。
 
-ES6的Promise对象是一个构造函数，用来生成Promise实例。
+有了Promise对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，Promise对象提供的接口，使得控制异步操作更加容易。
+
+ES6规定，Promise对象是一个构造函数，用来生成Promise实例。
 
 ```javascript
-
 var promise = new Promise(function(resolve, reject) {
   if (/* 异步操作成功 */){
     resolve(value);
@@ -23,7 +24,6 @@ promise.then(function(value) {
 }, function(value) {
   // failure
 });
-
 ```
 
 上面代码中，Promise构造函数接受一个函数作为参数，该函数的两个参数分别是resolve方法和reject方法。如果异步操作成功，则用resolve方法将Promise对象的状态，从“未完成”变为“成功”（即从pending变为resolved）；如果异步操作失败，则用reject方法将Promise对象的状态，从“未完成”变为“失败”（即从pending变为rejected）。
