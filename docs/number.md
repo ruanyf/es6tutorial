@@ -5,13 +5,16 @@
 ES6提供了二进制和八进制数值的新的写法，分别用前缀0b和0o表示。
 
 ```javascript
-
 0b111110111 === 503 // true
 0o767 === 503 // true
-
 ```
 
-八进制用0o前缀表示的方法，将要取代已经在ES5中被逐步淘汰的加前缀0的写法。
+八进制不再允许使用前缀0表示，而改为使用前缀0o。
+
+```javascript
+011 === 9 // 不正确
+0o11 === 9 // 正确
+```
 
 ## Number.isFinite(), Number.isNaN()
 
@@ -20,7 +23,6 @@ ES6在Number对象上，新提供了Number.isFinite()和Number.isNaN()两个方�
 Number.isFinite()用来检查一个数值是否非无穷（infinity）。
 
 ```javascript
-
 Number.isFinite(15); // true
 Number.isFinite(0.8); // true
 Number.isFinite(NaN); // false
@@ -29,13 +31,11 @@ Number.isFinite(-Infinity); // false
 Number.isFinite("foo"); // false
 Number.isFinite("15"); // false
 Number.isFinite(true); // false
-
 ```
 
 ES5通过下面的代码，部署Number.isFinite方法。
 
 ```javascript
-
 (function (global) {
   var global_isFinite = global.isFinite;
 
@@ -48,7 +48,6 @@ ES5通过下面的代码，部署Number.isFinite方法。
     writable: true
   });
 })(this);
-
 ```
 
 Number.isNaN()用来检查一个值是否为NaN。
@@ -102,7 +101,6 @@ Number.isNaN("NaN") // false
 ES6将全局方法parseInt()和parseFloat()，移植到Number对象上面，行为完全保持不变。
 
 ```javascript
-
 // ES5的写法
 parseInt("12.34") // 12
 parseFloat('123.45#') // 123.45
@@ -110,7 +108,6 @@ parseFloat('123.45#') // 123.45
 // ES6的写法
 Number.parseInt("12.34") // 12
 Number.parseFloat('123.45#') // 123.45
-
 ```
 
 这样做的目的，是逐步减少全局性方法，使得语言逐步模块化。
@@ -132,7 +129,6 @@ Number.isInteger(true) // false
 ES5通过下面的代码，部署Number.isInteger()。
 
 ```javascript
-
 (function (global) {
   var floor = Math.floor,
     isFinite = global.isFinite;
@@ -148,13 +144,11 @@ ES5通过下面的代码，部署Number.isInteger()。
     writable: true
   });
 })(this);
-
 ```
 
 JavaScript能够准确表示的整数范围在-2&#710;53 and 2&#710;53之间。ES6引入了Number.MAX_SAFE_INTEGER和Number.MIN_SAFE_INTEGER这两个常量，用来表示这个范围的上下限。Number.isSafeInteger()则是用来判断一个整数是否落在这个范围之内。
 
 ```javascript
-
 var inside = Number.MAX_SAFE_INTEGER;
 var outside = inside + 1;
 
@@ -163,79 +157,276 @@ Number.isSafeInteger(inside) // true
 
 Number.isInteger(outside) // true
 Number.isSafeInteger(outside) // false
-
 ```
 
 ## Math对象的扩展
 
-**（1）Math.trunc()**
+ES6在Math对象上新增了17个与数学相关的方法。所有这些方法都是静态方法，只能在Math对象上调用。
+
+### Math.trunc()
 
 Math.trunc方法用于去除一个数的小数部分，返回整数部分。
 
 ```javascript
-
 Math.trunc(4.1) // 4
 Math.trunc(4.9) // 4
 Math.trunc(-4.1) // -4
 Math.trunc(-4.9) // -4
-
 ```
 
-**（2）Math.sign()**
-
-Math.sign方法用来判断一个数到底是正数、负数、还是零。如果参数为正数，返回+1；参数为负数，返回-1；参数为0，返回0；参数为NaN，返回NaN。
+对于空值和无法截取整数的值，返回NaN。
 
 ```javascript
+Math.trunc(NaN);      // NaN
+Math.trunc('foo');    // NaN
+Math.trunc();         // NaN
+```
 
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.trunc = Math.trunc || function(x) {
+  return x < 0 ? Math.ceil(x) : Math.floor(x);
+}
+```
+
+### Math.sign()
+
+Math.sign方法用来判断一个数到底是正数、负数、还是零。
+
+它会返回五种值。
+
+- 参数为正数，返回+1；
+- 参数为负数，返回-1；
+- 参数为0，返回0；
+- 参数为-0，返回-0;
+- 其他值，返回NaN。
+
+```javascript
 Math.sign(-5) // -1
 Math.sign(5) // +1
 Math.sign(0) // +0
-Math.sign(-) // -0
+Math.sign(-0) // -0
 Math.sign(NaN) // NaN
-
+Math.sign('foo'); // NaN
+Math.sign();      // NaN
 ```
 
-ES5通过下面的代码，可以部署Math.sign()。
+对于没有部署这个方法的环境，可以用下面的代码模拟。
 
 ```javascript
-
-(function (global) {
-  var isNaN = Number.isNaN;
-
-  Object.defineProperty(Math, 'sign', {
-    value: function sign(value) {
-      var n = +value;
-      if (isNaN(n))
-        return n /* NaN */;
-
-      if (n === 0)
-        return n; // Keep the sign of the zero.
-
-      return (n < 0) ? -1 : 1;
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-
+Math.sign = Math.sign || function(x) {
+  x = +x; // convert to a number
+  if (x === 0 || isNaN(x)) {
+    return x;
+  }
+  return x > 0 ? 1 : -1;
+}
 ```
 
-**（3）数学方法**
+### Math.cbrt()
 
-ES6在Math对象上还提供了许多新的数学方法。
+Math.cbrt方法用于计算一个数的立方根。
 
-- Math.acosh(x)	返回x的反双曲余弦（inverse hyperbolic cosine）
-- Math.asinh(x) 返回x的反双曲正弦（inverse hyperbolic sine）
-- Math.atanh(x)	返回x的反双曲正切（inverse hyperbolic tangent）
-- Math.cbrt(x)	返回x的立方根
-- Math.clz32(x)	返回x的32位二进制整数表示形式的前导0的个数
+```javascript
+Math.cbrt(-1); // -1
+Math.cbrt(0);  // 0
+Math.cbrt(1);  // 1
+Math.cbrt(2);  // 1.2599210498948734
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.cbrt = Math.cbrt || function(x) {
+  var y = Math.pow(Math.abs(x), 1/3);
+  return x < 0 ? -y : y;
+};
+```
+
+### Math.clz32()
+
+JavaScript的整数使用32位二进制形式表示，Math.clz32方法返回一个数的32位无符号整数形式有多少个前导0。
+
+```javascript
+Math.clz32(0) // 32
+Math.clz32(1) // 31
+Math.clz32(1000) // 22
+```
+
+上面代码中，0的二进制形式全为0，所以有32个前导0；1的二进制形式是0b1，只占1位，所以32位之中有31个前导0；1000的二进制形式是0b1111101000，一共有10位，所以32位之中有22个前导0。
+
+对于小数，Math.clz32方法只考虑整数部分。
+
+```javascript
+Math.clz32(3.2) // 30
+Math.clz32(3.9) // 30
+```
+
+对于空值或其他类型的值，Math.clz32方法会将它们先转为数值，然后再计算。
+
+```javascript
+Math.clz32() // 32
+Math.clz32(NaN) // 32
+Math.clz32(Infinity) // 32
+Math.clz32(null) // 32
+Math.clz32('foo') // 32
+Math.clz32([]) // 32
+Math.clz32({}) // 32
+Math.clz32(true) // 31
+```
+
+### Math.imul()
+
+Math.imul方法返回两个数以32位带符号整数形式相乘的结果，返回的也是一个32位的带符号整数。
+
+```javascript
+Math.imul(2, 4);          // 8
+Math.imul(-1, 8);         // -8
+Math.imul(-2, -2);        // 4
+```
+
+如果只考虑最后32位（含第一个整数位），大多数情况下，`Math.imul(a, b)`与`a * b`的结果是相同的，即该方法等同于`(a * b)|0`的效果。之所以需要部署这个方法，是因为JavaScript有精度限制，超过2的53次方的值无法精确表示。这就是说，对于那些很大的数的乘法，低位数值往往都是不精确的，Math.imul方法可以返回正确的低位数值。
+
+```javascript
+(0x7fffffff * 0x7fffffff)|0 // 0
+```
+
+上面这个乘法算式，返回结果为0。但是由于这两个数的个位数都是1，所以这个结果肯定是不正确的。这个错误就是因为它们的乘积超过了2的53次方，JavaScript无法保存额外的精度，就把低位的值都变成了0。Math.imul方法可以返回正确的值1。
+
+```javascript
+Math.imul(0x7fffffff, 0x7fffffff) // 1
+```
+
+### Math.fround()
+
+Math.fround方法返回一个数的单精度浮点数形式。
+
+```javascript
+Math.fround(0);     // 0
+Math.fround(1);     // 1
+Math.fround(1.337); // 1.3370000123977661
+Math.fround(1.5);   // 1.5
+Math.fround(NaN);   // NaN
+```
+
+对于整数来说，Math.fround方法返回结果不会有任何不同，区别主要是那些无法用64个二进制位精确表示的小数。这时，Math.fround方法会返回最接近这个小数的单精度浮点数。
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.fround = Math.fround || function(x) {
+  return new Float32Array([x])[0];
+};
+```
+
+### Math.hypot()
+
+Math.hypot方法返回所有参数的平方和的平方根。
+
+```javascript
+Math.hypot(3, 4);        // 5
+Math.hypot(3, 4, 5);     // 7.0710678118654755
+Math.hypot();            // 0
+Math.hypot(NaN);         // NaN
+Math.hypot(3, 4, 'foo'); // NaN
+Math.hypot(3, 4, '5');   // 7.0710678118654755
+Math.hypot(-3);          // 3
+```
+
+上面代码中，3的平方加上4的平方，等于5的平方。
+
+如果参数不是数值，Math.hypot方法会将其转为数值。只要有一个参数无法转为数值，就会返回NaN。
+
+### 对数方法
+
+ES6新增了4个对数相关方法。
+
+（1） Math.expm1()
+
+`Math.expm1(x)`返回e<sub>x</sub> - 1。
+
+```javascript
+Math.expm1(-1); // -0.6321205588285577
+Math.expm1(0);  // 0
+Math.expm1(1);  // 1.718281828459045
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.expm1 = Math.expm1 || function(x) {
+  return Math.exp(x) - 1;
+};
+```
+
+（2）Math.log1p()
+
+`Math.log1p(x)`方法返回1 + x的自然对数。如果x小于-1，返回NaN。
+
+```javascript
+Math.log1p(1);  // 0.6931471805599453
+Math.log1p(0);  // 0
+Math.log1p(-1); // -Infinity
+Math.log1p(-2); // NaN
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.log1p = Math.log1p || function(x) {
+  return Math.log(1 + x);
+};
+```
+
+（3）Math.log10()
+
+`Math.log10(x)`返回以10为底的x的对数。如果x小于0，则返回NaN。
+
+```javascript
+Math.log10(2);      // 0.3010299956639812
+Math.log10(1);      // 0
+Math.log10(0);      // -Infinity
+Math.log10(-2);     // NaN
+Math.log10(100000); // 5
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.log10 = Math.log10 || function(x) {
+  return Math.log(x) / Math.LN10;
+};
+```
+
+（4）Math.log2()
+
+`Math.log2(x)`返回以2为底的x的对数。如果x小于0，则返回NaN。
+
+```javascript
+Math.log2(3);    // 1.584962500721156
+Math.log2(2);    // 1
+Math.log2(1);    // 0
+Math.log2(0);    // -Infinity
+Math.log2(-2);   // NaN
+Math.log2(1024); // 10
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.log2 = Math.log2 || function(x) {
+  return Math.log(x) / Math.LN2;
+};
+```
+
+### 三角函数方法
+
+ES6新增了6个三角函数方法。
+
+- Math.sinh(x) 返回x的双曲正弦（hyperbolic sine）
 - Math.cosh(x) 返回x的双曲余弦（hyperbolic cosine）
-- Math.expm1(x)	返回e&#710;x - 1
-- Math.fround(x) 返回x的单精度浮点数形式
-- Math.hypot(...values)	返回所有参数的平方和的平方根
-- Math.imul(x, y) 返回两个参数以32位整数形式相乘的结果
-- Math.log1p(x)	返回1 + x的自然对数
-- Math.log10(x) 返回以10为底的x的对数
-- Math.log2(x) 返回以2为底的x的对数
-- Math.tanh(x)	返回x的双曲正切（hyperbolic tangent）
+- Math.tanh(x) 返回x的双曲正切（hyperbolic tangent）
+- Math.asinh(x) 返回x的反双曲正弦（inverse hyperbolic sine）
+- Math.acosh(x) 返回x的反双曲余弦（inverse hyperbolic cosine）
+- Math.atanh(x) 返回x的反双曲正切（inverse hyperbolic tangent）
