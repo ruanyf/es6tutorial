@@ -823,7 +823,11 @@ var y = new Rectangle(3, 4);  // 正确
 
 ## 修饰器
 
-修饰器（Decorator）用于修改类的行为。这是ES7的一个[提案](https://github.com/wycats/javascript-decorators)，目前Babel转码器已经支持。
+### 类的修饰
+
+修饰器（Decorator）是一个表达式，用来修改类的行为。这是ES7的一个[提案](https://github.com/wycats/javascript-decorators)，目前Babel转码器已经支持。
+
+修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。
 
 ```javascript
 function testable(target) {
@@ -838,7 +842,7 @@ console.log(MyTestableClass.isTestable) // true
 
 上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性isTestable。
 
-修饰器函数的参数，就是所要修饰的目标对象。比如上面代码中，testable函数的参数target，就是所要修饰的对象。如果希望修饰器的行为，能够根据目标对象的不同而不同，就要在外面再封装一层函数。
+修饰器函数可以接受三个参数，依次是目标函数、属性名和该属性的描述对象。后两个参数可省略。上面代码中，testable函数的参数target，就是所要修饰的对象。如果希望修饰器的行为，能够根据目标对象的不同而不同，就要在外面再封装一层函数。
 
 ```javascript
 function testable(isTestable) {
@@ -887,7 +891,7 @@ export function mixins(...list) {
 import { mixins } from './mixins'
 
 const Foo = {
-    foo() { console.log('foo') }
+  foo() { console.log('foo') }
 }
 
 @mixins(Foo)
@@ -914,6 +918,8 @@ Object.assign(MyClass.prototype, Foo);
 let obj = new MyClass();
 obj.foo() // 'foo'
 ```
+
+### 方法的修饰
 
 修饰器不仅可以修饰类，还可以修饰类的属性。
 
@@ -959,4 +965,162 @@ function nonenumerable(target, name, descriptor) {
   return descriptor;
 }
 ```
+
+修饰器有注释的作用。
+
+```javascript
+@testable
+class Person {
+  @readonly
+  @nonenumerable
+  name() { return `${this.first} ${this.last}` }
+}
+```
+
+从上面代码中，我们一眼就能看出，MyTestableClass类是可测试的，而name方法是只读和不可枚举的。
+
+除了注释，修饰器还能用来类型检查。所以，对于Class来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
+
+### core-decorators.js
+
+[core-decorators.js](https://github.com/jayphelps/core-decorators.js)提供了几个常见的修饰器。
+
+（1）@autobind
+
+autobind修饰器使得方法中的this对象，绑定原始对象。
+
+```javascript
+import { autobind } from 'core-decorators';
+
+class Person {
+  @autobind
+  getPerson() {
+    return this;
+  }
+}
+
+let person = new Person();
+let getPerson = person.getPerson;
+
+getPerson() === person;
+// true
+```
+
+（2）@readonly
+
+readonly修饰器是的属性或方法不可写。
+
+```javascript
+import { readonly } from 'core-decorators';
+
+class Meal {
+  @readonly
+  entree = 'steak';
+}
+
+var dinner = new Meal();
+dinner.entree = 'salmon';
+// Cannot assign to read only property 'entree' of [object Object]
+```
+
+（3）@override
+
+override修饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
+
+```javascript
+import { override } from 'core-decorators';
+
+class Parent {
+  speak(first, second) {}
+}
+
+class Child extends Parent {
+  @override
+  speak() {}
+  // SyntaxError: Child#speak() does not properly override Parent#speak(first, second)
+}
+
+// or
+
+class Child extends Parent {
+  @override
+  speaks() {}
+  // SyntaxError: No descriptor matching Child#speaks() was found on the prototype chain.
+  //
+  //   Did you mean "speak"?
+}
+```
+
+（4）@deprecate (别名@deprecated)
+
+deprecate或deprecated修饰器在控制台显示一条警告，表示该方法将废除。
+
+```javascript
+import { deprecate } from 'core-decorators';
+
+class Person {
+  @deprecate
+  facepalm() {}
+
+  @deprecate('We stopped facepalming')
+  facepalmHard() {}
+
+  @deprecate('We stopped facepalming', { url: 'http://knowyourmeme.com/memes/facepalm' })
+  facepalmHarder() {}
+}
+
+let person = new Person();
+
+person.facepalm();
+// DEPRECATION Person#facepalm: This function will be removed in future versions.
+
+person.facepalmHard();
+// DEPRECATION Person#facepalmHard: We stopped facepalming
+
+person.facepalmHarder();
+// DEPRECATION Person#facepalmHarder: We stopped facepalming
+//
+//     See http://knowyourmeme.com/memes/facepalm for more details.
+//
+```
+
+（5）@suppressWarnings
+
+suppressWarnings修饰器抑制decorated修饰器导致的`console.warn()`调用。但是，异步代码出发的调用除外。
+
+```javascript
+import { suppressWarnings } from 'core-decorators';
+
+class Person {
+  @deprecated
+  facepalm() {}
+
+  @suppressWarnings
+  facepalmWithoutWarning() {
+    this.facepalm();
+  }
+}
+
+let person = new Person();
+
+person.facepalmWithoutWarning();
+// no warning is logged
+```
+
+### Babel转码器的支持
+
+目前，Babel转码器已经支持Decorator，命令行的用法如下。
+
+```bash
+$ babel --optional es7.decorators
+```
+
+脚本中打开的命令如下。
+
+```javascript
+babel.transfrom("code", {optional: ["es7.decorators"]})
+```
+
+Babel的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选Experimental，就能支持Decorator的在线转码。
+
 
