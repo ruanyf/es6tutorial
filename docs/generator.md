@@ -8,7 +8,7 @@ Generator函数是ES6提供的一种异步编程解决方案，语法行为与�
 
 Generator函数有多种理解角度。从语法上，首先可以把它理解成一个函数的内部状态的遍历器（也就是说，Generator函数是一个状态机）。它每调用一次，就进入下一个内部状态。Generator函数可以控制内部状态的变化，依次遍历这些状态。
 
-在形式上，Generator函数是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
+形式上，Generator函数是一个普通函数，但是有两个特征。一是，function命令与函数名之间有一个星号；二是，函数体内部使用yield语句，定义遍历器的每个成员，即不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
 function* helloWorldGenerator() {
@@ -236,7 +236,6 @@ it.next(13)
 for...of循环可以自动遍历Generator函数，且此时不再需要调用next方法。
 
 ```javascript
-
 function *foo() {
   yield 1;
   yield 2;
@@ -250,7 +249,6 @@ for (let v of foo()) {
   console.log(v);
 }
 // 1 2 3 4 5
-
 ```
 
 上面代码使用for...of循环，依次显示5个yield语句的值。这里需要注意，一旦next方法的返回对象的done属性为true，for...of循环就会中止，且不包含该返回对象，所以上面代码的return语句返回的6，不包括在for...of循环之中。
@@ -258,7 +256,6 @@ for (let v of foo()) {
 下面是一个利用generator函数和for...of循环，实现斐波那契数列的例子。
 
 ```javascript
-
 function* fibonacci() {
   let [prev, curr] = [0, 1];
   for (;;) {
@@ -271,7 +268,6 @@ for (let n of fibonacci()) {
   if (n > 1000) break;
   console.log(n);
 }
-
 ```
 
 从上面代码可见，使用for...of语句时不需要使用next方法。
@@ -513,7 +509,6 @@ log(g());
 如果yield命令后面跟的是一个遍历器，需要在yield命令后面加上星号，表明它返回的是一个遍历器。这被称为yield*语句。
 
 ```javascript
-
 let delegatedIterator = (function* () {
   yield 'Hello!';
   yield 'Bye!';
@@ -532,10 +527,31 @@ for(let value of delegatingIterator) {
 // "Hello!"
 // "Bye!"
 // "Ok, bye."
-
 ```
 
 上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
+
+yield*语句等同于在Generator函数内部，部署一个for...of循环。
+
+```javascript
+function* concat(iter1, iter2) {
+  yield* iter1;
+  yield* iter2;
+}
+
+// 等同于
+
+function* concat(iter1, iter2) {
+  for (var value of iter1) {
+    yield value;
+  }
+  for (var value of iter2) {
+    yield value;
+  }
+}
+```
+
+上面代码说明，yield*不过是for...of的一种简写形式，完全可以用后者替代前者。
 
 再来看一个对比的例子。
 
@@ -572,13 +588,11 @@ gen.next() // -> 'close'
 如果`yield*`后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
 
 ```javascript
-
 function* gen(){
   yield* ["a", "b", "c"];
 }
 
 gen().next() // { value:"a", done:false }
-
 ```
 
 上面代码中，yield命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器。
@@ -586,7 +600,6 @@ gen().next() // { value:"a", done:false }
 如果被代理的Generator函数有return语句，那么就可以向代理它的Generator函数返回数据。
 
 ```javascript
-
 function *foo() {
   yield 2;
   yield 3;
@@ -607,7 +620,6 @@ it.next(); //
 it.next(); //
 it.next(); // "v: foo"
 it.next(); //
-
 ```
 
 上面代码在第四次调用next方法的时候，屏幕上会有输出，这是因为函数foo的return语句，向函数bar提供了返回值。
@@ -615,7 +627,6 @@ it.next(); //
 `yield*`命令可以很方便地取出嵌套数组的所有成员。
 
 ```javascript
-
 function* iterTree(tree) {
   if (Array.isArray(tree)) {
     for(let i=0; i < tree.length; i++) {
@@ -636,13 +647,11 @@ for(let x of iterTree(tree)) {
 // c
 // d
 // e
-
 ```
 
 下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
 
 ```javascript
-
 // 下面是二叉树的构造函数，
 // 三个参数分别是左树、当前节点和右树
 function Tree(left, label, right) {
@@ -678,7 +687,6 @@ for (let node of inorder(tree)) {
 
 result
 // ['a', 'b', 'c', 'd', 'e', 'f', 'g']
-
 ```
 
 ## 作为对象属性的Generator函数
@@ -724,7 +732,7 @@ console.log(...squared);
 // 0 1 4 9 16 25
 ```
 
-“推导”这种语法结构，在ES6只能用于数组，ES7将其推广到了Generator函数。for...of循环会自动调用遍历器的next方法，将返回值的value属性作为数组的一个成员。
+“推导”这种语法结构，不仅可以用于数组，ES7将其推广到了Generator函数。for...of循环会自动调用遍历器的next方法，将返回值的value属性作为数组的一个成员。
 
 Generator函数推导是对数组结构的一种模拟，它的最大优点是惰性求值，即直到真正用到时才会求值，这样可以保证效率。请看下面的例子。
 
@@ -759,7 +767,6 @@ console.log(squared.next());
 Generator是实现状态机的最佳结构。比如，下面的clock函数就是一个状态机。
 
 ```javascript
-
 var ticking = true;
 var clock = function() {
   if (ticking)
@@ -768,13 +775,11 @@ var clock = function() {
     console.log('Tock!');
   ticking = !ticking;
 }
-
 ```
 
 上面代码的clock函数一共有两种状态（Tick和Tock），每运行一次，就改变一次状态。这个函数如果用Generator实现，就是下面这样。
 
 ```javascript
-
 var clock = function*(_) {
   while (true) {
     yield _;
@@ -783,7 +788,6 @@ var clock = function*(_) {
     console.log('Tock!');
   }
 };
-
 ```
 
 上面的Generator实现与ES5实现对比，可以看到少了用来保存状态的外部变量ticking，这样就更简洁，更安全（状态不会被非法篡改）、更符合函数式编程的思想，在写法上也更优雅。Generator之所以可以不用外部变量保存状态，是因为它本身就包含了一个状态信息，即目前是否处于暂停态。
@@ -817,19 +821,17 @@ Generator可以暂停函数执行，返回任意表达式的值。这种特点�
 Generator函数的暂停执行的效果，意味着可以把异步操作写在yield语句里面，等到调用next方法时再往后执行。这实际上等同于不需要写回调函数了，因为异步操作的后续操作可以放在yield语句下面，反正要等到调用next方法时再执行。所以，Generator函数的一个重要实际意义就是用来处理异步操作，改写回调函数。
 
 ```javascript
-
-function* loadUI() { 
-	showLoadingScreen(); 
-	yield loadUIDataAsynchronously(); 
-	hideLoadingScreen(); 
-} 
+function* loadUI() {
+  showLoadingScreen();
+  yield loadUIDataAsynchronously();
+ hideLoadingScreen();
+}
 var loader = loadUI();
 // 加载UI
-loader.next() 
+loader.next()
 
 // 卸载UI
 loader.next()
-
 ```
 
 上面代码表示，第一次调用loadUI函数时，该函数不会执行，仅返回一个遍历器。下一次对该遍历器调用next方法，则会显示Loading界面，并且异步加载数据。等到数据加载完成，再一次使用next方法，则会隐藏Loading界面。可以看到，这种写法的好处是所有Loading界面的逻辑，都被封装在一个函数，按部就班非常清晰。
@@ -837,7 +839,6 @@ loader.next()
 Ajax是典型的异步操作，通过Generator函数部署Ajax操作，可以用同步的方式表达。
 
 ```javascript
-
 function* main() {
   var result = yield request("http://some.url");
   var resp = JSON.parse(result);
@@ -852,7 +853,6 @@ function request(url) {
 
 var it = main();
 it.next();
-
 ```
 
 上面代码的main函数，就是通过Ajax操作获取数据。可以看到，除了多了一个yield，它几乎与同步操作的写法完全一样。注意，makeAjaxCall函数中的next方法，必须加上response参数，因为yield语句构成的表达式，本身是没有值的，总是等于undefined。
@@ -860,18 +860,16 @@ it.next();
 下面是另一个例子，通过Generator函数逐行读取文本文件。
 
 ```javascript
-
 function* numbers() {
-	let file = new FileReader("numbers.txt");
-	try {
-		while(!file.eof) {
-			yield parseInt(file.readLine(), 10);
-		}
-	} finally {
-		file.close();
-	}
+  let file = new FileReader("numbers.txt");
+  try {
+    while(!file.eof) {
+      yield parseInt(file.readLine(), 10);
+    }
+  } finally {
+    file.close();
+  }
 }
-
 ```
 
 上面代码打开文本文件，使用yield语句可以手动逐行读取文件。
@@ -881,7 +879,6 @@ function* numbers() {
 如果有一个多步操作非常耗时，采用回调函数，可能会写成下面这样。
 
 ```javascript
-
 step1(function (value1) {
   step2(value1, function(value2) {
     step3(value2, function(value3) {
@@ -891,32 +888,28 @@ step1(function (value1) {
     });
   });
 });
-
 ```
 
 采用Promise改写上面的代码。
 
 ```javascript
-
 Q.fcall(step1)
-.then(step2)
-.then(step3)
-.then(step4)
-.then(function (value4) {
+  .then(step2)
+  .then(step3)
+  .then(step4)
+  .then(function (value4) {
     // Do something with value4
-}, function (error) {
+  }, function (error) {
     // Handle any error from step1 through step4
-})
-.done();
-
+  })
+  .done();
 ```
 
 上面代码已经把回调函数，改成了直线执行的形式，但是加入了大量Promise的语法。Generator函数可以进一步改善代码运行流程。
 
 ```javascript
-
 function* longRunningTask() {
-  try {	
+  try {
     var value1 = yield step1();
     var value2 = yield step2(value1);
     var value3 = yield step3(value2);
@@ -926,13 +919,11 @@ function* longRunningTask() {
     // Handle any error from step1 through step4
   }
 }
-
 ```
 
 然后，使用一个函数，按次序自动执行所有步骤。
 
 ```javascript
-
 scheduler(longRunningTask());
 
 function scheduler(task) {
@@ -945,15 +936,13 @@ function scheduler(task) {
     }
   }, 0);
 }
-
 ```
 
 注意，yield语句是同步运行，不是异步运行（否则就失去了取代回调函数的设计目的了）。实际操作中，一般让yield语句返回Promise对象。
 
 ```javascript
-
 var Q = require('q');
- 
+
 function delay(milliseconds) {
   var deferred = Q.defer();
   setTimeout(deferred.resolve, milliseconds);
@@ -963,7 +952,6 @@ function delay(milliseconds) {
 function* f(){
   yield delay(100);
 };
-
 ```
 
 上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
@@ -971,7 +959,6 @@ function* f(){
 多个任务按顺序一个接一个执行时，yield语句可以按顺序排列。多个任务需要并列执行时（比如只有A任务和B任务都执行完，才能执行C任务），可以采用数组的写法。
 
 ```javascript
-
 function* parallelDownloads() {
   let [text1,text2] = yield [
     taskA(),
@@ -979,7 +966,6 @@ function* parallelDownloads() {
   ];
   console.log(text1, text2);
 }
-
 ```
 
 上面代码中，yield语句的参数是一个数组，成员就是两个任务taskA和taskB，只有等这两个任务都完成了，才会接着执行下面的语句。
@@ -989,24 +975,22 @@ function* parallelDownloads() {
 利用Generator函数，可以在任意对象上部署iterator接口。
 
 ```javascript
-
 function* iterEntries(obj) {
-	let keys = Object.keys(obj);
-	for (let i=0; i < keys.length; i++) {
-		let key = keys[i];
-		yield [key, obj[key]];
-	}
+  let keys = Object.keys(obj);
+  for (let i=0; i < keys.length; i++) {
+    let key = keys[i];
+    yield [key, obj[key]];
+  }
 }
 
 let myObj = { foo: 3, bar: 7 };
 
 for (let [key, value] of iterEntries(myObj)) {
-	console.log(key, value);
+  console.log(key, value);
 }
 
 // foo 3
 // bar 7
-
 ```
 
 上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
@@ -1014,10 +998,9 @@ for (let [key, value] of iterEntries(myObj)) {
 下面是一个对数组部署Iterator接口的例子，尽管数组原生具有这个接口。
 
 ```javascript
-
 function* makeSimpleGenerator(array){
   var nextIndex = 0;
-    
+
   while(nextIndex < array.length){
     yield array[nextIndex++];
   }
@@ -1028,7 +1011,6 @@ var gen = makeSimpleGenerator(['yo', 'ya']);
 gen.next().value // 'yo'
 gen.next().value // 'ya'
 gen.next().done  // true
-
 ```
 
 ### （4）作为数据结构
@@ -1036,29 +1018,24 @@ gen.next().done  // true
 Generator可以看作是数据结构，更确切地说，可以看作是一个数组结构，因为Generator函数可以返回一系列的值，这意味着它可以对任意表达式，提供类似数组的接口。
 
 ```javascript
-
 function *doStuff() {
   yield fs.readFile.bind(null, 'hello.txt');
   yield fs.readFile.bind(null, 'world.txt');
   yield fs.readFile.bind(null, 'and-such.txt');
 }
-
 ```
 
 上面代码就是依次返回三个函数，但是由于使用了Generator函数，导致可以像处理数组那样，处理这三个返回的函数。
 
 ```javascript
-
 for (task of doStuff()) {
   // task是一个函数，可以像回调函数那样使用它
 }
-
 ```
 
 实际上，如果用ES5表达，完全可以用数组模拟Generator的这种用法。
 
 ```javascript
-
 function doStuff() {
   return [
     fs.readFile.bind(null, 'hello.txt'),
@@ -1066,7 +1043,6 @@ function doStuff() {
     fs.readFile.bind(null, 'and-such.txt')
   ];
 }
-
 ```
 
 上面的函数，可以用一模一样的for...of循环处理！两相一比较，就不难看出Generator使得数据或者操作，具备了类似数组的接口。
