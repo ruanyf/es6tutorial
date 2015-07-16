@@ -24,7 +24,7 @@ import { stat, exists, readFile } from 'fs';
 
 模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
 
-ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export关键字输出变量。
+ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export命令输出变量。
 
 ```javascript
 // profile.js
@@ -47,6 +47,16 @@ export {firstName, lastName, year};
 ```
 
 上面代码在export命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在var语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
+
+export命令除了输出变量，还可以输出函数或类（class）。
+
+```javascript
+export function multiply (x, y) {
+  return x * y;
+};
+```
+
+上面代码对外输出一个函数multiply。
 
 ## import命令
 
@@ -100,10 +110,9 @@ export default es6;
 
 ## 模块的整体输入
 
-export命令除了输出变量，还可以输出方法或类（class）。下面是一个circle.js文件，它输出两个方法area和circumference。
+下面是一个circle.js文件，它输出两个方法area和circumference。
 
 ```javascript
-
 // circle.js
 
 export function area(radius) {
@@ -113,31 +122,26 @@ export function area(radius) {
 export function circumference(radius) {
   return 2 * Math.PI * radius;
 }
-
 ```
 
-然后，main.js输入circlek.js模块。
+然后，main.js文件输入circlek.js模块。
 
 ```javascript
-
 // main.js
 
 import { area, circumference } from 'circle';
 
 console.log("圆面积：" + area(4));
 console.log("圆周长：" + circumference(14));
-
 ```
 
 上面写法是逐一指定要输入的方法。另一种写法是整体输入。
 
 ```javascript
-
 import * as circle from 'circle';
 
 console.log("圆面积：" + circle.area(4));
 console.log("圆周长：" + circle.circumference(14));
-
 ```
 
 ## module命令
@@ -157,7 +161,9 @@ module命令后面跟一个变量，表示输入的模块定义在该变量上�
 
 ## export default命令
 
-为了给用户提供方便，有时我们希望，用户不用知道输入哪个方法，就能加载模块。这时就要用到`export default`命令，为所要加载的模块指定默认输出。
+从前面的例子可以看出，使用import的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
+
+为了给用户提供方便，让他们不用阅读文档就能加载模块，就要用到`export default`命令，为模块指定默认输出。
 
 ```javascript
 // export-default.js
@@ -178,18 +184,6 @@ customName(); // 'foo'
 
 上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法。需要注意的是，这时import命令后面，不使用大括号。
 
-```javascript
-import crc32 from 'crc32';
-// 对应的输出
-export default function crc32(){}
-
-import { crc32 } from 'crc32';
-// 对应的输出
-export function crc32(){};
-```
-
-上面代码的两组写法，第一组是使用`export default`时，对应的import语句不需要使用大括号；第二组是不使用`export default`时，对应的import语句需要使用大括号。
-
 export default命令用在非匿名函数前，也是可以的。
 
 ```javascript
@@ -209,7 +203,32 @@ export default foo;
 
 上面代码中，foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
 
+下面比较一下默认输出和正常输出。
+
+```javascript
+import crc32 from 'crc32';
+// 对应的输出
+export default function crc32(){}
+
+import { crc32 } from 'crc32';
+// 对应的输出
+export function crc32(){};
+```
+
+上面代码的两组写法，第一组是使用`export default`时，对应的import语句不需要使用大括号；第二组是不使用`export default`时，对应的import语句需要使用大括号。
+
 `export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export deault`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能对应一个方法。
+
+本质上，`export default`就是输出一个叫做default的变量或方法，然后系统允许你为它取任意名字。所以，下面的写法是有效的。
+
+```javascript
+// modules.js
+export default function (x, y) {
+  return x * y;
+};
+// app.js
+import { default } from 'modules';
+```
 
 有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
 
@@ -263,11 +282,9 @@ export default function(x) {
 这时，也可以将circle的属性或方法，改名后再输出。
 
 ```javascript
-
 // circleplus.js
 
-export { area as circleArea } from 'circle';  
-
+export { area as circleArea } from 'circle';
 ```
 
 上面代码表示，只输出circle模块的area方法，且将其改名为circleArea。
@@ -275,13 +292,11 @@ export { area as circleArea } from 'circle';
 加载上面模块的写法如下。
 
 ```javascript
-
 // main.js
 
 module math from "circleplus";
 import exp from "circleplus";
 console.log(exp(math.pi));
-
 ```
 
 上面代码中的"import exp"表示，将circleplus模块的默认方法加载为exp方法。
@@ -309,9 +324,7 @@ $ compile-modules convert file1.js file2.js
 o参数可以指定转码后的文件名。
 
 ```bash
-
 $ compile-modules convert -o out.js file1.js
-
 ```
 
 ### SystemJS
