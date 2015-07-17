@@ -5,13 +5,11 @@
 Array.from方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
 
 ```javascript
-
 let ps = document.querySelectorAll('p');
 
 Array.from(ps).forEach(function (p) {
   console.log(p);
 });
-
 ```
 
 上面代码中，querySelectorAll方法返回的是一个类似数组的对象，只有将这个对象转为真正的数组，才能使用forEach方法。
@@ -19,42 +17,34 @@ Array.from(ps).forEach(function (p) {
 Array.from方法可以将函数的arguments对象，转为数组。
 
 ```javascript
-
 function foo() {
   var args = Array.from( arguments );
 }
 
 foo( "a", "b", "c" );
-
 ```
 
 任何有length属性的对象，都可以通过Array.from方法转为数组。
 
 ```javascript
-
 Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
 // [ "a", "b" , "c" ]
-
 ```
 
 对于还没有部署该方法的浏览器，可以用Array.prototyp.slice方法替代。
 
 ```javascript
-
 const toArray = (() =>
   Array.from ? Array.from : obj => [].slice.call(obj)
 )();
-
 ```
 
 Array.from()还可以接受第二个参数，作用类似于数组的map方法，用来对每个元素进行处理。
 
 ```JavaScript
-
 Array.from(arrayLike, x => x * x);
 // 等同于
 Array.from(arrayLike).map(x => x * x);
-
 ```
 
 下面的例子将数组中布尔值为false的成员转为0。
@@ -77,11 +67,9 @@ function countSymbols(string) {
 Array.of方法用于将一组值，转换为数组。
 
 ```javaScript
-
 Array.of(3, 11, 8) // [3,11,8]
 Array.of(3) // [3]
 Array.of(3).length // 1
-
 ```
 
 这个方法的主要目的，是弥补数组构造函数Array()的不足。因为参数个数的不同，会导致Array()的行为有差异。
@@ -124,11 +112,9 @@ console.log("found:", found);
 数组实例的findIndex方法的用法与find方法非常类似，返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回-1。
 
 ```javascript
-
 [1, 5, 10, 15].findIndex(function(value, index, arr) {
   return value > 9;
 }) // 2
-
 ```
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的this对象。
@@ -150,13 +136,11 @@ console.log("found:", found);
 fill()使用给定值，填充一个数组。
 
 ```javascript
-
 ['a', 'b', 'c'].fill(7)
 // [7, 7, 7]
 
 new Array(3).fill(7)
 // [7, 7, 7]
-
 ```
 
 上面代码表明，fill方法用于空数组的初始化非常方便。数组中已有的元素，会被全部抹去。
@@ -201,38 +185,32 @@ for (let [index, elem] of ['a', 'b'].entries()) {
 Array.protypeto.includes方法返回一个布尔值，表示某个数组是否包含给定的值。该方法属于ES7。
 
 ```javascript
-
 [1, 2, 3].includes(2);     // true
 [1, 2, 3].includes(4);     // false
 [1, 2, NaN].includes(NaN); // true
-
 ```
 
 该方法的第二个参数表示搜索的起始位置，默认为0。
 
 ```javascript
-
 [1, 2, 3].includes(3, 3);  // false
 [1, 2, 3].includes(3, -1); // true
-
 ```
 
 下面代码用来检查当前环境是否支持该方法，如果不支持，部署一个简易的替代版本。
 
 ```javascript
-
 const contains = (() =>
   Array.prototype.includes
     ? (arr, value) => arr.includes(value)
     : (arr, value) => arr.some(el => el === value)
 )();
 contains(["foo", "bar"], "baz"); // => false
-
 ```
 
 ## 数组推导
 
-数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能没有被列入ES6，而是推迟到了ES7。
+数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能本来是要放入ES6的，但是TC39委员会想继续完善这项功能，让其支持所有数据结构（内部调用iterator对象），不像现在只支持数组，所以就把它推迟到了ES7。Babel转码器已经支持这个功能。
 
 ```javascript
 var a1 = [1, 2, 3, 4];
@@ -265,7 +243,6 @@ var years = [ 1954, 1974, 1990, 2006, 2010, 2014 ];
 数组推导可以替代map和filter方法。
 
 ```javascript
-
 [for (i of [1, 2, 3]) i * i];
 // 等价于
 [1, 2, 3].map(function (i) { return i * i });
@@ -273,7 +250,6 @@ var years = [ 1954, 1974, 1990, 2006, 2010, 2014 ];
 [for (i of [1,4,2,3,-8]) if (i < 3) i];
 // 等价于
 [1,4,2,3,-8].filter(function(i) { return i < 3 });
-
 ```
 
 上面代码说明，模拟map功能只要单纯的for...of循环就行了，模拟filter功能除了for...of循环，还必须加上if语句。
@@ -281,7 +257,6 @@ var years = [ 1954, 1974, 1990, 2006, 2010, 2014 ];
 在一个数组推导中，还可以使用多个for...of结构，构成多重循环。
 
 ```javascript
-
 var a1 = ["x1", "y1"];
 var a2 = ["x2", "y2"];
 var a3 = ["x3", "y3"];
@@ -295,7 +270,6 @@ var a3 = ["x3", "y3"];
 // y1x2y3
 // y1y2x3
 // y1y2y3
-
 ```
 
 上面代码在一个数组推导之中，使用了三个for...of结构。
@@ -305,11 +279,9 @@ var a3 = ["x3", "y3"];
 由于字符串可以视为数组，因此字符串也可以直接用于数组推导。
 
 ```javascript
-
 [for (c of 'abcde') if (/[aeiou]/.test(c)) c].join('') // 'ae'
 
 [for (c of 'abcde') c+'0'].join('') // 'a0b0c0d0e0'
-
 ```
 
 上面代码使用了数组推导，对字符串进行处理。

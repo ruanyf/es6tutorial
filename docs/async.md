@@ -466,9 +466,217 @@ run(gen);
 
 Thunk函数并不是Generator函数自动执行的唯一方案。因为自动执行的关键是，必须有一种机制，自动控制Generator函数的流程，接收和交还程序的执行权。回调函数可以做到这一点，Promise 对象也可以做到这一点。
 
-## co函数库
+## co模块
 
-如果并发执行异步操作，可以将异步操作都放入一个数组，跟在yield语句后面。
+### 基本用法
+
+[co模块](https://github.com/tj/co)是著名程序员TJ Holowaychuk于2013年6月发布的一个小工具，用于Generator函数的自动执行。
+
+比如，有一个Generator函数，用于依次读取两个文件。
+
+```javascript
+var gen = function* (){
+  var f1 = yield readFile('/etc/fstab');
+  var f2 = yield readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+co模块可以让你不用编写Generator函数的执行器。
+
+```javascript
+var co = require('co');
+co(gen);
+```
+
+上面代码中，Generator函数只要传入co函数，就会自动执行。
+
+co函数返回一个Promise对象，因此可以用then方法添加回调函数。
+
+```javascript
+co(gen).then(function (){
+  console.log('Generator 函数执行完成');
+})
+```
+
+上面代码中，等到Generator函数执行结束，就会输出一行提示。
+
+### co模块的原理
+
+为什么co可以自动执行Generator函数？
+
+前面说过，Generator就是一个异步操作的容器。它的自动执行需要一种机制，当异步操作有了结果，能够自动交回执行权。
+
+两种方法可以做到这一点。
+
+（1）回调函数。将异步操作包装成Thunk函数，在回调函数里面交回执行权。
+
+（2）Promise 对象。将异步操作包装成Promise对象，用then方法交回执行权。
+
+co模块其实就是将两种自动执行器（Thunk函数和Promise对象），包装成一个模块。使用co的前提条件是，Generator函数的yield命令后面，只能是Thunk函数或Promise对象。
+
+上一节已经介绍了基于Thunk函数的自动执行器。下面来看，基于Promise对象的自动执行器。这是理解co模块必须的。
+
+### 基于Promise对象的自动执行
+
+还是沿用上面的例子。首先，把fs模块的readFile方法包装成一个Promise对象。
+
+```javascript
+var fs = require('fs');
+
+var readFile = function (fileName){
+  return new Promise(function (resolve, reject){
+    fs.readFile(fileName, function(error, data){
+      if (error) reject(error);
+      resolve(data);
+    });
+  });
+};
+
+var gen = function* (){
+  var f1 = yield readFile('/etc/fstab');
+  var f2 = yield readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+然后，手动执行上面的Generator函数。
+
+```javascript
+var g = gen();
+
+g.next().value.then(function(data){
+  g.next(data).value.then(function(data){
+    g.next(data);
+  });
+})
+```
+
+手动执行其实就是用then方法，层层添加回调函数。理解了这一点，就可以写出一个自动执行器。
+
+```javascript
+function run(gen){
+  var g = gen();
+
+  function next(data){
+    var result = g.next(data);
+    if (result.done) return result.value;
+    result.value.then(function(data){
+      next(data);
+    });
+  }
+
+  next();
+}
+
+run(gen);
+```
+
+上面代码中，只要Generator函数还没执行到最后一步，next函数就调用自身，以此实现自动执行。
+
+### co模块的源码
+
+co就是上面那个自动执行器的扩展，它的源码只有几十行，非常简单。
+
+首先，co函数接受Generator函数作为参数，返回一个 Promise 对象。
+
+```javascript
+function co(gen) {
+  var ctx = this;
+
+  return new Promise(function(resolve, reject) {
+  });
+}
+```
+
+在返回的Promise对象里面，co先检查参数gen是否为Generator函数。如果是，就执行该函数，得到一个内部指针对象；如果不是就返回，并将Promise对象的状态改为resolved。
+
+```javascript
+function co(gen) {
+  var ctx = this;
+
+  return new Promise(function(resolve, reject) {
+    if (typeof gen === 'function') gen = gen.call(ctx);
+    if (!gen || typeof gen.next !== 'function') return resolve(gen);
+  });
+}
+```
+
+接着，co将Generator函数的内部指针对象的next方法，包装成onFulefilled函数。这主要是为了能够捕捉抛出的错误。
+
+```javascript
+function co(gen) {
+  var ctx = this;
+
+  return new Promise(function(resolve, reject) {
+    if (typeof gen === 'function') gen = gen.call(ctx);
+    if (!gen || typeof gen.next !== 'function') return resolve(gen);
+
+    onFulfilled();
+    function onFulfilled(res) {
+      var ret;
+      try {
+        ret = gen.next(res);
+      } catch (e) {
+        return reject(e);
+      }
+      next(ret);
+    }
+  });
+}
+```
+
+最后，就是关键的next函数，它会反复调用自身。
+
+```javascript
+function next(ret) {
+  if (ret.done) return resolve(ret.value);
+  var value = toPromise.call(ctx, ret.value);
+  if (value && isPromise(value)) return value.then(onFulfilled, onRejected);
+  return onRejected(new TypeError('You may only yield a function, promise, generator, array, or object, '
+    + 'but the following object was passed: "' + String(ret.value) + '"'));
+}
+```
+
+上面代码中，next 函数的内部代码，一共只有四行命令。
+
+- 第一行，检查当前是否为 Generator 函数的最后一步，如果是就返回。
+
+- 第二行，确保每一步的返回值，是 Promise 对象。
+
+- 第三行，使用 then 方法，为返回值加上回调函数，然后通过 onFulfilled 函数再次调用 next 函数。
+
+- 第四行，在参数不符合要求的情况下（参数非 Thunk 函数和 Promise 对象），将 Promise 对象的状态改为 rejected，从而终止执行。
+
+### 处理并发的异步操作
+
+co支持并发的异步操作，即允许某些操作同时进行，等到它们全部完成，才进行下一步。
+
+这时，要把并发的操作都放在数组或对象里面，跟在yield语句后面。
+
+```javascript
+// 数组的写法
+co(function* () {
+  var res = yield [
+    Promise.resolve(1),
+    Promise.resolve(2)
+  ];
+  console.log(res);
+}).catch(onerror);
+
+// 对象的写法
+co(function* () {
+  var res = yield {
+    1: Promise.resolve(1),
+    2: Promise.resolve(2),
+  };
+  console.log(res);
+}).catch(onerror);
+```
+
+下面是另一个例子。
 
 ```javascript
 co(function* () {
@@ -483,3 +691,308 @@ function* somethingAsync(x) {
 ```
 
 上面的代码允许并发三个somethingAsync异步操作，等到它们全部完成，才会进行下一步。
+
+## async函数
+
+### 含义
+
+async 函数是什么？一句话，async函数就是Generator函数的语法糖。
+
+前文有一个Generator函数，依次读取两个文件。
+
+```javascript
+var fs = require('fs');
+
+var readFile = function (fileName){
+  return new Promise(function (resolve, reject){
+    fs.readFile(fileName, function(error, data){
+      if (error) reject(error);
+      resolve(data);
+    });
+  });
+};
+
+var gen = function* (){
+  var f1 = yield readFile('/etc/fstab');
+  var f2 = yield readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+写成 async 函数，就是下面这样。
+
+```javascript
+var asyncReadFile = async function (){
+  var f1 = await readFile('/etc/fstab');
+  var f2 = await readFile('/etc/shells');
+  console.log(f1.toString());
+  console.log(f2.toString());
+};
+```
+
+一比较就会发现，async函数就是将Generator函数的星号（*）替换成async，将yield替换成await，仅此而已。
+
+async 函数对 Generator 函数的改进，体现在以下三点。
+
+（1）内置执行器。Generator函数的执行必须靠执行器，所以才有了co模块，而async 函数自带执行器。也就是说，async函数的执行，与普通函数一模一样，只要一行。
+
+```javascript
+var result = asyncReadFile();
+```
+
+（2）更好的语义。async和await，比起星号和yield，语义更清楚了。async表示函数里有异步操作，await 表示紧跟在后面的表达式需要等待结果。
+
+（3）更广的适用性。 co模块约定，yield命令后面只能是Thunk函数或Promise对象，而async函数的await命令后面，可以跟Promise对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+
+### async函数的实现
+
+async 函数的实现，就是将 Generator 函数和自动执行器，包装在一个函数里。
+
+```javascript
+async function fn(args){
+  // ...
+}
+
+// 等同于
+
+function fn(args){
+  return spawn(function*() {
+    // ...
+  });
+}
+```
+
+所有的 async 函数都可以写成上面的第二种形式，其中的 spawn 函数就是自动执行器。
+
+下面给出 spawn 函数的实现，基本就是前文自动执行器的翻版。
+
+```javascript
+function spawn(genF) {
+  return new Promise(function(resolve, reject) {
+    var gen = genF();
+    function step(nextF) {
+      try {
+        var next = nextF();
+      } catch(e) {
+        return reject(e);
+      }
+      if(next.done) {
+        return resolve(next.value);
+      }
+      Promise.resolve(next.value).then(function(v) {
+        step(function() { return gen.next(v); });
+      }, function(e) {
+        step(function() { return gen.throw(e); });
+      });
+    }
+    step(function() { return gen.next(undefined); });
+  });
+}
+```
+
+async 函数是非常新的语法功能，新到都不属于 ES6，而是属于 ES7。目前，它仍处于提案阶段，但是转码器 Babel 和 regenerator 都已经支持，转码后就能使用。
+
+### async 函数的用法
+
+同Generator函数一样，async函数返回一个Promise对象，可以使用then方法添加回调函数。当函数执行的时候，一旦遇到 await 就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+
+下面是一个例子。
+
+```javascript
+async function getStockPriceByName(name) {
+  var symbol = await getStockSymbol(name);
+  var stockPrice = await getStockPrice(symbol);
+  return stockPrice;
+}
+
+getStockPriceByName('goog').then(function (result){
+  console.log(result);
+});
+```
+
+上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数内部有异步操作。调用该函数时，会立即返回一个Promise对象。
+
+下面的例子，指定多少毫秒后输出一个值。
+
+```javascript
+function timeout(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function asyncPrint(value, ms) {
+  await timeout(ms);
+  console.log(value)
+}
+
+asyncPrint('hello world', 50);
+```
+
+上面代码指定50毫秒以后，输出"hello world"。
+
+### 注意点
+
+await命令后面的Promise对象，运行结果可能是rejected，所以最好把await命令放在try...catch代码块中。
+
+```javascript
+async function myFunction() {
+  try {
+    await somethingThatReturnsAPromise();
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// 另一种写法
+
+async function myFunction() {
+  await somethingThatReturnsAPromise().catch(function (err){
+    console.log(err);
+  };
+}
+```
+
+await命令只能用在async函数之中，如果用在普通函数，就会报错。
+
+```javascript
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  // 报错
+  docs.forEach(function (doc) {
+    await db.post(doc);
+  });
+}
+```
+
+上面代码会报错，因为await用在普通函数之中了。但是，如果将forEach方法的参数改成async函数，也有问题。
+
+```javascript
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  // 可能得到错误结果
+  docs.forEach(async function (doc) {
+    await db.post(doc);
+  });
+}
+```
+
+上面代码可能不会正常工作，原因是这时三个`db.post`操作将是并发执行，也就是同时执行，而不是继发执行。正确的写法是采用for循环。
+
+```javascript
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  for (let doc of docs) {
+    await db.post(doc);
+  }
+}
+```
+
+如果确实希望多个请求并发执行，可以使用 Promise.all 方法。
+
+```javascript
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+  let promises = docs.map((doc) => db.post(doc));
+
+  let results = await Promise.all(promises);
+  console.log(results);
+}
+
+// 或者使用下面的写法
+
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+  let promises = docs.map((doc) => db.post(doc));
+
+  let results = [];
+  for (let promise of promises) {
+    results.push(await promise);
+  }
+  console.log(results);
+}
+```
+
+ES6将await增加为保留字。使用这个词作为标识符，在ES5是合法的，在ES6将抛出SyntaxError。
+
+### 与Promise、Generator的比较
+
+我们通过一个例子，来看Async函数与Promise、Generator函数的区别。
+
+假定某个DOM元素上面，部署了一系列的动画，前一个动画结束，才能开始后一个。如果当中有一个动画出错，就不再往下执行，返回上一个成功执行的动画的返回值。
+
+首先是Promise的写法。
+
+```javascript
+function chainAnimationsPromise(elem, animations) {
+
+  // 变量ret用来保存上一个动画的返回值
+  var ret = null;
+
+  // 新建一个空的Promise
+  var p = Promise.resolve();
+
+  // 使用then方法，添加所有动画
+  for(var anim in animations) {
+    p = p.then(function(val) {
+      ret = val;
+      return anim(elem);
+    })
+  }
+
+  // 返回一个部署了错误捕捉机制的Promise
+  return p.catch(function(e) {
+    /* 忽略错误，继续执行 */
+  }).then(function() {
+    return ret;
+  });
+
+}
+```
+
+虽然Promise的写法比回调函数的写法大大改进，但是一眼看上去，代码完全都是Promise的API（then、catch等等），操作本身的语义反而不容易看出来。
+
+接着是Generator函数的写法。
+
+```javascript
+function chainAnimationsGenerator(elem, animations) {
+
+  return spawn(function*() {
+    var ret = null;
+    try {
+      for(var anim of animations) {
+        ret = yield anim(elem);
+      }
+    } catch(e) {
+      /* 忽略错误，继续执行 */
+    }
+      return ret;
+  });
+
+}
+```
+
+上面代码使用Generator函数遍历了每个动画，语义比Promise写法更清晰，用户定义的操作全部都出现在spawn函数的内部。这个写法的问题在于，必须有一个任务运行器，自动执行Generator函数，上面代码的spawn函数就是自动执行器，它返回一个Promise对象，而且必须保证yield语句后面的表达式，必须返回一个Promise。
+
+最后是Async函数的写法。
+
+```javascript
+async function chainAnimationsAsync(elem, animations) {
+  var ret = null;
+  try {
+    for(var anim of animations) {
+      ret = await anim(elem);
+    }
+  } catch(e) {
+    /* 忽略错误，继续执行 */
+  }
+  return ret;
+}
+```
+
+可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将Generator写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用Generator写法，自动执行器需要用户自己提供。
+
