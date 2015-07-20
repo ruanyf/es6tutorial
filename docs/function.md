@@ -460,7 +460,7 @@ var f = v => v;
 
 ```javascript
 var f = function(v) {
-    return v;
+  return v;
 };
 ```
 
@@ -474,7 +474,7 @@ var f = function (){ return 5 };
 var sum = (num1, num2) => num1 + num2;
 // 等同于
 var sum = function(num1, num2) {
-    return num1 + num2;
+  return num1 + num2;
 };
 ```
 
@@ -527,7 +527,7 @@ const square = n => n * n;
 ```javascript
 // 正常函数写法
 var result = values.sort(function(a, b) {
-    return a - b;
+  return a - b;
 });
 
 // 箭头函数写法
@@ -627,6 +627,19 @@ mult2(plus1(5))
 // 12
 ```
 
+箭头函数还有一个功能，就是可以很方便地改写λ演算。
+
+```javascript
+// λ演算的写法
+fix = λf.(λx.f(λv.x(x)(v)))(λx.f(λv.x(x)(v)))
+
+// ES6的写法
+var fix = f => (x => f(v => x(x)(v)))
+               (x => f(v => x(x)(v)));
+```
+
+上面两种写法，几乎是一一对应的。由于λ演算对于计算机科学非常重要，这使得我们可以用ES6作为替代工具，探索计算机科学。
+
 ## 函数绑定
 
 箭头函数可以绑定this对象，大大减少了显式绑定this对象的写法（call、apply、bind）。但是，箭头函数并不适用于所有场合，所以ES7提出了“函数绑定”（function bind）运算符，用来取代call、apply、bind调用。虽然该语法还是ES7的一个提案，但是Babel转码器已经支持。
@@ -646,19 +659,6 @@ foo::bar(...arguments);
 i// 等同于
 bar.apply(foo, arguments);
 ```
-
-箭头函数还有一个功能，就是可以很方便地改写λ演算。
-
-```javascript
-// λ演算的写法
-fix = λf.(λx.f(λv.x(x)(v)))(λx.f(λv.x(x)(v)))
-
-// ES6的写法
-var fix = f => (x => f(v => x(x)(v)))
-               (x => f(v => x(x)(v)));
-```
-
-上面两种写法，几乎是一一对应的。由于λ演算对于计算机科学非常重要，这使得我们可以用ES6作为替代工具，探索计算机科学。
 
 ## 尾调用优化
 

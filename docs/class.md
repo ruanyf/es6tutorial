@@ -983,9 +983,9 @@ class Person {
 
 ### core-decorators.js
 
-[core-decorators.js](https://github.com/jayphelps/core-decorators.js)提供了几个常见的修饰器。
+[core-decorators.js](https://github.com/jayphelps/core-decorators.js)是一个第三方模块，提供了几个常见的修饰器，通过它可以更好地理解修饰器。
 
-（1）@autobind
+**（1）@autobind**
 
 autobind修饰器使得方法中的this对象，绑定原始对象。
 
@@ -1006,7 +1006,7 @@ getPerson() === person;
 // true
 ```
 
-（2）@readonly
+**（2）@readonly**
 
 readonly修饰器是的属性或方法不可写。
 
@@ -1023,7 +1023,7 @@ dinner.entree = 'salmon';
 // Cannot assign to read only property 'entree' of [object Object]
 ```
 
-（3）@override
+**（3）@override**
 
 override修饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
 
@@ -1051,7 +1051,7 @@ class Child extends Parent {
 }
 ```
 
-（4）@deprecate (别名@deprecated)
+**（4）@deprecate (别名@deprecated)**
 
 deprecate或deprecated修饰器在控制台显示一条警告，表示该方法将废除。
 
@@ -1084,7 +1084,7 @@ person.facepalmHarder();
 //
 ```
 
-（5）@suppressWarnings
+**（5）@suppressWarnings**
 
 suppressWarnings修饰器抑制decorated修饰器导致的`console.warn()`调用。但是，异步代码出发的调用除外。
 
@@ -1105,6 +1105,172 @@ let person = new Person();
 
 person.facepalmWithoutWarning();
 // no warning is logged
+```
+
+### Mixin
+
+在修饰器的基础上，可以实现Mixin模式。所谓Mixin模式，就是对象继承的一种替代方案，中文译为“混入”（mix in），意为在一个对象之中混入另外一个对象的方法。
+
+请看下面的例子。
+
+```javascript
+const Foo = {
+  foo() { console.log('foo') }
+};
+
+class MyClass {}
+
+Object.assign(MyClass.prototype, Foo);
+
+let obj = new MyClass();
+obj.foo() // 'foo'
+```
+
+上面代码之中，对象Foo有一个foo方法，通过`Object.assign`方法，可以将foo方法“混入”MyClass类，导致MyClass的实例obj对象都具有foo方法。这就是“混入”模式的一个简单实现。
+
+下面，我们部署一个通用脚本`mixins.js`，将mixin写成一个修饰器。
+
+```javascript
+export function mixins(...list) {
+  return function (target) {
+    Object.assign(target.prototype, ...list);
+  };
+}
+```
+
+然后，就可以使用上面这个修饰器，为类“混入”各种方法。
+
+```javascript
+import { mixins } from './mixins'
+
+const Foo = {
+  foo() { console.log('foo') }
+};
+
+@mixins(Foo)
+class MyClass {}
+
+let obj = new MyClass();
+
+obj.foo() // "foo"
+```
+
+通过mixins这个修饰器，实现了在MyClass类上面“混入”Foo对象的foo方法。
+
+### Trait
+
+Trait也是一种修饰器，功能与Mixin类型，但是提供更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等等。
+
+下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的traits修饰器，不仅可以接受对象，还可以接受ES6类作为参数。
+
+```javascript
+import {traits } from 'traits-decorator'
+
+class TFoo {
+  foo() { console.log('foo') }
+}
+
+const TBar = {
+  bar() { console.log('bar') }
+}
+
+@traits(TFoo, TBar)
+class MyClass { }
+
+let obj = new MyClass()
+obj.foo() // foo
+obj.bar() // bar
+```
+
+上面代码中，通过traits修饰器，在MyClass类上面“混入”了TFoo类的foo方法和TBar对象的bar方法。
+
+Trait不允许“混入”同名方法。
+
+```javascript
+import {traits } from 'traits-decorator'
+
+class TFoo {
+  foo() { console.log('foo') }
+}
+
+const TBar = {
+  bar() { console.log('bar') },
+  foo() { console.log('foo') }
+}
+
+@traits(TFoo, TBar)
+class MyClass { }
+// 报错
+// throw new Error('Method named: ' + methodName + ' is defined twice.');
+//        ^
+// Error: Method named: foo is defined twice.
+```
+
+上面代码中，TFoo和TBar都有foo方法，结果traits修饰器报错。
+
+一种解决方法是排除TBar的foo方法。
+
+```javascript
+import { traits, excludes } from 'traits-decorator'
+
+class TFoo {
+  foo() { console.log('foo') }
+}
+
+const TBar = {
+  bar() { console.log('bar') },
+  foo() { console.log('foo') }
+}
+
+@traits(TFoo, TBar::excludes('foo'))
+class MyClass { }
+
+let obj = new MyClass()
+obj.foo() // foo
+obj.bar() // bar
+```
+
+上面代码使用绑定运算符（::）在TBar上排除foo方法，混入时就不会报错了。
+
+另一种方法是为TBar的foo方法起一个别名。
+
+```javascript
+import { traits, alias } from 'traits-decorator'
+
+class TFoo {
+  foo() { console.log('foo') }
+}
+
+const TBar = {
+  bar() { console.log('bar') },
+  foo() { console.log('foo') }
+}
+
+@traits(TFoo, TBar::alias({foo: 'aliasFoo'}))
+class MyClass { }
+
+let obj = new MyClass()
+obj.foo() // foo
+obj.aliasFoo() // foo
+obj.bar() // bar
+```
+
+上面代码为TBar的foo方法起了别名aliasFoo，于是MyClass也可以混入TBar的foo方法了。
+
+alias和excludes方法，可以结合起来使用。
+
+```javascript
+@traits(TExample::excludes('foo','bar')::alias({baz:'exampleBaz'}))
+class MyClass {}
+```
+
+上面代码排除了TExample的foo方法和bar方法，为baz方法起了别名exampleBaz。
+
+as方法则为上面的代码提供了另一种写法。
+
+```javascript
+@traits(TExample::as({excludes:['foo', 'bar'], alias: {baz: 'exampleBaz'}}))
+class MyClass {}
 ```
 
 ### Babel转码器的支持

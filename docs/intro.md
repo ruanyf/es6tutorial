@@ -120,7 +120,21 @@ $ es-checker
 
 ## Babel转码器
 
-[Babel](https://babeljs.io/)是一个广泛使用的ES6转码器，可以ES6代码转为ES5代码，从而在浏览器或其他环境执行。这意味着，你可以用ES6的方式编写程序，又不用担心现有环境是否支持。它的安装命令如下。
+[Babel](https://babeljs.io/)是一个广泛使用的ES6转码器，可以ES6代码转为ES5代码，从而在浏览器或其他环境执行。这意味着，你可以用ES6的方式编写程序，又不用担心现有环境是否支持。下面是一个例子。
+
+```javascript
+// 转码前
+input.map(item => item + 1);
+
+// 转码后
+input.map(function (item) {
+  return item + 1;
+});
+```
+
+上面的原始代码用了箭头函数，这个特性还没有得到广泛支持，Babel将其转为普通函数，就能在现有的JavaScript环境执行了。
+
+它的安装命令如下。
 
 ```bash
 $ npm install --global babel
@@ -154,10 +168,26 @@ console.log([1, 2, 3].map(function (x) {
 }));
 ```
 
-`-o` 参数将转换后的代码，从标准输出导入文件。
+`-o`参数将转换后的代码，从标准输出导入文件。
 
 ```bash
 $ babel es6.js -o es5.js
+# 或者
+$ babel es6.js --out-file es5.js
+```
+
+`-d`参数用于转换整个目录。
+
+```bash
+$ babel -d build-dir source-dir
+```
+
+注意，`-d`参数后面跟的是输出目录。
+
+如果希望生成source map文件，则要加上`-s`参数。
+
+```bash
+$ babel -d build-dir source-dir -s
 ```
 
 Babel也可以用于浏览器。
@@ -170,6 +200,12 @@ Babel也可以用于浏览器。
 ```
 
 上面代码中，`browser.js`是Babel提供的转换器脚本，可以在浏览器运行。用户的ES6脚本放在script标签之中，但是要注明`type="text/babel"`。
+
+Babel配合Browserify一起使用，可以生成浏览器能够直接加载的脚本。
+
+```bash
+$ browserify script.js -t babelify --outfile bundle.js
+```
 
 ## Traceur转码器
 
