@@ -44,7 +44,7 @@ Point类除了构造方法，还定义了一个toString方法。注意，定义�
 ES6的类，完全可以看作构造函数的另一种写法。
 
 ```javascript
-Class Point{
+class Point{
   // ...
 }
 
@@ -56,7 +56,7 @@ typeof Point // "function"
 构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
 
 ```javascript
-Class Point {
+class Point {
   constructor(){
     // ...
   }
@@ -81,7 +81,7 @@ Point.prototype = {
 由于类的方法（除constructor以外）都定义在prototype对象上面，所以类的新方法可以添加在prototype对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
 
 ```javascript
-Class Point {
+class Point {
   constructor(){
     // ...
   }
@@ -1288,5 +1288,3 @@ babel.transfrom("code", {optional: ["es7.decorators"]})
 ```
 
 Babel的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选Experimental，就能支持Decorator的在线转码。
-
-
