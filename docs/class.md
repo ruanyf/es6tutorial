@@ -325,53 +325,7 @@ class Foo {}
 
 如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
 
-**（7）存取器**
-
-Class支持set和get方法，设置赋值器和取值器，拦截属性的存取行为。
-
-```javascript
-class Jedi {
-  constructor(options = {}) {
-    // ...
-  }
-
-  set(key, val) {
-    this[key] = val;
-  }
-
-  get(key) {
-    return this[key];
-  }
-}
-```
-
-上面代码中，Jedi实例所有属性的存取，都会通过存取器。
-
-下面的例子是针对某个属性，设置存取器。
-
-```javascript
-class CustomHTMLElement {
-  constructor(element) {
-    this.element = element;
-  }
-
-  get html() {
-    return this.element.innerHTML;
-  }
-
-  set html(value) {
-    this.element.innerHTML = value;
-  }
-}
-
-var descriptor = Object.getOwnPropertyDescriptor(CustomHTMLElement.prototype, "html");
-"get" in descriptor  // true
-"set" in descriptor  // true
-```
-
-上面代码中，只有html属性的存取，会通过存取器，而存取器是定义在html属性的描述对象上面，这与ES5完全一致。
-
-**（8）严格模式**
+**（7）严格模式**
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
 
@@ -629,10 +583,13 @@ throw new MyError('Something happened!');
 
 ## class的取值函数（getter）和存值函数（setter）
 
-与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数。
+与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
 
 ```javascript
 class MyClass {
+  constructor() {
+    // ...
+  }
   get prop() {
     return 'getter';
   }
@@ -651,6 +608,51 @@ inst.prop
 ```
 
 上面代码中，prop属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
+
+存值函数和取值函数是设置在属性的descriptor对象上的。
+
+```javascript
+class CustomHTMLElement {
+  constructor(element) {
+    this.element = element;
+  }
+
+  get html() {
+    return this.element.innerHTML;
+  }
+
+  set html(value) {
+    this.element.innerHTML = value;
+  }
+}
+
+var descriptor = Object.getOwnPropertyDescriptor(
+  CustomHTMLElement.prototype, "html");
+"get" in descriptor  // true
+"set" in descriptor  // true
+```
+
+上面代码中，存值函数和取值函数是定义在html属性的描述对象上面，这与ES5完全一致。
+
+下面的例子针对所有属性，设置存值函数和取值函数。
+
+```javascript
+class Jedi {
+  constructor(options = {}) {
+    // ...
+  }
+
+  set(key, val) {
+    this[key] = val;
+  }
+
+  get(key) {
+    return this[key];
+  }
+}
+```
+
+上面代码中，Jedi实例所有属性的存取，都会通过存值函数和取值函数。
 
 ## Class的Generator方法
 

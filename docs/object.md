@@ -19,7 +19,6 @@ function f( x, y ) {
 上面是属性简写的例子，方法也可以简写。
 
 ```javascript
-
 var o = {
   method() {
     return "Hello!";
@@ -33,13 +32,11 @@ var o = {
     return "Hello!";
   }
 };
-
 ```
 
 下面是一个更实际的例子。
 
 ```javascript
-
 var Person = {
 
   name: '张三',
@@ -51,13 +48,11 @@ var Person = {
   hello() { console.log('我的名字是', this.name); }
 
 };
-
 ```
 
 这种写法用于函数的返回值，将会非常方便。
 
 ```javascript
-
 function getPoint() {
   var x = 1;
   var y = 10;
@@ -67,7 +62,6 @@ function getPoint() {
 
 getPoint()
 // {x:1, y:10}
-
 ```
 
 ## 属性名表达式
@@ -75,13 +69,11 @@ getPoint()
 JavaScript语言定义对象的属性，有两种方法。
 
 ```javascript
-
 // 方法一
 obj.foo = true;
 
 // 方法二
 obj['a'+'bc'] = 123;
-
 ```
 
 上面代码的方法一是直接用标识符作为属性名，方法二是用表达式作为属性名，这时要将表达式放在方括号之内。
@@ -89,31 +81,26 @@ obj['a'+'bc'] = 123;
 但是，如果使用字面量方式定义对象（使用大括号），在ES5中只能使用方法一（标识符）定义属性。
 
 ```javascript
-
 var obj = {
   foo: true,
   abc: 123
 };
-
 ```
 
 ES6允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
 
 ```javascript
-
 let propKey = 'foo';
 
 let obj = {
    [propKey]: true,
    ['a'+'bc']: 123
 };
-
 ```
 
 下面是另一个例子。
 
 ```javascript
-
 var lastWord = "last word";
 
 var a = {
@@ -124,13 +111,11 @@ var a = {
 a["first word"] // "hello"
 a[lastWord] // "world"
 a["last word"] // "world"
-
 ```
 
 表达式还可以用于定义方法名。
 
 ```javascript
-
 let obj = {
   ['h'+'ello']() {
     return 'hi';
@@ -138,7 +123,6 @@ let obj = {
 };
 
 console.log(obj.hello()); // hi
-
 ```
 
 ## 方法的name属性
@@ -163,7 +147,7 @@ person.firstName.name // "get firstName"
 
 ```javascript
 var doSomething = function() {
-    // ...
+  // ...
 };
 
 console.log(doSomething.bind().name);   // "bound doSomething"
@@ -187,19 +171,16 @@ doSomething.bind().name // "bound doSomething"
 Object.is()用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致，不同之处只有两个：一是+0不等于-0，二是NaN等于自身。
 
 ```javascript
-
 +0 === -0 //true
 NaN === NaN // false
 
 Object.is(+0, -0) // false
 Object.is(NaN, NaN) // true
-
 ```
 
 ES5可以通过下面的代码，部署Object.is()。
 
 ```javascript
-
 Object.defineProperty(Object, 'is', {
   value: function(x, y) {
     if (x === y) {
@@ -213,7 +194,6 @@ Object.defineProperty(Object, 'is', {
   enumerable: false,
   writable: true
 });
-
 ```
 
 ## Object.assign()
@@ -233,7 +213,6 @@ target // {a:1, b:2, c:3}
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
 
 ```javascript
-
 var target = { a: 1, b: 1 };
 
 var source1 = { b: 2, c: 2 };
@@ -241,7 +220,6 @@ var source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
-
 ```
 
 assign方法有很多用处。
@@ -249,19 +227,16 @@ assign方法有很多用处。
 **（1）为对象添加属性**
 
 ```javascript
-
 class Point {
   constructor(x, y) {
     Object.assign(this, {x, y});
   }
 }
-
 ```
 
 上面方法通过assign方法，将x属性和y属性添加到Point类的对象实例。
 
 **（2）为对象添加方法**
-
 ```javascript
 
 Object.assign(SomeClass.prototype, {
@@ -280,7 +255,6 @@ SomeClass.prototype.someMethod = function (arg1, arg2) {
 SomeClass.prototype.anotherMethod = function () {
   ···
 };
-
 ```
 
 上面代码使用了对象属性的简洁表示法，直接将两个函数放在大括号中，再使用assign方法添加到SomeClass.prototype之中。
@@ -288,11 +262,9 @@ SomeClass.prototype.anotherMethod = function () {
 **（3）克隆对象**
 
 ```javascript
-
 function clone(origin) {
   return Object.assign({}, origin);
 }
-
 ```
 
 上面代码将原始对象拷贝到一个空对象，就得到了原始对象的克隆。
@@ -300,12 +272,10 @@ function clone(origin) {
 不过，采用这种方法克隆，只能克隆原始对象自身的值，不能克隆它继承的值。如果想要保持继承链，可以采用下面的代码。
 
 ```javascript
-
 function clone(origin) {
   let originProto = Object.getPrototypeOf(origin);
   return Object.assign(Object.create(originProto), origin);
 }
-
 ```
 
 **（4）合并多个对象**
@@ -327,7 +297,6 @@ const merge =
 **（5）为属性指定默认值**
 
 ```javascript
-
 const DEFAULTS = {
   logLevel: 0,
   outputFormat: 'html'
@@ -336,7 +305,6 @@ const DEFAULTS = {
 function processContent(options) {
   let options = Object.assign({}, DEFAULTS, options);
 }
-
 ```
 
 上面代码中，DEFAULTS对象是默认值，options对象是用户提供的参数。assign方法将DEFAULTS和options合并成一个新对象，如果两者有同名属性，则option的属性值会覆盖DEFAULTS的属性值。
@@ -348,7 +316,6 @@ function processContent(options) {
 __proto__属性，用来读取或设置当前对象的prototype对象。该属性一度被正式写入ES6草案，但后来又被移除。目前，所有浏览器（包括IE11）都部署了这个属性。
 
 ```javascript
-
 // es6的写法
 
 var obj = {
@@ -360,7 +327,6 @@ var obj = {
 
 var obj = Object.create(someOtherObj);
 obj.method = function() { ... }
-
 ```
 
 有了这个属性，实际上已经不需要通过Object.create()来生成新对象了。
@@ -370,24 +336,20 @@ obj.method = function() { ... }
 Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。它是ES6正式推荐的设置原型对象的方法。
 
 ```javascript
-
 // 格式
 Object.setPrototypeOf(object, prototype)
 
 // 用法
 var o = Object.setPrototypeOf({}, null);
-
 ```
 
 该方法等同于下面的函数。
 
 ```javascript
-
 function (obj, proto) {
   obj.__proto__ = proto;
   return obj;
 }
-
 ```
 
 **（3）Object.getPrototypeOf()**
@@ -395,9 +357,7 @@ function (obj, proto) {
 该方法与setPrototypeOf方法配套，用于读取一个对象的prototype对象。
 
 ```javascript
-
 Object.getPrototypeOf(obj)
-
 ```
 
 ## Symbol
@@ -691,23 +651,23 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 除了定义自己使用的Symbol值以外，ES6还提供一些内置的Symbol值，指向语言内部使用的方法。
 
-（1）Symbol.hasInstance
+**（1）Symbol.hasInstance**
 
 对象的Symbol.hasInstance属性，指向一个内部方法。该对象使用instanceof运算符时，会调用这个方法，判断该对象是否为某个构造函数的实例。比如，`foo instanceof Foo`在语言内部，实际调用的是`Foo[Symbol.hasInstance](foo)`。
 
-（2）Symbol.isConcatSpreadable
+**（2）Symbol.isConcatSpreadable**
 
 对象的Symbol.isConcatSpreadable属性，指向一个方法。该对象使用Array.prototype.concat()时，会调用这个方法，返回一个布尔值，表示该对象是否可以扩展成数组。
 
-（3）Symbol.isRegExp
+**（3）Symbol.isRegExp**
 
 对象的Symbol.isRegExp属性，指向一个方法。该对象被用作正则表达式时，会调用这个方法，返回一个布尔值，表示该对象是否为一个正则对象。
 
-（4）Symbol.match
+**（4）Symbol.match**
 
 对象的Symbol.match属性，指向一个函数。当执行`str.match(myObject)`时，如果该属性存在，会调用它，返回该方法的返回值。
 
-（5）Symbol.iterator
+**（5）Symbol.iterator**
 
 对象的Symbol.iterator属性，指向该对象的默认遍历器方法，即该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
 
@@ -734,11 +694,11 @@ for(let value of myCollection) {
 // 2
 ```
 
-（6）Symbol.toPrimitive
+**（6）Symbol.toPrimitive**
 
 对象的Symbol.toPrimitive属性，指向一个方法。该对象被转为原始类型的值时，会调用这个方法，返回该对象对应的原始类型值。
 
-（7）Symbol.toStringTag
+**（7）Symbol.toStringTag**
 
 对象的Symbol.toStringTag属性，指向一个方法。在该对象上面调用`Object.prototype.toString`方法时，如果这个属性存在，它的返回值会出现在toString方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中object后面的那个字符串。
 
@@ -752,7 +712,7 @@ var x = new Collection();
 Object.prototype.toString.call(x) // "[object xxx]"
 ```
 
-（8）Symbol.unscopables
+**（8）Symbol.unscopables**
 
 对象的Symbol.unscopables属性，指向一个对象。该对象指定了使用with关键字时，那些属性会被with环境排除。
 
@@ -806,7 +766,33 @@ with (MyClass.prototype) {
 
 Proxy用于修改某些操作的默认行为，等同于在语言层面做出修改，所以属于一种“元编程”（meta programming），即对编程语言进行编程。
 
-Proxy可以理解成在目标对象之前，架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。proxy这个词的原意是代理，用在这里表示由它来“代理”某些操作。
+Proxy可以理解成，在目标对象之前架设一层“拦截”，外界对该对象的访问，都必须先通过这层拦截，因此提供了一种机制，可以对外界的访问进行过滤和改写。Proxy这个词的原意是代理，用在这里表示由它来“代理”某些操作，可以译为“代理器”。
+
+```javascript
+var obj = new Proxy({}, {
+  get: function (target, key, receiver) {
+    console.log(`getting ${key}!`);
+    return Reflect.get(target, key, receiver);
+  },
+  set: function (target, key, value, receiver) {
+    console.log(`setting ${key}!`);
+    return Reflect.set(target, key, value, receiver);
+  }
+});
+```
+
+上面代码对一个空对象架设了一层拦截，重定义了属性的读取（get）和设置（set）行为。这里暂时不解释具体的语法，只看运行结果。对设置了拦截行为的对象obj，去读写它的属性，就会得到下面的结果。
+
+```javascript
+obj.count = 1
+//  setting count!
+++obj.count
+//  getting count!
+//  setting count!
+//  2
+```
+
+上面代码说明，Proxy实际上重载（overload）了点运算符，即用自己的定义覆盖了语言的原始定义。
 
 ES6原生提供Proxy构造函数，用来生成Proxy实例。
 
@@ -814,9 +800,9 @@ ES6原生提供Proxy构造函数，用来生成Proxy实例。
 var proxy = new Proxy(target, handler)
 ```
 
-Proxy对象的使用方法，都是上面这种形式。`new Proxy()`表示生成一个Proxy实例，它的target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截行为。
+Proxy对象的所用用法，都是上面这种形式，不同的只是handler参数的写法。其中，`new Proxy()`表示生成一个Proxy实例，target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截行为。
 
-下面是一个使用实例。
+下面是另一个拦截读取属性行为的例子。
 
 ```javascript
 var proxy = new Proxy({}, {
@@ -830,14 +816,14 @@ proxy.name // 35
 proxy.title // 35
 ```
 
-上面代码中，作为构造函数，Proxy接受两个参数。第一个参数是所要代理的目标对象（上例是一个空对象），即如果没有Proxy的介入，操作原来要访问的就是这个对象；第二个参数是一个设置对象，对于每一个被代理的操作，需要提供一个对应的处理函数，该函数将拦截对应的操作。比如，上面代码中，设置对象有一个get方法，用来拦截对目标对象属性的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
+上面代码中，作为构造函数，Proxy接受两个参数。第一个参数是所要代理的目标对象（上例是一个空对象），即如果没有Proxy的介入，操作原来要访问的就是这个对象；第二个参数是一个配置对象，对于每一个被代理的操作，需要提供一个对应的处理函数，该函数将拦截对应的操作。比如，上面代码中，配置对象有一个get方法，用来拦截对目标对象属性的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
 
 注意，要使得Proxy起作用，必须针对Proxy实例（上例是proxy对象）进行操作，而不是针对目标对象（上例是空对象）进行操作。
 
 一个技巧是将Proxy对象，设置到`object.proxy`属性，从而可以在object对象上调用。
 
 ```javascript
-var object = { proxy: new Proxy(target, handler) }.
+var object = { proxy: new Proxy(target, handler) }
 ```
 
 Proxy实例也可以作为其他对象的原型对象。
@@ -877,39 +863,73 @@ fproxy.prototype; // Object.prototype
 fproxy.foo; // 'Hello, foo'
 ```
 
-Proxy支持的拦截操作一览。对于没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
+下面是Proxy支持的拦截操作一览。
 
-（1）get(target, propKey, receiver)：拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数receiver可选，当target对象设置了propKey属性的get函数时，receiver对象会绑定get函数的this对象。
+对于可以设置、但没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
 
-（2）set(target, propKey, value, receiver)：拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
+**（1）get(target, propKey, receiver)**
 
-（3）has(target, propKey)：拦截`propKey in proxy`的操作，返回一个布尔值。
+拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数receiver可选，当target对象设置了propKey属性的get函数时，receiver对象会绑定get函数的this对象。
 
-（4）deleteProperty(target, propKey) ：拦截`delete proxy[propKey]`的操作，返回一个布尔值。
+**（2）set(target, propKey, value, receiver)**
 
-（5）enumerate(target)：拦截`for (var x in proxy)`，返回一个遍历器。
+拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
 
-（6）hasOwn(target, propKey)：拦截`proxy.hasOwnProperty('foo')`，返回一个布尔值。
+**（3）has(target, propKey)**
 
-（7）ownKeys(target)：拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回对象所有自身的属性，而`Object.keys()`仅返回对象可遍历的属性。
+拦截`propKey in proxy`的操作，返回一个布尔值。
 
-（8）getOwnPropertyDescriptor(target, propKey) ：拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
+**（4）deleteProperty(target, propKey)**
 
-（9）defineProperty(target, propKey, propDesc)：拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
+拦截`delete proxy[propKey]`的操作，返回一个布尔值。
 
-（10）preventExtensions(target)：拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
+**（5）enumerate(target)**
 
-（11）getPrototypeOf(target) ：拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
+拦截`for (var x in proxy)`，返回一个遍历器。
 
-（12）isExtensible(target)：拦截`Object.isExtensible(proxy)`，返回一个布尔值。
+**6）hasOwn(target, propKey)**
 
-（13）setPrototypeOf(target, proto)：拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。
+拦截`proxy.hasOwnProperty('foo')`，返回一个布尔值。
+
+**（7）ownKeys(target)**
+
+拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回对象所有自身的属性，而`Object.keys()`仅返回对象可遍历的属性。
+
+**（8）getOwnPropertyDescriptor(target, propKey)**
+
+拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
+
+**（9）defineProperty(target, propKey, propDesc)**
+
+拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
+
+**（10）preventExtensions(target)**
+
+拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
+
+**（11）getPrototypeOf(target)**
+
+拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
+
+**（12）isExtensible(target)**
+
+拦截`Object.isExtensible(proxy)`，返回一个布尔值。
+
+**（13）setPrototypeOf(target, proto)**
+
+拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。
 
 如果目标对象是函数，那么还有两种额外操作可以拦截。
 
-（14）apply(target, object, args)：拦截Proxy实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
+**（14）apply(target, object, args)**
 
-（15）construct(target, args, proxy)：拦截Proxy实例作为构造函数调用的操作，比如new proxy(...args)。
+拦截Proxy实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
+
+**（15）construct(target, args, proxy)**
+
+拦截Proxy实例作为构造函数调用的操作，比如new proxy(...args)。
+
+下面是其中几个重要拦截方法的详细介绍。
 
 ### get()
 
