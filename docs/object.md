@@ -143,7 +143,7 @@ person.sayName.name   // "sayName"
 person.firstName.name // "get firstName"
 ```
 
-上面代码中，方法的name属性返回函数名（即方法名）。如果使用了存值函数，则会在方法名前加上get。如果是存值函数，方法名的前面会加上set。
+上面代码中，方法的name属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上get。如果是存值函数，方法名的前面会加上set。
 
 ```javascript
 var doSomething = function() {
