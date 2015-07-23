@@ -571,7 +571,7 @@ var handler = {
 };
 ```
 
-上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，this.doSomething这一行会报错，因为此时this指向全局对象。
+上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，this.doSomething这一行会报错，因为此时this指向document对象。
 
 由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
 
