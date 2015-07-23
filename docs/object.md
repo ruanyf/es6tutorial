@@ -445,7 +445,7 @@ a[mySymbol] = 'Hello!';
 
 // 第二种写法
 var a = {
-  [mySymbol]: 123
+  [mySymbol]: 'Hello!'
 };
 
 // 第三种写法
