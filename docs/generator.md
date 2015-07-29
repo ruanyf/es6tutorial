@@ -713,6 +713,44 @@ let obj = {
 };
 ```
 
+## 构造函数是Generator函数
+
+这一节讨论一种特殊情况：构造函数是Generator函数。
+
+```javascript
+function* F(){
+  yield this.x = 2;
+  yield this.y = 3;
+}
+```
+
+上面代码中，函数F是一个构造函数，又是一个Generator函数。这时，使用new命令就无法生成F的实例了，因为F返回的是一个内部指针。
+
+```javascript
+'next' in (new F())
+// true
+```
+
+上面代码中，由于`new F()`返回的是一个Iterator对象，具有next方法，所以上面的表达式为true。
+
+那么，这个时候怎么生成对象实例呢？
+
+我们知道，如果构造函数调用时，没有使用new命令，那么内部的this对象，绑定当前构造函数所在的对象（比如window对象）。因此，可以生成一个空对象，使用bind方法绑定F内部的this。这样，构造函数调用以后，这个空对象就是F的实例对象了。
+
+```javascript
+var obj = {};
+var f = F.bind(obj)();
+
+f.next();
+f.next();
+f.next();
+
+console.log(obj);
+// { x: 2, y: 3 }
+```
+
+上面代码中，首先是F内部的this对象绑定obj对象，然后调用它，返回一个Iterator对象。这个对象执行三次next方法（因为F内部有两个yield语句），完成F内部所有代码的运行。这时，所有内部属性都绑定在obj对象上了，因此obj对象也就成了F的实例。
+
 ## Generator函数推导
 
 ES7在数组推导的基础上，提出了Generator函数推导（Generator comprehension）。
