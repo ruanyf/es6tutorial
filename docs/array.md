@@ -31,7 +31,7 @@ Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
 // [ "a", "b" , "c" ]
 ```
 
-对于还没有部署该方法的浏览器，可以用Array.prototyp.slice方法替代。
+对于还没有部署该方法的浏览器，可以用Array.prototype.slice方法替代。
 
 ```javascript
 const toArray = (() =>
@@ -182,7 +182,7 @@ for (let [index, elem] of ['a', 'b'].entries()) {
 
 ## 数组实例的includes()
 
-Array.protypeto.includes方法返回一个布尔值，表示某个数组是否包含给定的值。该方法属于ES7。
+Array.prototype.includes方法返回一个布尔值，表示某个数组是否包含给定的值。该方法属于ES7。
 
 ```javascript
 [1, 2, 3].includes(2);     // true
@@ -210,7 +210,7 @@ contains(["foo", "bar"], "baz"); // => false
 
 ## 数组推导
 
-数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能本来是要放入ES6的，但是TC39委员会想继续完善这项功能，让其支持所有数据结构（内部调用iterator对象），不像现在只支持数组，所以就把它推迟到了ES7。Babel转码器已经支持这个功能。
+数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能本来是要放入ES6的，但是TC39委员会想继续完善这项功能，让其支持所有数据结构（内部调用iterator对象），不像现在只支持数组，所以就把它推迟到了ES7。Babel转码器已经支持这个功能（[ES7 Comprehensions](http://babeljs.io/docs/advanced/transformers/other/comprehensions/)）。
 
 ```javascript
 var a1 = [1, 2, 3, 4];
