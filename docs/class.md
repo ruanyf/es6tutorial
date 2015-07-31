@@ -436,9 +436,9 @@ B.__proto__ === A // true
 B.prototype.__proto__ === A.prototype // true
 ```
 
-上面代码中，子类A的`__proto__`属性指向父类B，子类A的prototype属性的__proto__属性指向父类B的prototype属性。
+上面代码中，子类B的`__proto__`属性指向父类A，子类B的prototype属性的__proto__属性指向父类A的prototype属性。
 
-这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__属性`）是父类（A）；作为一个构造函数，子类（B）的原型（prototype属性）是父类的实例。
+这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__`属性）是父类（A）；作为一个构造函数，子类（B）的原型（prototype属性）是父类的实例。
 
 ```javascript
 B.prototype = new A();
@@ -477,7 +477,7 @@ class A extends null {
 }
 
 A.__proto__ === Function.prototype // true
-A.prototype.__proto__ === null // true
+A.prototype.__proto__ === undefined // true
 ```
 
 这种情况与第二种情况非常像。A也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
