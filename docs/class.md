@@ -458,7 +458,7 @@ A.prototype.__proto__ === Object.prototype // true
 
 这种情况下，A其实就是构造函数Object的复制，A的实例就是Object的实例。
 
-第二种特性情况，不存在任何继承。
+第二种特殊情况，不存在任何继承。
 
 ```javascript
 class A {
@@ -499,7 +499,7 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 ### 实例的\_\_proto\_\_属性
 
-父类实例和子类实例的\_\_proto\_\_属性，指向是不一样的。
+子类实例的\_\_proto\_\_属性的\_\_proto\_\_属性，指向父类实例的\_\_proto\_\_属性。也就是说，子类的原型的原型，是父类的原型。
 
 ```javascript
 var p1 = new Point(2, 3);

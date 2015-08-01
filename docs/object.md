@@ -352,12 +352,45 @@ function (obj, proto) {
 }
 ```
 
+下面是一个例子。
+
+```javascript
+let proto = {};
+let obj = { x: 10 };
+Object.setPrototypeOf(obj, proto);
+
+proto.y = 20;
+proto.z = 40;
+
+obj.x // 10
+obj.y // 20
+obj.z // 40
+```
+
+上面代码将proto对象设为obj对象的原型，所以从obj对象可以读取proto对象的属性。
+
 **（3）Object.getPrototypeOf()**
 
 该方法与setPrototypeOf方法配套，用于读取一个对象的prototype对象。
 
 ```javascript
-Object.getPrototypeOf(obj)
+Object.getPrototypeOf(obj);
+```
+
+下面是一个例子。
+
+```javascript
+function Rectangle() {
+}
+
+var rec = new Rectangle();
+
+Object.getPrototypeOf(rec) === Rectangle.prototype
+// true
+
+Object.setPrototypeOf(rec, Object.prototype);
+Object.getPrototypeOf(rec) === Rectangle.prototype
+// false
 ```
 
 ## Symbol
