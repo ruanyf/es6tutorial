@@ -90,7 +90,7 @@ ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF�
 
 ## 字符的Unicode表示法
 
-JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表示字符的码点。
+JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示字符的码点。
 
 ```javascript
 "\u0061"
@@ -100,118 +100,42 @@ JavaScript允许采用“\uxxxx”形式表示一个字符，其中“xxxx”表
 但是，这种表示法只限于\u0000——\uFFFF之间的字符。超出这个范围的字符，必须用两个双字节的形式表达。
 
 ```javascript
-
 "\uD842\uDFB7"
 // "𠮷"
 
 "\u20BB7"
 // " 7"
-
 ```
 
-上面代码表示，如果直接在“\u”后面跟上超过0xFFFF的数值（比如\u20BB7），JavaScript会理解成“\u20BB+7”。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
+上面代码表示，如果直接在“\u”后面跟上超过`0xFFFF`的数值（比如\u20BB7），JavaScript会理解成“\u20BB+7”。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
 
 ES6对这一点做出了改进，只要将码点放入大括号，就能正确解读该字符。
 
 ```javascript
-
 "\u{20BB7}"
 // "𠮷"
 
 "\u{41}\u{42}\u{43}"
 // "ABC"
 
+let hello = 123;
+hell\u{6F} // 123
+
+'\u{1F680}' === '\uD83D\uDE80'
+// true
 ```
 
-## 正则表达式的u修饰符
+上面代码中，最后一个例子表明，大括号表示法与四字节的UTF-16编码是等价的。
 
-ES6对正则表达式添加了u修饰符，用来正确处理大于\uFFFF的Unicode字符。
-
-一旦加上u修饰符号，就会修改下面这些正则表达式的行为。
-
-**（1）点字符**
-
-点（.）字符在正则表达式中，解释为除了换行以外的任意单个字符。对于码点大于0xFFFF的Unicode字符，点字符不能识别，必须加上u修饰符。
+有了这种表示法之后，JavaScript共有5种方法可以表示一个字符。
 
 ```javascript
-
-var s = "𠮷";
-
-/^.$/.test(s) // false
-/^.$/u.test(s) // true
-
+'\z' === 'z'  // true
+'\172' === 'z' // true
+'\x7A' === 'z' // true
+'\u007A' === 'z' // true
+'\u{7A}' === 'z' // true
 ```
-
-上面代码表示，如果不添加u修饰符，正则表达式就会认为字符串为两个字符，从而匹配失败。
-
-**（2）Unicode字符表示法**
-
-ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达式中必须加上u修饰符，才能识别。
-
-```javascript
-
-/\u{61}/.test('a') // false
-/\u{61}/u.test('a') // true
-/\u{20BB7}/u.test('𠮷') // true
-
-```
-
-上面代码表示，如果不加u修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配61个连续的u。
-
-**（3）量词**
-
-使用u修饰符后，所有量词都会正确识别大于码点大于0xFFFF的Unicode字符。
-
-```javascript
-
-/a{2}/.test('aa') // true
-/a{2}/u.test('aa') // true
-/𠮷{2}/.test('𠮷𠮷') // false
-/𠮷{2}/u.test('𠮷𠮷') // true
-
-```
-
-**（4）预定义模式**
-
-u修饰符也影响到预定义模式，能否正确识别码点大于0xFFFF的Unicode字符。
-
-```javascript
-
-/^\S$/.test('𠮷') // false
-/^\S$/u.test('𠮷')
-
-```
-
-上面代码的`\S`是预定义模式，匹配所有不是空格的字符。只有加了u修饰符，它才能正确匹配码点大于0xFFFF的Unicode字符。
-
-利用这一点，可以写出一个正确返回字符串长度的函数。
-
-```javascript
-
-function codePointLength(text) {
-    var result = text.match(/[\s\S]/gu);
-    return result ? result.length : 0;
-}
-
-var s = "𠮷𠮷";
-
-s.length // 4
-codePointLength(s) // 2
-
-```
-
-**（5）i修饰符**
-
-有些Unicode字符的编码不同，但是字型很相近，比如，\u004B与\u212A都是大写的K。
-
-```javascript
-
-/[a-z]/i.test('\u212A') // false
-/[a-z]/iu.test('\u212A') // true
-
-```
-
-上面代码中，不加u修饰符，就无法识别非规范的K字符。
 
 ## normalize()
 
@@ -233,10 +157,8 @@ codePointLength(s) // 2
 ES6提供String.prototype.normalize()方法，用来将字符的不同表示方法统一为同样的形式，这称为Unicode正规化。
 
 ```javascript
-
 '\u01D1'.normalize() === '\u004F\u030C'.normalize()
 // true
-
 ```
 
 normalize方法可以接受四个参数。
@@ -266,25 +188,21 @@ normalize方法可以接受四个参数。
 - **endsWith()**：返回布尔值，表示参数字符串是否在源字符串的尾部。
 
 ```javascript
-
 var s = "Hello world!";
 
 s.startsWith("Hello") // true
 s.endsWith("!") // true
 s.includes("o") // true
-
 ```
 
 这三个方法都支持第二个参数，表示开始搜索的位置。
 
 ```javascript
-
 var s = "Hello world!";
 
 s.startsWith("world", 6) // true
 s.endsWith("Hello", 5) // true
 s.includes("Hello", 6) // false
-
 ```
 
 上面代码表示，使用第二个参数n时，endsWith的行为与其他两个方法有所不同。它针对前n个字符，而其他两个方法针对从第n个位置直到字符串结束。
@@ -294,202 +212,8 @@ s.includes("Hello", 6) // false
 repeat()返回一个新字符串，表示将原字符串重复n次。
 
 ```javascript
-
 "x".repeat(3) // "xxx"
 "hello".repeat(2) // "hellohello"
-
-```
-
-## 正则表达式的y修饰符
-
-除了u修饰符，ES6还为正则表达式添加了y修饰符，叫做“粘连”（sticky）修饰符。
-
-y修饰符的作用与g修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始。不同之处在于，g修饰符只要剩余位置中存在匹配就可，而y修饰符确保匹配必须从剩余的第一个位置开始，这也就是“粘连”的涵义。
-
-```javascript
-var s = "aaa_aa_a";
-var r1 = /a+/g;
-var r2 = /a+/y;
-
-r1.exec(s) // ["aaa"]
-r2.exec(s) // ["aaa"]
-
-r1.exec(s) // ["aa"]
-r2.exec(s) // null
-```
-
-上面代码有两个正则表达式，一个使用g修饰符，另一个使用y修饰符。这两个正则表达式各执行了两次，第一次执行的时候，两者行为相同，剩余字符串都是“_aa_a”。由于g修饰没有位置要求，所以第二次执行会返回结果，而y修饰符要求匹配必须从头部开始，所以返回null。
-
-如果改一下正则表达式，保证每次都能头部匹配，y修饰符就会返回结果了。
-
-```javascript
-var s = "aaa_aa_a";
-var r = /a+_/y;
-
-r.exec(s) // ["aaa_"]
-r.exec(s) // ["aa_"]
-```
-
-上面代码每次匹配，都是从剩余字符串的头部开始。
-
-使用lastIndex属性，可以更好地说明y修饰符。
-
-```javascript
-const REGEX = /a/g;
-
-REGEX.lastIndex = 2; // 指定从第三个位置y开始搜索
-const match = REGEX.exec('xaya');
-
-match.index
-// 3
-REGEX.lastIndex
-// 4
-REGEX.exec('xaxa')
-// null
-```
-
-上面代码中，lastIndex属性指定每次搜索的开始位置，g修饰符从这个位置开始向后搜索，直到发现匹配为止。
-
-y修饰符同样遵守lastIndex属性，但是要求必须在lastIndex指定的位置发现匹配。
-
-```javascript
-const REGEX = /a/y;
-
-// 第三个位置y不匹配
-REGEX.lastIndex = 2;
-console.log(REGEX.exec('xaya')); // null
-
-// 第四个位置出现匹配
-REGEX.lastIndex = 3;
-const match = REGEX.exec('xaxa');
-match.index // 3
-REGEX.lastIndex // 4
-```
-
-进一步说，y修饰符号隐含了头部匹配的标志&#710;。
-
-```javascript
-/b/y.exec("aba")
-// null
-```
-
-上面代码由于不能保证头部匹配，所以返回null。y修饰符的设计本意，就是让头部匹配的标志&#710;在全局匹配中都有效。
-
-在split方法中使用y修饰符，原字符串必须以分隔符开头。
-
-```javascript
-// 没有找到匹配
-'x##'.split(/#/y)
-// [ 'x##' ]
-
-// 找到两个匹配
-'##x'.split(/#/y)
-// [ '', '', 'x' ]
-```
-
-后续的分隔符只有紧跟前面的分隔符，才会被识别。
-
-```javascript
-'#x#'.split(/#/y)
-// [ '', 'x#' ]
-
-'##'.split(/#/y)
-// [ '', '', '' ]
-```
-
-如果同时使用g修饰符和y修饰符，则y修饰符覆盖g修饰符。
-
-## 正则表达式的sticky属性
-
-与y修饰符相匹配，ES6的正则对象多了sticky属性，表示是否设置了y修饰符。
-
-```javascript
-var r = /hello\d/y;
-r.sticky // true
-```
-
-## 正则表达式的flags属性
-
-ES6为正则表达式新增了flags属性，会返回正则表达式的修饰符。
-
-```javascript
-// ES5的source属性
-// 返回正则表达式的正文
-/abc/ig.source
-// "abc"
-
-// ES6的flags属性
-// 返回正则表达式的修饰符
-/abc/ig.flags
-// 'gi'
-```
-
-## RegExp构造函数
-
-在ES5中，RegExp构造函数只能接受字符串作为参数。
-
-```javascript
-var regex = new RegExp("xyz", "i");
-// 等价于
-var regex = /xyz/i;
-```
-
-ES6允许RegExp构造函数接受正则表达式作为参数，这时会返回一个原有正则表达式的拷贝。
-
-```javascript
-var regex = new RegExp(/xyz/i);
-```
-
-如果使用RegExp构造函数的第二个参数指定修饰符，则会修改原有的正则表达式。
-
-```javascript
-new RegExp(/abc/ig, 'i').flags
-// "i"
-```
-
-## RegExp.escape()
-
-字符串必须转义，才能作为正则模式。
-
-```javascript
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-let str = '/path/to/resource.html?search=query';
-escapeRegExp(str)
-// "\/path\/to\/resource\.html\?search=query"
-```
-
-上面代码中，str是一个正常字符串，必须使用反斜杠对其中的特殊字符转义，才能用来作为一个正则匹配的模式。
-
-已经有[提议](https://esdiscuss.org/topic/regexp-escape)将这个需求标准化，作为RegExp对象的静态方法[`RegExp.escape()`](https://github.com/benjamingr/RexExp.escape)，放入ES7。2015年7月31日，TC39认为，这个方法有安全风险，又不愿这个方法变得过于复杂，没有同意将其列入ES7，但这不失为一个真实的需求。
-
-```javascript
-RegExp.escape("The Quick Brown Fox");
-// "The Quick Brown Fox"
-
-RegExp.escape("Buy it. use it. break it. fix it.")
-// "Buy it\. use it\. break it\. fix it\."
-
-RegExp.escape("(*.*)");
-// "\(\*\.\*\)"
-```
-
-字符串转义以后，可以使用RegExp构造函数生成正则模式。
-
-```javascript
-var str = 'hello. how are you?';
-var regex = new RegExp(RegExp.escape(str), 'g');
-assert.equal(String(regex), '/hello\. how are you\?/g');
-```
-
-目前，该方法可以用上文的escapeRegExp函数或者垫片模块[`regexp.escape`](https://github.com/ljharb/regexp.escape)实现。
-
-```javascript
-var escape = require('regexp.escape');
-escape('hi. how are you?')
-"hi\\. how are you\\?"
 ```
 
 ## 模板字符串
