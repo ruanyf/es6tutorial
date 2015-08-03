@@ -310,7 +310,7 @@ escapeRegExp(str)
 
 上面代码中，str是一个正常字符串，必须使用反斜杠对其中的特殊字符转义，才能用来作为一个正则匹配的模式。
 
-已经有[提议](https://esdiscuss.org/topic/regexp-escape)将这个需求标准化，作为RegExp对象的静态方法[`RegExp.escape()`](https://github.com/benjamingr/RexExp.escape)，放入ES7。2015年7月31日，TC39认为，这个方法有安全风险，又不愿这个方法变得过于复杂，没有同意将其列入ES7，但这不失为一个真实的需求。
+已经有[提议](https://esdiscuss.org/topic/regexp-escape)将这个需求标准化，作为RegExp对象的静态方法[RegExp.escape()](https://github.com/benjamingr/RexExp.escape)，放入ES7。2015年7月31日，TC39认为，这个方法有安全风险，又不愿这个方法变得过于复杂，没有同意将其列入ES7，但这不失为一个真实的需求。
 
 ```javascript
 RegExp.escape("The Quick Brown Fox");
@@ -331,7 +331,7 @@ var regex = new RegExp(RegExp.escape(str), 'g');
 assert.equal(String(regex), '/hello\. how are you\?/g');
 ```
 
-目前，该方法可以用上文的escapeRegExp函数或者垫片模块[`regexp.escape`](https://github.com/ljharb/regexp.escape)实现。
+目前，该方法可以用上文的escapeRegExp函数或者垫片模块[regexp.escape](https://github.com/ljharb/regexp.escape)实现。
 
 ```javascript
 var escape = require('regexp.escape');
