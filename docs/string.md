@@ -2,86 +2,6 @@
 
 ES6加强了对Unicode的支持，并且扩展了字符串对象。
 
-## codePointAt()
-
-JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode码点大于0xFFFF的字符），JavaScript会认为它们是两个字符。
-
-```javascript
-var s = "𠮷";
-
-s.length // 2
-s.charAt(0) // ''
-s.charAt(1) // ''
-s.charCodeAt(0) // 55362
-s.charCodeAt(1) // 57271
-```
-
-上面代码中，汉字“𠮷”的码点是0x20BB7，UTF-16编码为0xD842 0xDFB7（十进制为55362 57271），需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
-
-ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的码点。
-
-```javascript
-var s = "𠮷a";
-
-s.codePointAt(0) // 134071
-s.codePointAt(1) // 57271
-
-s.charCodeAt(2) // 97
-```
-
-codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
-
-总之，codePointAt方法会正确返回四字节的UTF-16字符的码点。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
-
-codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
-
-```javascript
-function is32Bit(c) {
-  return c.codePointAt(0) > 0xFFFF;
-}
-
-is32Bit("𠮷") // true
-is32Bit("a") // false
-```
-
-## String.fromCodePoint()
-
-ES5提供String.fromCharCode方法，用于从码点返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
-
-```javascript
-String.fromCharCode(0x20BB7)
-// "ஷ"
-```
-
-上面代码中，最后返回码点U+0BB7对应的字符，而不是码点U+20BB7对应的字符。
-
-ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
-
-```javascript
-String.fromCodePoint(0x20BB7)
-// "𠮷"
-```
-
-注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
-
-## at()
-
-ES5对字符串对象提供charAt方法，返回字符串给定位置的字符。该方法不能识别码点大于0xFFFF的字符。
-
-```javascript
-'abc'.charAt(0) // "a"
-'𠮷'.charAt(0) // "\uD842"
-```
-
-上面代码中，charAt方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
-
-ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF的字符，返回正确的字符。Chrome浏览器已经支持该方法。
-
-```javascript
-'abc'.at(0) // "a"
-'𠮷'.at(0) // "𠮷"
-```
-
 ## 字符的Unicode表示法
 
 JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示字符的码点。
@@ -131,6 +51,86 @@ hell\u{6F} // 123
 '\u{7A}' === 'z' // true
 ```
 
+## String.fromCodePoint()
+
+ES5提供String.fromCharCode方法，用于从码点返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
+
+```javascript
+String.fromCharCode(0x20BB7)
+// "ஷ"
+```
+
+上面代码中，最后返回码点U+0BB7对应的字符，而不是码点U+20BB7对应的字符。
+
+ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
+
+```javascript
+String.fromCodePoint(0x20BB7)
+// "𠮷"
+```
+
+注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
+
+## codePointAt()
+
+JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode码点大于0xFFFF的字符），JavaScript会认为它们是两个字符。
+
+```javascript
+var s = "𠮷";
+
+s.length // 2
+s.charAt(0) // ''
+s.charAt(1) // ''
+s.charCodeAt(0) // 55362
+s.charCodeAt(1) // 57271
+```
+
+上面代码中，汉字“𠮷”的码点是0x20BB7，UTF-16编码为0xD842 0xDFB7（十进制为55362 57271），需要4个字节储存。对于这种4个字节的字符，JavaScript不能正确处理，字符串长度会误判为2，而且charAt方法无法读取字符，charCodeAt方法只能分别返回前两个字节和后两个字节的值。
+
+ES6提供了codePointAt方法，能够正确处理4个字节储存的字符，返回一个字符的码点。
+
+```javascript
+var s = "𠮷a";
+
+s.codePointAt(0) // 134071
+s.codePointAt(1) // 57271
+
+s.charCodeAt(2) // 97
+```
+
+codePointAt方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点134071（即十六进制的20BB7）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，codePointAt方法的结果与charCodeAt方法相同。
+
+总之，codePointAt方法会正确返回四字节的UTF-16字符的码点。对于那些两个字节储存的常规字符，它的返回结果与charCodeAt方法相同。
+
+codePointAt方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
+
+```javascript
+function is32Bit(c) {
+  return c.codePointAt(0) > 0xFFFF;
+}
+
+is32Bit("𠮷") // true
+is32Bit("a") // false
+```
+
+## at()
+
+ES5对字符串对象提供charAt方法，返回字符串给定位置的字符。该方法不能识别码点大于0xFFFF的字符。
+
+```javascript
+'abc'.charAt(0) // "a"
+'𠮷'.charAt(0) // "\uD842"
+```
+
+上面代码中，charAt方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
+
+ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF的字符，返回正确的字符。Chrome浏览器已经支持该方法。
+
+```javascript
+'abc'.at(0) // "a"
+'𠮷'.at(0) // "𠮷"
+```
+
 ## normalize()
 
 为了表示语调和重音符号，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如O（\u004F）和ˇ（\u030C）合成Ǒ（\u004F\u030C）。
@@ -138,12 +138,10 @@ hell\u{6F} // 123
 这两种表示方法，在视觉和语义上都等价，但是JavaScript不能识别。
 
 ```javascript
-
 '\u01D1'==='\u004F\u030C' //false
 
 '\u01D1'.length // 1
 '\u004F\u030C'.length // 2
-
 ```
 
 上面代码表示，JavaScript将合成字符视为两个字符，导致两种表示方法不相等。
@@ -163,10 +161,8 @@ normalize方法可以接受四个参数。
 - NFKD，表示“兼容等价分解”（Normalization Form Compatibility Decomposition），即在兼容等价的前提下，返回合成字符分解的多个简单字符。
 
 ```javascript
-
 '\u004F\u030C'.normalize('NFC').length // 1
 '\u004F\u030C'.normalize('NFD').length // 2
-
 ```
 
 上面代码表示，NFC参数返回字符的合成形式，NFD参数返回字符的分解形式。

@@ -184,13 +184,50 @@ function func(arg) {
 
 ## 块级作用域
 
+### 为什么需要块级作用域？
+
+ES5只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。
+
+第一种场景，内层变量可能会覆盖外层变量。
+
+```javascript
+var tmp = new Date();
+
+function f(){
+  console.log(tmp);
+  if (false){
+    var tmp = "hello world";
+  }
+}
+
+f() // 没有输出
+```
+
+上面代码中，函数f执行后没有任何输出，原因在于变量提升，导致内层的tmp变量覆盖了外层的tmp变量。
+
+第二种场景，用来计数的循环变量泄露为全局变量。
+
+```javascript
+var s = 'hello';
+
+for (var i = 0; i < s.length; i++){
+  console.log(s[i]);
+}
+
+console.log(i); // 5
+```
+
+上面代码中，变量i只用来控制循环，但是循环结束后，它并没有消失，泄露成了全局变量。
+
+### ES6的块级作用域
+
 let实际上为JavaScript新增了块级作用域。
 
 ```javascript
 function f1() {
   let n = 5;
   if (true) {
-      let n = 10;
+    let n = 10;
   }
   console.log(n); // 5
 }
