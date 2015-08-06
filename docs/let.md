@@ -113,7 +113,7 @@ if (true) {
 有些“死区”比较隐蔽，不太容易发现。
 
 ```javascript
-function bar(x=y, y=2) {
+function bar(x = y, y = 2) {
   return [x, y];
 }
 

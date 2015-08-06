@@ -15,6 +15,7 @@
 1. [数组的扩展](#docs/array)
 1. [对象的扩展](#docs/object)
 1. [函数的扩展](#docs/function)
+1. [Symbol](#docs/symbol)
 1. [Set和Map数据结构](#docs/set-map)
 1. [Iterator和for...of循环](#docs/iterator)
 1. [Generator函数](#docs/generator)

@@ -19,6 +19,7 @@
 - Luke Hoban, [ES6 features](https://github.com/lukehoban/es6features): ES6新语法点的罗列
 - Traceur-compiler, [Language Features](https://github.com/google/traceur-compiler/wiki/LanguageFeatures): Traceur文档列出的一些ES6例子
 - Axel Rauschmayer, [ECMAScript 6: what’s next for JavaScript?](https://speakerdeck.com/rauschma/ecmascript-6-whats-next-for-javascript-august-2014): 关于ES6新增语法的综合介绍，有很多例子
+- Axel Rauschmayer, [Getting started with ECMAScript 6](http://www.2ality.com/2015/08/getting-started-es6.html): ES6语法点的综合介绍
 - Toby Ho, [ES6 in io.js](http://davidwalsh.name/es6-io)
 - Guillermo Rauch, [ECMAScript 6](http://rauchg.com/2015/ecmascript-6/)
 - Charles King, [The power of ECMAScript 6](http://charlesbking.com/power_of_es6/#/)
