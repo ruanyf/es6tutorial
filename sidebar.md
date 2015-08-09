@@ -22,6 +22,7 @@
 1. [Promise对象](#docs/promise)
 1. [异步操作](#docs/async)
 1. [Class](#docs/class)
+1. [Decorator](#docs/decorator)
 1. [Module](#docs/module)
 1. [编程风格](#docs/style)
 1. [参考链接](#docs/reference)
