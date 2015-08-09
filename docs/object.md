@@ -520,7 +520,7 @@ fproxy.foo; // 'Hello, foo'
 
 拦截`for (var x in proxy)`，返回一个遍历器。
 
-**6）hasOwn(target, propKey)**
+**（6）hasOwn(target, propKey)**
 
 拦截`proxy.hasOwnProperty('foo')`，返回一个布尔值。
 
@@ -842,7 +842,6 @@ Reflect.defineProperty(obj, name, desc);
 Object.observe方法用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
 
 ```javascript
-
 var user = {};
 Object.observe(user, function(changes){
   changes.forEach(function(change) {
@@ -853,7 +852,6 @@ Object.observe(user, function(changes){
 user.firstName = 'Michael';
 user.lastName = 'Jackson';
 user.fullName // 'Michael Jackson'
-
 ```
 
 上面代码中，Object.observer方法监听user对象。一旦该对象发生变化，就自动生成fullName属性。
@@ -861,7 +859,6 @@ user.fullName // 'Michael Jackson'
 一般情况下，Object.observe方法接受两个参数，第一个参数是监听的对象，第二个函数是一个回调函数。一旦监听对象发生变化（比如新增或删除一个属性），就会触发这个回调函数。很明显，利用这个方法可以做很多事情，比如自动更新DOM。
 
 ```javascript
-
 var div = $("#foo");
 
 Object.observe(user, function(changes){
@@ -870,7 +867,6 @@ Object.observe(user, function(changes){
     div.text(fullName);
   });
 });
-
 ```
 
 上面代码中，只要user对象发生变化，就会自动更新DOM。如果配合jQuery的change方法，就可以实现数据对象与DOM对象的双向自动绑定。
@@ -878,7 +874,6 @@ Object.observe(user, function(changes){
 回调函数的changes参数是一个数组，代表对象发生的变化。下面是一个更完整的例子。
 
 ```javascript
-
 var o = {};
 
 function observer(changes){
@@ -891,20 +886,17 @@ function observer(changes){
 }
 
 Object.observe(o, observer);
-
 ```
 
 参照上面代码，Object.observe方法指定的回调函数，接受一个数组（changes）作为参数。该数组的成员与对象的变化一一对应，也就是说，对象发生多少个变化，该数组就有多少个成员。每个成员是一个对象（change），它的name属性表示发生变化源对象的属性名，oldValue属性表示发生变化前的值，object属性指向变动后的源对象，type属性表示变化的种类。基本上，change对象是下面的样子。
 
 ```javascript
-
 var change = {
   object: {...},
   type: 'update',
   name: 'p2',
   oldValue: 'Property 2'
 }
-
 ```
 
 Object.observe方法目前共支持监听六种变化。
@@ -919,9 +911,7 @@ Object.observe方法目前共支持监听六种变化。
 Object.observe方法还可以接受第三个参数，用来指定监听的事件种类。
 
 ```javascript
-
 Object.observe(o, observer, ['delete']);
-
 ```
 
 上面的代码表示，只在发生delete事件时，才会调用回调函数。
@@ -929,9 +919,7 @@ Object.observe(o, observer, ['delete']);
 Object.unobserve方法用来取消监听。
 
 ```javascript
-
 Object.unobserve(o, observer);
-
 ```
 
 注意，Object.observe和Object.unobserve这两个方法不属于ES6，而是属于ES7的一部分。不过，Chrome浏览器从33版起就已经支持。

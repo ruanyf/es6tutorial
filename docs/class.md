@@ -844,6 +844,20 @@ console.log(MyTestableClass.isTestable) // true
 
 上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性isTestable。
 
+基本上，修饰器的行为就是下面这样。
+
+```javascript
+@decorator
+class A {}
+
+// 等同于
+
+class A {}
+A = decorator(A) || A;
+```
+
+也就是说，修饰器本质上就是能在编译时执行的函数。
+
 修饰器函数可以接受三个参数，依次是目标函数、属性名和该属性的描述对象。后两个参数可省略。上面代码中，testable函数的参数target，就是所要修饰的对象。如果希望修饰器的行为，能够根据目标对象的不同而不同，就要在外面再封装一层函数。
 
 ```javascript
@@ -982,6 +996,64 @@ class Person {
 从上面代码中，我们一眼就能看出，MyTestableClass类是可测试的，而name方法是只读和不可枚举的。
 
 除了注释，修饰器还能用来类型检查。所以，对于Class来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
+
+
+### 为什么修饰器不能用于函数？
+
+修饰器只能用于类和类的方法，不能用于函数，因为存在函数提升。
+
+```javascript
+var counter = 0;
+
+var add = function () {
+  counter++;
+};
+
+@add
+function foo() {
+}
+```
+
+上面的代码，意图是执行后，counter等于1，但是实际上结果是couter等于0。因为函数提升，使得实际执行的代码是下面这样。
+
+```javascript
+var counter;
+var add;
+
+@add
+function foo() {
+}
+
+counter = 0;
+
+add = function () {
+  counter++;
+};
+```
+
+下面是另一个例子。
+
+```javascript
+var readOnly = require("some-decorator");
+
+@readOnly
+function foo() {
+}
+```
+
+上面代码也有问题，因为实际执行是下面这样。
+
+```javascript
+var readOnly;
+
+@readOnly
+function foo() {
+}
+
+readOnly = require("some-decorator");
+```
+
+总之，由于存在函数提升，使得修饰器不能用于函数。类是不会提升的，所以就没有这方面的问题。
 
 ### core-decorators.js
 

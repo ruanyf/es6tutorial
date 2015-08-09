@@ -150,7 +150,6 @@ foo()
 另一个需要注意的地方是，参数默认值所处的作用域，不是全局作用域，而是函数作用域。
 
 ```javascript
-
 var x = 1;
 
 function foo(x, y = x) {
@@ -158,20 +157,17 @@ function foo(x, y = x) {
 }
 
 foo(2) // 2
-
 ```
 
-上面代码中，参数y的默认值等于x，由于处在函数作用域，所以x等于参数x，而不是全局变量x。
+上面代码中，参数y的默认值等于x，由于处在函数作用域，所以y等于参数x，而不是全局变量x。
 
 参数变量是默认声明的，所以不能用let或const再次声明。
 
 ```javascript
-
 function foo(x = 5) {
   let x = 1; // error
   const x = 2; // error
 }
-
 ```
 
 上面代码中，参数变量x是默认声明的，在函数体中，不能用let或const再次声明，否则会报错。
@@ -179,7 +175,6 @@ function foo(x = 5) {
 参数默认值可以与解构赋值，联合起来使用。
 
 ```javascript
-
 function foo({x, y = 5}) {
   console.log(x, y);
 }
@@ -187,7 +182,6 @@ function foo({x, y = 5}) {
 foo({}) // undefined, 5
 foo({x: 1}) // 1, 5
 foo({x: 1, y: 2}) // 1, 2
-
 ```
 
 上面代码中，foo函数的参数是一个对象，变量x和y用于解构赋值，y有默认值5。
@@ -197,19 +191,17 @@ foo({x: 1, y: 2}) // 1, 2
 ES6引入rest参数（形式为“...变量名”），用于获取函数的多余参数，这样就不需要使用arguments对象了。rest参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
 
 ```javascript
-
 function add(...values) {
-   let sum = 0;
+  let sum = 0;
 
-   for (var val of values) {
-      sum += val;
-   }
+  for (var val of values) {
+    sum += val;
+  }
 
-   return sum;
+  return sum;
 }
 
 add(2, 5, 3) // 10
-
 ```
 
 上面代码的add函数是一个求和函数，利用rest参数，可以向该函数传入任意数目的参数。
