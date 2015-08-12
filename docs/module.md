@@ -106,7 +106,7 @@ import { es6 } from './someModule';
 export default es6;
 ```
 
-上面代码中，export和import语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，h应该采用标准写法。
+上面代码中，export和import语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，应该采用标准写法。
 
 ## 模块的整体输入
 
