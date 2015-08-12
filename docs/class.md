@@ -436,7 +436,44 @@ B.__proto__ === A // true
 B.prototype.__proto__ === A.prototype // true
 ```
 
-上面代码中，子类B的`__proto__`属性指向父类A，子类B的prototype属性的__proto__属性指向父类A的prototype属性。
+上面代码中，子类B的`__proto__`属性指向父类A，子类B的prototype属性的`__proto__`属性指向父类A的prototype属性。
+
+这样的结果是因为，类的继承是按照下面的模式实现的。
+
+```javascript
+class A {
+}
+
+class B {
+}
+
+// B的实例继承A的实例
+Object.setPrototypeOf(B.prototype, A.prototype);
+
+// B继承A的静态属性
+Object.setPrototypeOf(B, A);
+```
+
+《对象的扩展》一章给出过`Object.setPrototypeOf`方法的实现。
+
+```
+Object.setPrototypeOf = function (obj, proto) {
+  obj.__proto__ = proto;
+  return obj;
+}
+```
+
+因此，就得到了上面的结果。
+
+```javascript
+Object.setPrototypeOf(B.prototype, A.prototype);
+// 等同于
+B.prototype.__proto__ = A.prototype;
+
+Object.setPrototypeOf(B, A);
+// 等同于
+B.__proto__ = A;
+```
 
 这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__`属性）是父类（A）；作为一个构造函数，子类（B）的原型（prototype属性）是父类的实例。
 
@@ -446,7 +483,20 @@ B.prototype = new A();
 B.prototype.__proto__ = A.prototype;
 ```
 
-此外，考虑三种特殊情况。第一种特殊情况，子类继承Object类。
+### Extends 的继承目标
+
+extends关键字后面可以跟多种类型的值。
+
+```javascript
+class B extends A {
+}
+```
+
+上面代码的A，只要是一个有prototype属性的函数，就能被B继承。由于函数都有prototype属性，因此A可以是任意函数。
+
+下面，讨论三种特殊情况。
+
+第一种特殊情况，子类继承Object类。
 
 ```javascript
 class A extends Object {
@@ -497,6 +547,37 @@ Object.getPrototypeOf(ColorPoint) === Point
 // true
 ```
 
+因此，可以使用这个方法判断，一个类是否继承了另一个类。
+
+### super关键字
+
+上面讲过，在子类中，super关键字代表父类实例。
+
+```javascript
+class B extends A {
+  get m() {
+    return this._p * super._p;
+  }
+  set m() {
+    throw new Error('该属性只读');
+  }
+}
+```
+
+上面代码中，子类通过super关键字，调用父类的实例。
+
+由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用super关键字。
+
+```javascript
+var obj = {
+  toString() {
+    return "MyObject: " + super.toString();
+  }
+}
+
+obj.toString(); // MyObject: [object Object]
+```
+
 ### 实例的\_\_proto\_\_属性
 
 子类实例的\_\_proto\_\_属性的\_\_proto\_\_属性，指向父类实例的\_\_proto\_\_属性。也就是说，子类的原型的原型，是父类的原型。
@@ -509,7 +590,9 @@ p2.__proto__ === p1.__proto // false
 p2.__proto__.__proto__ === p1.__proto__ // true
 ```
 
-通过子类实例的\_\_proto\_\_属性，可以修改父类实例的行为。
+上面代码中，ColorPoint继承了Point，导致前者原型的原型是后者的原型。
+
+因此，通过子类实例的`__proto__.__proto__`属性，可以修改父类实例的行为。
 
 ```javascript
 p2.__proto__.__proto__.printName = function () {
@@ -521,7 +604,7 @@ p1.printName() // "Ha"
 
 上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
 
-### 原生构造函数的继承
+## 原生构造函数的继承
 
 原生构造函数是指语言内置的构造函数，通常用来生成数据结构，比如`Array()`。以前，这些原生构造函数是无法继承的，即不能自己定义一个Array的子类。
 
@@ -572,13 +655,51 @@ arr[0] // undefined
 
 上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
 
-上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承原生的构造函数。下面是一个自定义Error子类的例子。
+上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承原生的构造函数。因此可以在原生数据结构的基础上，定义自己的数据结构。下面就是定义了一个带版本功能的数组。
 
 ```javascript
-class MyError extends Error {
+class VersionedArray extends Array {
+  constructor() {
+    super();
+    this.history = [[]];
+  }
+  commit() {
+    this.history.push(this.slice());
+  }
+  revert() {
+    this.splice(0, this.length, this.history[this.history.length - 1]);
+  }
+}
+```
+
+上面代码中，VersionedArray结构会通过commit方法，将自己的上一个版本存入history属性，然后通过revert方法，可以撤销当前版本，回到上一个版本。除此之外，VersionedArray依然是一个数组，所有原生的数组方法都可以在它上面调用。
+
+下面是一个自定义Error子类的例子。
+
+```javascript
+class ExtendableError extends Error {
+  constructor(message) {
+    super();
+    this.message = message;
+    this.stack = (new Error()).stack;
+    this.name = this.constructor.name;
+  }
 }
 
-throw new MyError('Something happened!');
+class MyError extends ExtendableError {
+  constructor(m) {
+    super(m);
+  }
+}
+
+var myerror = new MyError('ll');
+myerror.message // "ll"
+myerror instanceof Error // true
+myerror.name // "MyError"
+myerror.stack
+// Error
+//     at MyError.ExtendableError
+//     ...
 ```
 
 ## class的取值函数（getter）和存值函数（setter）
@@ -823,3 +944,39 @@ var y = new Rectangle(3, 4);  // 正确
 
 注意，在函数外部，使用`new.target`会报错。
 
+## Mixin模式的实现
+
+Mixin模式指的是，将多个类的接口“混入”（mix in）另一个类。它在ES6的实现如下。
+
+```javascript
+function mix(...mixins) {
+  class Mix {}
+
+  for (let mixin of mixins) {
+    copyProperties(Mix, mixin);
+    copyProperties(Mix.prototype, mixin.prototype);
+  }
+
+  return Mix;
+}
+
+function copyProperties(target, source) {
+  for (let key of Reflect.ownKeys(source)) {
+    if ( key !== "constructor"
+      && key !== "prototype"
+      && key !== "name"
+    ) {
+      let desc = Object.getOwnPropertyDescriptor(source, key);
+      Object.defineProperty(target, key, desc);
+    }
+  }
+}
+```
+
+上面代码的mix函数，可以将多个对象合成为一个类。使用的时候，只要继承这个类即可。
+
+```javascript
+class DistributedEdit extends mix(Loggable, Serializable) {
+  // ...
+}
+```
