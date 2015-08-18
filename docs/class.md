@@ -335,7 +335,7 @@ class Foo {}
 
 ### 基本用法
 
-Class之间可以通过extends关键字，实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
+Class之间可以通过extends关键字实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
 ```javascript
 class ColorPoint extends Point {}

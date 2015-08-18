@@ -322,7 +322,7 @@ data["[Object HTMLDivElement]"] // metadata
 
 上面代码原意是将一个DOM节点作为对象data的键，但是由于对象只接受字符串作为键名，所以element被自动转为字符串`[Object HTMLDivElement]`。
 
-为了解决这个问题，ES6提供了Map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。
+为了解决这个问题，ES6提供了Map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。
 
 ```javascript
 var m = new Map();
@@ -586,6 +586,110 @@ map.forEach(function(value, key, map) {
 
 上面代码中，forEach方法的回调函数的this，就指向reporter。
 
+### 与其他数据结构的互相转换
+
+**（1）Map转为数组**
+
+前面已经提过，Map转为数组最方便的方法，就是使用扩展运算符（...）。
+
+```javascript
+let myMap = new Map().set(true, 7).set({foo: 3}, ['abc']);
+[...myMap]
+// [ [ true, 7 ], [ { foo: 3 }, [ 'abc' ] ] ]
+```
+
+**（2）数组转为Map**
+
+将数组转入Map构造函数，就可以转为Map。
+
+```javascript
+new Map([[true, 7], [{foo: 3}, ['abc']]])
+// Map {true => 7, Object {foo: 3} => ['abc']}
+```
+
+**（3）Map转为对象**
+
+如果所有Map的键都是字符串，它可以转为对象。
+
+```javascript
+function strMapToObj(strMap) {
+  let obj = Object.create(null);
+  for (let [k,v] of strMap) {
+    obj[k] = v;
+  }
+  return obj;
+}
+
+let myMap = new Map().set('yes', true).set('no', false);
+strMapToObj(myMap)
+// { yes: true, no: false }
+```
+
+**（4）对象转为Map**
+
+```javascript
+function objToStrMap(obj) {
+  let strMap = new Map();
+  for (let k of Object.keys(obj)) {
+    strMap.set(k, obj[k]);
+  }
+  return strMap;
+}
+
+objToStrMap({yes: true, no: false})
+// [ [ 'yes', true ], [ 'no', false ] ]
+```
+
+**（5）Map转为JSON**
+
+Map转为JSON要区分两种情况。一种情况是，Map的键名都是字符串，这时可以选择转为对象JSON。
+
+```javascript
+function strMapToJson(strMap) {
+  return JSON.stringify(strMapToObj(strMap));
+}
+
+let myMap = new Map().set('yes', true).set('no', false);
+strMapToJson(myMap)
+// '{"yes":true,"no":false}'
+```
+
+另一种情况是，Map的键名有非字符串，这时可以选择转为数组JSON。
+
+```javascript
+function mapToArrayJson(map) {
+  return JSON.stringify([...map]);
+}
+
+let myMap = new Map().set(true, 7).set({foo: 3}, ['abc']);
+mapToArrayJson(myMap)
+// '[[true,7],[{"foo":3},["abc"]]]'
+```
+
+**（6）JSON转为Map**
+
+JSON转为Map，正常情况下，所有键名都是字符串。
+
+```javascript
+function jsonToStrMap(jsonStr) {
+  return objToStrMap(JSON.parse(jsonStr));
+}
+
+jsonToStrMap('{"yes":true,"no":false}')
+// Map {'yes' => true, 'no' => false}
+```
+
+但是，有一种特殊情况，整个JSON就是一个数组，且每个数组成员本身，又是一个有两个成员的数组。这时，它可以一一对应地转为Map。这往往是数组转为JSON的逆操作。
+
+```javascript
+function jsonToMap(jsonStr) {
+  return new Map(JSON.parse(jsonStr));
+}
+
+jsonToMap('[[true,7],[{"foo":3},["abc"]]]')
+// Map {true => 7, Object {foo: 3} => ['abc']}
+```
+
 ## WeakMap
 
 WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受原始类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
@@ -595,7 +699,6 @@ WeakMap的设计目的在于，键名是对象的弱引用（垃圾回收机制�
 下面是WeakMap结构的一个例子，可以看到用法上与Map几乎一样。
 
 ```javascript
-
 var wm = new WeakMap();
 var element = document.querySelector(".element");
 
@@ -605,7 +708,6 @@ wm.get(element) // "Original"
 element.parentNode.removeChild(element);
 element = null;
 wm.get(element) // undefined
-
 ```
 
 上面代码中，变量wm是一个WeakMap实例，我们将一个DOM节点element作为键名，然后销毁这个节点，element对应的键就自动消失了，再引用这个键名就返回undefined。
