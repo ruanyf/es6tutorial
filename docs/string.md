@@ -350,14 +350,14 @@ tag函数的其他参数，都是模板字符串各个变量被替换后的值�
 
 tag函数所有参数的实际值如下。
 
-- 第一个参数：['Hello ', ' world ']
+- 第一个参数：['Hello ', ' world ', '']
 - 第二个参数: 15
 - 第三个参数：50
 
 也就是说，tag函数实际上以下面的形式调用。
 
 ```javascript
-tag(['Hello ', ' world '], 15, 50)
+tag(['Hello ', ' world ', ''], 15, 50)
 ```
 
 我们可以按照需要编写tag函数的代码。下面是tag函数的一种写法，以及运行结果。
@@ -369,6 +369,7 @@ var b = 10;
 function tag(s, v1, v2) {
   console.log(s[0]);
   console.log(s[1]);
+  console.log(s[2]);
   console.log(v1);
   console.log(v2);
 
@@ -378,6 +379,7 @@ function tag(s, v1, v2) {
 tag`Hello ${ a + b } world ${ a * b}`;
 // "Hello "
 // " world "
+// ""
 // 15
 // 50
 // "OK"
@@ -413,7 +415,7 @@ msg
 passthru函数采用rest参数的写法如下。
 
 ```javascript
-function passthru(literals,...values) {
+function passthru(literals, ...values) {
   var output = "";
   for (var index = 0; index < values.length; index++) {
     output += literals[index] + values[index];
