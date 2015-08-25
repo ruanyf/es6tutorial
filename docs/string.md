@@ -308,7 +308,7 @@ console.log(`foo ${fn()} bar`);
 // foo Hello World bar
 ```
 
-如果大括号中的值不是字符串，将按照一般的规则转为字符串。不如，大括号中是一个对象，将默认调用对象的toString方法。
+如果大括号中的值不是字符串，将按照一般的规则转为字符串。比如，大括号中是一个对象，将默认调用对象的toString方法。
 
 如果模板字符串中的变量没有声明，将报错。
 
@@ -456,7 +456,7 @@ i18n`Hello ${name}, you have ${amount}:c(CAD) in your bank account.`
 // Hallo Bob, Sie haben 1.234,56 $CA auf Ihrem Bankkonto.
 ```
 
-模板字符串本身并不能取代Mustache之类的模板函数，因为没有条件判断和循环处理功能，但是通过标签函数，你可以自己添加这些功能。
+模板字符串本身并不能取代Mustache之类的模板库，因为没有条件判断和循环处理功能，但是通过标签函数，你可以自己添加这些功能。
 
 ```javascript
 // 下面的hashTemplate函数

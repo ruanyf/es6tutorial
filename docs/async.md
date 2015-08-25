@@ -642,13 +642,13 @@ function next(ret) {
 
 上面代码中，next 函数的内部代码，一共只有四行命令。
 
-- 第一行，检查当前是否为 Generator 函数的最后一步，如果是就返回。
+第一行，检查当前是否为 Generator 函数的最后一步，如果是就返回。
 
-- 第二行，确保每一步的返回值，是 Promise 对象。
+第二行，确保每一步的返回值，是 Promise 对象。
 
-- 第三行，使用 then 方法，为返回值加上回调函数，然后通过 onFulfilled 函数再次调用 next 函数。
+第三行，使用 then 方法，为返回值加上回调函数，然后通过 onFulfilled 函数再次调用 next 函数。
 
-- 第四行，在参数不符合要求的情况下（参数非 Thunk 函数和 Promise 对象），将 Promise 对象的状态改为 rejected，从而终止执行。
+第四行，在参数不符合要求的情况下（参数非 Thunk 函数和 Promise 对象），将 Promise 对象的状态改为 rejected，从而终止执行。
 
 ### 处理并发的异步操作
 
