@@ -227,6 +227,10 @@ let obj = {
 
 ```javascript
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
+// 或者
+NodeList.prototype[Symbol.iterator] = [][Symbol.iterator];
+
+[...document.querySelectorAll('div')] // 可以执行了
 ```
 
 如果Symbol.iterator方法返回的不是遍历器，解释引擎将会报错。
