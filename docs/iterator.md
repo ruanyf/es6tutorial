@@ -223,7 +223,7 @@ let obj = {
 };
 ```
 
-对于类似数组的对象（存在数值键名和length属性），部署Iterator接口，有一个简便方法，就是`Symbol.iterator`方法直接引用数值的Iterator接口。
+对于类似数组的对象（存在数值键名和length属性），部署Iterator接口，有一个简便方法，就是`Symbol.iterator`方法直接引用数组的Iterator接口。
 
 ```javascript
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
