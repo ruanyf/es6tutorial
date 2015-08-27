@@ -413,7 +413,7 @@ Trait也是一种修饰器，功能与Mixin类型，但是提供更多功能，�
 下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的traits修饰器，不仅可以接受对象，还可以接受ES6类作为参数。
 
 ```javascript
-import {traits } from 'traits-decorator'
+import { traits } from 'traits-decorator'
 
 class TFoo {
   foo() { console.log('foo') }
