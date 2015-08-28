@@ -533,7 +533,7 @@ $ babel --optional es7.decorators
 脚本中打开的命令如下。
 
 ```javascript
-babel.transfrom("code", {optional: ["es7.decorators"]})
+babel.transform("code", {optional: ["es7.decorators"]})
 ```
 
 Babel的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选Experimental，就能支持Decorator的在线转码。

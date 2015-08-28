@@ -56,7 +56,7 @@ then方法可以接受两个回调函数作为参数。第一个回调函数是P
 
 ```javascript
 function timeout(ms) {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     setTimeout(resolve, ms, 'done');
   });
 }
@@ -67,6 +67,26 @@ timeout(100).then((value) => {
 ```
 
 上面代码中，timeout方法返回一个Promise实例，表示一段时间以后才会发生的结果。过了指定的时间（ms参数）以后，Promise实例的状态变为Resolved，就会触发then方法绑定的回调函数。
+
+下面是异步加载图片的例子。
+
+```javascript
+function loadImageAsync(url) {
+  return new Promise(function(resolve, reject) {
+    var image = new Image();
+
+    image.onload = function() {
+      resolve(image);
+    };
+
+    image.onerror = function() {
+      reject(new Error('Could not load image at ' + url));
+    };
+
+    image.src = url;
+  });
+}
+```
 
 下面是一个用Promise对象实现的Ajax操作的例子。
 
