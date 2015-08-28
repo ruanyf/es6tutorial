@@ -150,9 +150,9 @@ for (var f of flat(arr)){
 
 ### 与Iterator的关系
 
-上一章说过，任意一个对象的Symbol.iterator属性，等于该对象的遍历器函数，调用该函数会返回该对象的一个遍历器。
+上一章说过，任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器函数，调用该函数会返回该对象的一个遍历器。
 
-遍历器本身也是一个对象，它的Symbol.iterator属性执行后，返回自身。
+遍历器本身也是一个对象，它的`Symbol.iterator`方法执行后，返回自身。
 
 ```javascript
 function* gen(){
@@ -331,7 +331,7 @@ try {
 
 上面代码之所以只捕获了a，是因为函数体外的catch语句块，捕获了抛出的a错误以后，就不会再继续执行try语句块了。
 
-如果遍历器函数内部没有部署try...catch代码块，那么throw方法抛出的错误，将被外部try...catch代码块捕获。
+如果Generator函数内部没有部署try...catch代码块，那么throw方法抛出的错误，将被外部try...catch代码块捕获。
 
 ```javascript
 var g = function* () {
@@ -355,7 +355,7 @@ try {
 
 上面代码中，遍历器函数g内部，没有部署try...catch代码块，所以抛出的错误直接被外部catch代码块捕获。
 
-如果遍历器函数内部部署了try...catch代码块，那么遍历器的throw方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
+如果Generator函数内部部署了try...catch代码块，那么遍历器的throw方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
 
 ```javascript
 var gen = function* gen(){
@@ -374,7 +374,7 @@ try {
 // hello
 ```
 
-上面代码只输出hello就结束了，因为第二次调用next方法时，遍历器状态已经变成终止了。但是，如果使用throw方法抛出错误，不会影响遍历器状态。
+上面代码只输出hello就结束了，因为第二次调用next方法时，遍历器状态已经变成终止了。但是，如果使用throw命令抛出错误，不会影响遍历器状态。
 
 ```javascript
 var gen = function* gen(){
@@ -529,7 +529,7 @@ for(let value of delegatingIterator) {
 // "Ok, bye."
 ```
 
-上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Genertor函数，有递归的效果。
+上面代码中，delegatingIterator是代理者，delegatedIterator是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Generator函数，有递归的效果。
 
 yield*语句等同于在Generator函数内部，部署一个for...of循环。
 

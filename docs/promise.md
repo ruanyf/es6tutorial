@@ -260,7 +260,7 @@ someAsyncThing().then(function() {
 });
 ```
 
-上面代码中，someAsyncThing函数产生的Promise对象会报错，但是由于没有调用catch方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。
+上面代码中，someAsyncThing函数产生的Promise对象会报错，但是由于没有指定catch方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
@@ -272,7 +272,7 @@ promise.then(function(value) { console.log(value) });
 // Uncaught Error: test
 ```
 
-上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定catch语句，就冒泡到最外层，成了未捕获的错误。
+上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用try...catch语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
 
 Node.js有一个unhandledRejection事件，专门监听未捕获的reject错误。
 

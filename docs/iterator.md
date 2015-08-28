@@ -95,7 +95,7 @@ interface IterationResult {
 
 Iterator接口的目的，就是为所有数据结构，提供了一种统一的访问机制，即for...of循环（详见下文）。当使用for...of循环遍历某种数据结构时，该循环会自动去寻找Iterator接口。
 
-ES6规定，默认的Iterator接口部署在数据结构的`Symbol.iterator`属性，或者一个数据结构只要具有`Symbol.iterator`属性，就可以认为是“可遍历的”（iterable）。也就是说，调用`Symbol.iterator`方法，就会得到当前数据结构的默认遍历器。`Symbol.iterator`本身是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一节）。
+ES6规定，默认的Iterator接口部署在数据结构的`Symbol.iterator`属性，或者说，一个数据结构只要具有`Symbol.iterator`属性，就可以认为是“可遍历的”（iterable）。调用`Symbol.iterator`方法，就会得到当前数据结构的默认遍历器。`Symbol.iterator`本身是一个表达式，返回Symbol对象的iterator属性，这是一个预定义好的、类型为Symbol的特殊值，所以要放在方括号内（请参考Symbol一章）。
 
 在ES6中，有三类数据结构原生具备Iterator接口：数组、某些类似数组的对象、Set和Map结构。
 
@@ -223,7 +223,7 @@ let obj = {
 };
 ```
 
-对于类似数组的对象（存在数值键名和length属性），部署Iterator接口，有一个简便方法，就是`Symbol.iterator`方法直接引用数值的Iterator接口。
+对于类似数组的对象（存在数值键名和length属性），部署Iterator接口，有一个简便方法，就是`Symbol.iterator`方法直接引用数组的Iterator接口。
 
 ```javascript
 NodeList.prototype[Symbol.iterator] = Array.prototype[Symbol.iterator];
@@ -265,10 +265,9 @@ while (!$result.done) {
 
 **（1）解构赋值**
 
-对数组和Set结构进行解构赋值时，会默认调用iterator接口。
+对数组和Set结构进行解构赋值时，会默认调用`Symbol.iterator`方法。
 
 ```javascript
-
 let set = new Set().add('a').add('b').add('c');
 
 let [x,y] = set;
@@ -276,7 +275,6 @@ let [x,y] = set;
 
 let [first, ...rest] = set;
 // first='a'; rest=['b','c'];
-
 ```
 
 **（2）扩展运算符**
@@ -337,7 +335,6 @@ iterator.next() // { value: undefined, done: true }
 《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个遍历器。
 
 ```javascript
-
 var arr = [1, 5, 7];
 var arrEntries = arr.entries();
 
@@ -346,7 +343,6 @@ arrEntries.toString()
 
 arrEntries === arrEntries[Symbol.iterator]()
 // true
-
 ```
 
 上面代码中，entries方法返回的是一个遍历器（iterator），本质上就是调用了`Symbol.iterator`方法。
@@ -354,7 +350,6 @@ arrEntries === arrEntries[Symbol.iterator]()
 字符串是一个类似数组的对象，也原生具有Iterator接口。
 
 ```javascript
-
 var someString = "hi";
 typeof someString[Symbol.iterator]
 // "function"
@@ -364,7 +359,6 @@ var iterator = someString[Symbol.iterator]();
 iterator.next()  // { value: "h", done: false }
 iterator.next()  // { value: "i", done: false }
 iterator.next()  // { value: undefined, done: true }
-
 ```
 
 上面代码中，调用`Symbol.iterator`方法返回一个遍历器，在这个遍历器上可以调用next方法，实现对于字符串的遍历。

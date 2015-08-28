@@ -67,7 +67,7 @@ export function multiply (x, y) {
 
 import {firstName, lastName, year} from './profile';
 
-function sfirsetHeader(element) {
+function setName(element) {
   element.textContent = firstName + ' ' + lastName;
 }
 ```
@@ -124,7 +124,7 @@ export function circumference(radius) {
 }
 ```
 
-然后，main.js文件输入circlek.js模块。
+然后，main.js文件输入circle.js模块。
 
 ```javascript
 // main.js
@@ -296,7 +296,7 @@ export { area as circleArea } from 'circle';
 
 module math from "circleplus";
 import exp from "circleplus";
-console.log(exp(math.pi));
+console.log(exp(math.PI));
 ```
 
 上面代码中的"import exp"表示，将circleplus模块的默认方法加载为exp方法。

@@ -53,7 +53,7 @@ typeof Point // "function"
 
 上面代码表明，类的数据类型就是函数。
 
-构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，除了constructor方法以外，类的方法都定义在类的prototype属性上面。
+构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的prototype属性上面。
 
 ```javascript
 class Point {
@@ -73,10 +73,22 @@ class Point {
 // 等同于
 
 Point.prototype = {
+  constructor(){},
   toString(){},
   toValue(){}
 }
 ```
+
+在类的实例上面调用方法，其实就是调用原型上的方法。
+
+```javascript
+class B {}
+let b = new B();
+
+b.constructor === B.prototype.constructor // true
+```
+
+上面代码中，b是B类的实例，它的constructor方法就是B类原型的constructor方法。
 
 由于类的方法（除constructor以外）都定义在prototype对象上面，所以类的新方法可以添加在prototype对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
 
@@ -419,7 +431,7 @@ cp instanceof Point // true
 
 ### 类的prototype属性和\_\_proto\_\_属性
 
-在ES5中，每一个对象都有`__proto__`属性，指向对应的构造函数的prototype属性。Class作为构造函数的语法糖，同时有prototype属性和`__proto__`属性，因此同时存在两条继承链。
+大多数浏览器的ES5实现之中，每一个对象都有`__proto__`属性，指向对应的构造函数的prototype属性。Class作为构造函数的语法糖，同时有prototype属性和`__proto__`属性，因此同时存在两条继承链。
 
 （1）子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
 
