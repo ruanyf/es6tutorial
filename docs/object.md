@@ -145,18 +145,6 @@ person.firstName.name // "get firstName"
 
 上面代码中，方法的name属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上get。如果是存值函数，方法名的前面会加上set。
 
-```javascript
-var doSomething = function() {
-  // ...
-};
-
-doSomething.bind().name
-// "bound doSomething"
-
-(new Function()).name
-// "anonymous"
-```
-
 有两种特殊情况：bind方法创造的函数，name属性返回“bound”加上原函数的名字；Function构造函数创造的函数，name属性返回“anonymous”。
 
 ```javascript
