@@ -31,7 +31,7 @@ Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
 // [ "a", "b" , "c" ]
 ```
 
-对于还没有部署该方法的浏览器，可以用Array.prototyp.slice方法替代。
+对于还没有部署该方法的浏览器，可以用Array.prototype.slice方法替代。
 
 ```javascript
 const toArray = (() =>
