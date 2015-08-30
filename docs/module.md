@@ -296,7 +296,7 @@ export { area as circleArea } from 'circle';
 
 module math from "circleplus";
 import exp from "circleplus";
-console.log(exp(math.PI));
+console.log(exp(math.E));
 ```
 
 上面代码中的"import exp"表示，将circleplus模块的默认方法加载为exp方法。

@@ -116,6 +116,11 @@ $ node --v8-options | grep harmony
 ```bash
 $ npm install -g es-checker
 $ es-checker
+
+=========================================
+Passes 24 feature Dectations
+Your runtime supports 57% of ECMAScript 6
+=========================================
 ```
 
 ## Babel转码器
@@ -206,6 +211,19 @@ Babel配合Browserify一起使用，可以生成浏览器能够直接加载的�
 ```bash
 $ browserify script.js -t babelify --outfile bundle.js
 ```
+
+在`package.json`设置下面的代码，就不用每次命令行都输入参数了。
+
+```javascript
+{
+  // ...
+  "browserify": {
+    "transform": [
+      ["babelify", { "stage": [0] }]
+    ]
+  }
+}
+``
 
 ## Traceur转码器
 

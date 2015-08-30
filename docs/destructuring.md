@@ -44,13 +44,10 @@ tail // [2, 3, 4]
 
 ```javascript
 var [foo] = [];
-var [foo] = 1;
-var [foo] = false;
-var [foo] = NaN;
 var [bar, foo] = [1];
 ```
 
-以上几种情况都属于解构不成功，foo的值都会等于undefined。这是因为原始类型的值，会自动转为对象，比如数值1转为`new Number(1)`，从而导致foo取到undefined。
+以上两种情况都属于解构不成功，foo的值都会等于undefined。
 
 另一种情况是不完全解构，即等号左边的模式，只匹配一部分的等号右边的数组。这种情况下，解构依然可以成功。
 
@@ -65,17 +62,18 @@ b // 2
 d // 4
 ```
 
-上面代码的两个例子，都属于不完全解构，但是可以成功。
+上面两个例子，都属于不完全解构，但是可以成功。
 
-如果对undefined或null进行解构，会报错。
+如果等号的右边不是数组（或者严格地说，不是可遍历的结构，参见《Iterator》一章），那么将会报错。
 
 ```javascript
 // 报错
+let [foo] = 1;
+let [foo] = false;
+let [foo] = NaN;
 let [foo] = undefined;
 let [foo] = null;
 ```
-
-这是因为解构只能用于数组或对象。其他原始类型的值都可以转为相应的对象，但是，undefined和null不能转为对象，因此报错。
 
 解构赋值允许指定默认值。
 
@@ -206,6 +204,27 @@ x // null
 ```
 
 上面代码中，如果x属性等于null，就不严格相等于undefined，导致默认值不会生效。
+
+如果解构失败，变量的值等于undefined。
+
+```javascript
+var {foo} = {bar: 'baz'}
+foo // undefined
+```
+
+如果解构模式是嵌套的对象，而且子对象所在的父属性不存在，那么将会报错。
+
+```javascript
+// 报错
+var {foo: {bar}} = {baz: 'baz'}
+```
+
+上面代码中，等号左边对象的foo属性，对应一个子对象。该子对象的bar属性，解构时会报错。原因很简单，因为foo这时等于undefined，再取子属性就会报错，请看下面的代码。
+
+```javascript
+var _tmp = {baz: 'baz'};
+_tmp.foo.bar // 报错
+```
 
 如果要将一个已经声明的变量用于解构赋值，必须非常小心。
 
