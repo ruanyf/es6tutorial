@@ -286,14 +286,14 @@ function authorize(user, action) {
 var x = 1;
 var y = 2;
 
-console.log(`${x} + ${y} = ${x+y}`)
+`${x} + ${y} = ${x + y}`
 // "1 + 2 = 3"
 
-console.log(`${x} + ${y*2} = ${x+y*2}`)
+`${x} + ${y * 2} = ${x + y * 2}`
 // "1 + 4 = 5"
 
 var obj = {x: 1, y: 2};
-console.log(`${obj.x + obj.y}`)
+`${obj.x + obj.y}`
 // 3
 ```
 
@@ -304,7 +304,7 @@ function fn() {
   return "Hello World";
 }
 
-console.log(`foo ${fn()} bar`);
+`foo ${fn()} bar`
 // foo Hello World bar
 ```
 
@@ -316,6 +316,13 @@ console.log(`foo ${fn()} bar`);
 // 变量place没有声明
 var msg = `Hello, ${place}`;
 // 报错
+```
+
+由于模板字符串的大括号内部，就是执行JavaScript代码，因此如果表达式放在引号之中，将会原样输出。
+
+```javascript
+`Hello ${'World'}`
+// "Hello World"
 ```
 
 ## 标签模板

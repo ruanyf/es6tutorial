@@ -430,3 +430,24 @@ ES6新增了6个三角函数方法。
 - Math.asinh(x) 返回x的反双曲正弦（inverse hyperbolic sine）
 - Math.acosh(x) 返回x的反双曲余弦（inverse hyperbolic cosine）
 - Math.atanh(x) 返回x的反双曲正切（inverse hyperbolic tangent）
+
+## 指数运算符
+
+ES7新增了一个指数运算符（`**`），目前Babel转码器已经支持。
+
+```javascript
+2 ** 2 // 4
+2 ** 3 // 8
+```
+
+指数运算符可以与等号结合，形成一个新的赋值运算符（`**=`）。
+
+```javascript
+let a = 2;
+a **= 2;
+// 等同于 a = a * a;
+
+let b = 3;
+b **= 3;
+// 等同于 b = b * b * b;
+```

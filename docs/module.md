@@ -20,11 +20,13 @@ import { stat, exists, readFile } from 'fs';
 
 所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
 
+需要注意的是，ES6的模块自动采用严格模块，不管你有没有在模块头部加上`"use strict"`。
+
 ## export命令
 
-模块功能主要由两个命令构成：export和import。export命令用于用户自定义模块，规定对外接口；import命令用于输入其他模块提供的功能，同时创造命名空间（namespace），防止函数名冲突。
+模块功能主要由两个命令构成：export和import。export命令用于规定模块的对外接口，import命令用于输入其他模块提供的功能。
 
-ES6允许将独立的JS文件作为模块，也就是说，允许一个JavaScript脚本文件调用另一个脚本文件。该文件内部的所有变量，外部无法获取，必须使用export关键字输出变量。下面是一个JS文件，里面使用export命令输出变量。
+一个模块就是一个独立的文件。该文件内部的所有变量，外部无法获取。如果你希望外部能够读取模块内部的某个变量，就必须使用export关键字输出该变量。下面是一个JS文件，里面使用export命令输出变量。
 
 ```javascript
 // profile.js
@@ -58,6 +60,23 @@ export function multiply (x, y) {
 
 上面代码对外输出一个函数multiply。
 
+通常情况下，export输出的变量就是本来的名字，但是可以使用as关键字重命名。
+
+```javascript
+function v1() { ... }
+function v2() { ... }
+
+export {
+  v1 as streamV1,
+  v2 as streamV2,
+  v2 as streamLatestVersion
+};
+```
+
+上面代码使用as关键字，重命名了函数v1和v2的对外接口。重命名后，v2可以用不同的名字输出两次。
+
+最后，export命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的import命令也是如此。
+
 ## import命令
 
 使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
@@ -72,9 +91,9 @@ function setName(element) {
 }
 ```
 
-上面代码属于另一个文件main.js，import命令就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
+上面代码的import命令，就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
 
-如果想为输入的变量重新取一个名字，import语句中要使用as关键字，将输入的变量重命名。
+如果想为输入的变量重新取一个名字，import命令要使用as关键字，将输入的变量重命名。
 
 ```javascript
 import { lastName as surname } from './profile';
@@ -129,7 +148,7 @@ export function circumference(radius) {
 ```javascript
 // main.js
 
-import { area, circumference } from 'circle';
+import { area, circumference } from './circle';
 
 console.log("圆面积：" + area(4));
 console.log("圆周长：" + circumference(14));
@@ -138,7 +157,7 @@ console.log("圆周长：" + circumference(14));
 上面写法是逐一指定要输入的方法。另一种写法是整体输入。
 
 ```javascript
-import * as circle from 'circle';
+import * as circle from './circle';
 
 console.log("圆面积：" + circle.area(4));
 console.log("圆周长：" + circle.circumference(14));
@@ -151,7 +170,7 @@ module命令可以取代import语句，达到整体输入模块的作用。
 ```javascript
 // main.js
 
-module circle from 'circle';
+module circle from './circle';
 
 console.log("圆面积：" + circle.area(4));
 console.log("圆周长：" + circle.circumference(14));
@@ -161,7 +180,7 @@ module命令后面跟一个变量，表示输入的模块定义在该变量上�
 
 ## export default命令
 
-从前面的例子可以看出，使用import的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
+从前面的例子可以看出，使用import命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
 
 为了给用户提供方便，让他们不用阅读文档就能加载模块，就要用到`export default`命令，为模块指定默认输出。
 
@@ -182,7 +201,7 @@ import customName from './export-default';
 customName(); // 'foo'
 ```
 
-上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法。需要注意的是，这时import命令后面，不使用大括号。
+上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时import命令后面，不使用大括号。
 
 export default命令用在非匿名函数前，也是可以的。
 
@@ -226,8 +245,16 @@ export function crc32(){};
 export default function (x, y) {
   return x * y;
 };
+
+// 或者
+
+function add(x, y) {
+  return x * y;
+};
+export {add as default};
+
 // app.js
-import { default } from 'modules';
+import { default as xxx } from 'modules';
 ```
 
 有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
