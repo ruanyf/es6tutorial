@@ -34,7 +34,6 @@ if (arguments.length === 1) {
 ES6允许为函数的参数设置默认值，即直接写在参数定义的后面。
 
 ```javascript
-
 function log(x, y = 'World') {
   console.log(x, y);
 }
@@ -42,13 +41,11 @@ function log(x, y = 'World') {
 log('Hello') // Hello World
 log('Hello', 'China') // Hello China
 log('Hello', '') // Hello
-
 ```
 
 可以看到，ES6的写法比ES5简洁许多，而且非常自然。下面是另一个例子。
 
 ```javascript
-
 function Point(x = 0, y = 0) {
   this.x = x;
   this.y = y;
@@ -56,7 +53,6 @@ function Point(x = 0, y = 0) {
 
 var p = new Point();
 // p = { x:0, y:0 }
-
 ```
 
 除了简洁，ES6的写法还有两个好处：首先，阅读代码的人，可以立刻意识到哪些参数是可以省略的，不用查看函数体或文档；其次，有利于将来的代码优化，即使未来的版本彻底拿到这个参数，也不会导致以前的代码无法运行。
@@ -64,11 +60,9 @@ var p = new Point();
 默认值的写法非常灵活，下面是一个为对象属性设置默认值的例子。
 
 ```javascript
-
 fetch(url, { body = '', method = 'GET', headers = {} }){
   console.log(method);
 }
-
 ```
 
 上面代码中，传入函数fetch的第二个参数是一个对象，调用的时候可以为它的三个属性设置默认值。
@@ -76,11 +70,9 @@ fetch(url, { body = '', method = 'GET', headers = {} }){
 甚至还可以设置双重默认值。
 
 ```javascript
-
 fetch(url, { method = 'GET' } = {}){
   console.log(method);
 }
-
 ```
 
 上面代码中，调用函数fetch时，如果不含第二个参数，则默认值为一个空对象；如果包含第二个参数，则它的method属性默认值为GET。
@@ -88,7 +80,6 @@ fetch(url, { method = 'GET' } = {}){
 定义了默认值的参数，必须是函数的尾部参数，其后不能再有其他无默认值的参数。这是因为有了默认值以后，该参数可以省略，只有位于尾部，才可能判断出到底省略了哪些参数。
 
 ```javascript
-
 // 以下两种写法都是错的
 
 function f(x = 5, y) {
@@ -96,20 +87,17 @@ function f(x = 5, y) {
 
 function f(x, y = 5, z) {
 }
-
 ```
 
 如果传入undefined，将触发该参数等于默认值，null则没有这个效果。
 
 ```javascript
-
 function foo(x = 5, y = 6){
   console.log(x,y);
 }
 
 foo(undefined, null)
 // 5 null
-
 ```
 
 上面代码中，x参数对应undefined，结果触发了默认值，y参数等于null，就没有触发默认值。
@@ -117,11 +105,9 @@ foo(undefined, null)
 指定了默认值以后，函数的length属性，将返回没有指定默认值的参数个数。也就是说，指定了默认值后，length属性将失真。
 
 ```javascript
-
 (function(a){}).length // 1
 (function(a = 5){}).length // 0
 (function(a, b, c = 5){}).length // 2
-
 ```
 
 上面代码中，length属性的返回值，等于函数的参数个数减去指定了默认值的参数个数。
@@ -129,7 +115,6 @@ foo(undefined, null)
 利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误。
 
 ```javascript
-
 function throwIfMissing() {
   throw new Error('Missing parameter');
 }
@@ -140,7 +125,6 @@ function foo(mustBeProvided = throwIfMissing()) {
 
 foo()
 // Error: Missing parameter
-
 ```
 
 上面代码的foo函数，如果调用的时候没有参数，就会调用默认值throwIfMissing函数，从而抛出一个错误。
@@ -222,7 +206,6 @@ const sortNumbers = (...numbers) => numbers.sort();
 rest参数中的变量代表一个数组，所以数组特有的方法都可以用于这个变量。下面是一个利用rest参数改写数组push方法的例子。
 
 ```javascript
-
 function push(array, ...items) {
   items.forEach(function(item) {
     array.push(item);
@@ -232,33 +215,41 @@ function push(array, ...items) {
 
 var a = [];
 push(a, 1, 2, 3)
-
 ```
 
 注意，rest参数之后不能再有其他参数（即只能是最后一个参数），否则会报错。
 
 ```javascript
-
 // 报错
 function f(a, ...b, c) {
   // ...
 }
-
 ```
 
 函数的length属性，不包括rest参数。
 
 ```javascript
-
 (function(a) {}).length  // 1
 (function(...a) {}).length  // 0
 (function(a, ...b) {}).length  // 1
-
 ```
 
 ## 扩展运算符
 
-扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。该运算符主要用于函数调用。
+扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。
+
+```javascript
+console.log(...[1, 2, 3])
+// 1 2 3
+
+console.log(1, ...[2, 3, 4], 5)
+// 1 2 3 4 5
+
+[...document.querySelectorAll('div')]
+// <- [<div>, <div>, <div>]
+```
+
+该运算符主要用于函数调用。
 
 ```javascript
 function push(array, ...items) {
@@ -275,12 +266,6 @@ add(...numbers) // 42
 
 上面代码中，`array.push(...items)`和`add(...numbers)`这两行，都是函数的调用，它们的都使用了扩展运算符。该运算符将一个数组，变为参数序列。
 
-下面是Date函数的参数使用扩展运算符的例子。
-
-```javascript
-const date = new Date(...[2015, 1, 1]);
-```
-
 由于扩展运算符可以展开数组，所以不再需要apply方法，将数组转为函数的参数了。
 
 ```javascript
@@ -293,14 +278,6 @@ f.apply(null, args);
 function f (x, y, z){}
 var args = [0, 1, 2];
 f(...args);
-```
-
-扩展运算符与正常的函数参数可以结合使用，非常灵活。
-
-```javascript
-function f(v, w, x, y, z) { }
-var args = [0, 1];
-f(-1, ...args, 2, ...[3]);
 ```
 
 下面是扩展运算符取代apply方法的一个实际的例子，应用Math.max方法，简化求出一个数组最大元素的写法。
@@ -316,7 +293,7 @@ Math.max(...[14, 3, 77])
 Math.max(14, 3, 77);
 ```
 
-上面代码表示，由于JavaScript不提供求数组最大元素的函数，所以只能套用Math.max函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用Math.max了。
+上面代码表示，由于JavaScript不提供求数组最大元素的函数，所以只能套用`Math.max`函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用`Math.max`了。
 
 另一个例子是通过push函数，将一个数组添加到另一个数组的尾部。
 
@@ -334,22 +311,36 @@ arr1.push(...arr2);
 
 上面代码的ES5写法中，push方法的参数不能是数组，所以只好通过apply方法变通使用push方法。有了扩展运算符，就可以直接将数组传入push方法。
 
-扩展运算符还可以用于数组的赋值。
+扩展运算符与正常的函数参数可以结合使用，非常灵活。
 
 ```javascript
-var a = [1];
-var b = [2, 3, 4];
-var c = [6, 7];
-var d = [0, ...a, ...b, 5, ...c];
-
-d
-// [0, 1, 2, 3, 4, 5, 6, 7]
+function f(v, w, x, y, z) { }
+var args = [0, 1];
+f(-1, ...args, 2, ...[3]);
 ```
 
-上面代码其实也提供了，将一个数组拷贝进另一个数组的便捷方法。
+扩展运算符可以简化很多种ES5的写法。
 
 ```javascript
-const arr2 = [...arr1];
+// ES5
+[1, 2].concat(more)
+// ES6
+[1, 2, ...more]
+
+// ES5
+list.push.apply(list, [3, 4])
+// ES6
+list.push(...[3, 4])
+
+// ES5
+a = list[0], rest = list.slice(1)
+// ES6
+[a, ...rest] = list
+
+// ES5
+new (Date.bind.apply(Date, [null, 2015, 1, 1]))
+// ES6
+new Date(...[2015, 1, 1]);
 ```
 
 扩展运算符也可以与解构赋值结合起来，用于生成数组。
@@ -424,7 +415,6 @@ let arr = [...map.keys()]; // [1, 2, 3]
 ```
 
 Generator函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
-
 
 ```javascript
 var go = function*(){
@@ -569,7 +559,19 @@ var handler = {
 };
 ```
 
-上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，this.doSomething这一行会报错，因为此时this指向document对象。
+上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，`this.doSomething`这一行会报错，因为此时this指向全局对象。
+
+```javascript
+function Timer () {
+  this.seconds = 0
+  setInterval(() => this.seconds++, 1000)
+}
+var timer = new Timer()
+setTimeout(() => console.log(timer.seconds), 3100)
+// 3
+```
+
+上面代码中，`Timer`函数内部的`setInterval`调用了`this.seconds`属性，通过箭头函数将`this`绑定在Timer的实例对象。否则，输出结果是0，而不是3。
 
 由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
 

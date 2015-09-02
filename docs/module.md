@@ -20,7 +20,7 @@ import { stat, exists, readFile } from 'fs';
 
 所以，ES6可以在编译时就完成模块编译，效率要比CommonJS模块高。
 
-需要注意的是，ES6的模块自动采用严格模块，不管你有没有在模块头部加上`"use strict"`。
+需要注意的是，ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
 
 ## export命令
 
