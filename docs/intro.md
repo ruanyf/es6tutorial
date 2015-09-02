@@ -223,7 +223,7 @@ $ browserify script.js -t babelify --outfile bundle.js
     ]
   }
 }
-``
+```
 
 ## Traceur转码器
 
