@@ -55,7 +55,7 @@ a[6](); // 6
 
 ### 不存在变量提升
 
-let不像var那样，会发生“变量提升”现象。
+let不像var那样发生“变量提升”现象。
 
 ```javascript
 function do_something() {
