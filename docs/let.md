@@ -55,7 +55,7 @@ a[6](); // 6
 
 ### 不存在变量提升
 
-let不像var那样，会发生“变量提升”现象。
+`let`不像`var`那样，会发生“变量提升”现象。
 
 ```javascript
 function do_something() {
@@ -64,9 +64,9 @@ function do_something() {
 }
 ```
 
-上面代码在声明foo之前，就使用这个变量，结果会抛出一个错误。
+上面代码在声明`foo`之前，就使用这个变量，结果会抛出一个错误。
 
-这也意味着typeof不再是一个百分之百安全的操作。
+这也意味着`typeof`不再是一个百分之百安全的操作。
 
 ```javascript
 if (1) {
@@ -75,7 +75,9 @@ if (1) {
 }
 ```
 
-上面代码中，由于块级作用域内typeof运行时，x还没有值，所以会抛出一个ReferenceError。
+上面代码中，由于块级作用域内typeof运行时，x还没有值，所以会抛出一个`ReferenceError`。
+
+### 暂时性死区
 
 只要块级作用域内存在let命令，它所声明的变量就“绑定”（binding）这个区域，不再受外部的影响。
 
@@ -137,7 +139,6 @@ bar();
 
 上面代码中，函数bar的参数func，默认是一个匿名函数，返回值为变量foo。这个匿名函数的作用域就不是bar。这个匿名函数声明时，是处在外层作用域，所以内部的foo指向函数体外的声明，输出outer。它实际上等同于下面的代码。
 
-
 ```javascript
 let foo = 'outer';
 let f = x => foo;
@@ -149,6 +150,10 @@ function bar(func = f) {
 
 bar();
 ```
+
+ES6规定暂时性死区和不存在变量提升，主要是为了减少运行时错误，防止在变量声明前就使用这个变量，从而导致意料之外的行为。这样的错误在ES5是很常见的，现在有了这种规定，避免此类错误就很容易了。
+
+总之，暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。
 
 ### 不允许重复声明
 
@@ -235,6 +240,31 @@ function f1() {
 
 上面的函数有两个代码块，都声明了变量n，运行后输出5。这表示外层代码块不受内层代码块的影响。如果使用var定义变量n，最后输出的值就是10。
 
+ES6允许块级作用域的任意嵌套。
+
+```javascript
+{{{{{let insane = 'Hello World'}}}}};
+insane // "Hello World"
+```
+
+上面代码使用了一个五层的块级作用域。外层作用域无法读取内层作用域的变量。
+
+```javascript
+{{{{
+  {let insane = 'Hello World'}
+  console.log(insane); // 报错
+}}}};
+```
+
+内层作用域可以定义外层作用域的同名变量。
+
+```javascript
+{{{{
+  let insane = 'Hello World';
+  {let insane = 'Hello World';}
+}}}};
+```
+
 块级作用域的出现，实际上使得获得广泛应用的立即执行匿名函数（IIFE）不再必要了。
 
 ```javascript
@@ -267,6 +297,29 @@ function f() { console.log('I am outside!'); }
 
 上面代码在ES5中运行，会得到“I am inside!”，但是在ES6中运行，会得到“I am outside!”。这是因为ES5存在函数提升，不管会不会进入if代码块，函数声明都会提升到当前作用域的顶部，得到执行；而ES6支持块级作用域，不管会不会进入if代码块，其内部声明的函数皆不会影响到作用域的外部。
 
+```javascript
+{
+  let a = 'secret';
+  function f() {
+    return a;
+  }
+}
+f() // 报错
+```
+
+上面代码中，块级作用域外部，无法调用块级作用域内部定义的函数。如果确实需要调用，就要像下面这样处理。
+
+```javascript
+let f;
+{
+  let a = 'secret';
+  f = function () {
+    return a;
+  }
+}
+f() // "secret"
+```
+
 需要注意的是，如果在严格模式下，函数只能在顶层作用域和函数内声明，其他情况（比如if代码块、循环代码块）的声明都会报错。
 
 ## const命令
@@ -293,10 +346,10 @@ if (true) {
   const MAX = 5;
 }
 
-// 常量MAX在此处不可得
+MAX // Uncaught ReferenceError: MAX is not defined
 ```
 
-const命令也不存在提升，只能在声明的位置后面使用。
+const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
 
 ```javascript
 if (true) {

@@ -64,6 +64,23 @@ getPoint()
 // {x:1, y:10}
 ```
 
+赋值器和取值器，也可以采用简洁写法。
+
+```javascript
+var cart = {
+  _wheels: 4,
+  get wheels () {
+    return this._wheels
+  },
+  set wheels (value) {
+    if (value < this._wheels) {
+      throw new Error('hey, come back here!')
+    }
+    this._wheels = value
+  }
+}
+```
+
 ## 属性名表达式
 
 JavaScript语言定义对象的属性，有两种方法。
