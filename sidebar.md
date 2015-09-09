@@ -21,7 +21,7 @@
 1. [Iterator和for...of循环](#docs/iterator)
 1. [Generator函数](#docs/generator)
 1. [Promise对象](#docs/promise)
-1. [异步操作](#docs/async)
+1. [异步操作和Async函数](#docs/async)
 1. [Class](#docs/class)
 1. [Decorator](#docs/decorator)
 1. [Module](#docs/module)

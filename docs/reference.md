@@ -43,6 +43,7 @@
 - Mozilla Developer Network, [Template strings](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/template_strings)
 - Addy Osmani, [Getting Literal With ES6 Template Strings](http://updates.html5rocks.com/2015/01/ES6-Template-Strings): 模板字符串的介绍
 - Blake Winton, [ES6 Templates](https://weblog.latte.ca/blake/tech/firefox/templates.html): 模板字符串的介绍
+- Peter Jaszkowiak, [How to write a template compiler in JavaScript](https://medium.com/@PitaJ/how-to-write-a-template-compiler-in-javascript-f174df6f32f): 使用模板字符串，编写一个模板编译函数
 
 ## 正则
 
@@ -115,6 +116,7 @@
 - Ruslan Ismagilov, [learn-generators](https://github.com/isRuslan/learn-generators): 编程练习，共6道题
 - Steven Sanderson, [Experiments with Koa and JavaScript Generators](http://blog.stevensanderson.com/2013/12/21/experiments-with-koa-and-javascript-generators/): Generator入门介绍，以Koa框架为例
 - Mahdi Dibaiee, [ES7 Array and Generator comprehensions](http://dibaiee.ir/es7-array-generator-comprehensions/)：ES7的Generator推导
+- Nicolas Bevacqua, [ES6 Generators in Depth](http://ponyfoo.com/articles/es6-generators-in-depth)
 
 ## Promise对象
 
