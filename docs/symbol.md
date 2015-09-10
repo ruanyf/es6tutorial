@@ -6,7 +6,7 @@ ES5的对象属性名都是字符串，这容易造成属性名的冲突。比�
 
 ES6引入了一种新的原始数据类型Symbol，表示独一无二的值。它是JavaScript语言的第七种数据类型，前六种是：Undefined、Null、布尔值（Boolean）、字符串（String）、数值（Number）、对象（Object）。
 
-Symbol值通过Symbol函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的Symbol类型。凡是属性名属于Symbol类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
+Symbol值通过`Symbol`函数生成。这就是说，对象的属性名现在可以有两种类型，一种是原来就有的字符串，另一种就是新增的Symbol类型。凡是属性名属于Symbol类型，就都是独一无二的，可以保证不会与其他属性名产生冲突。
 
 ```javascript
 let s = Symbol();
@@ -15,9 +15,9 @@ typeof s
 // "symbol"
 ```
 
-上面代码中，变量s就是一个独一无二的值。typeof运算符的结果，表明变量s是Symbol数据类型，而不是字符串之类的其他类型。
+上面代码中，变量`s`就是一个独一无二的值。`typeof`运算符的结果，表明变量`s`是Symbol数据类型，而不是字符串之类的其他类型。
 
-注意，Symbol函数前不能使用new命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。也就是说，由于Symbol值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。
+注意，Symbol函数前不能使用`new`命令，否则会报错。这是因为生成的Symbol是一个原始类型的值，不是对象。也就是说，由于Symbol值不是对象，所以不能添加属性。基本上，它是一种类似于字符串的数据类型。
 
 Symbol函数可以接受一个字符串作为参数，表示对Symbol实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
 
@@ -32,7 +32,7 @@ s1.toString() // "Symbol(foo)"
 s2.toString() // "Symbol(bar)"
 ```
 
-上面代码中，s1和s2是两个Symbol值。如果不加参数，它们在控制台的输出都是`Symbol()`，不利于区分。有了参数以后，就等于为它们加上了描述，输出的时候就能够分清，到底是哪一个值。
+上面代码中，`s1`和`s2`是两个Symbol值。如果不加参数，它们在控制台的输出都是`Symbol()`，不利于区分。有了参数以后，就等于为它们加上了描述，输出的时候就能够分清，到底是哪一个值。
 
 注意，Symbol函数的参数只是表示对当前Symbol值的描述，因此相同参数的Symbol函数的返回值是不相等的。
 
@@ -50,7 +50,7 @@ var s2 = Symbol("foo");
 s1 === s2 // false
 ```
 
-上面代码中，s1和s2都是Symbol函数的返回值，而且参数相同，但是它们是不相等的。
+上面代码中，`s1`和`s2`都是Symbol函数的返回值，而且参数相同，但是它们是不相等的。
 
 Symbol值不能与其他类型的值进行运算，会报错。
 
@@ -109,7 +109,7 @@ a[mySymbol] // undefined
 a['mySymbol'] // "Hello!"
 ```
 
-上面代码中，因为点运算符后面总是字符串，所以不会读取mySymbol作为标识名所指代的那个值，导致a的属性名实际上是一个字符串，而不是一个Symbol值。
+上面代码中，因为点运算符后面总是字符串，所以不会读取`mySymbol`作为标识名所指代的那个值，导致`a`的属性名实际上是一个字符串，而不是一个Symbol值。
 
 同理，在对象的内部，使用Symbol值定义属性时，Symbol值必须放在方括号之中。
 
@@ -123,9 +123,9 @@ let obj = {
 obj[s](123);
 ```
 
-上面代码中，如果s不放在方括号中，该属性的键名就是字符串s，而不是s所代表的那个Symbol值。
+上面代码中，如果`s`不放在方括号中，该属性的键名就是字符串`s`，而不是`s`所代表的那个Symbol值。
 
-采用增强的对象写法，上面代码的obj对象可以写得更简洁一些。
+采用增强的对象写法，上面代码的`obj`对象可以写得更简洁一些。
 
 ```javascript
 let obj = {
@@ -149,9 +149,9 @@ log(log.levels.INFO, 'info message');
 
 ## 属性名的遍历
 
-Symbol作为属性名，该属性不会出现在for...in、for...of循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个Object.getOwnPropertySymbols方法，可以获取指定对象的所有Symbol属性名。
+Symbol作为属性名，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols`方法，可以获取指定对象的所有Symbol属性名。
 
-Object.getOwnPropertySymbols方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
+`Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
 
 ```javascript
 var obj = {};
@@ -167,7 +167,7 @@ objectSymbols
 // [Symbol(a), Symbol(b)]
 ```
 
-下面是另一个例子，Object.getOwnPropertySymbols方法与for...in循环、Object.getOwnPropertyNames方法进行对比的例子。
+下面是另一个例子，`Object.getOwnPropertySymbols`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
 
 ```javascript
 var obj = {};
@@ -189,9 +189,9 @@ Object.getOwnPropertySymbols(obj)
 // [Symbol(foo)]
 ```
 
-上面代码中，使用Object.getOwnPropertyNames方法得不到Symbol属性名，需要使用Object.getOwnPropertySymbols方法。
+上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
 
-另一个新的API，Reflect.ownKeys方法可以返回所有类型的键名，包括常规键名和Symbol键名。
+另一个新的API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和Symbol键名。
 
 ```javascript
 let obj = {
