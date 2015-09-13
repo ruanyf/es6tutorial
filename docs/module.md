@@ -77,11 +77,11 @@ export {
 
 上面代码使用as关键字，重命名了函数v1和v2的对外接口。重命名后，v2可以用不同的名字输出两次。
 
-最后，export命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的import命令也是如此。
+最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的`import`命令也是如此。
 
 ## import命令
 
-使用export命令定义了模块的对外接口以后，其他JS文件就可以通过import命令加载这个模块（文件）。
+使用`export`命令定义了模块的对外接口以后，其他JS文件就可以通过`import`命令加载这个模块（文件）。
 
 ```javascript
 // main.js
@@ -93,7 +93,7 @@ function setName(element) {
 }
 ```
 
-上面代码的import命令，就用于加载profile.js文件，并从中输入变量。import命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（profile.js）对外接口的名称相同。
+上面代码的`import`命令，就用于加载`profile.js`文件，并从中输入变量。`import`命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（`profile.js`）对外接口的名称相同。
 
 如果想为输入的变量重新取一个名字，import命令要使用as关键字，将输入的变量重命名。
 
@@ -127,7 +127,7 @@ import { es6 } from './someModule';
 export default es6;
 ```
 
-上面代码中，export和import语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，h应该采用标准写法。
+上面代码中，`export`和`import`语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，而应该采用标准写法。
 
 ## 模块的整体输入
 
@@ -182,7 +182,7 @@ module命令后面跟一个变量，表示输入的模块定义在该变量上�
 
 ## export default命令
 
-从前面的例子可以看出，使用import命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
+从前面的例子可以看出，使用`import`命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
 
 为了给用户提供方便，让他们不用阅读文档就能加载模块，就要用到`export default`命令，为模块指定默认输出。
 
@@ -203,9 +203,9 @@ import customName from './export-default';
 customName(); // 'foo'
 ```
 
-上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时import命令后面，不使用大括号。
+上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
 
-export default命令用在非匿名函数前，也是可以的。
+`export default`命令用在非匿名函数前，也是可以的。
 
 ```javascript
 // export-default.js
@@ -222,7 +222,7 @@ function foo() {
 export default foo;
 ```
 
-上面代码中，foo函数的函数名foo，在模块外部是无效的。加载的时候，视同匿名函数加载。
+上面代码中，`foo`函数的函数名`foo`，在模块外部是无效的。加载的时候，视同匿名函数加载。
 
 下面比较一下默认输出和正常输出。
 
@@ -236,20 +236,14 @@ import { crc32 } from 'crc32';
 export function crc32(){};
 ```
 
-上面代码的两组写法，第一组是使用`export default`时，对应的import语句不需要使用大括号；第二组是不使用`export default`时，对应的import语句需要使用大括号。
+上面代码的两组写法，第一组是使用`export default`时，对应的`import`语句不需要使用大括号；第二组是不使用`export default`时，对应的`import`语句需要使用大括号。
 
-`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export deault`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能对应一个方法。
+`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export deault`命令只能使用一次。所以，`import`命令后面才不用加大括号，因为只可能对应一个方法。
 
-本质上，`export default`就是输出一个叫做default的变量或方法，然后系统允许你为它取任意名字。所以，下面的写法是有效的。
+本质上，`export default`就是输出一个叫做`default`的变量或方法，然后系统允许你为它取任意名字。所以，下面的写法是有效的。
 
 ```javascript
 // modules.js
-export default function (x, y) {
-  return x * y;
-};
-
-// 或者
-
 function add(x, y) {
   return x * y;
 };

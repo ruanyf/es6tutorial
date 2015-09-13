@@ -144,7 +144,7 @@ obj.hello() // hi
 
 ## 方法的name属性
 
-函数的name属性，返回函数名。ES6为对象方法也添加了name属性。
+函数的`name`属性，返回函数名。对象方法也是函数，因此也有`name`属性。
 
 ```javascript
 var person = {
@@ -160,9 +160,9 @@ person.sayName.name   // "sayName"
 person.firstName.name // "get firstName"
 ```
 
-上面代码中，方法的name属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上get。如果是存值函数，方法名的前面会加上set。
+上面代码中，方法的`name`属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上`get`。如果是存值函数，方法名的前面会加上`set`。
 
-有两种特殊情况：bind方法创造的函数，name属性返回“bound”加上原函数的名字；Function构造函数创造的函数，name属性返回“anonymous”。
+有两种特殊情况：`bind`方法创造的函数，`name`属性返回“bound”加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回“anonymous”。
 
 ```javascript
 (new Function()).name // "anonymous"
@@ -172,6 +172,21 @@ var doSomething = function() {
 };
 doSomething.bind().name // "bound doSomething"
 ```
+
+如果对象的方法是一个Symbol值，那么`name`属性返回的是这个Symbol值的描述。
+
+```javascript
+const key1 = Symbol('description');
+const key2 = Symbol();
+let obj = {
+  [key1]() {},
+  [key2]() {},
+};
+obj[key1].name // "[description]"
+obj[key2].name // ""
+```
+
+上面代码中，`key1`对应的Symbol值有描述，`key2`没有。
 
 ## Object.is()
 
