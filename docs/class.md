@@ -416,7 +416,7 @@ class ColorPoint extends Point {
 }
 ```
 
-上面代码中，子类的constructor方法没有调用super之前，就使用this关键字，结果报错，而放在super方法之后就是正确的。
+上面代码中，子类的`constructor`方法没有调用`super`之前，就使用`this`关键字，结果报错，而放在`super`方法之后就是正确的。
 
 下面是生成子类实例的代码。
 
@@ -814,7 +814,7 @@ for (let x of new Foo('hello', 'world')) {
 
 ## Class的静态方法
 
-类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上static关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
+类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上`static`关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
 ```javascript
 class Foo {
@@ -830,7 +830,23 @@ foo.classMethod()
 // TypeError: undefined is not a function
 ```
 
-上面代码中，Foo类的classMethod方法前有static关键字，表明该方法是一个静态方法，可以直接在Foo类上调用（`Foo.classMethod()`），而不是在Foo类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
+上面代码中，`Foo`类的`classMethod`方法前有`static`关键字，表明该方法是一个静态方法，可以直接在`Foo`类上调用（`Foo.classMethod()`），而不是在`Foo`类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
+
+需要注意的是，类只有静态方法，没有静态属性，像`Class.propname`这样的用法不存在。
+
+```javascript
+// 以下两种写法都无效，
+// 但不会报错
+class Foo {
+  // 写法一
+  prop: 2
+
+  // 写法二
+  static prop: 2
+}
+
+Foo.prop // undefined
+```
 
 父类的静态方法，可以被子类继承。
 
@@ -849,7 +865,7 @@ Bar.classMethod(); // 'hello'
 
 上面代码中，父类Foo有一个静态方法，子类Bar可以调用这个方法。
 
-静态方法也是可以从super对象上调用的。
+静态方法也是可以从`super`对象上调用的。
 
 ```javascript
 class Foo {
