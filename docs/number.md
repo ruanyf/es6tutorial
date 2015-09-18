@@ -53,18 +53,15 @@ ES5通过下面的代码，部署Number.isFinite方法。
 Number.isNaN()用来检查一个值是否为NaN。
 
 ```javascript
-
 Number.isNaN(NaN); // true
 Number.isNaN(15); // false
 Number.isNaN("15"); // false
 Number.isNaN(true); // false
-
 ```
 
 ES5通过下面的代码，部署Number.isNaN()。
 
 ```javascript
-
 (function (global) {
   var global_isNaN = global.isNaN;
 
@@ -77,13 +74,11 @@ ES5通过下面的代码，部署Number.isNaN()。
     writable: true
   });
 })(this);
-
 ```
 
 它们与传统的全局方法isFinite()和isNaN()的区别在于，传统方法先调用Number()将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回false。
 
 ```javascript
-
 isFinite(25) // true
 isFinite("25") // true
 Number.isFinite(25) // true
@@ -93,7 +88,6 @@ isNaN(NaN) // true
 isNaN("NaN") // true
 Number.isNaN(NaN) // true
 Number.isNaN("NaN") // false
-
 ```
 
 ## Number.parseInt(), Number.parseFloat()
@@ -112,18 +106,16 @@ Number.parseFloat('123.45#') // 123.45
 
 这样做的目的，是逐步减少全局性方法，使得语言逐步模块化。
 
-## Number.isInteger()和安全整数
+## Number.isInteger()
 
 Number.isInteger()用来判断一个值是否为整数。需要注意的是，在JavaScript内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
 
 ```javascript
-
 Number.isInteger(25) // true
 Number.isInteger(25.0) // true
 Number.isInteger(25.1) // false
 Number.isInteger("15") // false
 Number.isInteger(true) // false
-
 ```
 
 ES5通过下面的代码，部署Number.isInteger()。
@@ -146,7 +138,9 @@ ES5通过下面的代码，部署Number.isInteger()。
 })(this);
 ```
 
-JavaScript能够准确表示的整数范围在-2&#710;53 and 2&#710;53之间。ES6引入了Number.MAX_SAFE_INTEGER和Number.MIN_SAFE_INTEGER这两个常量，用来表示这个范围的上下限。Number.isSafeInteger()则是用来判断一个整数是否落在这个范围之内。
+## 安全整数和Number.isSafeInteger()
+
+JavaScript能够准确表示的整数范围在`-2^53`到`2^53`之间。ES6引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示这个范围的上下限。`Number.isSafeInteger()`则是用来判断一个整数是否落在这个范围之内。
 
 ```javascript
 var inside = Number.MAX_SAFE_INTEGER;
