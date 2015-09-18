@@ -317,9 +317,9 @@ var a2 = [for (i of a1) i * 2];
 a2 // [2, 4, 6, 8]
 ```
 
-上面代码表示，通过for...of结构，数组a2直接在a1的基础上生成。
+上面代码表示，通过`for...of`结构，数组`a2`直接在`a1`的基础上生成。
 
-注意，数组推导中，for...of结构总是写在最前面，返回的表达式写在最后面。
+注意，数组推导中，`for...of`结构总是写在最前面，返回的表达式写在最后面。
 
 for...of后面还可以附加if语句，用来设定循环的限制条件。
 
@@ -386,8 +386,20 @@ var a3 = ["x3", "y3"];
 
 数组推导需要注意的地方是，新数组会立即在内存中生成。这时，如果原数组是一个很大的数组，将会非常耗费内存。
 
+推导的用法不限于数组，还可以直接使用。
+
+```javascript
+var results = (
+  for (c of customers)
+    if (c.city == "Seattle")
+      { name: c.name, age: c.age }
+)
+```
+
 ## Array.observe()，Array.unobserve()
 
 这两个方法用于监听（取消监听）数组的变化，指定回调函数。
 
-它们的用法与Object.observe和Object.unobserve方法完全一致，也属于ES7的一部分，请参阅《对象的扩展》一章。唯一的区别是，对象可监听的变化一共有六种，而数组只有四种：add、update、delete、splice（数组的length属性发生变化）。
+它们的用法与`Object.observe`和`Object.unobserve`方法完全一致，也属于ES7的一部分，请参阅《对象的扩展》一章。
+
+唯一的区别是，对象可监听的变化一共有六种，而数组只有四种：`add`、`update`、`delete`、`splice`（数组的`length`属性发生变化）。

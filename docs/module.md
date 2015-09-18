@@ -2,7 +2,7 @@
 
 ES6的Class只是面向对象编程的语法糖，升级了ES5的构造函数的原型链继承的写法，并没有解决模块化问题。Module功能就是为了解决这个问题而提出的。
 
-历史上，JavaScript一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的require、Python的import，甚至就连CSS都有@import，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
+历史上，JavaScript一直没有模块（module）体系，无法将一个大程序拆分成互相依赖的小文件，再用简单的方法拼装起来。其他语言都有这项功能，比如Ruby的`require`、Python的`import`，甚至就连CSS都有`@import`，但是JavaScript任何这方面的支持都没有，这对开发大型的、复杂的项目形成了巨大障碍。
 
 在ES6之前，社区制定了一些模块加载方案，最主要的有CommonJS和AMD两种。前者用于服务器，后者用于浏览器。ES6在语言规格的层面上，实现了模块功能，而且实现得相当简单，完全可以取代现有的CommonJS和AMD规范，成为浏览器和服务器通用的模块解决方案。
 
@@ -95,7 +95,7 @@ function setName(element) {
 
 上面代码的`import`命令，就用于加载`profile.js`文件，并从中输入变量。`import`命令接受一个对象（用大括号表示），里面指定要从其他模块导入的变量名。大括号里面的变量名，必须与被导入模块（`profile.js`）对外接口的名称相同。
 
-如果想为输入的变量重新取一个名字，import命令要使用as关键字，将输入的变量重命名。
+如果想为输入的变量重新取一个名字，import命令要使用`as`关键字，将输入的变量重命名。
 
 ```javascript
 import { lastName as surname } from './profile';
@@ -115,9 +115,9 @@ class Car extends Vehicle {
 export { Car }
 ```
 
-上面的模块先加载Vehicle模块，然后在其基础上添加了move方法，再作为一个新模块输出。
+上面的模块先加载`Vehicle`模块，然后在其基础上添加了`move`方法，再作为一个新模块输出。
 
-如果在一个模块之中，先输入后输出同一个模块，import语句可以与export语句写在一起。
+如果在一个模块之中，先输入后输出同一个模块，`import`语句可以与`export`语句写在一起。
 
 ```javascript
 export { es6 as default } from './someModule';
@@ -129,9 +129,21 @@ export default es6;
 
 上面代码中，`export`和`import`语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，而应该采用标准写法。
 
-## 模块的整体输入
+另外，ES7有一个[提案](https://github.com/leebyron/ecmascript-more-export-from)，简化先输入后输出的写法，拿掉输出时的大括号。
 
-下面是一个circle.js文件，它输出两个方法area和circumference。
+```javascript
+// 提案的写法
+export v from "mod";
+
+// 现行的写法
+export {v} from "mod";
+```
+
+## 模块的整体加载
+
+除了指定加载某个输出值，还可以使用整体加载，即用星号（`*`）指定一个对象，所有输出值都加载在这个对象上面。
+
+下面是一个`circle.js`文件，它输出两个方法`area`和`circumference`。
 
 ```javascript
 // circle.js
@@ -145,7 +157,7 @@ export function circumference(radius) {
 }
 ```
 
-然后，main.js文件输入circle.js模块。
+现在，加载这个模块。
 
 ```javascript
 // main.js
@@ -156,7 +168,7 @@ console.log("圆面积：" + area(4));
 console.log("圆周长：" + circumference(14));
 ```
 
-上面写法是逐一指定要输入的方法。另一种写法是整体输入。
+上面写法是逐一指定要加载的方法，整体加载的写法如下。
 
 ```javascript
 import * as circle from './circle';

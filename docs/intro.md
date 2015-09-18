@@ -52,9 +52,9 @@ Node.js和io.js（一个部署新功能更快的Node分支）是JavaScript语言
 $ curl -o- https://raw.githubusercontent.com/creationix/nvm/<version number>/install.sh | bash
 ```
 
-上面命令的version number处，需要用版本号替换。本书写作时的版本号是v0.25.4。
+上面命令的`version number`处，需要用版本号替换。本节写作时的版本号是`v0.25.4`。
 
-该命令运行后，nvm会默认安装在用户主目录的`.nvm`子目录。然后，激活nvm。
+该命令运行后，`nvm`会默认安装在用户主目录的`.nvm`子目录。然后，激活`nvm`。
 
 ```bash
 $ source ~/.nvm/nvm.sh
@@ -78,7 +78,7 @@ $ nvm use node
 $ nvm use iojs
 ```
 
-需要注意的是，Node.js对ES6的支持，需要打开harmony参数，iojs不需要。
+需要注意的是，Node.js对ES6的支持，需要打开`harmony`参数，iojs不需要。
 
 ```
 $ node --harmony
@@ -139,7 +139,9 @@ input.map(function (item) {
 
 上面的原始代码用了箭头函数，这个特性还没有得到广泛支持，Babel将其转为普通函数，就能在现有的JavaScript环境执行了。
 
-它的安装命令如下。
+### 命令行环境
+
+命令行下，Babel的安装命令如下。
 
 ```bash
 $ npm install --global babel
@@ -195,7 +197,17 @@ $ babel -d build-dir source-dir
 $ babel -d build-dir source-dir -s
 ```
 
-Babel也可以用于浏览器。
+### 浏览器环境
+
+Babel也可以用于浏览器。它的浏览器版本，可以通过安装`babel-core`模块获取。
+
+```bash
+$ npm install babel-core
+```
+
+运行上面的命令以后，就可以在当前目录的`node_modules/babel-core/`子目录里面，找到`babel`的浏览器版本`browser.js`（未精简）和`browser.min.js`（已精简）。
+
+然后，将下面的代码插入网页。
 
 ```html
 <script src="node_modules/babel-core/browser.js"></script>
@@ -204,13 +216,17 @@ Babel也可以用于浏览器。
 </script>
 ```
 
-上面代码中，`browser.js`是Babel提供的转换器脚本，可以在浏览器运行。用户的ES6脚本放在script标签之中，但是要注明`type="text/babel"`。
+上面代码中，`browser.js`是Babel提供的转换器脚本，可以在浏览器运行。用户的ES6脚本放在`script`标签之中，但是要注明`type="text/babel"`。
 
-Babel配合Browserify一起使用，可以生成浏览器能够直接加载的脚本。
+这种写法是实时将ES6代码转为ES5，对网页性能会有影响。生产环境需要加载已经转码完成的脚本。
+
+`Babel`配合`Browserify`一起使用，可以生成浏览器能够直接加载的脚本。
 
 ```bash
 $ browserify script.js -t babelify --outfile bundle.js
 ```
+
+上面代码将ES6脚本`script.js`，转为`bundle.js`。浏览器直接加载后者就可以了，不用再加载`browser.js`。
 
 在`package.json`设置下面的代码，就不用每次命令行都输入参数了。
 
@@ -224,6 +240,38 @@ $ browserify script.js -t babelify --outfile bundle.js
   }
 }
 ```
+
+### Node环境
+
+Node脚本之中，需要转换ES6脚本，可以像下面这样写。
+
+先安装`babel-core`。
+
+```javascript
+$ npm install --save-dev babel-core
+```
+
+然后在脚本中，调用`babel-core`的`transform`方法。
+
+```javascript
+require("babel-core").transform("code", options);
+```
+
+上面代码中，`transform`方法的第一个参数是一个字符串，表示ES6代码。
+
+Node脚本还有一种特殊的`babel`用法，即把`babel`加载为`require`命令的一个钩子。先将`babel`全局安装。
+
+```bash
+$ npm install -g babel
+```
+
+然后，在你的应用的入口脚本（entry script）头部，加入下面的语句。
+
+```javascript
+require("babel/register");
+```
+
+有了上面这行语句，后面所有通过`require`命令加载的后缀名为`.es6`、`.es`、`.jsx`和`.js`的脚本，都会先通过`babel`转码后再加载。
 
 ## Traceur转码器
 
@@ -342,7 +390,7 @@ $ traceur --script calc.es6.js --out calc.es5.js --experimental
 
 命令行下转换的文件，就可以放到浏览器中运行。
 
-###  Node.js环境的用法
+### Node.js环境的用法
 
 Traceur的Node.js用法如下（假定已安装traceur模块）。
 
@@ -373,16 +421,42 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 2013年3月，ES6的草案封闭，不再接受新功能了。新的功能将被加入ES7。
 
-ES7可能包括的功能有：
+任何人都可以向ES7提案，从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由TC39委员会批准。
 
-（1）**Object.observe**：用来监听对象（以及数组）的变化。一旦监听对象发生变化，就会触发回调函数。
+- Stage 0 - Strawman（展示阶段）
+- Stage 1 - Proposal（征求意见阶段）
+- Stage 2 - Draft（草案阶段）
+- Stage 3 - Candidate（候选人阶段）
+- Stage 4 - Finished（定案阶段）
 
-（2）**Async函数**：在Promise和Generator函数基础上，提出的异步操作解决方案。
-
-（3）**Multi-Threading**：多线程支持。目前，Intel和Mozilla有一个共同的研究项目RiverTrail，致力于让JavaScript多线程运行。预计这个项目的研究成果会被纳入ECMAScript标准。
-
-（4）**Traits**：它将是“类”功能（class）的一个替代。通过它，不同的对象可以分享同样的特性。
-
-其他可能包括的功能还有：更精确的数值计算、改善的内存回收、增强的跨站点安全、类型化的更贴近硬件的低级别操作、国际化支持（Internationalization Support）、更多的数据结构等等。
+一个提案只要能进入Stage 2，就差不多等于肯定会包括在ES7里面。
 
 本书的写作目标之一，是跟踪ECMAScript语言的最新进展。对于那些明确的、或者很有希望列入ES7的功能，尤其是那些Babel已经支持的功能，都将予以介绍。
+
+本书介绍的ES7功能清单如下。
+
+**Stage 0**：
+
+- es7.comprehensions：数组推导
+- es7.classProperties：类的属性
+- es7.functionBind：函数的绑定运算符
+
+**Stage 1**：
+
+- es7.decorators：修饰器
+- es7.exportExtensions：export的扩展写法
+- es7.trailingFunctionCommas：函数参数的尾逗号
+
+**Stage 2**：
+
+- es7.exponentiationOperator：指数运算符
+- es7.asyncFunctions：ansyc函数
+- es7.objectRestSpread：对象的Rest参数和扩展运算符
+
+Babel转码器对Stage 2及以上阶段的功能，是默认支持的。对于那些默认没有打开的功能，需要手动打开。
+
+```bash
+$ babel --stage 0
+$ babel --optional es7.decorators
+```
+

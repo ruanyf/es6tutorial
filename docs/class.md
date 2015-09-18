@@ -37,9 +37,9 @@ class Point {
 }
 ```
 
-上面代码定义了一个“类”，可以看到里面有一个constructor方法，这就是构造方法，而this关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
+上面代码定义了一个“类”，可以看到里面有一个`constructor`方法，这就是构造方法，而`this`关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
 
-Point类除了构造方法，还定义了一个toString方法。注意，定义“类”的方法的时候，前面不需要加上function这个保留字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
+Point类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个保留字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
 
 ES6的类，完全可以看作构造函数的另一种写法。
 
@@ -240,9 +240,9 @@ p1.__proto__ === p2.__proto__
 //true
 ```
 
-上面代码中，p1和p2都是Point的实例，它们的原型都是Point，所以\_\_proto\_\_属性是相等的。
+上面代码中，`p1`和`p2`都是Point的实例，它们的原型都是Point，所以`__proto__`属性是相等的。
 
-这也意味着，可以通过实例的\_\_proto\_\_属性为Class添加方法。
+这也意味着，可以通过实例的`__proto__`属性为Class添加方法。
 
 ```javascript
 var p1 = new Point(2,3);
@@ -257,7 +257,7 @@ var p3 = new Point(4,2);
 p3.printName() // "Oops"
 ```
 
-上面代码在p1的原型上添加了一个printName方法，由于p1的原型就是p2的原型，因此p2也可以调用这个方法。而且，此后新建的实例p3也可以调用这个方法。这意味着，使用实例的\_\_proto\_\_属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
+上面代码在`p1`的原型上添加了一个`printName`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
 
 **（4）name属性**
 
@@ -832,22 +832,6 @@ foo.classMethod()
 
 上面代码中，`Foo`类的`classMethod`方法前有`static`关键字，表明该方法是一个静态方法，可以直接在`Foo`类上调用（`Foo.classMethod()`），而不是在`Foo`类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
 
-需要注意的是，类只有静态方法，没有静态属性，像`Class.propname`这样的用法不存在。
-
-```javascript
-// 以下两种写法都无效，
-// 但不会报错
-class Foo {
-  // 写法一
-  prop: 2
-
-  // 写法二
-  static prop: 2
-}
-
-Foo.prop // undefined
-```
-
 父类的静态方法，可以被子类继承。
 
 ```javascript
@@ -881,6 +865,50 @@ class Bar extends Foo {
 }
 
 Bar.classMethod();
+```
+
+## Class的静态属性
+
+静态属性指的是Class本身的属性，即`Class.propname`，而不是定义在实例对象（`this`）上的属性。
+
+ES6明确规定，类只有静态方法，没有静态属性，即像`Class.propname`这样的用法不存在。
+
+```javascript
+// 以下两种写法都无效，
+// 但不会报错
+class Foo {
+  // 写法一
+  prop: 2
+
+  // 写法二
+  static prop: 2
+}
+
+Foo.prop // undefined
+```
+
+ES7有一个静态属性的[提案](https://github.com/jeffmo/es-class-properties)，目前Babel转码器支持。
+
+这个提案对实例属性和静态属性，都规定了新的写法。
+
+```javascript
+// 实例属性的新写法
+class MyClass {
+  myProp = 42;
+
+  constructor() {
+    console.log(this.myProp); // 42
+  }
+}
+
+// 静态属性的新写法
+class MyClass {
+  static myStaticProp = 42;
+
+  constructor() {
+    console.log(MyClass.myProp); // 42
+  }
+}
 ```
 
 ## new.target属性

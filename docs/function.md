@@ -400,7 +400,7 @@ var nodeList = document.querySelectorAll('div');
 var array = [...nodeList];
 ```
 
-上面代码中，querySelectorAll方法返回的是一个nodeList对象，扩展运算符可以将其转为真正的数组。
+上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象，扩展运算符可以将其转为真正的数组。
 
 扩展运算符内部调用的是数据结构的Iterator接口，因此只要具有Iterator接口的对象，都可以使用扩展运算符，比如Map结构。
 
@@ -426,7 +426,7 @@ var go = function*(){
 [...go()] // [1, 2, 3]
 ```
 
-上面代码中，变量go是一个Generator函数，执行后返回的是一个遍历器对象，对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，转为一个数组。
+上面代码中，变量`go`是一个Generator函数，执行后返回的是一个遍历器对象，对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，转为一个数组。
 
 ## name属性
 
@@ -580,15 +580,25 @@ headAndTail(1, 2, 3, 4, 5)
 
 箭头函数有几个使用注意点。
 
-（1）函数体内的this对象，绑定定义时所在的对象，而不是使用时所在的对象。
+（1）函数体内的`this`对象，绑定定义时所在的对象，而不是使用时所在的对象。
 
-（2）不可以当作构造函数，也就是说，不可以使用new命令，否则会抛出一个错误。
+（2）不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误。
 
-（3）不可以使用arguments对象，该对象在函数体内不存在。如果要用，可以用Rest参数代替。
+（3）不可以使用`arguments`对象，该对象在函数体内不存在。如果要用，可以用Rest参数代替。
 
-（4）不可以使用yield命令，因此箭头函数不能用作Generator函数。
+（4）不可以使用`yield`命令，因此箭头函数不能用作Generator函数。
 
-上面四点中，第一点尤其值得注意。this对象的指向是可变的，但是在箭头函数中，它是固定的。下面的代码是一个例子，将this对象绑定定义时所在的对象。
+上面四点中，第一点尤其值得注意。`this`对象的指向是可变的，但是在箭头函数中，它是固定的。
+
+```javascript
+[1, 2, 3].map(n => n * 2);
+
+// 等同于
+
+[1, 2, 3].map(function(n) { return n * 2; }, this);
+```
+
+下面的代码是一个例子，将this对象绑定定义时所在的对象。
 
 ```javascript
 var handler = {
@@ -605,7 +615,7 @@ var handler = {
 };
 ```
 
-上面代码的init方法中，使用了箭头函数，这导致this绑定handler对象，否则回调函数运行时，`this.doSomething`这一行会报错，因为此时this指向全局对象。
+上面代码的`init`方法中，使用了箭头函数，这导致`this`绑定`handler`对象，否则回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向全局对象。
 
 ```javascript
 function Timer () {
@@ -690,15 +700,11 @@ var fix = f => (x => f(v => x(x)(v)))
 
 ## 函数绑定
 
-箭头函数可以绑定this对象，大大减少了显式绑定this对象的写法（call、apply、bind）。但是，箭头函数并不适用于所有场合，所以ES7提出了“函数绑定”（function bind）运算符，用来取代call、apply、bind调用。虽然该语法还是ES7的一个提案，但是Babel转码器已经支持。
+箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call`、`apply`、`bind`）。但是，箭头函数并不适用于所有场合，所以ES7提出了“函数绑定”（function bind）运算符，用来取代`call`、`apply`、`bind`调用。虽然该语法还是ES7的一个[提案](https://github.com/zenparsing/es-function-bind)，但是Babel转码器已经支持。
 
-函数绑定运算符是并排的两个双引号（::），双引号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即this对象），绑定到右边的函数上面。
+函数绑定运算符是并排的两个双冒号（::），双冒号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即this对象），绑定到右边的函数上面。
 
 ```javascript
-let log = ::console.log;
-// 等同于
-var log = console.log.bind(console);
-
 foo::bar;
 // 等同于
 bar.call(foo);
@@ -706,6 +712,42 @@ bar.call(foo);
 foo::bar(...arguments);
 i// 等同于
 bar.apply(foo, arguments);
+
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwn(obj, key) {
+  return obj::hasOwnProperty(key);
+}
+```
+
+如果双冒号左边为空，右边是一个对象的方法，则等于将该方法绑定在该对象上面。
+
+```javascript
+var method = obj::obj.foo;
+// 等同于
+var method = ::obj.foo;
+
+let log = ::console.log;
+// 等同于
+var log = console.log.bind(console);
+```
+
+由于双冒号运算符返回的还是原对象，因此可以采用链式写法。
+
+```javascript
+// 例一
+import { map, takeWhile, forEach } from "iterlib";
+
+getPlayers()
+::map(x => x.character())
+::takeWhile(x => x.strength > 100)
+::forEach(x => console.log(x));
+
+// 例二
+let { find, html } = jake;
+
+document.querySelectorAll("div.myClass")
+::find("p")
+::html("hahaha");
 ```
 
 ## 尾调用优化
@@ -897,3 +939,35 @@ factorial(5) // 120
 上面代码中，参数 total 有默认值1，所以调用时不用提供这个值。
 
 总结一下，递归本质上是一种循环操作。纯粹的函数式编程语言没有循环操作命令，所有的循环都用递归实现，这就是为什么尾递归对这些语言极其重要。对于其他支持“尾调用优化”的语言（比如Lua，ES6），只需要知道循环可以用递归代替，而一旦使用递归，就最好使用尾递归。
+
+## 函数参数的尾逗号
+
+ES7有一个[提案](https://github.com/jeffmo/es-trailing-function-commas)，允许函数的最后一个参数有尾逗号（trailing comma）。
+
+目前，函数定义和调用时，都不允许有参数的尾逗号。
+
+```javascript
+function clownsEverywhere(
+  param1,
+  param2
+) { /* ... */ }
+
+clownsEverywhere(
+  'foo',
+  'bar'
+);
+```
+
+如果以后要在函数的定义之中添加参数，就势必还要添加一个逗号。这对版本管理系统来说，就会显示，添加逗号的那一行也发生了变动。这看上去有点冗余，因此新提案允许定义和调用时，尾部直接有一个逗号。
+
+```javascript
+function clownsEverywhere(
+  param1,
+  param2,
+) { /* ... */ }
+
+clownsEverywhere(
+  'foo',
+  'bar',
+);
+```
