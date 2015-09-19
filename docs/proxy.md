@@ -19,7 +19,7 @@ var obj = new Proxy({}, {
 });
 ```
 
-上面代码对一个空对象架设了一层拦截，重定义了属性的读取（get）和设置（set）行为。这里暂时不解释具体的语法，只看运行结果。对设置了拦截行为的对象obj，去读写它的属性，就会得到下面的结果。
+上面代码对一个空对象架设了一层拦截，重定义了属性的读取（`get`）和设置（`set`）行为。这里暂时先不解释具体的语法，只看运行结果。对设置了拦截行为的对象`obj`，去读写它的属性，就会得到下面的结果。
 
 ```javascript
 obj.count = 1
@@ -38,7 +38,7 @@ ES6原生提供Proxy构造函数，用来生成Proxy实例。
 var proxy = new Proxy(target, handler)
 ```
 
-Proxy对象的所有用法，都是上面这种形式，不同的只是handler参数的写法。其中，`new Proxy()`表示生成一个Proxy实例，target参数表示所要拦截的目标对象，handler参数也是一个对象，用来定制拦截行为。
+Proxy对象的所有用法，都是上面这种形式，不同的只是`handler`参数的写法。其中，`new Proxy()`表示生成一个Proxy实例，target参数表示所要拦截的目标对象，`handler`参数也是一个对象，用来定制拦截行为。
 
 下面是另一个拦截读取属性行为的例子。
 
@@ -54,11 +54,23 @@ proxy.name // 35
 proxy.title // 35
 ```
 
-上面代码中，作为构造函数，Proxy接受两个参数。第一个参数是所要代理的目标对象（上例是一个空对象），即如果没有Proxy的介入，操作原来要访问的就是这个对象；第二个参数是一个配置对象，对于每一个被代理的操作，需要提供一个对应的处理函数，该函数将拦截对应的操作。比如，上面代码中，配置对象有一个get方法，用来拦截对目标对象属性的访问请求。get方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回35，所以访问任何属性都得到35。
+上面代码中，作为构造函数，Proxy接受两个参数。第一个参数是所要代理的目标对象（上例是一个空对象），即如果没有Proxy的介入，操作原来要访问的就是这个对象；第二个参数是一个配置对象，对于每一个被代理的操作，需要提供一个对应的处理函数，该函数将拦截对应的操作。比如，上面代码中，配置对象有一个`get`方法，用来拦截对目标对象属性的访问请求。`get`方法的两个参数分别是目标对象和所要访问的属性。可以看到，由于拦截函数总是返回`35`，所以访问任何属性都得到`35`。
 
 注意，要使得Proxy起作用，必须针对Proxy实例（上例是proxy对象）进行操作，而不是针对目标对象（上例是空对象）进行操作。
 
-一个技巧是将Proxy对象，设置到`object.proxy`属性，从而可以在object对象上调用。
+如果`handler`没有设置任何拦截，那就等同于直接通向原对象。
+
+```javascript
+var target = {};
+var handler = {};
+var proxy = new Proxy(target, handler);
+proxy.a = 'b';
+target.a // "b"
+```
+
+上面代码中，`handler`是一个空对象，没有任何拦截效果，访问`handeler`就等同于访问`target`。
+
+一个技巧是将Proxy对象，设置到`object.proxy`属性，从而可以在`object`对象上调用。
 
 ```javascript
 var object = { proxy: new Proxy(target, handler) }
@@ -77,7 +89,7 @@ let obj = Object.create(proxy);
 obj.time // 35
 ```
 
-上面代码中，proxy对象是obj对象的原型，obj对象本身并没有time属性，所以根据原型链，会在proxy对象上读取该属性，导致被拦截。
+上面代码中，`proxy`对象是`obj`对象的原型，`obj`对象本身并没有`time`属性，所以根据原型链，会在`proxy`对象上读取该属性，导致被拦截。
 
 同一个拦截器函数，可以设置拦截多个操作。
 
@@ -229,10 +241,11 @@ pipe(3) . double . pow . reverseInt . get
 
 ### set()
 
-set方法用来拦截某个属性的赋值操作。假定Person对象有一个age属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证age的属性值符合要求。
+`set`方法用来拦截某个属性的赋值操作。
+
+假定Person对象有一个`age`属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证`age`的属性值符合要求。
 
 ```javascript
-
 let validator = {
   set: function(obj, prop, value) {
     if (prop === 'age') {
@@ -256,20 +269,58 @@ person.age = 100;
 person.age // 100
 person.age = 'young' // 报错
 person.age = 300 // 报错
-
 ```
 
-上面代码中，由于设置了存值函数set，任何不符合要求的age属性赋值，都会抛出一个错误。利用set方法，还可以数据绑定，即每当对象发生变化时，会自动更新DOM。
+上面代码中，由于设置了存值函数`set`，任何不符合要求的`age`属性赋值，都会抛出一个错误。利用`set`方法，还可以数据绑定，即每当对象发生变化时，会自动更新DOM。
+
+有时，我们会在对象上面设置内部属性，属性名的第一个字符使用下划线开头，表示这些属性不应该被外部使用。结合`get`和`set`方法，就可以做到防止这些内部属性被外部读写。
+
+```javascript
+var handler = {
+  get (target, key) {
+    invariant(key, 'get');
+    return target[key];
+  },
+  set (target, key, value) {
+    invariant(key, 'set');
+    return true;
+  }
+}
+function invariant (key, action) {
+  if (key[0] === '_') {
+    throw new Error(`Invalid attempt to ${action} private "${key}" property`);
+  }
+}
+var target = {};
+var proxy = new Proxy(target, handler);
+proxy._prop
+// Error: Invalid attempt to get private "_prop" property
+proxy._prop = 'c'
+// Error: Invalid attempt to set private "_prop" property
+```
+
+上面代码中，只要读写的属性名的第一个字符是下划线，一律抛错，从而达到禁止读写内部属性的目的。
 
 ### apply()
 
-apply方法拦截函数的调用、call和apply操作。
+`apply`方法拦截函数的调用、call和apply操作。
 
 ```javascript
+var handler = {
+  apply (target, ctx, args) {
+    return Reflect.apply(...arguments);
+  }
+}
+```
 
+`apply`方法可以接受三个参数，分别是目标对象、目标对象的上下文对象（`this`）和目标对象的参数数组。
+
+下面是一个例子。
+
+```javascript
 var target = function () { return 'I am the target'; };
 var handler = {
-  apply: function (receiver, ...args) {
+  apply: function () {
     return 'I am the proxy';
   }
 };
@@ -281,11 +332,166 @@ p() === 'I am the proxy';
 
 ```
 
-上面代码中，变量p是Proxy的实例，当它作为函数调用时（p()），就会被apply方法拦截，返回一个字符串。
+上面代码中，变量p是Proxy的实例，当它作为函数调用时（`p()`），就会被apply方法拦截，返回一个字符串。
+
+下面是另外一个例子。
+
+```javascript
+var twice = {
+  apply (target, ctx, args) {
+    return Reflect.apply(...arguments) * 2;
+  }
+}
+function sum (left, right) {
+  return left + right;
+}
+var proxy = new Proxy(sum, twice);
+proxy(1, 2) // 6
+proxy.call(null, 5, 6) // 22
+proxy.apply(null, [7, 8]) // 30
+```
+
+上面代码中，每当执行`proxy`函数，就会被`apply`方法拦截。
+
+另外，直接调用`Reflect.apply`方法，也会被拦截。
+
+```javascript
+Reflect.apply(proxy, null, [9, 10]) // 38
+```
+
+### has()
+
+`has`方法可以隐藏某些属性，不被`in`操作符发现。
+
+```javascript
+var handler = {
+  has (target, key) {
+    if (key[0] === '_') {
+      return false;
+    }
+    return key in target;
+  }
+}
+var target = { _prop: 'foo', prop: 'foo' };
+'_prop' in proxy
+// false
+```
+
+上面代码中，如果原对象的属性名的第一个字符是下划线，`proxy.has`就会返回`false`，从而不会被`in`运算符发现。
+
+如果原对象不可配置或者禁止扩展，这时`has`拦截会报错。
+
+```javascript
+var obj = { a: 10 };
+Object.preventExtensions(obj);
+var p = new Proxy(obj, {
+  has: function(target, prop) {
+    return false;
+  }
+});
+
+"a" in p; // TypeError is thrown
+```
+
+上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
+
+### deleteProperty()
+
+`deleteProperty`方法用于拦截`delete`操作，如果这个方法抛出错误或者返回`false`，当前属性就无法被`delete`命令删除。
+
+```javascript
+var handler = {
+  deleteProperty (target, key) {
+    invariant(key, 'delete');
+    return true;
+  }
+}
+function invariant (key, action) {
+  if (key[0] === '_') {
+    throw new Error(`Invalid attempt to ${action} private "${key}" property`);
+  }
+}
+
+var target = { _prop: 'foo' }
+var proxy = new Proxy(target, handler)
+delete proxy._prop
+// Error: Invalid attempt to delete private "_prop" property
+```
+
+上面代码中，`deleteProperty`方法拦截了`delete`操作符，删除第一个字符为下划线的属性会报错。
+
+### defineProperty()
+
+`defineProperty`方法拦截了`Object.defineProperty`操作。
+
+```javascript
+var handler = {
+  defineProperty (target, key, descriptor) {
+    return false
+  }
+}
+var target = {}
+var proxy = new Proxy(target, handler)
+proxy.foo = 'bar'
+// TypeError: proxy defineProperty handler returned false for property '"foo"'
+```
+
+上面代码中，`defineProperty`方法返回`false`，导致添加新属性会抛出错误。
+
+### enumerate()
+
+`enumerate`方法用来拦截`for...in`循环。注意与Proxy对象的`has`方法区分，后者用来拦截`in`操作符，对`for...in`循环无效。
+
+```javascript
+var handler = {
+  enumerate (target) {
+    return Object.keys(target).filter(key => key[0] !== '_')[Symbol.iterator]();
+  }
+}
+var target = { prop: 'foo', _bar: 'baz', _prop: 'foo' }
+var proxy = new Proxy(target, handler)
+for (let key in proxy) {
+  console.log(key);
+  // "prop"
+}
+```
+
+上面代码中，`enumerate`方法取出原对象的所有属性名，将其中第一个字符等于下划线的都过滤掉，然后返回这些符合条件的属性名的一个遍历器对象，供`for...in`循环消费。
+
+下面是另一个例子。
+
+```javascript
+var p = new Proxy({}, {
+  enumerate(target) {
+    console.log("called");
+    return ["a", "b", "c"][Symbol.iterator]();
+  }
+});
+
+for (var x in p) {
+  console.log(x);
+}
+// "called"
+// "a"
+// "b"
+// "c"
+```
+
+如果`enumerate`方法返回的不是一个对象，就会报错。
+
+```javascript
+var p = new Proxy({}, {
+  enumerate(target) {
+    return 1;
+  }
+});
+
+for (var x in p) {} // 报错
+```
 
 ### ownKeys()
 
-ownKeys方法用来拦截Object.keys()操作。
+`ownKeys`方法用来拦截`Object.keys()`操作。
 
 ```javascript
 let target = {};
@@ -302,7 +508,29 @@ Object.keys(proxy)
 // [ 'hello', 'world' ]
 ```
 
-上面代码拦截了对于target对象的Object.keys()操作，返回预先设定的数组。
+上面代码拦截了对于`target`对象的`Object.keys()`操作，返回预先设定的数组。
+
+下面的例子是拦截第一个字符为下划线的属性名。
+
+```javascript
+var target = {
+  _bar: 'foo',
+  _prop: 'bar',
+  prop: 'baz'
+};
+
+var handler = {
+  ownKeys (target) {
+    return Reflect.ownKeys(target).filter(key => key[0] !== '_');
+  }
+};
+
+var proxy = new Proxy(target, handler);
+for (let key of Object.keys(proxy)) {
+  console.log(key)
+}
+// "baz"
+```
 
 ## Proxy.revocable()
 
