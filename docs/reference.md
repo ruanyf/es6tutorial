@@ -78,6 +78,9 @@
 - Tom Van Cutsem, [Proxy Traps](https://github.com/tvcutsem/harmony-reflect/blob/master/doc/traps.md)：Proxy拦截操作一览
 - Tom Van Cutsem, [Reflect API](https://github.com/tvcutsem/harmony-reflect/blob/master/doc/api.md)
 - Tom Van Cutsem, [Proxy Handler API](https://github.com/tvcutsem/harmony-reflect/blob/master/doc/handler_api.md)
+- Nicolas Bevacqua, [ES6 Proxies in Depth](http://ponyfoo.com/articles/es6-proxies-in-depth)
+- Nicolas Bevacqua, [ES6 Proxy Traps in Depth](http://ponyfoo.com/articles/es6-proxy-traps-in-depth)
+- Nicolas Bevacqua, [More ES6 Proxy Traps in Depth](http://ponyfoo.com/articles/more-es6-proxy-traps-in-depth)
 
 ## Symbol
 
