@@ -335,25 +335,57 @@ function processContent(options) {
 
 **（1）__proto__属性**
 
-__proto__属性，用来读取或设置当前对象的prototype对象。该属性一度被正式写入ES6草案，但后来又被移除。目前，所有浏览器（包括IE11）都部署了这个属性。
+`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括IE11）都部署了这个属性。
 
 ```javascript
 // es6的写法
-
 var obj = {
-  __proto__: someOtherObj,
   method: function() { ... }
 }
+obj.__proto__ = someOtherObj;
 
 // es5的写法
-
 var obj = Object.create(someOtherObj);
 obj.method = function() { ... }
 ```
 
-有了这个属性，实际上已经不需要通过Object.create()来生成新对象了。
+该属性没有写入ES6的正文，而是写入了附录，原因是`__proto__`前后的双引号，说明它本质上是一个内部属性，而不是一个正式的对外的API，只是由于浏览器广泛支持，才被加入了ES6。标准明确规定，只有浏览器必须部署这个属性，其他运行环境不一定需要部署，而且新的代码最好认为这个属性是不存在的。因此，无论从语义的角度，还是从兼容性的角度，都不要使用这个属性，而是使用下面的`Object.setPrototypeOf()`（写操作）、`Object.getPrototypeOf()`（读操作）、`Object.create()`（生成操作）代替。
 
-由于`__proto__`前后的双引号，看上去很像内部属性，而不像一个正式的对外的API，所以从语义角度考虑，最好不要使用这个属性，而是下面的`Object.setPrototypeOf()`和`Object.getPrototypeOf()`代替。
+在实现上，`__proto__`调用的是`Object.prototype.__proto__`，具体实现如下。
+
+```javascript
+Object.defineProperty(Object.prototype, '__proto__', {
+  get() {
+    let _thisObj = Object(this);
+    return Object.getPrototypeOf(_thisObj);
+  },
+  set(proto) {
+    if (this === undefined || this === null) {
+      throw new TypeError();
+    }
+    if (!isObject(this)) {
+      return undefined;
+    }
+    if (!isObject(proto)) {
+      return undefined;
+    }
+    let status = Reflect.setPrototypeOf(this, proto);
+    if (! status) {
+      throw new TypeError();
+    }
+  },
+});
+function isObject(value) {
+  return Object(value) === value;
+}
+```
+
+如果一个对象本身部署了`__proto__`属性，则该属性的值就是对象的原型。
+
+```javascript
+Object.getPrototypeOf({ __proto__: null })
+// null
+```
 
 **（2）Object.setPrototypeOf()**
 
