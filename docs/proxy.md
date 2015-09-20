@@ -329,7 +329,6 @@ var p = new Proxy(target, handler);
 
 p() === 'I am the proxy';
 // true
-
 ```
 
 上面代码中，变量p是Proxy的实例，当它作为函数调用时（`p()`），就会被apply方法拦截，返回一个字符串。
@@ -741,21 +740,21 @@ Reflect对象与Proxy对象一样，也是ES6为了操作对象而提供的新AP
 
 （3） 让Object操作都变成函数行为。某些Object操作是命令式，比如`name in obj`和`delete obj[name]`，而`Reflect.has(obj, name)`和`Reflect.deleteProperty(obj, name)`让它们变成了函数行为。
 
-（4）Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础。
+（4）Reflect对象的方法与Proxy对象的方法一一对应，只要是Proxy对象的方法，就能在Reflect对象上找到对应的方法。这就让Proxy对象可以方便地调用对应的Reflect方法，完成默认行为，作为修改行为的基础。也就是说，不管Proxy怎么修改默认行为，你总可以在Reflect上获取默认行为。
 
 ```javascript
 Proxy(target, {
   set: function(target, name, value, receiver) {
     var success = Reflect.set(target,name, value, receiver);
     if (success) {
-      log('property '+name+' on '+target+' set to '+value);
+      log('property ' + name + ' on ' + target + ' set to ' + value);
     }
     return success;
   }
 });
 ```
 
-上面代码中，Proxy方法拦截target对象的属性赋值行为。它采用Reflect.set方法将值赋值给对象的属性，然后再部署额外的功能。
+上面代码中，Proxy方法拦截target对象的属性赋值行为。它采用`Reflect.set`方法将值赋值给对象的属性，然后再部署额外的功能。
 
 下面是get方法的例子。
 
@@ -824,7 +823,7 @@ Reflect.get(obj, "foo", wrapper);
 
 等同于`delete obj[name]`。
 
-**（5）Reflect.construct(target, args)**
+**（5）Refl2ect.construct(target, args)**
 
 等同于`new target(...args)`，这提供了一种不使用new，来调用构造函数的方法。
 
@@ -838,9 +837,9 @@ Reflect.get(obj, "foo", wrapper);
 
 **（8）Reflect.apply(fun,thisArg,args)**
 
-等同于`Function.prototype.apply.call(fun,thisArg,args)`。一般来说，如果要绑定一个函数的this对象，可以这样写`fn.apply(obj, args)`，但是如果函数定义了自己的apply方法，就只能写成`Function.prototype.apply.call(fn, obj, args)`，采用Reflect对象可以简化这种操作。
+等同于`Function.prototype.apply.call(fun,thisArg,args)`。一般来说，如果要绑定一个函数的this对象，可以这样写`fn.apply(obj, args)`，但是如果函数定义了自己的`apply`方法，就只能写成`Function.prototype.apply.call(fn, obj, args)`，采用Reflect对象可以简化这种操作。
 
-另外，需要注意的是，Reflect.set()、Reflect.defineProperty()、Reflect.freeze()、Reflect.seal()和Reflect.preventExtensions()返回一个布尔值，表示操作是否成功。它们对应的Object方法，失败时都会抛出错误。
+另外，需要注意的是，`Reflect.set()`、`Reflect.defineProperty()`、`Reflect.freeze()`、`Reflect.seal()`和`Reflect.preventExtensions()`返回一个布尔值，表示操作是否成功。它们对应的Object方法，失败时都会抛出错误。
 
 ```javascript
 // 失败时抛出错误
@@ -849,4 +848,4 @@ Object.defineProperty(obj, name, desc);
 Reflect.defineProperty(obj, name, desc);
 ```
 
-上面代码中，Reflect.defineProperty方法的作用与Object.defineProperty是一样的，都是为对象定义一个属性。但是，Reflect.defineProperty方法失败时，不会抛出错误，只会返回false。
+上面代码中，`Reflect.defineProperty`方法的作用与`Object.defineProperty`是一样的，都是为对象定义一个属性。但是，`Reflect.defineProperty`方法失败时，不会抛出错误，只会返回`false`。

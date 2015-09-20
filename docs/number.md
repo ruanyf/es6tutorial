@@ -2,14 +2,14 @@
 
 ## 二进制和八进制表示法
 
-ES6提供了二进制和八进制数值的新的写法，分别用前缀0b和0o表示。
+ES6提供了二进制和八进制数值的新的写法，分别用前缀`0b`和`0o`表示。
 
 ```javascript
 0b111110111 === 503 // true
 0o767 === 503 // true
 ```
 
-八进制不再允许使用前缀0表示，而改为使用前缀0o。
+八进制不再允许使用前缀0表示，而改为使用前缀`0o`。
 
 ```javascript
 011 === 9 // 不正确
@@ -18,9 +18,9 @@ ES6提供了二进制和八进制数值的新的写法，分别用前缀0b和0o�
 
 ## Number.isFinite(), Number.isNaN()
 
-ES6在Number对象上，新提供了Number.isFinite()和Number.isNaN()两个方法，用来检查Infinite和NaN这两个特殊值。
+ES6在Number对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法，用来检查`Infinite`和`NaN`这两个特殊值。
 
-Number.isFinite()用来检查一个数值是否非无穷（infinity）。
+`Number.isFinite()`用来检查一个数值是否非无穷（infinity）。
 
 ```javascript
 Number.isFinite(15); // true
@@ -28,12 +28,12 @@ Number.isFinite(0.8); // true
 Number.isFinite(NaN); // false
 Number.isFinite(Infinity); // false
 Number.isFinite(-Infinity); // false
-Number.isFinite("foo"); // false
-Number.isFinite("15"); // false
+Number.isFinite('foo'); // false
+Number.isFinite('15'); // false
 Number.isFinite(true); // false
 ```
 
-ES5通过下面的代码，部署Number.isFinite方法。
+ES5可以通过下面的代码，部署`Number.isFinite`方法。
 
 ```javascript
 (function (global) {
@@ -50,16 +50,19 @@ ES5通过下面的代码，部署Number.isFinite方法。
 })(this);
 ```
 
-Number.isNaN()用来检查一个值是否为NaN。
+`Number.isNaN()`用来检查一个值是否为NaN。
 
 ```javascript
-Number.isNaN(NaN); // true
-Number.isNaN(15); // false
-Number.isNaN("15"); // false
-Number.isNaN(true); // false
+Number.isNaN(NaN) // true
+Number.isNaN(15) // false
+Number.isNaN('15') // false
+Number.isNaN(true) // false
+Number.isNaN(9/NaN) // true
+Number.isNaN('true'/0) // true
+Number.isNaN('true'/'true') // true
 ```
 
-ES5通过下面的代码，部署Number.isNaN()。
+ES5通过下面的代码，部署`Number.isNaN()`。
 
 ```javascript
 (function (global) {
@@ -76,7 +79,7 @@ ES5通过下面的代码，部署Number.isNaN()。
 })(this);
 ```
 
-它们与传统的全局方法isFinite()和isNaN()的区别在于，传统方法先调用Number()将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回false。
+它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回`false`。
 
 ```javascript
 isFinite(25) // true
@@ -92,23 +95,28 @@ Number.isNaN("NaN") // false
 
 ## Number.parseInt(), Number.parseFloat()
 
-ES6将全局方法parseInt()和parseFloat()，移植到Number对象上面，行为完全保持不变。
+ES6将全局方法`parseInt()`和`parseFloat()`，移植到Number对象上面，行为完全保持不变。
 
 ```javascript
 // ES5的写法
-parseInt("12.34") // 12
+parseInt('12.34') // 12
 parseFloat('123.45#') // 123.45
 
 // ES6的写法
-Number.parseInt("12.34") // 12
+Number.parseInt('12.34') // 12
 Number.parseFloat('123.45#') // 123.45
 ```
 
 这样做的目的，是逐步减少全局性方法，使得语言逐步模块化。
 
+```javascript
+Number.parseInt === parseInt // true
+Number.parseFloat === parseFloat // true
+```
+
 ## Number.isInteger()
 
-Number.isInteger()用来判断一个值是否为整数。需要注意的是，在JavaScript内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
+`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在JavaScript内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
 
 ```javascript
 Number.isInteger(25) // true
@@ -118,7 +126,7 @@ Number.isInteger("15") // false
 Number.isInteger(true) // false
 ```
 
-ES5通过下面的代码，部署Number.isInteger()。
+ES5可以通过下面的代码，部署Number.isInteger()。
 
 ```javascript
 (function (global) {
@@ -138,19 +146,123 @@ ES5通过下面的代码，部署Number.isInteger()。
 })(this);
 ```
 
-## 安全整数和Number.isSafeInteger()
+## Number.EPSILON
 
-JavaScript能够准确表示的整数范围在`-2^53`到`2^53`之间。ES6引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示这个范围的上下限。`Number.isSafeInteger()`则是用来判断一个整数是否落在这个范围之内。
+ES6在Number对象上面，新增一个极小的常量`Number.EPSILON`。
 
 ```javascript
-var inside = Number.MAX_SAFE_INTEGER;
-var outside = inside + 1;
+Number.EPSILON
+// 2.220446049250313e-16
+Number.EPSILON.toFixed(20)
+// '0.00000000000000022204'
+```
 
-Number.isInteger(inside) // true
-Number.isSafeInteger(inside) // true
+引入一个这么小的量的目的，在于为浮点数计算，设置一个误差范围。我们知道浮点数计算是不精确的。
 
-Number.isInteger(outside) // true
-Number.isSafeInteger(outside) // false
+```javascript
+0.1 + 0.2
+// 0.30000000000000004
+
+0.1 + 0.2 - 0.3
+// 5.551115123125783e-17
+
+5.551115123125783e-17.toFixed(20)
+// '0.00000000000000005551'
+```
+
+但是如果这个误差能够小于`Number.EPSILON`，我们就可以认为得到了正确结果。
+
+```javascript
+5.551115123125783e-17 < Number.EPSILON
+// true
+```
+
+因此，`Number.EPSILON`的实质是一个可以接受的误差范围。
+
+```javascript
+function withinErrorMargin (left, right) {
+  return Math.abs(left - right) < Number.EPSILON
+}
+withinErrorMargin(0.1 + 0.2, 0.3)
+// true
+withinErrorMargin(0.2 + 0.2, 0.3)
+// false
+```
+
+上面的代码部署了一个误差检查函数。
+
+## 安全整数和Number.isSafeInteger()
+
+JavaScript能够准确表示的整数范围在`-2^53`到`2^53`之间（不含两个端点）。ES6引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示这个范围的上下限。
+
+```javascript
+Number.MAX_SAFE_INTEGER === Math.pow(2, 53) - 1
+// true
+Number.MAX_SAFE_INTEGER === 9007199254740991
+// true
+
+Number.MIN_SAFE_INTEGER === -Number.MAX_SAFE_INTEGER
+// true
+Number.MIN_SAFE_INTEGER === -9007199254740991
+// true
+```
+
+`Number.isSafeInteger()`则是用来判断一个整数是否落在这个范围之内。
+
+```javascript
+Number.isSafeInteger('a') // false
+Number.isSafeInteger(null) // false
+Number.isSafeInteger(NaN) // false
+Number.isSafeInteger(Infinity) // false
+Number.isSafeInteger(-Infinity) // false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER - 1) // false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER) // true
+Number.isSafeInteger(1) // true
+Number.isSafeInteger(1.2) // false
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER) // true
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER + 1) // false
+```
+
+注意，验证运算结果是否落在安全整数的范围时，不要只验证运算结果，而要同时验证参与运算的每个值。
+
+```javascript
+Number.isSafeInteger(9007199254740993)
+// false
+Number.isSafeInteger(990)
+// true
+Number.isSafeInteger(9007199254740993 - 990)
+// true
+9007199254740993 - 990
+// 返回结果 9007199254740002
+// 正确答案应该是 9007199254740003
+```
+
+上面代码中，`9007199254740993`不是一个安全整数，但是`Number.isSafeInteger`会返回结果，显示计算结果是安全的。这是因为，这个数超出了精度范围，导致在计算机内部，以`9007199254740992`的形式储存。
+
+```javascript
+9007199254740993 === 9007199254740992
+// true
+```
+
+所以，如果只验证运算结果是否为安全整数，很可能得到错误结果。下面的函数可以同时验证两个运算数和运算结果。
+
+```javascript
+function trusty (left, right, result) {
+  if (
+    Number.isSafeInteger(left) &&
+    Number.isSafeInteger(right) &&
+    Number.isSafeInteger(result)
+  ) {
+    return result
+  }
+  throw new RangeError('Operation cannot be trusted!')
+}
+
+trusty(9007199254740993, 990, 9007199254740993 - 990)
+// RangeError: Operation cannot be trusted!
+
+trusty(1, 2, 3)
+// 3
 ```
 
 ## Math对象的扩展

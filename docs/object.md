@@ -353,6 +353,8 @@ obj.method = function() { ... }
 
 有了这个属性，实际上已经不需要通过Object.create()来生成新对象了。
 
+由于`__proto__`前后的双引号，看上去很像内部属性，而不像一个正式的对外的API，所以从语义角度考虑，最好不要使用这个属性，而是下面的`Object.setPrototypeOf()`和`Object.getPrototypeOf()`代替。
+
 **（2）Object.setPrototypeOf()**
 
 Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。它是ES6正式推荐的设置原型对象的方法。
