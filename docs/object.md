@@ -331,9 +331,9 @@ function processContent(options) {
 
 上面代码中，DEFAULTS对象是默认值，options对象是用户提供的参数。assign方法将DEFAULTS和options合并成一个新对象，如果两者有同名属性，则option的属性值会覆盖DEFAULTS的属性值。
 
-## __proto__属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
-**（1）__proto__属性**
+**（1）`__proto__`属性**
 
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括IE11）都部署了这个属性。
 
