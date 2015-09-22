@@ -109,13 +109,13 @@ iter.next() // { value: 'c', done: false }
 iter.next() // { value: undefined, done: true }
 ```
 
-上面代码中，变量arr是一个数组，原生就具有遍历器接口，部署在arr的Symbol.iterator属性上面。所以，调用这个属性，就得到遍历器对象。
+上面代码中，变量`arr`是一个数组，原生就具有遍历器接口，部署在`arr`的`Symbol.iterator`属性上面。所以，调用这个属性，就得到遍历器对象。
 
-上面提到，原生就部署iterator接口的数据结构有三类，对于这三类数据结构，不用自己写遍历器生成函数，for...of循环会自动遍历它们。除此之外，其他数据结构（主要是对象）的Iterator接口，都需要自己在Symbol.iterator属性上面部署，这样才会被`for...of`循环遍历。
+上面提到，原生就部署Iterator接口的数据结构有三类，对于这三类数据结构，不用自己写遍历器生成函数，`for...of`循环会自动遍历它们。除此之外，其他数据结构（主要是对象）的Iterator接口，都需要自己在`Symbol.iterator`属性上面部署，这样才会被`for...of`循环遍历。
 
 对象（Object）之所以没有默认部署Iterator接口，是因为对象的哪个属性先遍历，哪个属性后遍历是不确定的，需要开发者手动指定。本质上，遍历器是一种线性处理，对于任何非线性的数据结构，部署遍历器接口，就等于部署一种线性转换。不过，严格地说，对象部署遍历器接口并不是很必要，因为这时对象实际上被当作Map结构使用，ES5没有Map结构，而ES6原生提供了。
 
-一个对象如果要有可被`for...of`循环调用的Iterator接口，就必须在Symbol.iterator的属性上部署遍历器生成方法（原型链上的对象具有该方法也可）。
+一个对象如果要有可被`for...of`循环调用的Iterator接口，就必须在`Symbol.iterator`的属性上部署遍历器生成方法（原型链上的对象具有该方法也可）。
 
 ```javascript
 class RangeIterator {
@@ -146,7 +146,7 @@ for (var value of range(0, 3)) {
 }
 ```
 
-上面代码是一个类部署Iterator接口的写法。Symbol.iterator属性对应一个函数，执行后返回当前对象的遍历器对象。
+上面代码是一个类部署Iterator接口的写法。`Symbol.iterator`属性对应一个函数，执行后返回当前对象的遍历器对象。
 
 下面是通过遍历器实现指针结构的例子。
 
@@ -197,7 +197,7 @@ for (var i of one){
 // 3
 ```
 
-上面代码首先在构造函数的原型链上部署Symbol.iterator方法，调用该方法会返回遍历器对象iterator，调用该对象的next方法，在返回一个值的同时，自动将内部指针移到下一个实例。
+上面代码首先在构造函数的原型链上部署`Symbol.iterator`方法，调用该方法会返回遍历器对象`iterator`，调用该对象的`next`方法，在返回一个值的同时，自动将内部指针移到下一个实例。
 
 下面是另一个为对象添加Iterator接口的例子。
 
@@ -233,7 +233,22 @@ NodeList.prototype[Symbol.iterator] = [][Symbol.iterator];
 [...document.querySelectorAll('div')] // 可以执行了
 ```
 
-如果Symbol.iterator方法对应的不是遍历器生成函数（即会返回一个遍历器对象），解释引擎将会报错。
+下面是对象调用数组的`Symbol.iterator`方法的例子。
+
+```javascript
+let iterable = {
+  0: 'a',
+  1: 'b',
+  2: 'c',
+  length: 3,
+  [Symbol.iterator]: Array.prototype[Symbol.iterator]
+};
+for (let item of iterable) {
+  console.log(item); // 'a', 'b', 'c'
+}
+```
+
+如果`Symbol.iterator`方法对应的不是遍历器生成函数（即会返回一个遍历器对象），解释引擎将会报错。
 
 ```javascript
 var obj = {};
@@ -245,7 +260,7 @@ obj[Symbol.iterator] = () => 1;
 
 上面代码中，变量obj的Symbol.iterator方法对应的不是遍历器生成函数，因此报错。
 
-有了遍历器接口，数据结构就可以用`for...of`循环遍历（详见下文），也可以使用while循环遍历。
+有了遍历器接口，数据结构就可以用`for...of`循环遍历（详见下文），也可以使用`while`循环遍历。
 
 ```javascript
 var $iterator = ITERABLE[Symbol.iterator]();
@@ -257,11 +272,11 @@ while (!$result.done) {
 }
 ```
 
-上面代码中，ITERABLE代表某种可遍历的数据结构，$iterator是它的遍历器对象。遍历器对象每次移动指针（next方法），都检查一下返回值的done属性，如果遍历还没结束，就移动遍历器对象的指针到下一步（next方法），不断循环。
+上面代码中，`ITERABLE`代表某种可遍历的数据结构，`$iterator`是它的遍历器对象。遍历器对象每次移动指针（`next`方法），都检查一下返回值的`done`属性，如果遍历还没结束，就移动遍历器对象的指针到下一步（`next`方法），不断循环。
 
-## 调用默认Iterator接口的场合
+## 调用Iterator接口的场合
 
-有一些场合会默认调用iterator接口（即Symbol.iterator方法），除了下文会介绍的for...of循环，还有几个别的场合。
+有一些场合会默认调用Iterator接口（即`Symbol.iterator`方法），除了下文会介绍的`for...of`循环，还有几个别的场合。
 
 **（1）解构赋值**
 
@@ -292,9 +307,9 @@ let arr = ['b', 'c'];
 // ['a', 'b', 'c', 'd']
 ```
 
-上面代码的扩展运算符内部就调用iterator接口。
+上面代码的扩展运算符内部就调用Iterator接口。
 
-实际上，这提供了一种简便机制，可以将任何部署了iterator接口的数据结构，转为数组。也就是说，只要某个数据结构部署了iterator接口，就可以对它使用扩展运算符，将其转为数组。
+实际上，这提供了一种简便机制，可以将任何部署了Iterator接口的数据结构，转为数组。也就是说，只要某个数据结构部署了Iterator接口，就可以对它使用扩展运算符，将其转为数组。
 
 ```javascript
 let arr = [...iterable];
@@ -325,27 +340,13 @@ iterator.next() // { value: undefined, done: true }
 
 由于数组的遍历会调用遍历器接口，所以任何接受数组作为参数的场合，其实都调用了遍历器接口。下面是一些例子。
 
+- for...of
 - Array.from()
 - Map(), Set(), WeakMap(), WeakSet()（比如`new Map([['a',1],['b',2]])`）
 - Promise.all()
 - Promise.race()
 
-## 原生具备Iterator接口的数据结构
-
-《数组的扩展》一章中提到，ES6对数组提供entries()、keys()和values()三个方法，就是返回三个遍历器对象。
-
-```javascript
-var arr = [1, 5, 7];
-var arrEntries = arr.entries();
-
-arrEntries.toString()
-// "[object Array Iterator]"
-
-arrEntries === arrEntries[Symbol.iterator]()
-// true
-```
-
-上面代码中，entries方法返回的是一个遍历器对象（iterator），本质上就是调用了`Symbol.iterator`方法。
+## 字符串的Iterator接口
 
 字符串是一个类似数组的对象，也原生具有Iterator接口。
 
@@ -388,7 +389,7 @@ str[Symbol.iterator] = function() {
 str // "hi"
 ```
 
-上面代码中，字符串str的`Symbol.iterator`方法被修改了，所以扩展运算符（...）返回的值变成了bye，而字符串本身还是hi。
+上面代码中，字符串str的`Symbol.iterator`方法被修改了，所以扩展运算符（`...`）返回的值变成了`bye`，而字符串本身还是`hi`。
 
 ## Iterator接口与Generator函数
 
@@ -424,11 +425,11 @@ for (let x of obj) {
 
 ## 遍历器对象的return()，throw()
 
-遍历器对象除了具有next方法，还可以具有return方法和throw方法。如果你自己写遍历器生成函数，那么next方法是必须部署的，return方法和throw方法是否部署是可选的。
+遍历器对象除了具有`next`方法，还可以具有`return`方法和`throw`方法。如果你自己写遍历器生成函数，那么`next`方法是必须部署的，`return`方法和`throw`方法是否部署是可选的。
 
-return方法的使用场合是，如果`for...of`循环提前退出（通常是因为出错，或者有break语句或continue语句），就会调用return方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署return方法。
+`return`方法的使用场合是，如果`for...of`循环提前退出（通常是因为出错，或者有`break`语句或`continue`语句），就会调用`return`方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署`return`方法。
 
-throw方法主要是配合Generator函数使用，一般的遍历器对象用不到这个方法。请参阅《Generator函数》一章。
+`throw`方法主要是配合Generator函数使用，一般的遍历器对象用不到这个方法。请参阅《Generator函数》一章。
 
 ## for...of循环
 
