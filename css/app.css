@@ -154,9 +154,11 @@ body {
 }
 
 #content p>code,
-#content li>code {
-    color: #c7254e;
-    background: #f9f2f4;
+#content li>code,
+#content h2>code,
+#content h3>code{
+  color: #c7254e;
+  background: #f9f2f4;
 }
 
 #content h2 {

@@ -190,7 +190,16 @@ obj[key2].name // ""
 
 ## Object.is()
 
-Object.is()用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致，不同之处只有两个：一是+0不等于-0，二是NaN等于自身。
+`Object.is`用来比较两个值是否严格相等。它与严格比较运算符（===）的行为基本一致。
+
+```javascript
+Object.is('foo', 'foo')
+// true
+Object.is({}, {})
+// false
+```
+
+不同之处只有两个：一是`+0`不等于`-0`，二是`NaN`等于自身。
 
 ```javascript
 +0 === -0 //true
@@ -200,7 +209,7 @@ Object.is(+0, -0) // false
 Object.is(NaN, NaN) // true
 ```
 
-ES5可以通过下面的代码，部署Object.is()。
+ES5可以通过下面的代码，部署`Object.is`。
 
 ```javascript
 Object.defineProperty(Object, 'is', {
@@ -220,7 +229,7 @@ Object.defineProperty(Object, 'is', {
 
 ## Object.assign()
 
-Object.assign方法用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
+`Object.assign`方法用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
 
 ```javascript
 var target = { a: 1 };
@@ -244,7 +253,48 @@ Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
 ```
 
-assign方法有很多用处。
+`Object.assign`只拷贝自身属性，不可枚举的属性（`enumerable`为false）和继承的属性不会被拷贝。
+
+```javascript
+Object.assign({b: 'c'},
+  Object.defineProperty({}, 'invisible', {
+    enumerable: false,
+    value: 'hello'
+  })
+)
+// { b: 'c' }
+```
+
+上面代码中，`Object.assign`要拷贝的对象只有一个不可枚举属性`invisible`，这个属性并没有被拷贝进去。
+
+属性名为Symbol值的属性，也会被`Object.assign`拷贝。
+
+```javascript
+Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
+// { a: 'b', Symbol(c): 'd' }
+```
+
+对于嵌套的对象，`Object.assign`的处理方法是替换，而不是添加。
+
+```javascript
+var target = { a: { b: 'c', d: 'e' } }
+var source = { a: { b: 'hello' } }
+Object.assign(target, source)
+// { a: { b: 'hello' } }
+```
+
+上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。有一些函数库提供`Object.assign`的定制版本（比如Lodash的`_.defaultsDeep`方法），可以解决深拷贝的问题。
+
+注意，`Object.assign`可以用来处理数组，但是会把数组视为对象。
+
+```javascript
+Object.assign([1, 2, 3], [4, 5])
+// [4, 5, 3]
+```
+
+上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此目标数组的0号属性`4`覆盖了原数组的0号属性`1`。
+
+`Object.assign`方法有很多用处。
 
 **（1）为对象添加属性**
 
@@ -329,7 +379,9 @@ function processContent(options) {
 }
 ```
 
-上面代码中，DEFAULTS对象是默认值，options对象是用户提供的参数。assign方法将DEFAULTS和options合并成一个新对象，如果两者有同名属性，则option的属性值会覆盖DEFAULTS的属性值。
+上面代码中，`DEFAULTS`对象是默认值，`options`对象是用户提供的参数。`Object.assign`方法将`DEFAULTS`和`options`合并成一个新对象，如果两者有同名属性，则`option`的属性值会覆盖`DEFAULTS`的属性值。
+
+注意，由于存在深拷贝的问题，`DEFAULTS`对象和`options`对象的所有属性的值，都只能是简单类型，而不能指向另一个对象。否则，将导致`DEFAULTS`对象的该属性不起作用。
 
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
