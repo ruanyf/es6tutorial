@@ -12,7 +12,7 @@ function testable(target) {
 }
 
 @testable
-class MyTestableClass () {}
+class MyTestableClass {}
 
 console.log(MyTestableClass.isTestable) // true
 ```
@@ -59,9 +59,9 @@ function testable(target) {
 }
 
 @testable
-class MyTestableClass () {}
+class MyTestableClass {}
 
-let obj = new MyClass();
+let obj = new MyTestableClass();
 
 console.log(obj.isTestable) // true
 ```
