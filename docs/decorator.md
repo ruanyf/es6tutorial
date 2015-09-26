@@ -42,10 +42,10 @@ function testable(isTestable) {
   }
 }
 
-@testable(true) class MyTestableClass () {}
+@testable(true) class MyTestableClass {}
 console.log(MyTestableClass.isTestable) // true
 
-@testable(false) class MyClass () {}
+@testable(false) class MyClass {}
 console.log(MyClass.isTestable) // false
 ```
 
