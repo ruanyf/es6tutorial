@@ -244,7 +244,6 @@ ES6允许块级作用域的任意嵌套。
 
 ```javascript
 {{{{{let insane = 'Hello World'}}}}};
-insane // "Hello World"
 ```
 
 上面代码使用了一个五层的块级作用域。外层作用域无法读取内层作用域的变量。
@@ -331,9 +330,6 @@ const PI = 3.1415;
 PI // 3.1415
 
 PI = 3;
-PI // 3.1415
-
-const PI = 3.1;
 PI // 3.1415
 ```
 
