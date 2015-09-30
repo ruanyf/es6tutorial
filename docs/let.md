@@ -433,13 +433,13 @@ console.log(B); // 3
 
 ## 全局对象的属性
 
-全局对象是最顶层的对象，在浏览器环境指的是window对象，在Node.js指的是global对象。在JavaScript语言中，所有全局变量都是全局对象的属性。
+全局对象是最顶层的对象，在浏览器环境指的是window对象，在Node.js指的是global对象。在JavaScript语言中，所有全局变量都是全局对象的属性。（对于模块，指模块的顶层对象。）
 
 ES6规定，var命令和function命令声明的全局变量，属于全局对象的属性；let命令、const命令、class命令声明的全局变量，不属于全局对象的属性。
 
 ```javascript
 var a = 1;
-// 如果在node环境，可以写成global.a
+// 如果在Node的REPL环境，可以写成global.a
 // 或者采用通用方法，写成this.a
 window.a // 1
 
@@ -447,4 +447,4 @@ let b = 1;
 window.b // undefined
 ```
 
-上面代码中，全局变量a由var命令声明，所以它是全局对象的属性；全局变量b由let命令声明，所以它不是全局对象的属性，返回undefined。
+上面代码中，全局变量`a`由var命令声明，所以它是全局对象的属性；全局变量`b`由let命令声明，所以它不是全局对象的属性，返回`undefined`。
