@@ -94,6 +94,14 @@
 - Jason Orendorff, [ES6 In Depth: Symbols](https://hacks.mozilla.org/2015/06/es6-in-depth-symbols/)
 - Keith Cirkel, [Metaprogramming in ES6: Symbols and why they're awesome](http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/): Symbol的深入介绍
 
+## 二进制数组
+
+- Ilmari Heikkinen, [Typed Arrays: Binary Data in the Browser](http://www.html5rocks.com/en/tutorials/webgl/typed_arrays/)
+- Khronos, [Typed Array Specification](http://www.khronos.org/registry/typedarray/specs/latest/)
+- Ian Elliot, [Reading A BMP File In JavaScript](http://www.i-programmer.info/projects/36-web/6234-reading-a-bmp-file-in-javascript.html)	
+- Renato Mangini, [How to convert ArrayBuffer to and from String](http://updates.html5rocks.com/2012/06/How-to-convert-ArrayBuffer-to-and-from-String)
+- Axel Rauschmayer, [Typed Arrays in ECMAScript 6](http://www.2ality.com/2015/09/typed-arrays.html)
+
 ## Set和Map
 
 - Mozilla Developer Network, [WeakSet](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakSet)：介绍WeakSet数据结构
