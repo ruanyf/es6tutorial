@@ -75,7 +75,7 @@ x1[0] // 2
 
 上面代码对同一段内存，分别建立两种视图：32位带符号整数（Int32Array构造函数）和8位不带符号整数（Uint8Array构造函数）。由于两个视图对应的是同一段内存，一个视图修改底层内存，会影响到另一个视图。
 
-TypedArray视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受正常数组作为参数，直接分配内存生成底层的ArrayBuffer实例，并同时完成对这段内存的赋值。
+TypedArray视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受普通数组作为参数，直接分配内存生成底层的ArrayBuffer实例，并同时完成对这段内存的赋值。
 
 ```javascript
 var typedArray = new Uint8Array([0,1,2]);
@@ -85,7 +85,7 @@ typedArray[0] = 5;
 typedArray // [5, 1, 2]
 ```
 
-上面代码使用`TypedArray`视图的`Uint8Array`构造函数，新建一个不带符号的8位整数视图。可以看到，`Uint8Array`直接使用正常数组作为参数，对底层内存的赋值同时完成。
+上面代码使用`TypedArray`视图的`Uint8Array`构造函数，新建一个不带符号的8位整数视图。可以看到，`Uint8Array`直接使用普通数组作为参数，对底层内存的赋值同时完成。
 
 ### ArrayBuffer.prototype.byteLength
 
@@ -152,11 +152,11 @@ ArrayBuffer.isView(v) // true
 - **Float32Array**：32位浮点数，长度4个字节。
 - **Float64Array**：64位浮点数，长度8个字节。
 
-这9个构造函数生成的对象，统称为TypedArray对象。它们很像正常数组，都有`length`属性，都能用方括号运算符（`[]`）获取单个元素，所有数组的方法，在类型化数组上面都能使用。两者的差异主要在以下方面。
+这9个构造函数生成的对象，统称为TypedArray对象。它们很像普通数组，都有`length`属性，都能用方括号运算符（`[]`）获取单个元素，所有数组的方法，在TypedArray数组上面都能使用。普通数组与TypedArray数组的差异主要在以下方面。
 
 - `TypedArray`数组的所有成员，都是同一种类型。
 - `TypedArray`数组的成员是连续的，不会有空位。
-- `TypedArray`数组成员的默认值为0。比如，`new Array(10)`返回一个正常数组，里面没有任何成员，只是10个空位；`new Uint8Array(10)`返回一个类型化数组，里面10个成员都是0。
+- `TypedArray`数组成员的默认值为0。比如，`new Array(10)`返回一个普通数组，里面没有任何成员，只是10个空位；`new Uint8Array(10)`返回一个TypedArray数组，里面10个成员都是0。
 - `TypedArray`数组只是一层视图，本身不储存数据，它的数据都储存在底层的`ArrayBuffer`对象之中，要获取底层对象必须使用`buffer`属性。
 
 ### 构造函数
@@ -220,7 +220,7 @@ f64a[2] = f64a[0] + f64a[1];
 
 **（3）TypedArray(typedArray)**
 
-类型化数组的构造函数，可以接受另一个视图实例作为参数。
+TypedArray数组的构造函数，可以接受另一个TypedArray实例作为参数。
 
 ```javascript
 var typedArray = new Int8Array(new Uint8Array(4));
@@ -527,7 +527,7 @@ a.byteLength // 16
 
 ### TypedArray.prototype.set()
 
-TypedArray数组的`set`方法用于复制数组（正常数组或TypedArray数组），也就是将一段内容完全复制到另一段内存。
+TypedArray数组的`set`方法用于复制数组（普通数组或TypedArray数组），也就是将一段内容完全复制到另一段内存。
 
 ```javascript
 var a = new Uint8Array(8);
@@ -781,7 +781,7 @@ xhr.onreadystatechange = function () {
 
 ### Canvas
 
-网页`Canvas`元素输出的二进制像素数据，就是类型化数组。
+网页`Canvas`元素输出的二进制像素数据，就是TypedArray数组。
 
 ```javascript
 var canvas = document.getElementById('myCanvas');
@@ -791,7 +791,7 @@ var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 var uint8ClampedArray = imageData.data;
 ```
 
-需要注意的是，上面代码的`typedArray`虽然是一个类型化数组，但是它的视图类型是一种针对`Canvas`元素的专有类型`Uint8ClampedArray`。这个视图类型的特点，就是专门针对颜色，把每个字节解读为无符号的8位整数，即只能取值0～255，而且发生运算的时候自动过滤高位溢出。这为图像处理带来了巨大的方便。
+需要注意的是，上面代码的`typedArray`虽然是一个TypedArray数组，但是它的视图类型是一种针对`Canvas`元素的专有类型`Uint8ClampedArray`。这个视图类型的特点，就是专门针对颜色，把每个字节解读为无符号的8位整数，即只能取值0～255，而且发生运算的时候自动过滤高位溢出。这为图像处理带来了巨大的方便。
 
 举例来说，如果把像素的颜色值设为`Uint8Array`类型，那么乘以一个gamma值的时候，就必须这样计算：
 
