@@ -22,7 +22,29 @@ import { stat, exists, readFile } from 'fs';
 
 上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”，即ES6可以在编译时就完成模块编译，效率要比CommonJS模块的加载方式高。
 
-需要注意的是，ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
+## 严格模式
+
+ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
+
+严格模式主要有以下限制。
+
+- 变量必须声明后再使用
+- 函数的参数不能有同名属性，否则报错
+- 不能使用`with`语句
+- 不能对只读属性赋值，否则报错
+- 不能使用前缀0表示八进制数，否则报错
+- 不能删除不可删除的属性，否则报错
+- 不能删除变量`delete prop`，会报错，只能删除属性`delete global[prop]`
+- `eval`不会在它的外层作用域引入变量
+- `eval`和`arguments`不能被重新赋值
+- `arguments`不会自动反映函数参数的变化
+- 不能使用`arguments.callee`
+- 不能使用`arguments.caller`
+- 禁止`this`指向全局对象
+- 不能使用`fn.caller`和`fn.arguments`获取函数调用的堆栈
+- 增加了保留字（比如`protected`、`static`和`interface`）
+
+上面这些限制，模块都必须遵守。
 
 ## export命令
 
@@ -60,9 +82,9 @@ export function multiply (x, y) {
 };
 ```
 
-上面代码对外输出一个函数multiply。
+上面代码对外输出一个函数`multiply`。
 
-通常情况下，export输出的变量就是本来的名字，但是可以使用as关键字重命名。
+通常情况下，`export`输出的变量就是本来的名字，但是可以使用`as`关键字重命名。
 
 ```javascript
 function v1() { ... }
@@ -78,6 +100,24 @@ export {
 上面代码使用as关键字，重命名了函数v1和v2的对外接口。重命名后，v2可以用不同的名字输出两次。
 
 最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的`import`命令也是如此。
+
+```javascript
+function foo () {
+  export default 'bar' // SyntaxError
+}
+foo()
+```
+
+上面代码中，`export`语句放在函数之中，结果报错。
+
+`export`语句输出的值是动态绑定，绑定其所在的模块。
+
+```javascript
+export var foo = 'bar';
+setTimeout(() => foo = 'baz', 500);
+```
+
+上面代码输出变量`foo`，值为`bar`，500毫秒之后变成`baz`。
 
 ## import命令
 
@@ -138,6 +178,14 @@ export v from "mod";
 // 现行的写法
 export {v} from "mod";
 ```
+
+`import`语句会执行所加载的模块，因此可以有下面的写法。
+
+```javascript
+import 'lodash'
+```
+
+上面代码仅仅执行`lodash`模块，但是不输入任何值。
 
 ## 模块的整体加载
 

@@ -11,7 +11,7 @@ JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示�
 // "a"
 ```
 
-但是，这种表示法只限于\u0000——\uFFFF之间的字符。超出这个范围的字符，必须用两个双字节的形式表达。
+但是，这种表示法只限于`\u0000`——`\uFFFF`之间的字符。超出这个范围的字符，必须用两个双字节的形式表达。
 
 ```javascript
 "\uD842\uDFB7"
@@ -21,7 +21,7 @@ JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示�
 // " 7"
 ```
 
-上面代码表示，如果直接在“\u”后面跟上超过`0xFFFF`的数值（比如\u20BB7），JavaScript会理解成“\u20BB+7”。由于\u20BB是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
+上面代码表示，如果直接在“\u”后面跟上超过`0xFFFF`的数值（比如`\u20BB7`），JavaScript会理解成“\u20BB+7”。由于`\u20BB`是一个不可打印字符，所以只会显示一个空格，后面跟着一个7。
 
 ES6对这一点做出了改进，只要将码点放入大括号，就能正确解读该字符。
 
@@ -41,7 +41,7 @@ hell\u{6F} // 123
 
 上面代码中，最后一个例子表明，大括号表示法与四字节的UTF-16编码是等价的。
 
-有了这种表示法之后，JavaScript共有5种方法可以表示一个字符。
+有了这种表示法之后，JavaScript共有6种方法可以表示一个字符。
 
 ```javascript
 '\z' === 'z'  // true
@@ -50,26 +50,6 @@ hell\u{6F} // 123
 '\u007A' === 'z' // true
 '\u{7A}' === 'z' // true
 ```
-
-## String.fromCodePoint()
-
-ES5提供String.fromCharCode方法，用于从码点返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于0xFFFF）。
-
-```javascript
-String.fromCharCode(0x20BB7)
-// "ஷ"
-```
-
-上面代码中，最后返回码点U+0BB7对应的字符，而不是码点U+20BB7对应的字符。
-
-ES6提供了String.fromCodePoint方法，可以识别0xFFFF的字符，弥补了String.fromCharCode方法的不足。在作用上，正好与codePointAt方法相反。
-
-```javascript
-String.fromCodePoint(0x20BB7)
-// "𠮷"
-```
-
-注意，fromCodePoint方法定义在String对象上，而codePointAt方法定义在字符串的实例对象上。
 
 ## codePointAt()
 
@@ -113,18 +93,70 @@ is32Bit("𠮷") // true
 is32Bit("a") // false
 ```
 
+## String.fromCodePoint()
+
+ES5提供`String.fromCharCode`方法，用于从码点返回对应字符，但是这个方法不能识别辅助平面的字符（编号大于`0xFFFF`）。
+
+```javascript
+String.fromCharCode(0x20BB7)
+// "ஷ"
+```
+
+上面代码中，`String.fromCharCode`不能识别大于`0xFFFF`的码点，所以`0x20BB7`就发生了溢出，最高位`2`被舍弃了，最后返回码点`U+0BB7`对应的字符，而不是码点`U+20BB7`对应的字符。
+
+ES6提供了`String.fromCodePoint`方法，可以识别`0xFFFF`的字符，弥补了`String.fromCharCode`方法的不足。在作用上，正好与`codePointAt`方法相反。
+
+```javascript
+String.fromCodePoint(0x20BB7)
+// "𠮷"
+```
+
+注意，`fromCodePoint`方法定义在String对象上，而`codePointAt`方法定义在字符串的实例对象上。
+
+## 字符串的遍历器接口
+
+ES6为字符串添加了遍历器接口（详见《Iterator》一章），使得字符串可以被`for...of`循环遍历。
+
+```javascript
+for (let codePoint of 'foo') {
+  console.log(codePoint)
+}
+// "f"
+// "o"
+// "o"
+```
+
+除了遍历字符串，这个遍历器最大的优点是可以识别大于`0xFFFF`的码点，传统的`for`循环无法识别这样的码点。
+
+```javascript
+var text = String.fromCodePoint(0x20BB7);
+
+for (let i = 0; i < text.length; i++) {
+  console.log(text[i]);
+}
+// " "
+// " "
+
+for (let i of text) {
+  console.log(i);
+}
+// "𠮷"
+```
+
+上面代码中，字符串`text`只有一个字符，但是`for`循环会认为它包含两个字符（都不可打印），而`for...of`循环会正确识别出这一个字符。
+
 ## at()
 
-ES5对字符串对象提供charAt方法，返回字符串给定位置的字符。该方法不能识别码点大于0xFFFF的字符。
+ES5对字符串对象提供`charAt`方法，返回字符串给定位置的字符。该方法不能识别码点大于`0xFFFF`的字符。
 
 ```javascript
 'abc'.charAt(0) // "a"
 '𠮷'.charAt(0) // "\uD842"
 ```
 
-上面代码中，charAt方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
+上面代码中，`charAt`方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
 
-ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF的字符，返回正确的字符。Chrome浏览器已经支持该方法。
+ES7提供了字符串实例的`at`方法，可以识别Unicode编号大于`0xFFFF`的字符，返回正确的字符。Chrome浏览器已经支持该方法。
 
 ```javascript
 'abc'.at(0) // "a"
@@ -133,7 +165,7 @@ ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF�
 
 ## normalize()
 
-为了表示语调和重音符号，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如O（\u004F）和ˇ（\u030C）合成Ǒ（\u004F\u030C）。
+为了表示语调和重音符号，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如Ǒ（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如`O`（\u004F）和`ˇ`（\u030C）合成`Ǒ`（\u004F\u030C）。
 
 这两种表示方法，在视觉和语义上都等价，但是JavaScript不能识别。
 
@@ -146,7 +178,7 @@ ES7提供了字符串实例的at方法，可以识别Unicode编号大于0xFFFF�
 
 上面代码表示，JavaScript将合成字符视为两个字符，导致两种表示方法不相等。
 
-ES6提供String.prototype.normalize()方法，用来将字符的不同表示方法统一为同样的形式，这称为Unicode正规化。
+ES6提供`String.prototype.normalize()`方法，用来将字符的不同表示方法统一为同样的形式，这称为Unicode正规化。
 
 ```javascript
 '\u01D1'.normalize() === '\u004F\u030C'.normalize()
@@ -178,32 +210,67 @@ normalize方法可以接受四个参数。
 - **endsWith()**：返回布尔值，表示参数字符串是否在源字符串的尾部。
 
 ```javascript
-var s = "Hello world!";
+var s = 'Hello world!';
 
-s.startsWith("Hello") // true
-s.endsWith("!") // true
-s.includes("o") // true
+s.startsWith('Hello') // true
+s.endsWith('!') // true
+s.includes('o') // true
 ```
 
 这三个方法都支持第二个参数，表示开始搜索的位置。
 
 ```javascript
-var s = "Hello world!";
+var s = 'Hello world!';
 
-s.startsWith("world", 6) // true
-s.endsWith("Hello", 5) // true
-s.includes("Hello", 6) // false
+s.startsWith('world', 6) // true
+s.endsWith('Hello', 5) // true
+s.includes('Hello', 6) // false
 ```
 
 上面代码表示，使用第二个参数n时，endsWith的行为与其他两个方法有所不同。它针对前n个字符，而其他两个方法针对从第n个位置直到字符串结束。
 
 ## repeat()
 
-repeat()返回一个新字符串，表示将原字符串重复n次。
+`repeat`方法返回一个新字符串，表示将原字符串重复n次。
 
 ```javascript
-"x".repeat(3) // "xxx"
-"hello".repeat(2) // "hellohello"
+'x'.repeat(3) // "xxx"
+'hello'.repeat(2) // "hellohello"
+'na'.repeat(0) // ""
+```
+
+参数如果是小数，会被取整。
+
+```javascript
+'na'.repeat(2.9) // "nana"
+```
+
+如果`repeat`的参数是负数或者`Infinity`，会报错。
+
+```javascript
+'na'.repeat(Infinity)
+// RangeError
+'na'.repeat(-1)
+// RangeError
+```
+
+但是，如果参数是0到-1之间的小数，则等同于0，这是因为会先进行取整运算。0到-1之间的小数，取整以后等于`-0`，`repeat`视同为0。
+
+```javascript
+'na'.repeat(-0.9) // ""
+```
+
+参数`NaN`等同于0。
+
+```javascript
+'na'.repeat(NaN) // ""
+```
+
+如果`repeat`的参数是字符串，则会先转换成数字。
+
+```javascript
+'na'.repeat('na') // ""
+'na'.repeat('3') // "nanana"
 ```
 
 ## 模板字符串

@@ -134,9 +134,23 @@ var p2 = new Promise(function(resolve, reject){
 })
 ```
 
-上面代码中，p1和p2都是Promise的实例，但是p2的resolve方法将p1作为参数，即一个异步操作的结果是返回另一个异步操作。
+上面代码中，`p1`和`p2`都是Promise的实例，但是`p2`的`resolve`方法将`p1`作为参数，即一个异步操作的结果是返回另一个异步操作。
 
-注意，这时p1的状态就会传递给p2，也就是说，p1的状态决定了p2的状态。如果p1的状态是Pending，那么p2的回调函数就会等待p1的状态改变；如果p1的状态已经是Resolved或者Rejected，那么p2的回调函数将会立刻执行。
+注意，这时`p1`的状态就会传递给`p2`，也就是说，`p1`的状态决定了`p2`的状态。如果`p1`的状态是`Pending`，那么`p2`的回调函数就会等待`p1`的状态改变；如果`p1`的状态已经是`Resolved`或者`Rejected`，那么`p2`的回调函数将会立刻执行。
+
+```javascript
+var p1 = new Promise(function (resolve, reject) {
+  setTimeout(() => reject(new Error('fail')), 3000)
+})
+var p2 = new Promise(function (resolve, reject) {
+  setTimeout(() => resolve(p1), 1000)
+})
+p2.then(result => console.log(result))
+p2.catch(error => console.log(error))
+// Error: fail
+```
+
+上面代码中，`p1`是一个Promise，3秒之后变为`rejected`。`p2`的状态由`p1`决定，1秒之后，`p2`调用`resolve`方法，但是此时`p1`的状态还没有改变，因此`p2`的状态也不会变。又过了2秒，`p1`变为`rejected`，`p2`也跟着变为`rejected`。
 
 ## Promise.prototype.then()
 
@@ -349,19 +363,19 @@ someAsyncThing().then(function() {
 
 ## Promise.all()
 
-Promise.all方法用于将多个Promise实例，包装成一个新的Promise实例。
+`Promise.all`方法用于将多个Promise实例，包装成一个新的Promise实例。
 
 ```javascript
 var p = Promise.all([p1,p2,p3]);
 ```
 
-上面代码中，Promise.all方法接受一个数组作为参数，p1、p2、p3都是Promise对象的实例。（Promise.all方法的参数不一定是数组，但是必须具有iterator接口，且返回的每个成员都是Promise实例。）
+上面代码中，`Promise.all`方法接受一个数组作为参数，`p1`、`p2`、`p3`都是Promise对象的实例，如果不是，就会先调用下面讲到的`Promise.resolve`方法，将参数转为Promise实例，再进一步处理。（`Promise.all`方法的参数不一定是数组，但是必须具有iterator接口，且返回的每个成员都是Promise实例。）
 
-p的状态由p1、p2、p3决定，分成两种情况。
+`p`的状态由`p1`、`p2`、`p3`决定，分成两种情况。
 
-（1）只有p1、p2、p3的状态都变成fulfilled，p的状态才会变成fulfilled，此时p1、p2、p3的返回值组成一个数组，传递给p的回调函数。
+（1）只有`p1`、`p2`、`p3`的状态都变成`fulfilled`，`p`的状态才会变成`fulfilled`，此时`p1`、`p2`、`p3`的返回值组成一个数组，传递给`p`的回调函数。
 
-（2）只要p1、p2、p3之中有一个被rejected，p的状态就变成rejected，此时第一个被reject的实例的返回值，会传递给p的回调函数。
+（2）只要`p1`、`p2`、`p3`之中有一个被`rejected`，`p`的状态就变成`rejected`，此时第一个被`reject`的实例的返回值，会传递给`p`的回调函数。
 
 下面是一个具体的例子。
 
@@ -379,15 +393,30 @@ Promise.all(promises).then(function(posts) {
 ```
 ## Promise.race()
 
-Promise.race方法同样是将多个Promise实例，包装成一个新的Promise实例。
+`Promise.race`方法同样是将多个Promise实例，包装成一个新的Promise实例。
 
 ```javascript
 var p = Promise.race([p1,p2,p3]);
 ```
 
-上面代码中，只要p1、p2、p3之中有一个实例率先改变状态，p的状态就跟着改变。那个率先改变的Promise实例的返回值，就传递给p的回调函数。
+上面代码中，只要`p1`、`p2`、`p3`之中有一个实例率先改变状态，`p`的状态就跟着改变。那个率先改变的Promise实例的返回值，就传递给`p`的回调函数。
 
-如果Promise.all方法和Promise.race方法的参数，不是Promise实例，就会先调用下面讲到的Promise.resolve方法，将参数转为Promise实例，再进一步处理。
+`Promise.race`方法的参数与`Promise.all`方法一样，如果不是Promise实例，就会先调用下面讲到的`Promise.resolve`方法，将参数转为Promise实例，再进一步处理。
+
+下面是一个例子，如果指定时间内没有获得结果，就将Promise的状态变为`reject`，否则变为`resolve`。
+
+```javascript
+var p = Promise.race([
+  fetch('/resource-that-may-take-a-while'),
+  new Promise(function (resolve, reject) {
+    setTimeout(() => reject(new Error('request timeout')), 5000)
+  })
+])
+p.then(response => console.log(response))
+p.catch(error => console.log(error))
+```
+
+上面代码中，如果5秒之内`fetch`方法无法返回结果，变量`p`的状态就会变为`rejected`，从而触发`catch`方法指定的回调函数。
 
 ## Promise.resolve()
 
@@ -397,7 +426,15 @@ var p = Promise.race([p1,p2,p3]);
 var jsPromise = Promise.resolve($.ajax('/whatever.json'));
 ```
 
-上面代码将jQuery生成deferred对象，转为一个新的Promise对象。
+上面代码将jQuery生成的`deferred`对象，转为一个新的Promise对象。
+
+`Promise.resolve`等价于下面的写法。
+
+```javascript
+Promise.resolve('foo')
+// 等价于
+new Promise(resolve => resolve('foo'))
+```
 
 如果Promise.resolve方法的参数，不是具有then方法的对象（又称thenable对象），则返回一个新的Promise对象，且它的状态为Resolved。
 
@@ -428,17 +465,17 @@ p.then(function () {
 
 ## Promise.reject()
 
-Promise.reject(reason)方法也会返回一个新的Promise实例，该实例的状态为rejected。Promise.reject方法的参数reason，会被传递给实例的回调函数。
+`Promise.reject(reason)`方法也会返回一个新的Promise实例，该实例的状态为`rejected`。`Promise.reject`方法的参数`reason`，会被传递给实例的回调函数。
 
 ```javascript
-
 var p = Promise.reject('出错了');
+// 等同于
+var p = new Promise((resolve, reject) => reject('foo'))
 
 p.then(null, function (s){
   console.log(s)
 });
 // 出错了
-
 ```
 
 上面代码生成一个Promise对象的实例p，状态为rejected，回调函数会立即执行。

@@ -322,7 +322,7 @@ yield*后面跟的是一个可遍历的结构，它会调用该结构的遍历�
 ```javascript
 let generator = function* () {
   yield 1;
-  yield* [2,3,4]; //use an iterable, is looped, and added as yields
+  yield* [2,3,4];
   yield 5;
 };
 
