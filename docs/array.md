@@ -345,6 +345,103 @@ contains(["foo", "bar"], "baz"); // => false
 - Map结构的`has`方法，是用来查找键名的，比如`Map.prototype.has(key)`、`WeakMap.prototype.has(key)`、`Reflect.has(target, propertyKey)`。
 - Set结构的`has`方法，是用来查找值的，比如`Set.prototype.has(value)`、`WeakSet.prototype.has(value)`。
 
+## 数组的空位
+
+数组的空位指，数组的某一个位置没有任何值。比如，`Array`构造函数返回的数组都是空位。
+
+```javascript
+Array(3) // [, , ,]
+```
+
+上面代码中，`Array(3)`返回一个具有3个空位的数组。
+
+注意，空位不是`undefined`，一个位置的值等于`undefined`，依然是有值的。空位是没有任何值，`in`运算符可以说明这一点。
+
+```javascript
+0 in [undefined, undefined, undefined] // true
+0 in [, , ,] // false
+```
+
+上面代码说明，第一个数组的0号位置是有值的，第二个数组的0号位置没有值。
+
+ES5对空位的处理，已经很不一致了，大多数情况下会忽略空位。
+
+- `forEach()`, `filter()`, `every()` 和`some()`都会跳过空位。
+- `map()`会跳过空位，但会保留这个值
+- `join()`和`toString()`会将空位视为`undefined`，而`undefined`和`null`会被处理成空字符串。
+
+```javascript
+// forEach方法
+[,'a'].forEach((x,i) => log(i)); // 1
+
+// filter方法
+['a',,'b'].filter(x => true) // ['a','b']
+
+// every方法
+[,'a'].every(x => x==='a') // true
+
+// some方法
+[,'a'].some(x => x !== 'a') // false
+
+// map方法
+[,'a'].map(x => 1) // [,1]
+
+// join方法
+[,'a',undefined,null].join('#') // "#a##"
+
+// toString方法
+[,'a',undefined,null].toString() // ",a,,"
+```
+
+ES6则是明确将空位转为`undefined`。
+
+`Array.from`方法会将数组的空位，转为`undefined`，也就是说，这个方法不会忽略空位。
+
+```javascript
+Array.from(['a',,'b'])
+// [ "a", undefined, "b" ]
+```
+
+扩展运算符（`...`）也会将空位转为`undefined`。
+
+```javascript
+[...['a',,'b']]
+// [ "a", undefined, "b" ]
+```
+
+`copyWithin()`会连空位一起拷贝。
+
+```javascript
+[,'a','b',,].copyWithin(2,0) // [,"a",,"a"]
+```
+
+`fill()`会将空位视为正常的数组位置。
+
+```javascript
+new Array(3).fill('a') // ["a","a","a"]
+```
+
+`entries()`、`keys()`、`values()`、`find()`和`findIndex()`会将空位处理成`undefined`。
+
+```javascript
+// entries()
+[...[,'a'].entries()] // [[0,undefined], [1,"a"]]
+
+// keys()
+[...[,'a'].keys()] // [0,1]
+
+// values()
+[...[,'a'].values()] // [undefined,"a"]
+
+// find()
+[,'a'].find(x => true) // undefined
+
+// findIndex()
+[,'a'].findIndex(x => true) // 0
+```
+
+由于空位的处理规则非常不统一，所以建议避免出现空位。
+
 ## 数组推导
 
 数组推导（array comprehension）提供简洁写法，允许直接通过现有数组生成新数组。这项功能本来是要放入ES6的，但是TC39委员会想继续完善这项功能，让其支持所有数据结构（内部调用iterator对象），不像现在只支持数组，所以就把它推迟到了ES7。Babel转码器已经支持这个功能。

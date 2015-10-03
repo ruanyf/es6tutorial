@@ -5,14 +5,17 @@
 ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
-function f( x, y ) {
-  return { x, y };
-}
-
+var foo = 'bar';
+var baz = {foo};
 // 等同于
+var baz = {foo: foo};
 
-function f( x, y ) {
-  return { x: x, y: y };
+function f(x, y) {
+  return {x, y};
+}
+// 等同于
+function f(x, y) {
+  return {x: x, y: y};
 }
 ```
 
@@ -56,7 +59,6 @@ var Person = {
 function getPoint() {
   var x = 1;
   var y = 10;
-
   return {x, y};
 }
 
@@ -81,6 +83,26 @@ var cart = {
 }
 ```
 
+模块输出变量，就非常合适使用简洁写法。
+
+```javascript
+var ms = {};
+
+function getItem (key) {
+  return key in ms ? ms[key] : null;
+}
+
+function setItem (key, value) {
+  ms[key] = value;
+}
+
+function clear () {
+  ms = {};
+}
+
+module.exports = { getItem, setItem, clear };
+```
+
 ## 属性名表达式
 
 JavaScript语言定义对象的属性，有两种方法。
@@ -90,7 +112,7 @@ JavaScript语言定义对象的属性，有两种方法。
 obj.foo = true;
 
 // 方法二
-obj['a'+'bc'] = 123;
+obj['a' + 'bc'] = 123;
 ```
 
 上面代码的方法一是直接用标识符作为属性名，方法二是用表达式作为属性名，这时要将表达式放在方括号之内。
@@ -111,7 +133,7 @@ let propKey = 'foo';
 
 let obj = {
   [propKey]: true,
-  ['a'+'bc']: 123
+  ['a' + 'bc']: 123
 };
 ```
 
@@ -140,6 +162,19 @@ let obj = {
 };
 
 obj.hello() // hi
+```
+
+注意，属性名表达式与简洁表示法，不能同时使用，会报错。
+
+```javascript
+// 报错
+var foo = 'bar';
+var bar = 'abc';
+var baz = { [foo] };
+
+// 正确
+var foo = 'bar';
+var baz = { [foo]: 'abc'};
 ```
 
 ## 方法的name属性

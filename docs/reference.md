@@ -58,6 +58,7 @@
 
 - Axel Rauschmayer, [ECMAScript 6’s new array methods](http://www.2ality.com/2014/05/es6-array-methods.html): 对ES6新增的数组方法的全面介绍
 - TC39, [Array.prototype.includes](https://github.com/tc39/Array.prototype.includes/): 数组的includes方法的规格
+- Axel Rauschmayer, [ECMAScript 6: holes in Arrays](http://www.2ality.com/2015/09/holes-arrays-es6.html): 数组的空位问题
 
 ## 函数
 
