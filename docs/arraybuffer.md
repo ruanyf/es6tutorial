@@ -38,7 +38,7 @@ Float64|8|64位浮点数|double
 - Canvas
 - WebSockets
 
-## ArrayBuffe对象
+## ArrayBuffer对象
 
 ### 概述
 
