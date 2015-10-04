@@ -17,7 +17,7 @@ class MyTestableClass {}
 console.log(MyTestableClass.isTestable) // true
 ```
 
-上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性isTestable。
+上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性`isTestable`。
 
 基本上，修饰器的行为就是下面这样。
 
@@ -42,14 +42,16 @@ function testable(isTestable) {
   }
 }
 
-@testable(true) class MyTestableClass {}
-console.log(MyTestableClass.isTestable) // true
+@testable(true)
+class MyTestableClass {}
+MyTestableClass.isTestable // true
 
-@testable(false) class MyClass {}
-console.log(MyClass.isTestable) // false
+@testable(false)
+class MyClass {}
+MyClass.isTestable // false
 ```
 
-上面代码中，修饰器testable可以接受参数，这就等于可以修改修饰器的行为。
+上面代码中，修饰器`testable`可以接受参数，这就等于可以修改修饰器的行为。
 
 如果想要为类的实例添加方法，可以在修饰器函数中，为目标类的prototype属性添加方法。
 
@@ -62,11 +64,10 @@ function testable(target) {
 class MyTestableClass {}
 
 let obj = new MyTestableClass();
-
-console.log(obj.isTestable) // true
+obj.isTestable // true
 ```
 
-上面代码中，修饰器函数testable是在目标类的prototype属性添加属性，因此就可以在类的实例上调用添加的属性。
+上面代码中，修饰器函数`testable`是在目标类的`prototype`属性添加属性，因此就可以在类的实例上调用添加的属性。
 
 下面是另外一个例子。
 
@@ -89,11 +90,10 @@ const Foo = {
 class MyClass {}
 
 let obj = new MyClass()
-
 obj.foo() // 'foo'
 ```
 
-上面代码通过修饰器mixins，可以为类添加指定的方法。
+上面代码通过修饰器`mixins`，可以为类添加指定的方法。
 
 修饰器可以用`Object.assign()`模拟。
 
@@ -168,10 +168,9 @@ class Person {
 }
 ```
 
-从上面代码中，我们一眼就能看出，MyTestableClass类是可测试的，而name方法是只读和不可枚举的。
+从上面代码中，我们一眼就能看出，`MyTestableClass`类是可测试的，而`name`方法是只读和不可枚举的。
 
-除了注释，修饰器还能用来类型检查。所以，对于Class来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
-
+除了注释，修饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
 
 ## 为什么修饰器不能用于函数？
 
@@ -236,7 +235,7 @@ readOnly = require("some-decorator");
 
 **（1）@autobind**
 
-autobind修饰器使得方法中的this对象，绑定原始对象。
+`autobind`修饰器使得方法中的`this`对象，绑定原始对象。
 
 ```javascript
 import { autobind } from 'core-decorators';
@@ -257,7 +256,7 @@ getPerson() === person;
 
 **（2）@readonly**
 
-readonly修饰器是的属性或方法不可写。
+`readonly`修饰器使得属性或方法不可写。
 
 ```javascript
 import { readonly } from 'core-decorators';
@@ -274,7 +273,7 @@ dinner.entree = 'salmon';
 
 **（3）@override**
 
-override修饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
+`override`修饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
 
 ```javascript
 import { override } from 'core-decorators';
@@ -302,7 +301,7 @@ class Child extends Parent {
 
 **（4）@deprecate (别名@deprecated)**
 
-deprecate或deprecated修饰器在控制台显示一条警告，表示该方法将废除。
+`deprecate`或`deprecated`修饰器在控制台显示一条警告，表示该方法将废除。
 
 ```javascript
 import { deprecate } from 'core-decorators';
@@ -335,7 +334,7 @@ person.facepalmHarder();
 
 **（5）@suppressWarnings**
 
-suppressWarnings修饰器抑制decorated修饰器导致的`console.warn()`调用。但是，异步代码出发的调用除外。
+`suppressWarnings`修饰器抑制`decorated`修饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
 
 ```javascript
 import { suppressWarnings } from 'core-decorators';
@@ -356,9 +355,58 @@ person.facepalmWithoutWarning();
 // no warning is logged
 ```
 
+## 使用修饰器实现自动发布事件
+
+我们可以使用修饰器，使得对象的方法被调用时，自动发出一个事件。
+
+```javascript
+import postal from "postal/lib/postal.lodash";
+
+export default function publish(topic, channel) {
+  return function(target, name, descriptor) {
+    const fn = descriptor.value;
+
+    descriptor.value = function() {
+      let value = fn.apply(this, arguments);
+      postal.channel(channel || target.channel || "/").publish(topic, value);
+    };
+  };
+}
+```
+
+上面代码定义了一个名为`publish`的修饰器，它通过改写`descriptor.value`，使得原方法被调用时，会自动发出一个事件。它使用的事件“发布/订阅”库是[Postal.js](https://github.com/postaljs/postal.js)。
+
+它的用法如下。
+
+```javascript
+import publish from "path/to/decorators/publish";
+
+class FooComponent () {
+  @publish("foo.some.message", "component")
+  someMethod() {
+    return {
+      my: "data"
+    };
+  }
+  @publish("foo.some.other")
+  anotherMethod() {
+    // ...
+  }
+}
+```
+
+以后，只要调用`someMethod`或者`anotherMethod`，就会自动发出一个事件。
+
+```javascript
+let foo = new FooComponent();
+
+foo.someMethod() // 在"component"频道发布"foo.some.message"事件，附带的数据是{ my: "data" }
+foo.anotherMethod() // 在"/"频道发布"foo.some.other"事件，不附带数据
+```
+
 ## Mixin
 
-在修饰器的基础上，可以实现Mixin模式。所谓Mixin模式，就是对象继承的一种替代方案，中文译为“混入”（mix in），意为在一个对象之中混入另外一个对象的方法。
+在修饰器的基础上，可以实现`Mixin`模式。所谓`Mixin`模式，就是对象继承的一种替代方案，中文译为“混入”（mix in），意为在一个对象之中混入另外一个对象的方法。
 
 请看下面的例子。
 
@@ -400,11 +448,10 @@ const Foo = {
 class MyClass {}
 
 let obj = new MyClass();
-
 obj.foo() // "foo"
 ```
 
-通过mixins这个修饰器，实现了在MyClass类上面“混入”Foo对象的foo方法。
+通过mixins这个修饰器，实现了在MyClass类上面“混入”Foo对象的`foo`方法。
 
 ## Trait
 
@@ -522,7 +569,7 @@ as方法则为上面的代码提供了另一种写法。
 class MyClass {}
 ```
 
-### Babel转码器的支持
+## Babel转码器的支持
 
 目前，Babel转码器已经支持Decorator，命令行的用法如下。
 

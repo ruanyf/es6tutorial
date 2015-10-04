@@ -165,6 +165,7 @@
 - Addy Osmani, [Exploring ES2016 Decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841): Decorator的深入介绍
 - Sebastian McKenzie, [Allow decorators for functions as well](https://github.com/wycats/javascript-decorators/issues/4): 为什么修饰器不能用于函数
 - Maximiliano Fierro, [Traits with ES7 Decorators](http://cocktailjs.github.io/blog/traits-with-es7-decorators.html): Trait的用法介绍
+- Jonathan Creamer: [Using ES2016 Decorators to Publish on an Event Bus](http://jonathancreamer.com/using-es2016-decorators-to-publish-on-an-event-bus/): 使用修饰器实现自动发布事件
 
 ## Module
 
