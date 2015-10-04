@@ -94,6 +94,7 @@
 - MDN, [Symbol](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Symbol): Symbol类型的详细介绍
 - Jason Orendorff, [ES6 In Depth: Symbols](https://hacks.mozilla.org/2015/06/es6-in-depth-symbols/)
 - Keith Cirkel, [Metaprogramming in ES6: Symbols and why they're awesome](http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/): Symbol的深入介绍
+- Axel Rauschmayer, [Customizing ES6 via well-known symbols](http://www.2ality.com/2015/09/well-known-symbols-es6.html)
 
 ## 二进制数组
 

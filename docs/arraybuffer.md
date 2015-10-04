@@ -303,6 +303,27 @@ var normalArray = Array.prototype.slice.call(typedArray);
 
 上面所有方法的用法，请参阅数组方法的介绍，这里不再重复了。
 
+注意，TypedArray数组没有`concat`方法。如果想要合并多个TypedArray数组，可以用下面这个函数。
+
+```javascript
+function concatenate(resultConstructor, ...arrays) {
+  let totalLength = 0;
+  for (let arr of arrays) {
+    totalLength += arr.length;
+  }
+  let result = new resultConstructor(totalLength);
+  let offset = 0;
+  for (let arr of arrays) {
+    result.set(arr, offset);
+    offset += arr.length;
+  }
+  return result;
+}
+
+concatenate(Uint8Array, Uint8Array.of(1, 2), Uint8Array.of(3, 4))
+// Uint8Array [1, 2, 3, 4]
+```
+
 另外，`TypedArray`数组与普通数组一样，部署了Iterator接口，所以可以被遍历。
 
 ```javascript
@@ -538,7 +559,9 @@ var b = new Uint8Array(8);
 b.set(a);
 ```
 
-上面代码复制`a`数组的内容到`b`数组，它是整段内存的复制，比一个个拷贝成员的那种复制快得多。`set`方法还可以接受第二个参数，表示从`b`对象哪一个成员开始复制`a`对象。
+上面代码复制`a`数组的内容到`b`数组，它是整段内存的复制，比一个个拷贝成员的那种复制快得多。
+
+`set`方法还可以接受第二个参数，表示从`b`对象的哪一个成员开始复制`a`对象。
 
 ```javascript
 var a = new Uint16Array(8);

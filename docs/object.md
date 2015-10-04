@@ -476,7 +476,7 @@ Object.getPrototypeOf({ __proto__: null })
 
 **（2）Object.setPrototypeOf()**
 
-Object.setPrototypeOf方法的作用与__proto__相同，用来设置一个对象的prototype对象。它是ES6正式推荐的设置原型对象的方法。
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象。它是ES6正式推荐的设置原型对象的方法。
 
 ```javascript
 // 格式
