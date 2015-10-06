@@ -418,6 +418,51 @@ function processContent(options) {
 
 注意，由于存在深拷贝的问题，`DEFAULTS`对象和`options`对象的所有属性的值，都只能是简单类型，而不能指向另一个对象。否则，将导致`DEFAULTS`对象的该属性不起作用。
 
+## 属性的可枚举性
+
+对象的每个属性都有一个描述对象（Descriptor），用来控制该属性的行为。`Object.getOwnPropertyDescriptor`方法可以获取该属性的描述对象。
+
+```javascript
+let obj = { foo: 123 };
+ Object.getOwnPropertyDescriptor(obj, 'foo')
+ //   { value: 123,
+ //     writable: true,
+ //     enumerable: true,
+ //     configurable: true }
+```
+
+描述对象的`enumerable`属性，称为”可枚举性“，如果该属性为`false`，就表示某些操作会忽略当前属性。
+
+ES5有三个操作会忽略`enumerable`为`false`的属性。
+
+- for...in 循环：只遍历对象自身的和继承的可枚举的属性
+- Object.keys()：返回对象自身的所有可枚举的属性的键名
+- JSON.stringify()：只串行化对象自身的可枚举的属性
+
+ES6新增了两个操作，会忽略`enumerable`为`false`的属性。
+
+- Object.assign()：只拷贝对象自身的可枚举的属性
+- Reflect.enumerate()：返回所有`for...in`循环会遍历的属性
+
+这五个操作之中，只有`for...in`和`Reflect.enumerate()`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
+
+```javascript
+Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
+// false
+
+Object.getOwnPropertyDescriptor([], 'length').enumerable
+// false
+```
+
+另外，ES6规定，所有Class的原型的方法都是不可枚举的。
+
+```javascript
+Object.getOwnPropertyDescriptor(class {foo() {}}.prototype, 'foo').enumerable
+// false
+```
+
+总的来说，操作中引入继承的属性会让问题复杂化，大多数时候，我们只关心对象自身的属性。所以，尽量不要用`for...in`循环，而用`Object.keys()`代替。
+
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
 **（1）`__proto__`属性**
