@@ -487,7 +487,7 @@ p.then(null, function (s){
 我们可以将图片的加载写成一个`Promise`，一旦加载完成，`Promise`的状态就发生变化。
 
 ```javascript
-conset preloadImage = function (path) {
+const preloadImage = function (path) {
   return new Promise(function (resolve, reject) {
     var image = new Image();
     image.onload  = resolve;
