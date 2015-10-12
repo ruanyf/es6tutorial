@@ -474,7 +474,7 @@ jQuery.ajax = function (url, {
 
 **（6）遍历Map结构**
 
-任何部署了Iterator接口的对象，都可以用for...of循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
+任何部署了Iterator接口的对象，都可以用for...of循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键和值就非常方便。
 
 ```javascript
 
@@ -490,7 +490,7 @@ for (let [key, value] of map) {
 
 ```
 
-如果只想获取键名，或者只想获取键值，可以写成下面这样。
+如果只想获取键，或者只想获取值，可以写成下面这样。
 
 ```javascript
 
