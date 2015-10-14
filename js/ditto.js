@@ -194,7 +194,7 @@ function show_loading() {
 
 function router() {	
 
-    var path = location.hash.replace("#", "./");
+    var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
     if (ditto.save_progress && store.get('menu-progress') !== location.hash) {
         store.set('menu-progress', location.hash);
