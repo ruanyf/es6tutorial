@@ -286,8 +286,10 @@ function router() {
             var sHeight = h - wh;
 
             $w.on('scroll', function() {
+              window.requestAnimationFrame(function(){
                 var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
                 updateProgress(perc);
+              });
             });
 
             function updateProgress(perc) {
