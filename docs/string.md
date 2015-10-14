@@ -581,16 +581,14 @@ function passthru(literals) {
   }
 
   return result;
-
 }
 
-msg
-// "The total is 30 (31.5 with tax)"
+msg // "The total is 30 (31.5 with tax)"
 ```
 
 上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
 
-passthru函数采用rest参数的写法如下。
+`passthru`函数采用rest参数的写法如下。
 
 ```javascript
 function passthru(literals, ...values) {
