@@ -252,13 +252,16 @@ function router() {
             })();
         })();
 
-		var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
+    var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
 		if(location.hash !== '' || Boolean(perc)){
 			if (!Boolean(perc)){
 				$('html, body').animate({
-					scrollTop: $('#content').offset().top
-				}, 200);
+					scrollTop: ($('#content').offset().top + 10)
+				}, 300);
+				$('html, body').animate({
+					scrollTop: ($('#content').offset().top)
+				}, 300);
 			} else {
 				$('html, body').animate({
 					scrollTop: ($('body').height()-$(window).height())*perc
