@@ -558,7 +558,7 @@ function log(generator) {
   var v;
   console.log('starting generator');
   try {
- g.next();        // { value: undefined, done: true }   v = generator.next();
+    v = generator.next(); // { value: undefined, done: true }   
     console.log('第一次运行next方法', v);
   } catch (err) {
     console.log('捕捉错误', v);
@@ -587,7 +587,7 @@ log(g());
 // caller done
 ```
 
-上面代码一共三次运行next方法，第二次运行的时候会抛出错误，然后第三次运行的时候，Generator函数就已经结束了，不再执行下去了。
+上面代码一共三次运行`next`方法，第二次运行的时候会抛出错误，然后第三次运行的时候，Generator函数就已经结束了，不再执行下去了。
 
 ## Generator.prototype.return()
 

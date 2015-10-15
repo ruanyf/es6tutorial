@@ -782,7 +782,7 @@ xhr.open('GET', someUrl);
 xhr.responseType = 'arraybuffer';
 
 xhr.onload = function () {
-  var let arrayBuffer = xhr.response;
+  let arrayBuffer = xhr.response;
   // ···
 };
 

@@ -340,10 +340,10 @@ var twice = {
   apply (target, ctx, args) {
     return Reflect.apply(...arguments) * 2;
   }
-}
+};
 function sum (left, right) {
   return left + right;
-}
+};
 var proxy = new Proxy(sum, twice);
 proxy(1, 2) // 6
 proxy.call(null, 5, 6) // 22
@@ -370,10 +370,10 @@ var handler = {
     }
     return key in target;
   }
-}
+};
 var target = { _prop: 'foo', prop: 'foo' };
-'_prop' in proxy
-// false
+var proxy = new Proxy(target, handler);
+'_prop' in proxy // false
 ```
 
 上面代码中，如果原对象的属性名的第一个字符是下划线，`proxy.has`就会返回`false`，从而不会被`in`运算符发现。

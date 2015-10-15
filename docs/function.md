@@ -471,13 +471,19 @@ bar.name // "baz"
 bar.name // "baz"
 ```
 
-只有具名函数才有`name`这个属性，匿名函数是没有的。
+`Function`构造函数返回的函数实例，`name`属性的值为“anonymous”。
 
 ```javascript
-'name' in (function () {})
-// false
-'name' in (() => {})
-// false
+(new Function).name // "anonymous"
+```
+
+`bind`返回的函数，`name`属性值会加上“bound ”前缀。
+
+```javascript
+function foo() {};
+foo.bind({}).name // "bound foo"
+
+(function(){}).bind({}).name // "bound "
 ```
 
 ## 箭头函数

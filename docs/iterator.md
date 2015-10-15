@@ -23,6 +23,12 @@ Iterator的遍历过程是这样的。
 下面是一个模拟next方法返回值的例子。
 
 ```javascript
+var it = makeIterator(['a', 'b']);
+
+it.next() // { value: "a", done: false }
+it.next() // { value: "b", done: false }
+it.next() // { value: undefined, done: true }
+
 function makeIterator(array){
   var nextIndex = 0;
   return {
@@ -33,12 +39,6 @@ function makeIterator(array){
     }
   }
 }
-
-var it = makeIterator(['a', 'b']);
-
-it.next() // { value: "a", done: false }
-it.next() // { value: "b", done: false }
-it.next() // { value: undefined, done: true }
 ```
 
 上面代码定义了一个makeIterator函数，它是一个遍历器生成函数，作用就是返回一个遍历器对象。对数组`['a', 'b']`执行这个函数，就会返回该数组的遍历器对象（即指针对象）it。
@@ -52,6 +52,13 @@ next方法返回一个对象，表示当前数据成员的信息。这个对象�
 由于Iterator只是把接口规格加到数据结构之上，所以，遍历器与它所遍历的那个数据结构，实际上是分开的，完全可以写出没有对应数据结构的遍历器对象，或者说用遍历器对象模拟出数据结构。下面是一个无限运行的遍历器对象的例子。
 
 ```javascript
+var it = idMaker();
+
+it.next().value // '0'
+it.next().value // '1'
+it.next().value // '2'
+// ...
+
 function idMaker(){
   var index = 0;
 
@@ -61,13 +68,6 @@ function idMaker(){
     }
   }
 }
-
-var it = idMaker();
-
-it.next().value // '0'
-it.next().value // '1'
-it.next().value // '2'
-// ...
 ```
 
 上面的例子中，遍历器生成函数idMaker，返回一个遍历器对象（即指针对象）。但是并没有对应的数据结构，或者说，遍历器对象自己描述了一个数据结构出来。
@@ -488,7 +488,7 @@ for (a of arr) {
 Set和Map结构也原生具有Iterator接口，可以直接使用`for...of`循环。
 
 ```javascript
-var engines = Set(["Gecko", "Trident", "Webkit", "Webkit"]);
+var engines = new Set(["Gecko", "Trident", "Webkit", "Webkit"]);
 for (var e of engines) {
   console.log(e);
 }
