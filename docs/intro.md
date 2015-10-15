@@ -42,9 +42,7 @@ ECMA的第39号技术专家委员会（Technical Committee 39，简称TC39）负
 
 各大浏览器的最新版本，对ES6的支持可以查看[kangax.github.io/es5-compat-table/es6/](http://kangax.github.io/es5-compat-table/es6/)。随着时间的推移，支持度已经越来越高了，ES6的大部分特性都实现了。
 
-Node.js和io.js（一个部署新功能更快的Node分支）是JavaScript语言的服务器运行环境。它们对ES6的支持度，比浏览器更高。通过它们，可以体验更多ES6的特性。
-
-建议使用版本管理工具[nvm](https://github.com/creationix/nvm)，来安装Node.js和io.js。不过，nvm不支持Windows系统，下面的操作可以改用[nvmw](https://github.com/hakobera/nvmw)或[nvm-windows](https://github.com/coreybutler/nvm-windows)代替。
+Node.js是JavaScript语言的服务器运行环境，对ES6的支持度比浏览器更高。通过Node，可以体验更多ES6的特性。建议使用版本管理工具[nvm](https://github.com/creationix/nvm)，来安装Node，因为可以自由切换版本。不过，`nvm`不支持Windows系统，下面的操作可以改用[nvmw](https://github.com/hakobera/nvmw)或[nvm-windows](https://github.com/coreybutler/nvm-windows)代替。
 
 安装nvm需要打开命令行窗口，运行下面的命令。
 
@@ -52,43 +50,27 @@ Node.js和io.js（一个部署新功能更快的Node分支）是JavaScript语言
 $ curl -o- https://raw.githubusercontent.com/creationix/nvm/<version number>/install.sh | bash
 ```
 
-上面命令的`version number`处，需要用版本号替换。本节写作时的版本号是`v0.25.4`。
+上面命令的`version number`处，需要用版本号替换。本节写作时的版本号是`v0.29.0`。该命令运行后，`nvm`会默认安装在用户主目录的`.nvm`子目录。
 
-该命令运行后，`nvm`会默认安装在用户主目录的`.nvm`子目录。然后，激活`nvm`。
+然后，激活`nvm`。
 
 ```bash
 $ source ~/.nvm/nvm.sh
 ```
 
-激活以后，安装Node或io.js的最新版。
+激活以后，安装Node的最新版。
 
 ```bash
 $ nvm install node
-# 或
-$ nvm install iojs
 ```
 
-安装完成后，就可以在各种版本的node之间自由切换。
+安装完成后，切换到该版本。
 
 ```bash
-# 切换到node
 $ nvm use node
-
-# 切换到iojs
-$ nvm use iojs
 ```
 
-需要注意的是，Node.js对ES6的支持，需要打开`harmony`参数，iojs不需要。
-
-```
-$ node --harmony
-# iojs不需要打开harmony参数
-$ node
-```
-
-上面命令执行后，就会进入REPL环境，该环境支持所有已经实现的ES6特性。
-
-使用下面的命令，可以查看Node.js所有已经实现的ES6特性。
+使用下面的命令，可以查看Node所有已经实现的ES6特性。
 
 ```bash
 $ node --v8-options | grep harmony
@@ -450,7 +432,7 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 **Stage 2**：
 
 - es7.exponentiationOperator：指数运算符
-- es7.asyncFunctions：ansyc函数
+- es7.asyncFunctions：async函数
 - es7.objectRestSpread：对象的Rest参数和扩展运算符
 
 Babel转码器对Stage 2及以上阶段的功能，是默认支持的。对于那些默认没有打开的功能，需要手动打开。

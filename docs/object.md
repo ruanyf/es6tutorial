@@ -5,11 +5,15 @@
 ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
+// 示例一
 var foo = 'bar';
 var baz = {foo};
 // 等同于
 var baz = {foo: foo};
 
+baz // Object {foo: "bar"}
+
+// 示例二
 function f(x, y) {
   return {x, y};
 }
@@ -17,9 +21,11 @@ function f(x, y) {
 function f(x, y) {
   return {x: x, y: y};
 }
+
+f(1, 2) // Object {x: 1, y: 2}
 ```
 
-上面是属性简写的例子，方法也可以简写。
+上面代码表明，ES6允许在对象之中，只写属性名。这时，属性值等于属性名所代表的变量。除了属性简写，方法也可以简写。
 
 ```javascript
 var o = {
@@ -37,7 +43,7 @@ var o = {
 };
 ```
 
-下面是一个更实际的例子。
+下面是一个实际的例子。
 
 ```javascript
 var Person = {
