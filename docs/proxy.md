@@ -823,7 +823,7 @@ Reflect.get(obj, "foo", wrapper);
 
 等同于`delete obj[name]`。
 
-**（5）Refl2ect.construct(target, args)**
+**（5）Reflect.construct(target, args)**
 
 等同于`new target(...args)`，这提供了一种不使用new，来调用构造函数的方法。
 
