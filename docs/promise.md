@@ -526,7 +526,7 @@ function run (generator) {
     return result.value.then(function (value) {
       return go(it.next(value));
     }, function (error) {
-      return go(it.throw(value));
+      return go(it.throw(error));
     });
   }
 

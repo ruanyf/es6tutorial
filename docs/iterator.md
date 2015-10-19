@@ -233,7 +233,7 @@ NodeList.prototype[Symbol.iterator] = [][Symbol.iterator];
 [...document.querySelectorAll('div')] // 可以执行了
 ```
 
-下面是对象调用数组的`Symbol.iterator`方法的例子。
+下面是类似数组的对象调用数组的`Symbol.iterator`方法的例子。
 
 ```javascript
 let iterable = {
@@ -245,6 +245,21 @@ let iterable = {
 };
 for (let item of iterable) {
   console.log(item); // 'a', 'b', 'c'
+}
+```
+
+注意，普通对象部署数组的`Symbol.iterator`方法，并无效果。
+
+```javascript
+let iterable = {
+  a: 'a',
+  b: 'b',
+  c: 'c',
+  length: 3,
+  [Symbol.iterator]: Array.prototype[Symbol.iterator]
+};
+for (let item of iterable) {
+  console.log(item); // undefined, undefined, undefined
 }
 ```
 

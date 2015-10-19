@@ -66,6 +66,9 @@ function fetch(url, { body = '', method = 'GET', headers = {} }){
 
 fetch('http://example.com', {})
 // "GET"
+
+fetch('http://example.com')
+// 报错
 ```
 
 上面代码中，传入函数`fetch`的第二个参数是一个对象，调用的时候可以为它的三个属性设置默认值。
@@ -83,17 +86,31 @@ fetch('http://example.com')
 
 上面代码中，调用函数`fetch`时，第二个参数默认为一个空对象，而只要有第二个参数，`method`参数就默认为`GET`。
 
-定义了默认值的参数，必须是函数的尾参数，其后不能再有其他无默认值的参数。这是因为有了默认值以后，该参数可以省略，只有位于尾部，才可能判断出到底省略了哪些参数。
+通常情况下，定义了默认值的参数，都是函数的尾参数。因为这样比较容易看出来，到底省略了哪些参数。但是，非尾部的参数，也是可以设置默认值的。
 
 ```javascript
-// 以下两种写法都是错的
-
-function f(x = 5, y) {
+// 例一
+function f(x=1, y) {
+  return [x, y];
 }
 
+f() // [1, undefined]
+f(2) // [2, undefined])
+f(, 1) // 报错
+f(undefined, 1) // [1, 1]
+
+// 例二
 function f(x, y = 5, z) {
+  return [x, y, z];
 }
+
+f() // [undefined, 5, undefined]
+f(1) // [1, 5, undefined]
+f(1,,2) // 报错
+f(1, undefined, 2) // [1, 5, 2]
 ```
+
+上面代码中，有默认值的参数都不是尾参数。这时，无法只省略该参数，而不省略它后面的参数，除非显式输入`undefined`。
 
 如果传入`undefined`，将触发该参数等于默认值，null则没有这个效果。
 
