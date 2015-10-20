@@ -2,7 +2,7 @@
 
 ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经在2015年6月正式发布了。它的目标，是使得JavaScript语言可以用来编写复杂的大型应用程序，成为企业级开发语言。
 
-标准的制定者有计划，以后每年发布一次标准，使用年份作为标准的版本。因为当前版本的ES6是在2015年发布的，所以又称ECMAScript 2015。也就是说，ES6就是ES2015。
+标准的制定者有计划，以后每年发布一次标准，使用年份作为标准的版本。因为当前版本的ES6是在2015年发布的，所以又称ECMAScript 2015。也就是说，ES6就是ES2015，下一年应该会发布小幅修订的ES2016。
 
 ## ECMAScript和JavaScript的关系
 
@@ -146,7 +146,7 @@ $ babel-node es6.js
 [1, 4, 9]
 ```
 
-babel命令可以将ES6代码转为ES5代码。
+`babel`命令可以将ES6代码转为ES5代码。
 
 ```bash
 $ babel es6.js
@@ -403,7 +403,7 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 2013年3月，ES6的草案封闭，不再接受新功能了。新的功能将被加入ES7。
 
-任何人都可以向ES7提案，从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由TC39委员会批准。
+任何人都可以向TC39提案，从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由TC39委员会批准。
 
 - Stage 0 - Strawman（展示阶段）
 - Stage 1 - Proposal（征求意见阶段）
@@ -434,6 +434,8 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 - es7.exponentiationOperator：指数运算符
 - es7.asyncFunctions：async函数
 - es7.objectRestSpread：对象的Rest参数和扩展运算符
+
+ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
 
 Babel转码器对Stage 2及以上阶段的功能，是默认支持的。对于那些默认没有打开的功能，需要手动打开。
 

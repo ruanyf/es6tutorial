@@ -2,9 +2,9 @@
 
 ## 官方文件
 
-- [ECMAScript 6 Language Specification](http://people.mozilla.org/~jorendorff/es6-draft.html): 语言规格草案
-- [harmony:proposals](http://wiki.ecmascript.org/doku.php?id=harmony:proposals): ES6的各种提案
-- [Draft Specification for ES.next (Ecma-262 Edition 6)](http://wiki.ecmascript.org/doku.php?id=harmony:specification_drafts): ES6草案各版本之间的变动
+- [ECMAScript® 2015 Language Specification](http://www.ecma-international.org/ecma-262/6.0/index.html): ES6语言规格
+- [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript当前的各种提案
+- [ECMAScript® 2016 Language Specification](http://tc39.github.io/ecma262/): ECMAScript 2016草案
 
 ## 综合介绍
 

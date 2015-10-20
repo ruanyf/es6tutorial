@@ -108,8 +108,8 @@ const [v1, v2, ..., vN ] = array;
 对于Set结构，也可以使用数组的解构赋值。
 
 ```javascript
-[a, b, c] = new Set(["a", "b", "c"])
-a // "a"
+let [x, y, z] = new Set(["a", "b", "c"])
+x // "a"
 ```
 
 事实上，只要某种数据结构具有Iterator接口，都可以采用数组形式的解构赋值。
@@ -128,7 +128,7 @@ var [first, second, third, fourth, fifth, sixth] = fibs();
 sixth // 5
 ```
 
-上面代码中，fibs是一个Generator函数，原生具有Iterator接口。解构赋值会依次从这个接口获取值。
+上面代码中，`fibs`是一个Generator函数，原生具有Iterator接口。解构赋值会依次从这个接口获取值。
 
 ## 对象的解构赋值
 
@@ -164,6 +164,14 @@ let { first: f, last: l } = obj;
 f // 'hello'
 l // 'world'
 ```
+
+这实际上说明，对象的解构赋值是下面形式的简写（参见《对象的扩展》一章）。
+
+```javascript
+var { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
+```
+
+也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。
 
 和数组一样，解构也可以用于嵌套结构的对象。
 
@@ -203,9 +211,9 @@ var {x = 3} = {x: null};
 x // null
 ```
 
-上面代码中，如果x属性等于null，就不严格相等于undefined，导致默认值不会生效。
+上面代码中，如果`x`属性等于`null`，就不严格相等于`undefined`，导致默认值不会生效。
 
-如果解构失败，变量的值等于undefined。
+如果解构失败，变量的值等于`undefined`。
 
 ```javascript
 var {foo} = {bar: 'baz'}
@@ -219,7 +227,7 @@ foo // undefined
 var {foo: {bar}} = {baz: 'baz'}
 ```
 
-上面代码中，等号左边对象的foo属性，对应一个子对象。该子对象的bar属性，解构时会报错。原因很简单，因为foo这时等于undefined，再取子属性就会报错，请看下面的代码。
+上面代码中，等号左边对象的`foo`属性，对应一个子对象。该子对象的`bar`属性，解构时会报错。原因很简单，因为`foo`这时等于`undefined`，再取子属性就会报错，请看下面的代码。
 
 ```javascript
 var _tmp = {baz: 'baz'};
@@ -232,7 +240,7 @@ _tmp.foo.bar // 报错
 // 错误的写法
 
 var x;
-{x} = {x:1};
+{x} = {x: 1};
 // SyntaxError: syntax error
 ```
 
@@ -266,7 +274,7 @@ d // "l"
 e // "o"
 ```
 
-类似数组的对象都有一个length属性，因此还可以对这个属性解构赋值。
+类似数组的对象都有一个`length`属性，因此还可以对这个属性解构赋值。
 
 ```javascript
 let {length : len} = 'hello';
