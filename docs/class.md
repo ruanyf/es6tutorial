@@ -88,9 +88,9 @@ let b = new B();
 b.constructor === B.prototype.constructor // true
 ```
 
-上面代码中，b是B类的实例，它的constructor方法就是B类原型的constructor方法。
+上面代码中，`b`是B类的实例，它的`constructor`方法就是B类原型的`constructor`方法。
 
-由于类的方法（除constructor以外）都定义在prototype对象上面，所以类的新方法可以添加在prototype对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
+由于类的方法（除`constructor`以外）都定义在`prototype`对象上面，所以类的新方法可以添加在`prototype`对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
 
 ```javascript
 class Point {
@@ -618,7 +618,19 @@ p1.printName() // "Ha"
 
 ## 原生构造函数的继承
 
-原生构造函数是指语言内置的构造函数，通常用来生成数据结构，比如`Array()`。以前，这些原生构造函数是无法继承的，即不能自己定义一个Array的子类。
+原生构造函数是指语言内置的构造函数，通常用来生成数据结构。ECMAScript的原生构造函数大致有下面这些。
+
+- Boolean()
+- Number()
+- String()
+- Array()
+- Date()
+- Function()
+- RegExp()
+- Error()
+- Object()
+
+以前，这些原生构造函数是无法继承的，比如，不能自己定义一个Array的子类。
 
 ```javascript
 function MyArray() {
@@ -635,7 +647,7 @@ MyArray.prototype = Object.create(Array.prototype, {
 });
 ```
 
-上面代码定义了一个继承Array的MyArray类。但是，这个类的行为与Array完全不一致。
+上面代码定义了一个继承Array的`MyArray`类。但是，这个类的行为与Array完全不一致。
 
 ```javascript
 var colors = new MyArray();
@@ -646,9 +658,9 @@ colors.length = 0;
 colors[0]  // "red"
 ```
 
-之所以会发生这种情况，是因为原生构造函数无法外部获取，通过`Array.apply()`或者分配给原型对象都不行。ES5是先新建子类的实例对象this，再将父类的属性添加到子类上，由于父类的属性无法获取，导致无法继承原生的构造函数。
+之所以会发生这种情况，是因为子类无法获得原生构造函数的内部属性，通过`Array.apply()`或者分配给原型对象都不行。ES5是先新建子类的实例对象`this`，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数。比如，Array构造函数有一个内部属性`[[DefineOwnProperty]]`，用来定义新属性时，更新`length`属性，这个内部属性无法在子类获取，导致子类的`length`属性行为不正常。
 
-ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象this，然后再用子类的构造函数修饰this，使得父类的所有行为都可以继承。下面是一个继承Array的例子。
+ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。下面是一个继承Array的例子。
 
 ```javascript
 class MyArray extends Array {
@@ -667,7 +679,7 @@ arr[0] // undefined
 
 上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
 
-上面这个例子也说明，extends关键字不仅可以用来继承类，还可以用来继承原生的构造函数。因此可以在原生数据结构的基础上，定义自己的数据结构。下面就是定义了一个带版本功能的数组。
+上面这个例子也说明，`extends`关键字不仅可以用来继承类，还可以用来继承原生的构造函数。因此可以在原生数据结构的基础上，定义自己的数据结构。下面就是定义了一个带版本功能的数组。
 
 ```javascript
 class VersionedArray extends Array {
@@ -679,14 +691,29 @@ class VersionedArray extends Array {
     this.history.push(this.slice());
   }
   revert() {
-    this.splice(0, this.length, this.history[this.history.length - 1]);
+    this.splice(0, this.length, ...this.history[this.history.length - 1]);
   }
 }
+
+var x = new VersionedArray();
+
+x.push(1);
+x.push(2);
+x // [1, 2]
+x.history // [[]]
+
+x.commit();
+x.history // [[], [1, 2]]
+x.push(3);
+x // [1, 2, 3]
+
+x.revert();
+x // [1, 2]
 ```
 
-上面代码中，VersionedArray结构会通过commit方法，将自己的上一个版本存入history属性，然后通过revert方法，可以撤销当前版本，回到上一个版本。除此之外，VersionedArray依然是一个数组，所有原生的数组方法都可以在它上面调用。
+上面代码中，`VersionedArray`结构会通过`commit`方法，将自己的当前状态存入`history`属性，然后通过`revert`方法，可以撤销当前版本，回到上一个版本。除此之外，`VersionedArray`依然是一个数组，所有原生的数组方法都可以在它上面调用。
 
-下面是一个自定义Error子类的例子。
+下面是一个自定义`Error`子类的例子。
 
 ```javascript
 class ExtendableError extends Error {
@@ -714,7 +741,7 @@ myerror.stack
 //     ...
 ```
 
-## class的取值函数（getter）和存值函数（setter）
+## Class的取值函数（getter）和存值函数（setter）
 
 与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
 

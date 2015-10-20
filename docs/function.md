@@ -269,7 +269,7 @@ console.log(1, ...[2, 3, 4], 5)
 // 1 2 3 4 5
 
 [...document.querySelectorAll('div')]
-// <- [<div>, <div>, <div>]
+// [<div>, <div>, <div>]
 ```
 
 该运算符主要用于函数调用。
@@ -289,16 +289,24 @@ add(...numbers) // 42
 
 上面代码中，`array.push(...items)`和`add(...numbers)`这两行，都是函数的调用，它们的都使用了扩展运算符。该运算符将一个数组，变为参数序列。
 
-由于扩展运算符可以展开数组，所以不再需要apply方法，将数组转为函数的参数了。
+扩展运算符与正常的函数参数可以结合使用，非常灵活。
+
+```javascript
+function f(v, w, x, y, z) { }
+var args = [0, 1];
+f(-1, ...args, 2, ...[3]);
+```
+
+由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
 
 ```javascript
 // ES5的写法
-function f (x, y, z){}
+function f(x, y, z) {}
 var args = [0, 1, 2];
 f.apply(null, args);
 
 // ES6的写法
-function f (x, y, z){}
+function f(x, y, z) {}
 var args = [0, 1, 2];
 f(...args);
 ```
@@ -334,14 +342,6 @@ arr1.push(...arr2);
 
 上面代码的ES5写法中，`push`方法的参数不能是数组，所以只好通过`apply`方法变通使用`push`方法。有了扩展运算符，就可以直接将数组传入`push`方法。
 
-扩展运算符与正常的函数参数可以结合使用，非常灵活。
-
-```javascript
-function f(v, w, x, y, z) { }
-var args = [0, 1];
-f(-1, ...args, 2, ...[3]);
-```
-
 扩展运算符可以简化很多种ES5的写法。
 
 ```javascript
@@ -366,6 +366,22 @@ new (Date.bind.apply(Date, [null, 2015, 1, 1]))
 new Date(...[2015, 1, 1]);
 ```
 
+上面的第一个例子，其实提供了数组合并的新写法。
+
+```javascript
+var arr1 = ['a', 'b'];
+var arr2 = ['c'];
+var arr3 = ['d', 'e'];
+
+// ES5的合并数组
+arr1.concat(arr2, arr3));
+// [ 'a', 'b', 'c', 'd', 'e' ]
+
+// ES6的合并数组
+[...arr1, ...arr2, ...arr3]
+// [ 'a', 'b', 'c', 'd', 'e' ]
+```
+
 扩展运算符也可以与解构赋值结合起来，用于生成数组。
 
 ```javascript
@@ -380,14 +396,6 @@ rest  // []:
 const [first, ...rest] = ["foo"];
 first  // "foo"
 rest   // []
-
-const [first, ...rest] = ["foo", "bar"];
-first // "foo"
-rest  // ["bar"]
-
-const [first, ...rest] = ["foo", "bar", "baz"];
-first // "foo"
-rest  // ["bar","baz"]
 ```
 
 如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。
