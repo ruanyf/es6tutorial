@@ -171,7 +171,15 @@ l // 'world'
 var { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
 ```
 
-也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。
+也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。真正被赋值的是后者，而不是前者。
+
+```javascript
+var { foo: baz } = { foo: "aaa", bar: "bbb" };
+baz // "aaa"
+foo // error: foo is not defined
+```
+
+上面代码中，真正被赋值的是变量`baz`，而不是模式`foo`。
 
 和数组一样，解构也可以用于嵌套结构的对象。
 
@@ -188,6 +196,26 @@ x // "Hello"
 y // "World"
 ```
 
+注意，这时`p`是模式，不是变量，因此不会被赋值。
+
+```javascript
+var node = {
+  loc: {
+    start: {
+      line: 1,
+      column: 5
+    }
+  }
+};
+
+var { loc: { start: { line }} } = node;
+line // 1
+loc  // error: loc is undefined
+start // error: start is undefined
+```
+
+上面代码中，只有`line`是变量，`loc`和`start`都是模式，不会被赋值。
+
 对象的解构也可以指定默认值。
 
 ```javascript
@@ -201,7 +229,7 @@ var { message: msg = "Something went wrong" } = {};
 console.log(msg); // "Something went wrong"
 ```
 
-默认值生效的条件是，对象的属性值严格等于undefined。
+默认值生效的条件是，对象的属性值严格等于`undefined`。
 
 ```javascript
 var {x = 3} = {x: undefined};

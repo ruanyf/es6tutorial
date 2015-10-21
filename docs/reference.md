@@ -36,6 +36,7 @@
 ## 解构赋值
 
 - Nick Fitzgerald, [Destructuring Assignment in ECMAScript 6](http://fitzgeraldnick.com/weblog/50/): 详细介绍解构赋值的用法
+- Nicholas C. Zakas, [ECMAScript 6 destructuring gotcha](https://www.nczonline.net/blog/2015/10/ecmascript-6-destructuring-gotcha/)
 
 ## 字符串
 
