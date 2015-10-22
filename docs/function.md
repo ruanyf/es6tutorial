@@ -617,7 +617,7 @@ headAndTail(1, 2, 3, 4, 5)
 
 箭头函数有几个使用注意点。
 
-（1）函数体内的`this`对象，绑定定义时所在的对象，而不是使用时所在的对象。
+（1）函数体内的`this`对象，就是定义时所在的对象，而不是使用时所在的对象。
 
 （2）不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误。
 
@@ -628,14 +628,19 @@ headAndTail(1, 2, 3, 4, 5)
 上面四点中，第一点尤其值得注意。`this`对象的指向是可变的，但是在箭头函数中，它是固定的。
 
 ```javascript
-[1, 2, 3].map(n => n * 2);
+function foo() {
+   setTimeout( () => {
+      console.log("id:", this.id);
+   },100);
+}
 
-// 等同于
-
-[1, 2, 3].map(function(n) { return n * 2; }, this);
+foo.call( { id: 42 } );
+// id: 42
 ```
 
-下面的代码是一个例子，将this对象绑定定义时所在的对象。
+上面代码中，`setTimeout`的参数是一个箭头函数，100毫秒后执行。如果是普通函数，执行时`this`应该指向全局对象，但是箭头函数导致`this`总是指向函数所在的对象。
+
+下面是另一个例子。
 
 ```javascript
 var handler = {
@@ -652,7 +657,7 @@ var handler = {
 };
 ```
 
-上面代码的`init`方法中，使用了箭头函数，这导致`this`绑定`handler`对象，否则回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向全局对象。
+上面代码的`init`方法中，使用了箭头函数，这导致`this`总是指向`handler`对象。否则，回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向全局对象。
 
 ```javascript
 function Timer () {
@@ -664,11 +669,47 @@ setTimeout(() => console.log(timer.seconds), 3100)
 // 3
 ```
 
-上面代码中，`Timer`函数内部的`setInterval`调用了`this.seconds`属性，通过箭头函数将`this`绑定在Timer的实例对象。否则，输出结果是0，而不是3。
+上面代码中，`Timer`函数内部的`setInterval`调用了`this.seconds`属性，通过箭头函数让`this`总是指向Timer的实例对象。否则，输出结果是0，而不是3。
 
-由于this在箭头函数中被绑定，所以不能用call()、apply()、bind()这些方法去改变this的指向。
+`this`指向的固定化，并不是因为箭头函数内部有绑定`this`的机制，实际原因是箭头函数根本没有自己的`this`，导致内部的`this`就是外层代码块的`this`。
 
-长期以来，JavaScript语言的this对象一直是一个令人头痛的问题，在对象方法中使用this，必须非常小心。箭头函数绑定this，很大程度上解决了这个困扰。
+请问下面的代码之中有几个`this`？
+
+```javascript
+function foo() {
+   return () => {
+      return () => {
+         return () => {
+            console.log("id:", this.id);
+         };
+      };
+   };
+}
+
+foo.call( { id: 42 } )()()();
+// id: 42
+```
+
+上面代码之中，只有一个`this`，就是函数`foo`的`this`。因为所有的内层函数都是箭头函数，都没有自己的`this`，所以它们的`this`其实都是最外层`foo`函数的`this`。
+
+除了`this`，以下三个变量在箭头函数之中也是不存在的，指向外层函数的对应变量：`arguments`、`super`、`new.target`。
+
+```javascript
+function foo() {
+   setTimeout( () => {
+      console.log("args:", arguments);
+   },100);
+}
+
+foo( 2, 4, 6, 8 );
+// args: [2, 4, 6, 8]
+```
+
+上面代码中，箭头函数内部的变量`arguments`，其实是函数`foo`的`arguments`变量。
+
+另外，由于箭头函数内部没有`this`，所以当然也就不能用`call()`、`apply()`、`bind()`这些方法去改变`this`的指向。
+
+长期以来，JavaScript语言的`this`对象一直是一个令人头痛的问题，在对象方法中使用`this`，必须非常小心。箭头函数”绑定”`this`，很大程度上解决了这个困扰。
 
 ### 嵌套的箭头函数
 
