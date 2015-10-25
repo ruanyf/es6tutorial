@@ -71,7 +71,7 @@ hw.next()
 需要注意的是，`yield`语句后面的表达式，只有当调用`next`方法、内部指针指向该语句时才会执行，因此等于为JavaScript提供了手动的“惰性求值”（Lazy Evaluation）的语法功能。
 
 ```javascript
-function* gen{
+function* gen() {
   yield  123 + 456;
 }
 ```
