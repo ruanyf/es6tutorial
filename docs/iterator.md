@@ -502,11 +502,11 @@ JavaScript原有的`for...in`循环，只能获得对象的键名，不能直接
 ```javascript
 var arr = ["a", "b", "c", "d"];
 
-for (a in arr) {
+for (let a in arr) {
   console.log(a); // 0 1 2 3
 }
 
-for (a of arr) {
+for (let a of arr) {
   console.log(a); // a b c d
 }
 ```
