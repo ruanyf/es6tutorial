@@ -785,7 +785,7 @@ map.set(Symbol(), 2)
 // TypeError: Invalid value used as weak map key
 ```
 
-上面代码中，如果将1和`Symbol`作为WeakMap的键名，都会报错。
+上面代码中，如果将`1`和`Symbol`作为WeakMap的键名，都会报错。
 
 `WeakMap`的设计目的在于，键名是对象的弱引用（垃圾回收机制不将该引用考虑在内），所以其所对应的对象可能会被自动回收。当对象被回收后，`WeakMap`自动移除对应的键值对。典型应用是，一个对应DOM元素的`WeakMap`结构，当某个DOM元素被清除，其所对应的`WeakMap`记录就会自动被移除。基本上，`WeakMap`的专用场合就是，它的键所对应的对象，可能会在将来消失。`WeakMap`结构有助于防止内存泄漏。
 
@@ -832,7 +832,7 @@ myElement.addEventListener('click', function() {
 }, false);
 ```
 
-上面代码中，myElement是一个DOM节点，每当发生click事件，就更新一下状态。我们将这个状态作为键值放在WeakMap里，对应的键名就是myElement。一旦这个DOM节点删除，该状态就会自动消失，不存在内存泄漏风险。
+上面代码中，`myElement`是一个DOM节点，每当发生click事件，就更新一下状态。我们将这个状态作为键值放在WeakMap里，对应的键名就是`myElement`。一旦这个DOM节点删除，该状态就会自动消失，不存在内存泄漏风险。
 
 WeakMap的另一个用处是部署私有属性。
 
@@ -863,4 +863,4 @@ c.dec()
 // DONE
 ```
 
-上面代码中，Countdown类的两个内部属性_counter和_action，是实例的弱引用，所以如果删除实例，它们也就随之消失，不会造成内存泄漏。
+上面代码中，Countdown类的两个内部属性`_counter`和`_action`，是实例的弱引用，所以如果删除实例，它们也就随之消失，不会造成内存泄漏。

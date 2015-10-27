@@ -2,7 +2,7 @@
 
 ## 概述
 
-ES5的对象属性名都是字符串，这容易造成属性名的冲突。比如，你使用了一个他人提供的对象，但又想为这个对象添加新的方法，新方法的名字就有可能与现有方法产生冲突。如果有一种机制，保证每个属性的名字都是独一无二的就好了，这样就从根本上防止属性名的冲突。这就是ES6引入Symbol的原因。
+ES5的对象属性名都是字符串，这容易造成属性名的冲突。比如，你使用了一个他人提供的对象，但又想为这个对象添加新的方法（mixin模式），新方法的名字就有可能与现有方法产生冲突。如果有一种机制，保证每个属性的名字都是独一无二的就好了，这样就从根本上防止属性名的冲突。这就是ES6引入Symbol的原因。
 
 ES6引入了一种新的原始数据类型Symbol，表示独一无二的值。它是JavaScript语言的第七种数据类型，前六种是：Undefined、Null、布尔值（Boolean）、字符串（String）、数值（Number）、对象（Object）。
 
@@ -70,6 +70,21 @@ var sym = Symbol('My symbol');
 
 String(sym) // 'Symbol(My symbol)'
 sym.toString() // 'Symbol(My symbol)'
+```
+
+另外，Symbol值也可以转为布尔值，但是不能转为数值。
+
+```javascript
+var sym = Symbol();
+Boolean(sym) // true
+!sym  // false
+
+if (sym) {
+  // ...
+}
+
+Number(sym) // TypeError
+sym + 2 // TypeError
 ```
 
 ## 作为属性名的Symbol
@@ -144,6 +159,26 @@ log.levels = {
 log(log.levels.DEBUG, 'debug message');
 log(log.levels.INFO, 'info message');
 ```
+
+下面是另外一个例子。
+
+```javascript
+const COLOR_RED    = Symbol();
+const COLOR_GREEN  = Symbol();
+
+function getComplement(color) {
+  switch (color) {
+    case COLOR_RED:
+      return COLOR_GREEN;
+    case COLOR_GREEN:
+      return COLOR_RED;
+    default:
+      throw new Error('Undefined color');
+    }
+}
+```
+
+常量使用Symbol值最大的好处，就是其他任何值都不可能有相同的值了，因此可以保证上面的`switch`语句会按设计的方式工作。
 
 还有一点需要注意，Symbol值作为属性名时，该属性还是公开属性，不是私有属性。
 
