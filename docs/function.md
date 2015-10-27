@@ -259,6 +259,8 @@ function f(a, ...b, c) {
 
 ## 扩展运算符
 
+### 含义
+
 扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。
 
 ```javascript
@@ -296,6 +298,8 @@ function f(v, w, x, y, z) { }
 var args = [0, 1];
 f(-1, ...args, 2, ...[3]);
 ```
+
+### 替代数组的apply方法
 
 由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
 
@@ -342,7 +346,20 @@ arr1.push(...arr2);
 
 上面代码的ES5写法中，`push`方法的参数不能是数组，所以只好通过`apply`方法变通使用`push`方法。有了扩展运算符，就可以直接将数组传入`push`方法。
 
-扩展运算符可以简化很多种ES5的写法。
+下面是另外一个例子。
+
+```javascript
+// ES5
+new (Date.bind.apply(Date, [null, 2015, 1, 1]))
+// ES6
+new Date(...[2015, 1, 1]);
+```
+
+### 扩展运算符的应用
+
+**（1）合并数组**
+
+扩展运算符提供了数组合并的新写法。
 
 ```javascript
 // ES5
@@ -350,25 +367,6 @@ arr1.push(...arr2);
 // ES6
 [1, 2, ...more]
 
-// ES5
-list.push.apply(list, [3, 4])
-// ES6
-list.push(...[3, 4])
-
-// ES5
-a = list[0], rest = list.slice(1)
-// ES6
-[a, ...rest] = list
-
-// ES5
-new (Date.bind.apply(Date, [null, 2015, 1, 1]))
-// ES6
-new Date(...[2015, 1, 1]);
-```
-
-上面的第一个例子，其实提供了数组合并的新写法。
-
-```javascript
 var arr1 = ['a', 'b'];
 var arr2 = ['c'];
 var arr3 = ['d', 'e'];
@@ -382,7 +380,18 @@ arr1.concat(arr2, arr3));
 // [ 'a', 'b', 'c', 'd', 'e' ]
 ```
 
-扩展运算符也可以与解构赋值结合起来，用于生成数组。
+**（2）与解构赋值结合**
+
+扩展运算符可以与解构赋值结合起来，用于生成数组。
+
+```javascript
+// ES5
+a = list[0], rest = list.slice(1)
+// ES6
+[a, ...rest] = list
+```
+
+下面是另外一些例子。
 
 ```javascript
 const [first, ...rest] = [1, 2, 3, 4, 5];
@@ -408,6 +417,8 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 // 报错
 ```
 
+**（3）函数的返回值**
+
 JavaScript的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
 ```javascript
@@ -415,7 +426,9 @@ var dateFields = readDateFields(database);
 var d = new Date(...dateFields);
 ```
 
-上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数Date。
+上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数`Date`。
+
+**（4）字符串**
 
 扩展运算符还可以将字符串转为真正的数组。
 
@@ -423,6 +436,39 @@ var d = new Date(...dateFields);
 [..."hello"]
 // [ "h", "e", "l", "l", "o" ]
 ```
+
+上面的写法，有一个重要的好处，那就是能够正确识别32位的Unicode字符。
+
+```javascript
+'x\uD83D\uDE80y'.length // 4
+[...'x\uD83D\uDE80y'].length // 3
+```
+
+上面代码的第一种写法，JavaScript会将32位Unicode字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
+
+```javascript
+function length(str) {
+  return [...str].length;
+}
+
+length('x\uD83D\uDE80y') // 3
+```
+
+凡是涉及到操作32位Unicode字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
+
+```javascript
+let str = 'x\uD83D\uDE80y';
+
+str.split('').reverse().join('')
+// 'y\uDE80\uD83Dx'
+
+[...str].reverse().join('')
+// 'y\uD83D\uDE80x'
+```
+
+上面代码中，如果不用扩展运算符，字符串的`reverse`操作就不正确。
+
+**（5）类似数组的对象**
 
 任何类似数组的对象，都可以用扩展运算符转为真正的数组。
 
@@ -432,6 +478,8 @@ var array = [...nodeList];
 ```
 
 上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象，扩展运算符可以将其转为真正的数组。
+
+**（6）Map和Set结构，Generator函数**
 
 扩展运算符内部调用的是数据结构的Iterator接口，因此只要具有Iterator接口的对象，都可以使用扩展运算符，比如Map结构。
 
