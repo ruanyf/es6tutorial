@@ -370,7 +370,7 @@ function thunkify(fn){
 };
 ```
 
-它的源码主要多了一个检查机制，变量called确保回调函数只运行一次。这样的设计与下文的Generator函数相关。请看下面的例子。
+它的源码主要多了一个检查机制，变量`called`确保回调函数只运行一次。这样的设计与下文的Generator函数相关。请看下面的例子。
 
 ```javascript
 function f(a, b, callback){
@@ -380,11 +380,12 @@ function f(a, b, callback){
 }
 
 var ft = thunkify(f);
-ft(1, 2)(console.log);
+var print = console.log.bind(console);
+ft(1, 2)(print);
 // 3
 ```
 
-上面代码中，由于thunkify只允许回调函数执行一次，所以只输出一行结果。
+上面代码中，由于`thunkify`只允许回调函数执行一次，所以只输出一行结果。
 
 ### Generator 函数的流程管理
 

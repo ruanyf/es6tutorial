@@ -2,6 +2,8 @@
 
 ## 数组的解构赋值
 
+### 基本用法
+
 ES6允许按照一定模式，从数组和对象中提取值，对变量进行赋值，这被称为解构（Destructuring）。
 
 以前，为变量赋值，只能直接指定值。
@@ -28,7 +30,7 @@ foo // 1
 bar // 2
 baz // 3
 
-let [,,third] = ["foo", "bar", "baz"];
+let [ , , third] = ["foo", "bar", "baz"];
 third // "baz"
 
 let [x, , y] = [1, 2, 3];
@@ -38,16 +40,21 @@ y // 3
 let [head, ...tail] = [1, 2, 3, 4];
 head // 1
 tail // [2, 3, 4]
+
+let [x, y, ...z] = ['a'];
+x // "a"
+y // undefined
+z // []
 ```
 
-如果解构不成功，变量的值就等于undefined。
+如果解构不成功，变量的值就等于`undefined`。
 
 ```javascript
 var [foo] = [];
 var [bar, foo] = [1];
 ```
 
-以上两种情况都属于解构不成功，foo的值都会等于undefined。
+以上两种情况都属于解构不成功，`foo`的值都会等于`undefined`。
 
 另一种情况是不完全解构，即等号左边的模式，只匹配一部分的等号右边的数组。这种情况下，解构依然可以成功。
 
@@ -73,29 +80,10 @@ let [foo] = false;
 let [foo] = NaN;
 let [foo] = undefined;
 let [foo] = null;
+let [foo] = {};
 ```
 
-解构赋值允许指定默认值。
-
-```javascript
-var [foo = true] = [];
-foo // true
-
-[x, y='b'] = ['a'] // x='a', y='b'
-[x, y='b'] = ['a', undefined] // x='a', y='b'
-```
-
-注意，ES6内部使用严格相等运算符（===），判断一个位置是否有值。所以，如果一个数组成员不严格等于undefined，默认值是不会生效的。
-
-```javascript
-var [x = 1] = [undefined];
-x // 1
-
-var [x = 1] = [null];
-x // null
-```
-
-上面代码中，如果一个数组成员是null，默认值就不会生效，因为null不严格等于undefined。
+上面的表达式都会报错，因为等号右边的值，要么转为对象以后不具备Iterator接口（前五个表达式），要么本身就不具备Iterator接口（最后一个表达式）。
 
 解构赋值不仅适用于var命令，也适用于let和const命令。
 
@@ -129,6 +117,62 @@ sixth // 5
 ```
 
 上面代码中，`fibs`是一个Generator函数，原生具有Iterator接口。解构赋值会依次从这个接口获取值。
+
+### 默认值
+
+解构赋值允许指定默认值。
+
+```javascript
+var [foo = true] = [];
+foo // true
+
+[x, y = 'b'] = ['a'] // x='a', y='b'
+[x, y = 'b'] = ['a', undefined] // x='a', y='b'
+```
+
+注意，ES6内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，如果一个数组成员不严格等于`undefined`，默认值是不会生效的。
+
+```javascript
+var [x = 1] = [undefined];
+x // 1
+
+var [x = 1] = [null];
+x // null
+```
+
+上面代码中，如果一个数组成员是`null`，默认值就不会生效，因为`null`不严格等于`undefined`。
+
+如果默认值是一个表达式，那么这个表达式是惰性求值的，即只有在用到的时候，才会求值。
+
+```javascript
+function f(){
+  console.log('aaa');
+}
+
+let [x = f()] = [1];
+```
+
+上面代码中，因为`x`能取到值，所以函数`f`根本不会执行。上面的代码其实等价于下面的代码。
+
+```javascript
+let x;
+if ([1][0] === undefined) {
+  x = f();
+} else {
+  x = [1][0];
+}
+```
+
+默认值可以引用解构赋值的其他变量，但该变量必须已经声明。
+
+```javascript
+let [x = 1, y = x] = [];     // x=1; y=1
+let [x = 1, y = x] = [2];    // x=1; y=2
+let [x = 1, y = x] = [1, 2]; // x=1; y=2
+let [x = y, y = 1] = [];     // ReferenceError
+```
+
+上面最后一个表达式之所以会报错，是因为`x`用到默认值`y`时，`y`还没有声明。
 
 ## 对象的解构赋值
 
@@ -181,6 +225,26 @@ foo // error: foo is not defined
 
 上面代码中，真正被赋值的是变量`baz`，而不是模式`foo`。
 
+注意，采用这种写法时，变量的声明和赋值是一体的。对于let和const来说，变量不能重新声明，所以一旦赋值的变量以前声明过，就会报错。
+
+```javascript
+let foo;
+let {foo} = {foo: 1}; // SyntaxError: Duplicate declaration "foo"
+
+let baz;
+let {bar: baz} = {bar: 1}; // SyntaxError: Duplicate declaration "baz"
+```
+
+上面代码中，解构赋值的变量都会重新声明，所以报错了。不过，因为`var`命令允许重新声明，所以这个错误只会在使用`let`和`const`命令时出现。如果没有第二个let命令，上面的代码就不会报错。
+
+```javascript
+let foo;
+({foo} = {foo: 1}); // 成功
+
+let baz;
+({bar: baz} = {bar: 1}); // 成功
+```
+
 和数组一样，解构也可以用于嵌套结构的对象。
 
 ```javascript
@@ -216,6 +280,18 @@ start // error: start is undefined
 
 上面代码中，只有`line`是变量，`loc`和`start`都是模式，不会被赋值。
 
+下面是嵌套赋值的例子。
+
+```javascript
+let obj = {};
+let arr = [];
+
+({ foo: obj.prop, bar: arr[0] }) = { foo: 123, bar: true };
+
+obj // {prop:123}
+arr // [true]
+```
+
 对象的解构也可以指定默认值。
 
 ```javascript
@@ -223,10 +299,11 @@ var {x = 3} = {};
 x // 3
 
 var {x, y = 5} = {x: 1};
-console.log(x, y) // 1, 5
+x // 1
+y // 5
 
 var { message: msg = "Something went wrong" } = {};
-console.log(msg); // "Something went wrong"
+msg // "Something went wrong"
 ```
 
 默认值生效的条件是，对象的属性值严格等于`undefined`。
@@ -276,10 +353,20 @@ var x;
 
 ```javascript
 // 正确的写法
-({x} = {x:1});
+({x} = {x: 1});
 ```
 
 上面代码将整个解构赋值语句，放在一个圆括号里面，就可以正确执行。关于圆括号与解构赋值的关系，参见下文。
+
+解构赋值允许，等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
+
+```javascript
+({} = [true, false]);
+({} = 'abc');
+({} = []);
+```
+
+上面的表达式虽然毫无意义，但是语法是合法的，可以执行。
 
 对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
 
@@ -287,7 +374,7 @@ var x;
 let { log, sin, cos } = Math;
 ```
 
-上面代码将Math对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
+上面代码将`Math`对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
 
 ## 字符串的解构赋值
 
@@ -309,9 +396,30 @@ let {length : len} = 'hello';
 len // 5
 ```
 
+## 数值和布尔值的解构赋值
+
+解构赋值时，如果等号右边是数值和布尔值，则会先转为对象。
+
+```javascript
+let {toString: s} = 123;
+s === Number.prototype.toString // true
+
+let {toString: s} = true;
+s === Boolean.prototype.toString // true
+```
+
+上面代码中，数值和布尔值的包装对象都有`toString`属性，因此变量`s`都能取到值。
+
+解构赋值的规则是，只要等号右边的值不是对象，就先将其转为对象。由于`undefined`和`null`无法转为对象，所以对它们进行解构赋值，都会报错。
+
+```javascript
+let { prop: x } = undefined; // TypeError
+let { prop: y } = null; // TypeError
+```
+
 ## 函数参数的解构赋值
 
-函数的参数也可以使用解构。
+函数的参数也可以使用解构赋值。
 
 ```javascript
 function add([x, y]){
@@ -321,7 +429,7 @@ function add([x, y]){
 add([1, 2]) // 3
 ```
 
-上面代码中，函数add的参数实际上不是一个数组，而是通过解构得到的变量x和y。
+上面代码中，函数add的参数实际上不是一个数组，而是通过解构得到的变量`x`和`y`。
 
 函数参数的解构也可以使用默认值。
 
@@ -336,7 +444,7 @@ move({}); // [0, 0]
 move(); // [0, 0]
 ```
 
-上面代码中，函数move的参数是一个对象，通过对这个对象进行解构，得到变量x和y的值。如果解构失败，x和y等于默认值。
+上面代码中，函数`move`的参数是一个对象，通过对这个对象进行解构，得到变量`x`和`y`的值。如果解构失败，`x`和`y`等于默认值。
 
 注意，指定函数参数的默认值时，不能采用下面的写法。
 
@@ -421,9 +529,7 @@ function f([(z)]) { return z; }
 **（1）交换变量的值**
 
 ```javascript
-
 [x, y] = [y, x];
-
 ```
 
 上面代码交换变量x和y的值，这样的写法不仅简洁，而且易读，语义非常清晰。
@@ -433,7 +539,6 @@ function f([(z)]) { return z; }
 函数只能返回一个值，如果要返回多个值，只能将它们放在数组或对象里返回。有了解构赋值，取出这些值就非常方便。
 
 ```javascript
-
 // 返回一个数组
 
 function example() {
@@ -450,7 +555,6 @@ function example() {
   };
 }
 var { foo, bar } = example();
-
 ```
 
 **（3）函数参数的定义**
@@ -458,15 +562,13 @@ var { foo, bar } = example();
 解构赋值可以方便地将一组参数与变量名对应起来。
 
 ```javascript
-
 // 参数是一组有次序的值
 function f([x, y, z]) { ... }
 f([1, 2, 3])
 
 // 参数是一组无次序的值
 function f({x, y, z}) { ... }
-f({x:1, y:2, z:3})
-
+f({z: 3, y: 2, x: 1})
 ```
 
 **（4）提取JSON数据**
@@ -510,10 +612,9 @@ jQuery.ajax = function (url, {
 
 **（6）遍历Map结构**
 
-任何部署了Iterator接口的对象，都可以用for...of循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
+任何部署了Iterator接口的对象，都可以用`for...of`循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
 
 ```javascript
-
 var map = new Map();
 map.set('first', 'hello');
 map.set('second', 'world');
@@ -523,13 +624,11 @@ for (let [key, value] of map) {
 }
 // first is hello
 // second is world
-
 ```
 
 如果只想获取键名，或者只想获取键值，可以写成下面这样。
 
 ```javascript
-
 // 获取键名
 for (let [key] of map) {
   // ...
@@ -539,7 +638,6 @@ for (let [key] of map) {
 for (let [,value] of map) {
   // ...
 }
-
 ```
 
 **（7）输入模块的指定方法**
