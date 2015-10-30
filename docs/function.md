@@ -2,6 +2,8 @@
 
 ## 函数参数的默认值
 
+### 基本用法
+
 在ES6之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
 
 ```javascript
@@ -52,10 +54,37 @@ function Point(x = 0, y = 0) {
 }
 
 var p = new Point();
-// p = { x:0, y:0 }
+p // { x: 0, y: 0 }
 ```
 
-除了简洁，ES6的写法还有两个好处：首先，阅读代码的人，可以立刻意识到哪些参数是可以省略的，不用查看函数体或文档；其次，有利于将来的代码优化，即使未来的版本彻底拿到这个参数，也不会导致以前的代码无法运行。
+除了简洁，ES6的写法还有两个好处：首先，阅读代码的人，可以立刻意识到哪些参数是可以省略的，不用查看函数体或文档；其次，有利于将来的代码优化，即使未来的版本彻底拿掉这个参数，也不会导致以前的代码无法运行。
+
+参数默认值可以与解构赋值，联合起来使用。
+
+```javascript
+function foo({x, y = 5}) {
+  console.log(x, y);
+}
+
+foo({}) // undefined, 5
+foo({x: 1}) // 1, 5
+foo({x: 1, y: 2}) // 1, 2
+```
+
+上面代码中，`foo`函数的参数是一个对象，变量`x`和`y`用于解构赋值，`y`有默认值5。
+
+另外，参数变量是默认声明的，所以不能用let或const再次声明。
+
+```javascript
+function foo(x = 5) {
+  let x = 1; // error
+  const x = 2; // error
+}
+```
+
+上面代码中，参数变量`x`是默认声明的，在函数体中，不能用let或const再次声明，否则会报错。
+
+### 双重默认值
 
 默认值的写法非常灵活，下面是一个为对象属性设置默认值的例子。
 
@@ -86,7 +115,7 @@ fetch('http://example.com')
 
 上面代码中，调用函数`fetch`时，第二个参数默认为一个空对象，而只要有第二个参数，`method`参数就默认为`GET`。
 
-请问下面两种写法有什么差别？
+再请问下面两种写法有什么差别？
 
 ```javascript
 // 写法一
@@ -123,7 +152,9 @@ m1({z: 3}) // [0, 0]
 m2({z: 3}) // [undefined, undefined]
 ```
 
-通常情况下，定义了默认值的参数，都是函数的尾参数。因为这样比较容易看出来，到底省略了哪些参数。但是，非尾部的参数，也是可以设置默认值的。
+### 参数默认值的位置
+
+通常情况下，定义了默认值的参数，应该是函数的尾参数。因为这样比较容易看出来，到底省略了哪些参数。如果非尾部的参数设置默认值，实际上这个参数是没法省略的。
 
 ```javascript
 // 例一
@@ -149,7 +180,7 @@ f(1, undefined, 2) // [1, 5, 2]
 
 上面代码中，有默认值的参数都不是尾参数。这时，无法只省略该参数，而不省略它后面的参数，除非显式输入`undefined`。
 
-如果传入`undefined`，将触发该参数等于默认值，null则没有这个效果。
+如果传入`undefined`，将触发该参数等于默认值，`null`则没有这个效果。
 
 ```javascript
 function foo(x = 5, y = 6){
@@ -162,6 +193,8 @@ foo(undefined, null)
 
 上面代码中，`x`参数对应`undefined`，结果触发了默认值，`y`参数等于`null`，就没有触发默认值。
 
+### 函数的length属性
+
 指定了默认值以后，函数的`length`属性，将返回没有指定默认值的参数个数。也就是说，指定了默认值后，`length`属性将失真。
 
 ```javascript
@@ -171,6 +204,88 @@ foo(undefined, null)
 ```
 
 上面代码中，`length`属性的返回值，等于函数的参数个数减去指定了默认值的参数个数。
+
+### 作用域
+
+一个需要注意的地方是，如果参数默认值是一个变量，则该变量所处的作用域，与其他变量的作用域规则是一样的，即先是当前函数的作用域，然后才是全局作用域。
+
+```javascript
+var x = 1;
+
+function f(x, y = x) {
+  console.log(y);
+}
+
+f(2) // 2
+```
+
+上面代码中，参数`y`的默认值等于`x`。调用时，由于函数作用域内部的变量`x`已经生成，所以`y`等于参数`x`，而不是全局变量`x`。
+
+如果调用时，函数作用域内部的变量`x`没有生成，结果就会不一样。
+
+```javascript
+let x = 1;
+
+function f(y = x) {
+  let x = 2;
+  console.log(y);
+}
+
+f() // 1
+```
+
+上面代码中，函数调用时，`y`的默认值变量`x`尚未在函数内部生成，所以`x`指向全局变量，结果又不一样。
+
+如果此时，全局变量`x`不存在，就会报错。
+
+```javascript
+function f(y = x) {
+  let x = 2;
+  console.log(y);
+}
+
+f() // ReferenceError: x is not defined
+```
+
+如果函数`A`的参数默认值是函数`B`，由于函数的作用域是其声明时所在的作用域，那么函数`B`的作用域不是函数`A`，而是全局作用域。请看下面的例子。
+
+```javascript
+let foo = 'outer';
+
+function bar(func = x => foo) {
+  let foo = 'inner';
+  console.log(func()); // outer
+}
+
+bar();
+```
+
+上面代码中，函数`bar`的参数`func`，默认是一个匿名函数，返回值为变量`foo`。这个匿名函数的作用域就不是`bar`。这个匿名函数声明时，是处在外层作用域，所以内部的`foo`指向函数体外的声明，输出`outer`。它实际上等同于下面的代码。
+
+```javascript
+let foo = 'outer';
+let f = x => foo;
+
+function bar(func = f) {
+  let foo = 'inner';
+  console.log(func()); // outer
+}
+
+bar();
+```
+
+如果写成下面这样，就会报错。
+
+```javascript
+function bar(func = () => foo) {
+  let foo = 'inner';
+  console.log(func());
+}
+
+bar() // ReferenceError: foo is not defined
+```
+
+### 应用
 
 利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误。
 
@@ -190,45 +305,6 @@ foo()
 上面代码的`foo`函数，如果调用的时候没有参数，就会调用默认值`throwIfMissing`函数，从而抛出一个错误。
 
 从上面代码还可以看到，参数`mustBeProvided`的默认值等于`throwIfMissing`函数的运行结果（即函数名之后有一对圆括号），这表明参数的默认值不是在定义时执行，而是在运行时执行（即如果参数已经赋值，默认值中的函数就不会运行），这与python语言不一样。
-
-另一个需要注意的地方是，参数默认值所处的作用域，不是全局作用域，而是函数作用域。
-
-```javascript
-var x = 1;
-
-function foo(x, y = x) {
-  console.log(y);
-}
-
-foo(2) // 2
-```
-
-上面代码中，参数y的默认值等于x，由于处在函数作用域，所以y等于参数x，而不是全局变量x。
-
-参数变量是默认声明的，所以不能用let或const再次声明。
-
-```javascript
-function foo(x = 5) {
-  let x = 1; // error
-  const x = 2; // error
-}
-```
-
-上面代码中，参数变量x是默认声明的，在函数体中，不能用let或const再次声明，否则会报错。
-
-参数默认值可以与解构赋值，联合起来使用。
-
-```javascript
-function foo({x, y = 5}) {
-  console.log(x, y);
-}
-
-foo({}) // undefined, 5
-foo({x: 1}) // 1, 5
-foo({x: 1, y: 2}) // 1, 2
-```
-
-上面代码中，foo函数的参数是一个对象，变量x和y用于解构赋值，y有默认值5。
 
 ## rest参数
 
@@ -543,6 +619,13 @@ var go = function*(){
 ```
 
 上面代码中，变量`go`是一个Generator函数，执行后返回的是一个遍历器对象，对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，转为一个数组。
+
+如果对没有`iterator`接口的对象，使用扩展运算符，将会报错。
+
+```javascript
+var obj = {a: 1, b: 2};
+let arr = [...obj]; // TypeError: Cannot spread non-iterable object
+```
 
 ## name属性
 

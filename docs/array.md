@@ -5,6 +5,23 @@
 `Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
 
 ```javascript
+let arrayLike = {
+    '0': 'a',
+    '1': 'b',
+    '2': 'c',
+    length: 3
+};
+
+// ES5的写法
+var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
+
+// ES6的写法
+let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
+```
+
+下面是更多的例子。
+
+```javascript
 Array.from('hello')
 // ['h', 'e', 'l', 'l', 'o']
 
@@ -46,12 +63,14 @@ function foo() {
 
 扩展运算符背后调用的是遍历器接口（`Symbol.iterator`），如果一个对象没有部署这个接口，就无法转换。`Array.from`方法就不存在这个问题，比如下面的这个例子，扩展运算符就无法转换。
 
-任何有`length`属性的对象，都可以通过`Array.from`方法转为数组。
+所谓类似数组的对象，本质特征只有一点，即必须有`length`属性。因此，任何有`length`属性的对象，都可以通过`Array.from`方法转为数组。
 
 ```javascript
-Array.from({ 0: "a", 1: "b", 2: "c", length: 3 });
-// [ "a", "b" , "c" ]
+Array.from({ length: 3 });
+// [ undefined, undefined, undefinded ]
 ```
+
+上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。
 
 对于还没有部署该方法的浏览器，可以用`Array.prototype.slice`方法替代。
 
