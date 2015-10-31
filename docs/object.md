@@ -5,19 +5,23 @@
 ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
-// 示例一
 var foo = 'bar';
 var baz = {foo};
+baz // {foo: "bar"}
+
 // 等同于
 var baz = {foo: foo};
+```
 
-baz // Object {foo: "bar"}
+上面代码表明，ES6允许在对象之中，只写属性名，不写属性值。这时，属性值等于属性名所代表的变量。下面是另一个例子。
 
-// 示例二
+```javascript
 function f(x, y) {
   return {x, y};
 }
+
 // 等同于
+
 function f(x, y) {
   return {x: x, y: y};
 }
@@ -25,7 +29,7 @@ function f(x, y) {
 f(1, 2) // Object {x: 1, y: 2}
 ```
 
-上面代码表明，ES6允许在对象之中，只写属性名。这时，属性值等于属性名所代表的变量。除了属性简写，方法也可以简写。
+除了属性简写，方法也可以简写。
 
 ```javascript
 var o = {
@@ -72,23 +76,6 @@ getPoint()
 // {x:1, y:10}
 ```
 
-赋值器和取值器，也可以采用简洁写法。
-
-```javascript
-var cart = {
-  _wheels: 4,
-  get wheels () {
-    return this._wheels
-  },
-  set wheels (value) {
-    if (value < this._wheels) {
-      throw new Error('hey, come back here!')
-    }
-    this._wheels = value
-  }
-}
-```
-
 模块输出变量，就非常合适使用简洁写法。
 
 ```javascript
@@ -107,6 +94,41 @@ function clear () {
 }
 
 module.exports = { getItem, setItem, clear };
+// 等同于
+module.exports = {
+  getItem: getItem,
+  setItem: setItem,
+  clear: clear
+};
+```
+
+属性的赋值器（setter）和取值器（getter），事实上也是采用这种写法。
+
+```javascript
+var cart = {
+  _wheels: 4,
+
+  get wheels () {
+    return this._wheels;
+  },
+
+  set wheels (value) {
+    if (value < this._wheels) {
+      throw new Error('数值太小了！');
+    }
+    this._wheels = value;
+  }
+}
+```
+
+如果某个方法的值是一个Generator函数，前面需要加上星号。
+
+```javascript
+var obj = {
+  * m(){
+    yield 'hello world';
+  }
+}
 ```
 
 ## 属性名表达式

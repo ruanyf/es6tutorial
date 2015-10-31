@@ -94,7 +94,7 @@ setTimeout(function () {
 }, 2000);
 ```
 
-上面代码中，函数f如果是普通函数，在为变量generator赋值时就会执行。但是，函数f是一个Generator函数，就变成只有调用next方法时，函数f才会执行。
+上面代码中，函数`f`如果是普通函数，在为变量generator赋值时就会执行。但是，函数`f`是一个Generator函数，就变成只有调用`next`方法时，函数`f`才会执行。
 
 另外需要注意，yield语句不能用在普通函数中，否则会报错。
 
@@ -246,7 +246,7 @@ it.next(13)
 // { value:42, done:true }
 ```
 
-上面代码第一次调用next方法时，返回`x+1`的值6；第二次调用`next`方法，将上一次`yield`语句的值设为12，因此`y`等于24，返回`y / 3`的值8；第三次调用`next`方法，将上一次`yield`语句的值设为13，因此`z`等于13，这时`x`等于5，`y`等于24，所以`return`语句的值等于42。
+上面代码第一次调用`next`方法时，返回`x+1`的值6；第二次调用`next`方法，将上一次`yield`语句的值设为12，因此`y`等于24，返回`y / 3`的值8；第三次调用`next`方法，将上一次`yield`语句的值设为13，因此`z`等于13，这时`x`等于5，`y`等于24，所以`return`语句的值等于42。
 
 注意，由于`next`方法的参数表示上一个`yield`语句的返回值，所以第一次使用`next`方法时，不能带有参数。V8引擎直接忽略第一次使用`next`方法时的参数，只有从第二次使用`next`方法开始，参数才是有效的。
 
@@ -414,7 +414,7 @@ try {
 // 外部捕获 [Error: a]
 ```
 
-上面代码之所以只捕获了a，是因为函数体外的catch语句块，捕获了抛出的a错误以后，就不会再继续执行try语句块了。
+上面代码之所以只捕获了`a`，是因为函数体外的catch语句块，捕获了抛出的`a`错误以后，就不会再继续执行try语句块了。
 
 如果Generator函数内部没有部署try...catch代码块，那么throw方法抛出的错误，将被外部try...catch代码块捕获。
 
@@ -438,7 +438,7 @@ try {
 // 外部捕获 a
 ```
 
-上面代码中，遍历器函数g内部，没有部署try...catch代码块，所以抛出的错误直接被外部catch代码块捕获。
+上面代码中，遍历器函数`g`内部，没有部署try...catch代码块，所以抛出的错误直接被外部catch代码块捕获。
 
 如果Generator函数内部部署了try...catch代码块，那么遍历器的throw方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
 
@@ -682,6 +682,23 @@ function* bar() {
   yield 'y';
 }
 
+// 等同于
+function* bar() {
+  yield 'x';
+  yield 'a';
+  yield 'b';
+  yield 'y';
+}
+
+// 等同于
+function* bar() {
+  yield 'x';
+  for (let v of foo()) {
+    console.log(v);
+  }
+  yield 'y';
+}
+
 for (let v of bar()){
   console.log(v);
 }
@@ -691,7 +708,39 @@ for (let v of bar()){
 // "y"
 ```
 
-从另一个角度看，如果`yield`命令后面跟的是一个遍历器对象，需要在`yield`命令后面加上星号，表明它返回的是一个遍历器对象。这被称为`yield*`语句。
+再来看一个对比的例子。
+
+```javascript
+function* inner() {
+  yield 'hello!';
+}
+
+function* outer1() {
+  yield 'open';
+  yield inner();
+  yield 'close';
+}
+
+var gen = outer1()
+gen.next().value // "open"
+gen.next().value // 返回一个遍历器对象
+gen.next().value // "close"
+
+function* outer2() {
+  yield 'open'
+  yield* inner()
+  yield 'close'
+}
+
+var gen = outer2()
+gen.next().value // "open"
+gen.next().value // "hello!"
+gen.next().value // "close"
+```
+
+上面例子中，`outer2`使用了`yield*`，`outer1`没使用。结果就是，`outer1`返回一个遍历器对象，`outer2`返回该遍历器对象的内部值。
+
+从语法角度看，如果`yield`命令后面跟的是一个遍历器对象，需要在`yield`命令后面加上星号，表明它返回的是一个遍历器对象。这被称为`yield*`语句。
 
 ```javascript
 let delegatedIterator = (function* () {
@@ -738,38 +787,6 @@ function* concat(iter1, iter2) {
 
 上面代码说明，`yield*`不过是`for...of`的一种简写形式，完全可以用后者替代前者。
 
-再来看一个对比的例子。
-
-```javascript
-function* inner() {
-  yield 'hello!';
-}
-
-function* outer1() {
-  yield 'open';
-  yield inner();
-  yield 'close';
-}
-
-var gen = outer1()
-gen.next().value // "open"
-gen.next().value // 返回一个遍历器对象
-gen.next().value // "close"
-
-function* outer2() {
-  yield 'open'
-  yield* inner()
-  yield 'close'
-}
-
-var gen = outer2()
-gen.next().value // "open"
-gen.next().value // "hello!"
-gen.next().value // "close"
-```
-
-上面例子中，`outer2`使用了`yield*`，`outer1`没使用。结果就是，`outer1`返回一个遍历器对象，`outer2`返回该遍历器对象的内部值。
-
 如果`yield*`后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
 
 ```javascript
@@ -781,6 +798,20 @@ gen().next() // { value:"a", done:false }
 ```
 
 上面代码中，`yield`命令后面如果不加星号，返回的是整个数组，加了星号就表示返回的是数组的遍历器对象。
+
+实际上，任何数据结构只要有Iterator接口，就可以被`yield*`遍历。
+
+```javascript
+let read = (function* () {
+  yield 'hello';
+  yield* 'hello';
+})();
+
+read.next().value // "hello"
+read.next().value // "h"
+```
+
+上面代码中，`yield`语句返回整个字符串，`yield*`语句返回单个字符。因为字符串具有Iterator接口，所以被`yield*`遍历。
 
 如果被代理的Generator函数有`return`语句，那么就可以向代理它的Generator函数返回数据。
 
@@ -840,7 +871,7 @@ for(let x of iterTree(tree)) {
 // e
 ```
 
-下面是一个稍微复杂的例子，使用yield*语句遍历完全二叉树。
+下面是一个稍微复杂的例子，使用`yield*`语句遍历完全二叉树。
 
 ```javascript
 // 下面是二叉树的构造函数，
