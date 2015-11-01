@@ -49,9 +49,10 @@ class Point{
 }
 
 typeof Point // "function"
+Point === Point.prototype.constructor // true
 ```
 
-上面代码表明，类的数据类型就是函数。
+上面代码表明，类的数据类型就是函数，类本身就指向构造函数。
 
 构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的prototype属性上面。
 
@@ -282,7 +283,7 @@ const MyClass = class Me {
 };
 ```
 
-上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是MyClass而不是Me，Me只在Class的内部代码可用，指代当前类。
+上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是MyClass而不是`Me`，`Me`只在Class的内部代码可用，指代当前类。
 
 ```javascript
 let inst = new MyClass();
@@ -290,7 +291,7 @@ inst.getClassName() // Me
 Me.name // ReferenceError: Me is not defined
 ```
 
-上面代码表示，Me只在Class内部有定义。
+上面代码表示，`Me`只在Class内部有定义。
 
 如果Class内部没用到的话，可以省略Me，也就是可以写成下面的形式。
 
@@ -347,7 +348,7 @@ class Foo {}
 
 ### 基本用法
 
-Class之间可以通过extends关键字实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
+Class之间可以通过`extends`关键字实现继承，这比ES5的通过修改原型链实现继承，要清晰和方便很多。
 
 ```javascript
 class ColorPoint extends Point {}
@@ -397,7 +398,7 @@ constructor(...args) {
 }
 ```
 
-另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用this关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有super方法才能返回父类实例。
+另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用`this`关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有super方法才能返回父类实例。
 
 ```javascript
 class Point {
@@ -532,7 +533,7 @@ A.prototype.__proto__ === Object.prototype // true
 
 这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回一个空对象（即Object实例），所以`A.prototype.__proto__`指向构造函数（Object）的prototype属性。
 
-第三种特殊情况，子类继承null。
+第三种特殊情况，子类继承`null`。
 
 ```javascript
 class A extends null {
@@ -767,7 +768,7 @@ inst.prop
 // 'getter'
 ```
 
-上面代码中，prop属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
+上面代码中，`prop`属性有对应的存值函数和取值函数，因此赋值和读取行为都被自定义了。
 
 存值函数和取值函数是设置在属性的descriptor对象上的。
 
@@ -898,7 +899,17 @@ Bar.classMethod();
 
 静态属性指的是Class本身的属性，即`Class.propname`，而不是定义在实例对象（`this`）上的属性。
 
-ES6明确规定，类只有静态方法，没有静态属性，即像`Class.propname`这样的用法不存在。
+```javascript
+class Foo {
+}
+
+Foo.prop = 1;
+Foo.prop // 1
+```
+
+上面的写法可以读写`Foo`类的静态属性`prop`。
+
+目前，只有这种写法可行，因为ES6明确规定，Class内部只有静态方法，没有静态属性。
 
 ```javascript
 // 以下两种写法都无效，

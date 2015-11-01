@@ -394,6 +394,14 @@ a2[1] = 6;
 
 对象的`Symbol.species`属性，指向一个方法。该对象作为构造函数创造实例时，会调用这个方法。即如果`this.constructor[Symbol.species]`存在，就会使用这个属性作为构造函数，来创造新的实例对象。
 
+`Symbol.species`属性默认的读取器如下。
+
+```javascript
+static get [Symbol.species]() {
+  return this;
+}
+```
+
 ### Symbol.match
 
 对象的`Symbol.match`属性，指向一个函数。当执行`str.match(myObject)`时，如果该属性存在，会调用它，返回该方法的返回值。
