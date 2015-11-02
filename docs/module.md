@@ -22,6 +22,12 @@ import { stat, exists, readFile } from 'fs';
 
 上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”，即ES6可以在编译时就完成模块编译，效率要比CommonJS模块的加载方式高。
 
+除了静态加载带来的各种好处，ES6模块还有以下好处。
+
+- 不再需要UMD模块格式了，将来服务器和浏览器都会支持ES6模块格式。目前，通过各种工具库，其实已经做到了这一点。
+- 将来浏览器的新API就能用模块格式提供，不再必要做成全局变量或者`navigator`对象的属性。
+- 不再需要对象作为命名空间（比如`Math`对象），未来这些功能可以通过模块提供。
+
 ## 严格模式
 
 ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
@@ -140,22 +146,6 @@ function setName(element) {
 ```javascript
 import { lastName as surname } from './profile';
 ```
-
-ES6支持多重加载，即所加载的模块中又加载其他模块。
-
-```javascript
-import { Vehicle } from './Vehicle';
-
-class Car extends Vehicle {
-  move () {
-    console.log(this.name + ' is spinning wheels...')
-  }
-}
-
-export { Car }
-```
-
-上面的模块先加载`Vehicle`模块，然后在其基础上添加了`move`方法，再作为一个新模块输出。
 
 注意，`import`命令具有提升效果，会提升到整个模块的头部，首先执行。
 
@@ -356,7 +346,7 @@ let o = new MyClass();
 
 模块之间也可以继承。
 
-假设有一个circleplus模块，继承了circle模块。
+假设有一个`circleplus`块，继承了`circle`模块。
 
 ```javascript
 // circleplus.js
@@ -364,11 +354,11 @@ let o = new MyClass();
 export * from 'circle';
 export var e = 2.71828182846;
 export default function(x) {
-    return Math.exp(x);
+  return Math.exp(x);
 }
 ```
 
-上面代码中的`export *`，表示输出`circle`模块的所有属性和方法，`export default`命令定义模块的默认方法。
+上面代码中的`export *`，表示再输出`circle`模块的所有属性和方法。注意，`export *`命令会忽略`circle`模块的`default`方法。然后，上面代码又输出了自定义的`e`变量和默认方法。
 
 这时，也可以将`circle`的属性或方法，改名后再输出。
 
@@ -391,6 +381,103 @@ console.log(exp(math.E));
 ```
 
 上面代码中的`import exp`表示，将`circleplus`模块的默认方法加载为`exp`方法。
+
+## ES6模块加载的实质
+
+ES6模块加载的机制，与CommonJS模块完全不同。CommonJS模块输出的是一个值的拷贝，而ES6模块输出的是值的引用。
+
+CommonJS模块输入的是被输出值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个例子。
+
+下面是一个模块文件`lib.js`。
+
+```javascript
+// lib.js
+var counter = 3;
+function incCounter() {
+  counter++;
+}
+module.exports = {
+  counter: counter,
+  incCounter: incCounter,
+};
+```
+
+上面代码输出内部变量`counter`和改写这个变量的内部方法`incCounter`。
+
+然后，加载上面的模块。
+
+```javascript
+// main.js
+var counter = require('./lib').counter;
+var incCounter = require('./lib').incCounter;
+
+console.log(counter);  // 3
+incCounter();
+console.log(counter); // 3
+```
+
+上面代码说明，`counter`输出以后，`lib.js`模块内部的变化就影响不到`counter`了。
+
+ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，输入值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+
+还是举上面的例子。
+
+```javascript
+// lib.js
+export let counter = 3;
+export function incCounter() {
+  counter++;
+}
+
+// main1.js
+import { counter, incCounter } from './lib';
+console.log(counter); // 3
+incCounter();
+console.log(counter); // 4
+```
+
+上面代码说明，ES6模块输入的变量`counter`是活的，完全反映其所在模块`lib.js`内部的变化。
+
+还是举本章开头时的例子。
+
+```javascript
+// m1.js
+export var foo = 'bar';
+setTimeout(() => foo = 'baz', 500);
+
+// m2.js
+import {foo} from './m1.js';
+console.log(foo);
+setTimeout(() => console.log(foo), 500);
+```
+
+上面代码中，`m1.js`的变量`foo`，在刚加载时等于`bar`，过了500毫秒，又变为等于`baz`。
+
+让我们看看，`m2.js`能否正确读取这个变化。
+
+```bash
+$ babel-node m2.js
+
+bar
+baz
+```
+
+上面代码表明，ES6模块不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块。
+
+由于ES6输入的模块变量，只是一个”符号连接“，所以这个变量是只读的，对它进行重新赋值会报错。
+
+```javascript
+// lib.js
+export let obj = {};
+
+// main.js
+import { obj } from './lib';
+
+obj.prop = 123; // OK
+obj = {}; // TypeError
+```
+
+上面代码中，`main.js`从`lib.js`输入变量`obj`，可以对`obj`添加属性，但是重新赋值就会报错。因为变量`obj`指向的地址是只读的，不能重新赋值，这就好比`main.js`创造了一个名为`obj`的const变量。
 
 ## 循环加载
 
@@ -472,37 +559,11 @@ a.js 执行完毕
 exports.done = true;
 ```
 
+总之，CommonJS输入的是被输出值的拷贝。
+
 ### ES6模块
 
-ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个引用。等到真的需要用到时，再到模块里面去取值。
-
-因此，ES6模块是动态引用，不存在缓存值的问题，而且模块里面的变量，绑定其所在的模块。还是举本章开头时的例子。
-
-```javascript
-// m1.js
-export var foo = 'bar';
-setTimeout(() => foo = 'baz', 500);
-
-// m2.js
-import {foo} from './m1.js';
-console.log(foo);
-setTimeout(() => console.log(foo), 500);
-```
-
-上面代码中，`m1.js`的变量`foo`，在刚加载时等于`bar`，过了500毫秒，又变为等于`baz`。
-
-让我们看看，`m2.js`能否正确读取这个变化。
-
-```bash
-$ babel-node m2.js
-
-bar
-baz
-```
-
-上面代码表明，ES6模块不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块。
-
-这导致ES6处理“循环加载”与CommonJS有本质的不同。ES6根本不会检查是否发生了“循环加载”，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
+ES6处理“循环加载”与CommonJS有本质的不同。ES6模块是动态引用，根本不会检查是否发生了“循环加载”，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
 
 请看下面的例子（摘自 Dr. Axel Rauschmayer 的[《Exploring ES6》](http://exploringjs.com/es6/ch_modules.html)）。
 
