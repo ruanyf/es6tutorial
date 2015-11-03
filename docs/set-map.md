@@ -212,17 +212,23 @@ set = new Set([...set].filter(x => (x % 2) == 0));
 // 返回Set结构：{2, 4}
 ```
 
-因此使用Set，可以很容易地实现并集（Union）和交集（Intersect）。
+因此使用Set，可以很容易地实现并集（Union）、交集（Intersect）和差集（Difference）。
 
 ```javascript
 let a = new Set([1, 2, 3]);
 let b = new Set([4, 3, 2]);
 
+// 并集
 let union = new Set([...a, ...b]);
 // [1, 2, 3, 4]
 
+// 交集
 let intersect = new Set([...a].filter(x => b.has(x)));
 // [2, 3]
+
+// 差集
+let difference = new Set([...a].filter(x => !b.has(x)));
+// [1]
 ```
 
 Set结构的实例的forEach方法，用于对每个成员执行某种操作，没有返回值。
@@ -321,7 +327,7 @@ ws.forEach(function(item){ console.log('WeakSet has ' + item)})
 
 上面代码试图获取size和forEach属性，结果都不能成功。
 
-WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍历机制无法保存成员的存在，很可能刚刚遍历结束，成员就取不到了。WeakSet的一个用处，是储存DOM节点，而不用担心这些节点从文档移除时，会引发内存泄漏。
+WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍历机制无法保证成员的存在，很可能刚刚遍历结束，成员就取不到了。WeakSet的一个用处，是储存DOM节点，而不用担心这些节点从文档移除时，会引发内存泄漏。
 
 下面是WeakMap的另一个例子。
 
@@ -385,7 +391,7 @@ map.has("title") // true
 map.get("title") // "Author"
 ```
 
-上面代码在新建Map实例时，就指定了两个键name和title。
+上面代码在新建Map实例时，就指定了两个键`name`和`title`。
 
 Map构造函数接受数组作为参数，实际上执行的是下面的算法。
 
@@ -402,14 +408,17 @@ items.forEach(([key, value]) => map.set(key, value));
 
 ```javascript
 let map = new Map();
-map.set(1, 'aaa');
-map.set(1, 'bbb');
+
+map
+.set(1, 'aaa')
+.set(1, 'bbb');
+
 map.get(1) // "bbb"
 ```
 
-上面代码对键1连续赋值两次，后一次的值覆盖前一次的值。
+上面代码对键`1`连续赋值两次，后一次的值覆盖前一次的值。
 
-如果读取一个未知的键，则返回undefined。
+如果读取一个未知的键，则返回`undefined`。
 
 ```javascript
 new Map().get('asfddfsasadf')
@@ -425,7 +434,7 @@ map.set(['a'], 555);
 map.get(['a']) // undefined
 ```
 
-上面代码的set和get方法，表面是针对同一个键，但实际上这是两个值，内存地址是不一样的，因此get方法无法读取该键，返回undefined。
+上面代码的`set`和`get`方法，表面是针对同一个键，但实际上这是两个值，内存地址是不一样的，因此`get`方法无法读取该键，返回`undefined`。
 
 同理，同样的值的两个实例，在Map结构中被视为两个键。
 
@@ -435,14 +444,15 @@ var map = new Map();
 var k1 = ['a'];
 var k2 = ['a'];
 
-map.set(k1, 111);
-map.set(k2, 222);
+map
+.set(k1, 111)
+.set(k2, 222);
 
 map.get(k1) // 111
 map.get(k2) // 222
 ```
 
-上面代码中，变量k1和k2的值是一样的，但是它们在Map结构中被视为两个键。
+上面代码中，变量`k1`和`k2`的值是一样的，但是它们在Map结构中被视为两个键。
 
 由上可知，Map的键实际上是跟内存地址绑定的，只要内存地址不一样，就视为两个键。这就解决了同名属性碰撞（clash）的问题，我们扩展别人的库的时候，如果使用对象作为键名，就不用担心自己的属性与原作者的属性同名。
 

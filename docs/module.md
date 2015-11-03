@@ -438,7 +438,7 @@ console.log(counter); // 4
 
 上面代码说明，ES6模块输入的变量`counter`是活的，完全反映其所在模块`lib.js`内部的变化。
 
-还是举本章开头时的例子。
+再举一个出现在`export`一节中的例子。
 
 ```javascript
 // m1.js

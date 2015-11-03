@@ -4,6 +4,8 @@
 
 `Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
 
+下面是一个类似数组的对象，`Array.from`将它转为真正的数组。
+
 ```javascript
 let arrayLike = {
     '0': 'a',
@@ -19,34 +21,41 @@ var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
 let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 ```
 
-下面是更多的例子。
+实际应用中，常见的类似数组的对象是DOM操作返回的NodeList集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
+
+```javascript
+// NodeList对象
+let ps = document.querySelectorAll('p');
+Array.from(ps).forEach(function (p) {
+  console.log(p);
+});
+
+// arguments对象
+function foo() {
+  var args = Array.from(arguments);
+  // ...
+}
+```
+
+上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，只有将这个对象转为真正的数组，才能使用`forEach`方法。
+
+只要是部署了Iterator接口的数据结构，`Array.from`都能将其转为数组。
 
 ```javascript
 Array.from('hello')
 // ['h', 'e', 'l', 'l', 'o']
 
-Array.from([1, 2, 3])
-// [1, 2, 3]
-
 let namesSet = new Set(['a', 'b'])
 Array.from(namesSet) // ['a', 'b']
-
-let ps = document.querySelectorAll('p');
-Array.from(ps).forEach(function (p) {
-  console.log(p);
-});
 ```
 
-上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，只有将这个对象转为真正的数组，才能使用forEach方法。
+上面代码中，字符串和Set结构都具有Iterator接口，因此可以被`Array.from`转为真正的数组。
 
-`Array.from`方法可以将函数的`arguments`对象，转为数组。
+如果参数是一个真正的数组，`Array.from`会返回一个一模一样的新数组。
 
 ```javascript
-function foo() {
-  var args = Array.from(arguments);
-}
-
-foo('a', 'b', 'c');
+Array.from([1, 2, 3])
+// [1, 2, 3]
 ```
 
 值得提醒的是，扩展运算符（`...`）也可以将某些数据结构转为数组。
@@ -61,16 +70,14 @@ function foo() {
 [...document.querySelectorAll('div')]
 ```
 
-扩展运算符背后调用的是遍历器接口（`Symbol.iterator`），如果一个对象没有部署这个接口，就无法转换。`Array.from`方法就不存在这个问题，比如下面的这个例子，扩展运算符就无法转换。
-
-所谓类似数组的对象，本质特征只有一点，即必须有`length`属性。因此，任何有`length`属性的对象，都可以通过`Array.from`方法转为数组。
+扩展运算符背后调用的是遍历器接口（`Symbol.iterator`），如果一个对象没有部署这个接口，就无法转换。`Array.from`方法则是还支持类似数组的对象。所谓类似数组的对象，本质特征只有一点，即必须有`length`属性。因此，任何有`length`属性的对象，都可以通过`Array.from`方法转为数组，而此时扩展运算符就无法转换。
 
 ```javascript
 Array.from({ length: 3 });
 // [ undefined, undefined, undefinded ]
 ```
 
-上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。
+上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。扩展运算符转换不了这个对象。
 
 对于还没有部署该方法的浏览器，可以用`Array.prototype.slice`方法替代。
 
@@ -80,7 +87,7 @@ const toArray = (() =>
 )();
 ```
 
-`Array.from`还可以接受第二个参数，作用类似于数组的`map`方法，用来对每个元素进行处理。
+`Array.from`还可以接受第二个参数，作用类似于数组的`map`方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
 
 ```JavaScript
 Array.from(arrayLike, x => x * x);
@@ -89,6 +96,18 @@ Array.from(arrayLike).map(x => x * x);
 
 Array.from([1, 2, 3], (x) => x * x)
 // [1, 4, 9]
+```
+
+下面的例子是取出一组DOM节点的文本内容。
+
+```javascript
+let spans = document.querySelectorAll('span.name');
+
+// map()
+let names1 = Array.prototype.map.call(spans, s => s.textContent);
+
+// Array.from()
+let names2 = Array.from(spans, s => s.textContent)
 ```
 
 下面的例子将数组中布尔值为`false`的成员转为`0`。
@@ -110,7 +129,7 @@ typesOf(null, [], NaN)
 
 如果`map`函数里面用到了`this`关键字，还可以传入`Array.from`的第三个参数，用来绑定`this`。
 
-`Array.from()`可以将各种值转为真正的数组，并且还提供`map`功能。这实际上意味着，你可以在数组里造出任何想要的值。
+`Array.from()`可以将各种值转为真正的数组，并且还提供`map`功能。这实际上意味着，只要有一个原始的数据结构，你就可以先对它的值进行处理，然后转成规范的数组结构，进而就可以使用数量众多的数组方法。
 
 ```javascript
 Array.from({ length: 2 }, () => 'jack')
@@ -240,9 +259,9 @@ i32a.copyWithin(0, 2);
 }) // 2
 ```
 
-这两个方法都可以接受第二个参数，用来绑定回调函数的this对象。
+这两个方法都可以接受第二个参数，用来绑定回调函数的`this`对象。
 
-另外，这两个方法都可以发现NaN，弥补了数组的IndexOf方法的不足。
+另外，这两个方法都可以发现`NaN`，弥补了数组的`IndexOf`方法的不足。
 
 ```javascript
 [NaN].indexOf(NaN)
@@ -252,7 +271,7 @@ i32a.copyWithin(0, 2);
 // 0
 ```
 
-上面代码中，`indexOf`方法无法识别数组的NaN成员，但是`findIndex`方法可以借助`Object.is`方法做到。
+上面代码中，`indexOf`方法无法识别数组的`NaN`成员，但是`findIndex`方法可以借助`Object.is`方法做到。
 
 ## 数组实例的fill()
 
@@ -274,6 +293,8 @@ new Array(3).fill(7)
 ['a', 'b', 'c'].fill(7, 1, 2)
 // ['a', 7, 'c']
 ```
+
+上面代码表示，`fill`方法从1号位开始，向原数组填充7，到2号位之前结束。
 
 ## 数组实例的entries()，keys()和values()
 
