@@ -605,7 +605,7 @@ function co(gen) {
 }
 ```
 
-接着，co将Generator函数的内部指针对象的next方法，包装成onFulefilled函数。这主要是为了能够捕捉抛出的错误。
+接着，co将Generator函数的内部指针对象的next方法，包装成onFulfilled函数。这主要是为了能够捕捉抛出的错误。
 
 ```javascript
 function co(gen) {

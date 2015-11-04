@@ -66,7 +66,7 @@ function* foo(x, y) { ··· }
 function*foo(x, y) { ··· }
 ```
 
-由于Generator函数仍然是普通函数，所以一般的写法是上面的第三种，即星号紧跟在`function`关键字后面。本书也采用这种写法/。
+由于Generator函数仍然是普通函数，所以一般的写法是上面的第三种，即星号紧跟在`function`关键字后面。本书也采用这种写法。
 
 ### yield语句
 
