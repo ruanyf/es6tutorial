@@ -54,6 +54,20 @@ hw.next()
 
 总结一下，调用Generator函数，返回一个遍历器对象，代表Generator函数的内部指针。以后，每次调用遍历器对象的`next`方法，就会返回一个有着`value`和`done`两个属性的对象。`value`属性表示当前的内部状态的值，是`yield`语句后面那个表达式的值；`done`属性是一个布尔值，表示是否遍历结束。
 
+ES6没有规定，`function`关键字与函数名之间的星号，写在哪个位置。这导致下面的写法都能通过。
+
+```javascript
+function * foo(x, y) { ··· }
+
+function *foo(x, y) { ··· }
+
+function* foo(x, y) { ··· }
+
+function*foo(x, y) { ··· }
+```
+
+由于Generator函数仍然是普通函数，所以一般的写法是上面的第三种，即星号紧跟在`function`关键字后面。本书也采用这种写法/。
+
 ### yield语句
 
 由于Generator函数返回的遍历器对象，只有调用`next`方法才会遍历下一个内部状态，所以其实提供了一种可以暂停执行的函数。`yield`语句就是暂停标志。
@@ -219,36 +233,21 @@ function* foo(x) {
 }
 
 var a = foo(5);
-
 a.next() // Object{value:6, done:false}
 a.next() // Object{value:NaN, done:false}
 a.next() // Object{value:NaN, done:false}
+
+var b = foo(5);
+b.next() // { value:6, done:false }
+b.next(12) // { value:8, done:false }
+b.next(13) // { value:42, done:true }
 ```
 
 上面代码中，第二次运行`next`方法的时候不带参数，导致y的值等于`2 * undefined`（即`NaN`），除以3以后还是`NaN`，因此返回对象的`value`属性也等于`NaN`。第三次运行`Next`方法的时候不带参数，所以`z`等于`undefined`，返回对象的`value`属性等于`5 + NaN + undefined`，即`NaN`。
 
-如果向`next`方法提供参数，返回结果就完全不一样了。
+如果向`next`方法提供参数，返回结果就完全不一样了。上面代码第一次调用`b`的`next`方法时，返回`x+1`的值6；第二次调用`next`方法，将上一次`yield`语句的值设为12，因此`y`等于24，返回`y / 3`的值8；第三次调用`next`方法，将上一次`yield`语句的值设为13，因此`z`等于13，这时`x`等于5，`y`等于24，所以`return`语句的值等于42。
 
-```javascript
-function* foo(x) {
-  var y = 2 * (yield (x + 1));
-  var z = yield (y / 3);
-  return (x + y + z);
-}
-
-var it = foo(5);
-
-it.next()
-// { value:6, done:false }
-it.next(12)
-// { value:8, done:false }
-it.next(13)
-// { value:42, done:true }
-```
-
-上面代码第一次调用`next`方法时，返回`x+1`的值6；第二次调用`next`方法，将上一次`yield`语句的值设为12，因此`y`等于24，返回`y / 3`的值8；第三次调用`next`方法，将上一次`yield`语句的值设为13，因此`z`等于13，这时`x`等于5，`y`等于24，所以`return`语句的值等于42。
-
-注意，由于`next`方法的参数表示上一个`yield`语句的返回值，所以第一次使用`next`方法时，不能带有参数。V8引擎直接忽略第一次使用`next`方法时的参数，只有从第二次使用`next`方法开始，参数才是有效的。
+注意，由于`next`方法的参数表示上一个`yield`语句的返回值，所以第一次使用`next`方法时，不能带有参数。V8引擎直接忽略第一次使用`next`方法时的参数，只有从第二次使用`next`方法开始，参数才是有效的。从语义上讲，第一个`next`方法用来启动遍历器对象，所以不用带有参数。
 
 如果想要第一次调用`next`方法时，就能够输入值，可以在Generator函数外面再包一层。
 
@@ -271,6 +270,27 @@ wrapped().next('hello!')
 ```
 
 上面代码中，Generator函数如果不用`wrapper`先包一层，是无法第一次调用`next`方法，就输入参数的。
+
+再看一个通过`next`方法的参数，向Generator函数内部输入值的例子。
+
+```javascript
+function* dataConsumer() {
+  console.log('Started');
+  console.log(`1. ${yield}`);
+  console.log(`2. ${yield}`);
+  return 'result';
+}
+
+let genObj = dataConsumer();
+genObj.next();
+// Started
+genObj.next('a')
+// 1. a
+genObj.next('b')
+// 2. b
+```
+
+上面代码是一个很直观的例子，每次通过`next`方法向Generator函数输入值，然后打印出来。
 
 ## for...of循环
 
@@ -313,7 +333,7 @@ for (let n of fibonacci()) {
 
 从上面代码可见，使用`for...of`语句时不需要使用next方法。
 
-前面章节曾经介绍过，`for...of`循环、扩展运算符（...）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们可以将Generator函数返回的Iterator对象，作为参数。
+前面章节曾经介绍过，`for...of`循环、扩展运算符（`...`）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们可以将Generator函数返回的Iterator对象，作为参数。
 
 ```javascript
 function* numbers () {
@@ -350,7 +370,30 @@ function* objectEntries(obj) {
 }
 
 let jane = { first: 'Jane', last: 'Doe' };
-for (let [key,value] of objectEntries(jane)) {
+
+for (let [key, value] of objectEntries(jane)) {
+  console.log(`${key}: ${value}`);
+}
+// first: Jane
+// last: Doe
+```
+
+上面代码中，对象`jane`原生不具备Iterator接口，无法用`for...of`遍历。这时，我们通过Generator函数`objectEntries`为它加上遍历器接口，就可以用`for...of`遍历了。加上遍历器接口的另一种写法是，将Generator函数加到对象的`Symbol.iterator`属性上面。
+
+```javascript
+function* objectEntries() {
+  let propKeys = Object.keys(this);
+
+  for (let propKey of propKeys) {
+    yield [propKey, this[propKey]];
+  }
+}
+
+let jane = { first: 'Jane', last: 'Doe' };
+
+jane[Symbol.iterator] = objectEntries;
+
+for (let [key, value] of jane) {
   console.log(`${key}: ${value}`);
 }
 // first: Jane
@@ -459,7 +502,7 @@ try {
 // hello
 ```
 
-上面代码只输出hello就结束了，因为第二次调用next方法时，遍历器状态已经变成终止了。但是，如果使用throw命令抛出错误，不会影响遍历器状态。
+上面代码只输出`hello`就结束了，因为第二次调用`next`方法时，遍历器状态已经变成终止了。但是，如果使用`throw`命令抛出错误，不会影响遍历器状态。
 
 ```javascript
 var gen = function* gen(){
@@ -765,7 +808,7 @@ for(let value of delegatingIterator) {
 
 上面代码中，`delegatingIterator`是代理者，`delegatedIterator`是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Generator函数，有递归的效果。
 
-yield*语句等同于在Generator函数内部，部署一个for...of循环。
+`yield*`语句等同于在Generator函数内部，部署一个`for...of`循环。
 
 ```javascript
 function* concat(iter1, iter2) {
@@ -845,6 +888,26 @@ it.next()
 ```
 
 上面代码在第四次调用`next`方法的时候，屏幕上会有输出，这是因为函数`foo`的`return`语句，向函数`bar`提供了返回值。
+
+再看一个例子。
+
+```javascript
+function* genFuncWithReturn() {
+  yield 'a';
+  yield 'b';
+  return 'The result';
+}
+function* logReturned(genObj) {
+  let result = yield* genObj;
+  console.log(result);
+}
+
+[...logReturned(genFuncWithReturn())]
+// The result
+// 值为 [ 'a', 'b' ]
+```
+
+上面代码中，存在两次遍历。第一次是扩展运算符遍历函数`logReturned`返回的遍历器对象，第二次是`yield*`语句遍历函数`genFuncWithReturn`返回的遍历器对象。这两次遍历的效果是叠加的，最终表现为扩展运算符遍历函数`genFuncWithReturn`返回的遍历器对象。所以，最后的数据表达式得到的值等于`[ 'a', 'b' ]`。但是，函数`genFuncWithReturn`的`return`语句的返回值`The result`，会返回给函数`logReturned`内部的`result`变量，因此会有终端输出。
 
 `yield*`命令可以很方便地取出嵌套数组的所有成员。
 
@@ -935,9 +998,36 @@ let obj = {
 };
 ```
 
-## 构造函数是Generator函数
+## Generator函数的`this`
 
-这一节讨论一种特殊情况：构造函数是Generator函数。
+Generator函数总是返回一个遍历器，ES6规定这个遍历器是Generator函数的实例，也继承了Generator函数的`prototype`对象上的方法。
+
+```javascript
+function* g() {}
+
+g.prototype.hello = function () {
+  return 'hi!';
+};
+
+let obj = g();
+
+obj instanceof g // true
+obj.hello() // 'hi!'
+```
+
+上面代码表明，Generator函数`g`返回的遍历器`obj`，是`g`的实例，而且继承了`g.prototype`。但是，如果把`g`当作普通的构造函数，并不会生效，因为`g`返回的总是遍历器对象，而不是`this`对象。
+
+```javascript
+function* g() {
+  this.a = 11;
+}
+
+let obj = g();
+obj.a // undefined
+```
+
+上面代码中，Generator函数`g`在`this`对象上面添加了一个属性`a`，但是`obj`对象拿不到这个属性。
+
 
 ```javascript
 function* F(){
@@ -955,23 +1045,24 @@ function* F(){
 
 上面代码中，由于`new F()`返回的是一个Iterator对象，具有next方法，所以上面的表达式为true。
 
-那么，这个时候怎么生成对象实例呢？
-
-我们知道，如果构造函数调用时，没有使用new命令，那么内部的this对象，绑定当前构造函数所在的对象（比如window对象）。因此，可以生成一个空对象，使用bind方法绑定F内部的this。这样，构造函数调用以后，这个空对象就是F的实例对象了。
+如果要把Generator函数当作正常的构造函数使用，可以采用下面的变通方法。首先，生成一个空对象，使用`bind`方法绑定Generator函数内部的`this`。这样，构造函数调用以后，这个空对象就是Generator函数的实例对象了。
 
 ```javascript
+function* F(){
+  yield this.x = 2;
+  yield this.y = 3;
+}
 var obj = {};
 var f = F.bind(obj)();
 
-f.next();
-f.next();
-f.next();
+f.next();  // Object {value: 2, done: false}
+f.next();  // Object {value: 3, done: false}
+f.next();  // Object {value: undefined, done: true}
 
-console.log(obj);
-// { x: 2, y: 3 }
+obj // { x: 2, y: 3 }
 ```
 
-上面代码中，首先是F内部的this对象绑定obj对象，然后调用它，返回一个Iterator对象。这个对象执行三次next方法（因为F内部有两个yield语句），完成F内部所有代码的运行。这时，所有内部属性都绑定在obj对象上了，因此obj对象也就成了F的实例。
+上面代码中，首先是`F`内部的`this`对象绑定`obj`对象，然后调用它，返回一个Iterator对象。这个对象执行三次`next`方法（因为`F`内部有两个`yield`语句），完成F内部所有代码的运行。这时，所有内部属性都绑定在`obj`对象上了，因此`obj`对象也就成了`F`的实例。
 
 ## Generator函数推导
 

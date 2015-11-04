@@ -167,7 +167,7 @@ if ([1][0] === undefined) {
 
 ```javascript
 let [x = 1, y = x] = [];     // x=1; y=1
-let [x = 1, y = x] = [2];    // x=1; y=2
+let [x = 1, y = x] = [2];    // x=2; y=2
 let [x = 1, y = x] = [1, 2]; // x=1; y=2
 let [x = y, y = 1] = [];     // ReferenceError
 ```
