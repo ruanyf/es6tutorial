@@ -29,14 +29,14 @@ new RegExp(/abc/ig, 'i').flags
 
 ES6将这4个方法，在语言内部全部调用RegExp的实例方法，从而做到所有与正则相关的方法，全都定义在RegExp对象上。
 
-- String.prototype.match 调用 RegExp.prototype[Symbol.match]
-- String.prototype.replace 调用 RegExp.prototype[Symbol.replace]
-- String.prototype.search 调用 RegExp.prototype[Symbol.search]
-- String.prototype.split 调用 RegExp.prototype[Symbol.split]
+- `String.prototype.match` 调用 `RegExp.prototype[Symbol.match]`
+- `String.prototype.replace` 调用 `RegExp.prototype[Symbol.replace]`
+- `String.prototype.search` 调用 `RegExp.prototype[Symbol.search]`
+- `String.prototype.split` 调用 `RegExp.prototype[Symbol.split]`
 
 ## u修饰符
 
-ES6对正则表达式添加了u修饰符，含义为“Unicode模式”，用来正确处理大于`\uFFFF`的Unicode字符。也就是说，会正确处理四个字节的UTF-16编码。
+ES6对正则表达式添加了`u`修饰符，含义为“Unicode模式”，用来正确处理大于`\uFFFF`的Unicode字符。也就是说，会正确处理四个字节的UTF-16编码。
 
 ```javascript
 /^\uD83D/u.test('\uD83D\uDC2A')
@@ -45,7 +45,7 @@ ES6对正则表达式添加了u修饰符，含义为“Unicode模式”，用来
 // true
 ```
 
-上面代码中，“\uD83D\uDC2A”是一个四个字节的UTF-16编码，代表一个字符。但是，ES5不支持四个字节的UTF-16编码，会将其识别为两个字符，导致第二行代码结果为true。加了u修饰符以后，ES6就会识别其为一个字符，所以第一行代码结果为false。
+上面代码中，“\uD83D\uDC2A”是一个四个字节的UTF-16编码，代表一个字符。但是，ES5不支持四个字节的UTF-16编码，会将其识别为两个字符，导致第二行代码结果为true。加了u修饰符以后，ES6就会识别其为一个字符，所以第一行代码结果为`false`。
 
 一旦加上u修饰符号，就会修改下面这些正则表达式的行为。
 
@@ -127,11 +127,11 @@ codePointLength(s) // 2
 /[a-z]/iu.test('\u212A') // true
 ```
 
-上面代码中，不加u修饰符，就无法识别非规范的K字符。
+上面代码中，不加`u`修饰符，就无法识别非规范的K字符。
 
 ## y修饰符
 
-除了u修饰符，ES6还为正则表达式添加了y修饰符，叫做“粘连”（sticky）修饰符。
+除了`u`修饰符，ES6还为正则表达式添加了`y`修饰符，叫做“粘连”（sticky）修饰符。
 
 y修饰符的作用与g修饰符类似，也是全局匹配，后一次匹配都从上一次匹配成功的下一个位置开始。不同之处在于，g修饰符只要剩余位置中存在匹配就可，而y修饰符确保匹配必须从剩余的第一个位置开始，这也就是“粘连”的涵义。
 
@@ -161,41 +161,50 @@ r.exec(s) // ["aa_"]
 
 上面代码每次匹配，都是从剩余字符串的头部开始。
 
-使用lastIndex属性，可以更好地说明y修饰符。
+使用`lastIndex`属性，可以更好地说明`y`修饰符。
 
 ```javascript
 const REGEX = /a/g;
 
-REGEX.lastIndex = 2; // 指定从第三个位置y开始搜索
+// 指定从2号位置（y）开始匹配
+REGEX.lastIndex = 2;
+
+// 匹配成功
 const match = REGEX.exec('xaya');
 
-match.index
-// 3
-REGEX.lastIndex
-// 4
-REGEX.exec('xaxa')
-// null
+// 在3号位置匹配成功
+match.index // 3
+
+// 下一次匹配从4号位开始
+REGEX.lastIndex // 4
+
+// 4号位开始匹配失败
+REGEX.exec('xaxa') // null
 ```
 
-上面代码中，lastIndex属性指定每次搜索的开始位置，g修饰符从这个位置开始向后搜索，直到发现匹配为止。
+上面代码中，`lastIndex`属性指定每次搜索的开始位置，`g`修饰符从这个位置开始向后搜索，直到发现匹配为止。
 
-y修饰符同样遵守lastIndex属性，但是要求必须在lastIndex指定的位置发现匹配。
+y修饰符同样遵守`lastIndex`属性，但是要求必须在`lastIndex`指定的位置发现匹配。
 
 ```javascript
 const REGEX = /a/y;
 
-// 第三个位置y不匹配
+// 指定从2号位置开始匹配
 REGEX.lastIndex = 2;
-console.log(REGEX.exec('xaya')); // null
 
-// 第四个位置出现匹配
+// 不是粘连，匹配失败
+REGEX.exec('xaya') // null
+
+// 指定从3号位置开始匹配
 REGEX.lastIndex = 3;
+
+// 3号位置是粘连，匹配成功
 const match = REGEX.exec('xaxa');
 match.index // 3
 REGEX.lastIndex // 4
 ```
 
-进一步说，y修饰符号隐含了头部匹配的标志&#710;。
+进一步说，`y`修饰符号隐含了头部匹配的标志&#710;。
 
 ```javascript
 /b/y.exec("aba")
@@ -235,11 +244,17 @@ const REGEX = /a/gy;
 
 上面代码中，最后一个a因为不是出现下一次匹配的头部，所以不会被替换。
 
-如果同时使用g修饰符和y修饰符，则y修饰符覆盖g修饰符。
-
-y修饰符的主要作用，是从字符串提取token（词元），y修饰符确保了匹配之间不会有漏掉的字符。
+`y`修饰符的一个应用，是从字符串提取token（词元），`y`修饰符确保了匹配之间不会有漏掉的字符。
 
 ```javascript
+const TOKEN_Y = /\s*(\+|[0-9]+)\s*/y;
+const TOKEN_G  = /\s*(\+|[0-9]+)\s*/g;
+
+tokenize(TOKEN_Y, '3 + 4')
+// [ '3', '+', '4' ]
+tokenize(TOKEN_G, '3 + 4')
+// [ '3', '+', '4' ]
+
 function tokenize(TOKEN_REGEX, str) {
   let result = [];
   let match;
@@ -248,14 +263,6 @@ function tokenize(TOKEN_REGEX, str) {
   }
   return result;
 }
-
-const TOKEN_Y = /\s*(\+|[0-9]+)\s*/y;
-const TOKEN_G  = /\s*(\+|[0-9]+)\s*/g;
-
-tokenize(TOKEN_Y, '3 + 4')
-// [ '3', '+', '4' ]
-tokenize(TOKEN_G, '3 + 4')
-// [ '3', '+', '4' ]
 ```
 
 上面代码中，如果字符串里面没有非法字符，y修饰符与g修饰符的提取结果是一样的。但是，一旦出现非法字符，两者的行为就不一样了。

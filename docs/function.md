@@ -877,6 +877,17 @@ foo( 2, 4, 6, 8 );
 
 另外，由于箭头函数没有自己的`this`，所以当然也就不能用`call()`、`apply()`、`bind()`这些方法去改变`this`的指向。
 
+```javascript
+(function() {
+  return [
+    (() => this.x).bind({ x: 'inner' })()
+  ]
+}).call({ x: 'outer' });
+// ['outer']
+```
+
+上面代码中，箭头函数没有自己的`this`，所以`bind`方法无效，内部的`this`指向外部的`this`。
+
 长期以来，JavaScript语言的`this`对象一直是一个令人头痛的问题，在对象方法中使用`this`，必须非常小心。箭头函数”绑定”`this`，很大程度上解决了这个困扰。
 
 ### 嵌套的箭头函数
@@ -1152,7 +1163,6 @@ factorial(5) // 120
 函数式编程有一个概念，叫做柯里化（currying），意思是将多参数的函数转换成单参数的形式。这里也可以使用柯里化。
 
 ```javascript
-
 function currying(fn, n) {
   return function (m) {
     return fn.call(this, m, n);
