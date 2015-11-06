@@ -497,9 +497,28 @@ var a = require('a');
 
 对于JavaScript语言来说，目前最常见的两种模块格式CommonJS和ES6，处理“循环加载”的方法是不一样的，返回的结果也不一样。
 
-### CommonJS模块
+### CommonJS模块的加载原理
 
-CommonJS模块的重要特性是加载时执行，即脚本代码在`require`的时候，就会全部执行。因此，CommonJS规定，一旦发现某个模块被“循环加载”，就立即停止加载，只输出已经执行的部分。
+介绍ES6如何处理"循环加载"之前，先介绍目前最流行的CommonJS模块格式的加载原理。
+
+CommonJS的一个模块，就是一个脚本文件。`require`命令第一次加载该脚本，就会执行整个脚本，然后在内存生成一个对象。
+
+```javascript
+{
+  id: '...',
+  exports: { ... },
+  loaded: true,
+  ...
+}
+```
+
+上面代码中，该对象的id属性是模块名，`exports`属性是模块输出的各个接口，`loaded`属性是一个布尔值，表示该模块的脚本是否执行完毕。其他还有很多属性，这里都省略了。
+
+以后需要用到这个模块的时候，就会到exports属性上面取值。即使再次执行require命令，也不会再次执行该模块，而是到缓存之中取值。
+
+### CommonJS模块的循环加载
+
+CommonJS模块的重要特性是加载时执行，即脚本代码在`require`的时候，就会全部执行。CommonJS的做法是，一旦出现某个模块被"循环加载"，就只输出已经执行的部分，还未执行的部分不会输出。
 
 让我们来看，Node[官方文档](https://nodejs.org/api/modules.html#modules_cycles)里面的例子。脚本文件`a.js`代码如下。
 
@@ -523,7 +542,7 @@ exports.done = true;
 console.log('b.js 执行完毕');
 ```
 
-上面代码之中，`b.js`执行到第二行，就会去加载`a.js`，这时，就发生了“循环加载”。为了避免无穷递归，执行引擎不会去再次执行`a.js`，而是只返回已经执行的部分。
+上面代码之中，`b.js`执行到第二行，就会去加载`a.js`，这时，就发生了“循环加载”。系统会去`a.js`模块对应对象的`exports`属性取值，可是因为`a.js`还没有执行完，从`exports`属性只能取回已经执行的部分，而不是最后的值。
 
 `a.js`已经执行的部分，只有一行。
 
@@ -559,11 +578,11 @@ a.js 执行完毕
 exports.done = true;
 ```
 
-总之，CommonJS输入的是被输出值的拷贝。
+总之，CommonJS输入的是被输出值的拷贝，不是引用。
 
-### ES6模块
+### ES6模块的循环加载
 
-ES6处理“循环加载”与CommonJS有本质的不同。ES6模块是动态引用，根本不会检查是否发生了“循环加载”，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
+ES6处理“循环加载”与CommonJS有本质的不同。ES6模块是动态引用，遇到模块加载命令`import`时，不会去执行模块，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
 
 请看下面的例子（摘自 Dr. Axel Rauschmayer 的[《Exploring ES6》](http://exploringjs.com/es6/ch_modules.html)）。
 
@@ -647,8 +666,8 @@ exports.even = function(n) {
 }
 
 // odd.js
-var even = require('./even');
-exports.odd = function(n) {
+var even = require('./even').even;
+module.exports = function(n) {
   return n != 0 && even(n - 1);
 }
 ```
@@ -659,7 +678,7 @@ exports.odd = function(n) {
 $ node
 > var m = require('./even');
 > m.even(10)
-TypeError: odd is not a function
+TypeError: even is not a function
 ```
 
 ## ES6模块的转码
