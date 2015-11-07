@@ -265,7 +265,7 @@ const nodes = Array.from(foo);
 });
 ```
 
-箭头函数取代Function.prototype.bind，不应再用self/\_this/that绑定 this。
+箭头函数取代`Function.prototype.bind`，不应再用self/\_this/that绑定 this。
 
 ```javascript
 // bad
@@ -280,6 +280,8 @@ const boundMethod = method.bind(this);
 // best
 const boundMethod = (...params) => method.apply(this, params);
 ```
+
+简单的、单行的、不会复用的函数，建议采用箭头函数。如果函数体较为复杂，行数较多，还是应该采用传统的函数写法。
 
 所有配置项都应该集中在一个对象，放在最后一个参数，布尔值不可以直接作为参数。
 
@@ -393,7 +395,7 @@ class PeekableQueue extends Queue {
 
 ## 模块
 
-首先，Module语法是JavaScript模块的标准写法，坚持使用这种写法。使用import取代require。
+首先，Module语法是JavaScript模块的标准写法，坚持使用这种写法。使用`import`取代`require`。
 
 ```javascript
 // bad
@@ -405,7 +407,7 @@ const func2 = moduleA.func2;
 import { func1, func2 } from 'moduleA';
 ```
 
-使用export取代module.exports。
+使用`export`取代`module.exports`。
 
 ```javascript
 // commonJS的写法
@@ -430,6 +432,8 @@ const Breadcrumbs = React.createClass({
 
 export default Breadcrumbs
 ```
+
+如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，不要`export default`与普通的`export`同时使用。
 
 不要在模块输入中使用通配符。因为这样可以确保你的模块之中，有一个默认输出（export default）。
 

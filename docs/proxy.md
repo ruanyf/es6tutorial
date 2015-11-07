@@ -119,7 +119,7 @@ fproxy.foo; // 'Hello, foo'
 
 **（1）get(target, propKey, receiver)**
 
-拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数receiver可选，当target对象设置了propKey属性的get函数时，receiver对象会绑定get函数的this对象。
+拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数`receiver`可选，当`target`对象设置了`propKey`属性的`get`函数时，`receiver`对象会绑定`get`函数的`this`对象。
 
 **（2）set(target, propKey, value, receiver)**
 
@@ -177,15 +177,15 @@ fproxy.foo; // 'Hello, foo'
 
 **（15）construct(target, args, proxy)**
 
-拦截Proxy实例作为构造函数调用的操作，比如new proxy(...args)。
+拦截Proxy实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
 ## Proxy实例的方法
 
-下面是其中几个重要拦截方法的详细介绍。
+下面是上面这些拦截方法的详细介绍。
 
 ### get()
 
-get方法用于拦截某个属性的读取操作。上文已经有一个例子，下面是另一个拦截读取操作的例子。
+`get`方法用于拦截某个属性的读取操作。上文已经有一个例子，下面是另一个拦截读取操作的例子。
 
 ```javascript
 var person = {
@@ -206,9 +206,50 @@ proxy.name // "张三"
 proxy.age // 抛出一个错误
 ```
 
-上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回undefined。
+上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回`undefined`。
 
-利用proxy，可以将读取属性的操作（get），转变为执行某个函数。
+`get`方法可以继承。
+
+```javascript
+let proto = new Proxy({}, {
+  get(target, propertyKey, receiver) {
+    console.log('GET '+propertyKey);
+    return target[propertyKey];
+  }
+});
+
+let obj = Object.create(proto);
+obj.xxx // "GET xxx"
+```
+
+上面代码中，拦截操作定义在Prototype对象上面，所以如果读取`obj`对象继承的属性时，拦截会生效。
+
+下面的例子使用`get`拦截，实现数组读取负数的索引。
+
+```javascript
+function createArray(...elements) {
+  let handler = {
+    get(target, propKey, receiver) {
+      let index = Number(propKey);
+      if (index < 0) {
+        propKey = String(target.length + index);
+      }
+      return Reflect.get(target, propKey, receiver);
+    }
+  };
+
+  let target = [];
+  target.push(...elements);
+  return new Proxy(target, handler);
+}
+
+let arr = createArray('a', 'b', 'c');
+arr[-1] // c
+```
+
+上面代码中，数组的位置参数是`-1`，就会输出数组的倒数最后一个成员。
+
+利用proxy，可以将读取属性的操作（`get`），转变为执行某个函数，从而实现属性的链式操作。
 
 ```javascript
 var pipe = (function () {
@@ -229,11 +270,11 @@ var pipe = (function () {
   }
 }());
 
-var double = function (n) { return n*2 };
-var pow = function (n) { return n*n };
-var reverseInt = function (n) { return n.toString().split('').reverse().join('')|0 };
+var double = n => n * 2;
+var pow = n => n * n;
+var reverseInt = n => n.toString().split('').reverse().join('') | 0;
 
-pipe(3) . double . pow . reverseInt . get
+pipe(3).double.pow.reverseInt.get
 // 63
 ```
 
@@ -756,16 +797,26 @@ Proxy(target, {
 
 上面代码中，Proxy方法拦截target对象的属性赋值行为。它采用`Reflect.set`方法将值赋值给对象的属性，然后再部署额外的功能。
 
-下面是get方法的例子。
+下面是另一个例子。
 
 ```javascript
 var loggedObj = new Proxy(obj, {
-  get: function(target, name) {
-    console.log("get", target, name);
+  get(target, name) {
+    console.log('get', target, name);
     return Reflect.get(target, name);
+  },
+  deleteProperty(target, name) {
+    console.log('delete' + name);
+    return Reflect.deleteProperty(target, name);
+  },
+  has(target, name) {
+    console.log('has' + name);
+    return Reflect.has(target, name);
   }
 });
 ```
+
+上面代码中，每一个Proxy对象的拦截操作（`get`、`delete`、`has`），内部都调用对应的Reflect方法，保证原生行为能够正常执行。添加的工作，就是将每一个操作输出一行日志。
 
 ## Reflect对象的方法
 

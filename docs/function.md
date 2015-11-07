@@ -307,6 +307,12 @@ foo()
 
 从上面代码还可以看到，参数`mustBeProvided`的默认值等于`throwIfMissing`函数的运行结果（即函数名之后有一对圆括号），这表明参数的默认值不是在定义时执行，而是在运行时执行（即如果参数已经赋值，默认值中的函数就不会运行），这与python语言不一样。
 
+另外，可以将参数默认值设为`undefined`，表明这个参数是可以省略的。
+
+```javascript
+function foo(optional = undefined) { ··· }
+```
+
 ## rest参数
 
 ES6引入rest参数（形式为“...变量名”），用于获取函数的多余参数，这样就不需要使用arguments对象了。rest参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
