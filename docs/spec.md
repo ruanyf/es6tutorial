@@ -34,7 +34,7 @@ ECMAScript 6规格的26章之中，第1章到第3章是对文件本身的介绍�
 
 规格对每一种语法行为的描述，都分成两部分：先是总体的行为描述，然后是实现的算法细节。相等运算符的总体描述，只有一句话。
 
-> “The comparison `x == y`, where x and y are values, produces `true` or `false`.”
+> “The comparison `x == y`, where `x` and `y` are values, produces `true` or `false`.”
 
 上面这句话的意思是，相等运算符用于比较两个值，返回`true`或`false`。
 
@@ -42,21 +42,21 @@ ECMAScript 6规格的26章之中，第1章到第3章是对文件本身的介绍�
 
 > 1. ReturnIfAbrupt(x).
 > 1. ReturnIfAbrupt(y).
-> 1. If Type(x) is the same as Type(y), then
->   Return the result of performing Strict Equality Comparison x === y.
-> 1. If x is null and y is undefined, return true.
-> 1. If x is undefined and y is null, return true.
-> 1. If Type(x) is Number and Type(y) is String,
->  return the result of the comparison x == ToNumber(y).
-> 1. If Type(x) is String and Type(y) is Number,
+> 1. If `Type(x)` is the same as `Type(y)`, then  
+>   Return the result of performing Strict Equality Comparison `x === y`.
+> 1. If `x` is `null` and `y` is `undefined`, return `true`.
+> 1. If `x` is `undefined` and `y` is `null`, return `true`.
+> 1. If `Type(x)` is Number and `Type(y)` is String,  
+>  return the result of the comparison `x == ToNumber(y)`.
+> 1. If `Type(x)` is String and `Type(y)` is Number,  
 >  return the result of the comparison ToNumber(x) == y.
-> 1. If Type(x) is Boolean, return the result of the comparison ToNumber(x) == y.
-> 1. If Type(y) is Boolean, return the result of the comparison x == ToNumber(y).
-> 1. If Type(x) is either String, Number, or Symbol and Type(y) is Object, then
->  return the result of the comparison x == ToPrimitive(y).
-> 1. If Type(x) is Object and Type(y) is either String, Number, or Symbol, then
->  return the result of the comparison ToPrimitive(x) == y.
-> 1. Return false.
+> 1. If `Type(x)` is Boolean, return the result of the comparison `ToNumber(x) == y`.
+> 1. If `Type(y)` is Boolean, return the result of the comparison `x == ToNumber(y)`.
+> 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then  
+>  return the result of the comparison `x == ToPrimitive(y)`.
+> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then
+>  return the result of the comparison `ToPrimitive(x) == y`.
+> 1. Return `false`.
 
 上面这段算法，一共有12步，翻译如下。
 
@@ -138,7 +138,7 @@ a2.map(n => 1) // [, , ,]
 
 后面的算法描述是这样的。
 
-> 1. Let O be ToObject(this value).
+> 1. Let `O` be `ToObject(this value)`.
 > 1. ReturnIfAbrupt(O).
 > 1. Let len be ToLength(Get(O, "length")).
 > 1. ReturnIfAbrupt(len).
@@ -147,17 +147,17 @@ a2.map(n => 1) // [, , ,]
 > 1. Let A be ArraySpeciesCreate(O, len).
 > 1. ReturnIfAbrupt(A).
 > 1. Let k be 0.
-> 1. Repeat, while k < len
->     a. Let Pk be ToString(k).
->     b. Let kPresent be HasProperty(O, Pk).
->     c. ReturnIfAbrupt(kPresent).
->     d. If kPresent is true, then
->         d-1. Let kValue be Get(O, Pk).
->         d-2. ReturnIfAbrupt(kValue).
->         d-3. Let mappedValue be Call(callbackfn, T, «kValue, k, O»).
->         d-4. ReturnIfAbrupt(mappedValue).
->         d-5. Let status be CreateDataPropertyOrThrow (A, Pk, mappedValue).
->         d-6. ReturnIfAbrupt(status).
+> 1. Repeat, while k < len  
+>     a. Let Pk be ToString(k).  
+>     b. Let kPresent be HasProperty(O, Pk).  
+>     c. ReturnIfAbrupt(kPresent).  
+>     d. If kPresent is true, then  
+>         d-1. Let kValue be Get(O, Pk).  
+>         d-2. ReturnIfAbrupt(kValue).  
+>         d-3. Let mappedValue be Call(callbackfn, T, «kValue, k, O»).  
+>         d-4. ReturnIfAbrupt(mappedValue).  
+>         d-5. Let status be CreateDataPropertyOrThrow (A, Pk, mappedValue).  
+>         d-6. ReturnIfAbrupt(status).  
 >     e. Increase k by 1.
 > 1. Return A.
 
@@ -172,17 +172,17 @@ a2.map(n => 1) // [, , ,]
 > 1. 生成一个新的数组`A`，跟当前数组的`length`属性保持一致
 > 1. 如果报错就返回
 > 1. 设定`k`等于0
-> 1. 只要`k`小于当前数组的`length`属性，就重复下面步骤
->     a. 设定`Pk`等于`ToString(k)`，即将`K`转为字符串
->     b. 设定`kPresent`等于`HasProperty(O, Pk)`，即求当前数组有没有指定属性
->     c. 如果报错就返回
->     d. 如果`kPresent`等于`true`，则进行下面步骤
->         d-1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性
->         d-2. 如果报错就返回
->         d-3. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数
->         d-4. 如果报错就返回
->         d-5. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置
->         d-6. 如果报错就返回
+> 1. 只要`k`小于当前数组的`length`属性，就重复下面步骤  
+>     a. 设定`Pk`等于`ToString(k)`，即将`K`转为字符串  
+>     b. 设定`kPresent`等于`HasProperty(O, Pk)`，即求当前数组有没有指定属性  
+>     c. 如果报错就返回  
+>     d. 如果`kPresent`等于`true`，则进行下面步骤  
+>         d-1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性  
+>         d-2. 如果报错就返回  
+>         d-3. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数  
+>         d-4. 如果报错就返回  
+>         d-5. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置  
+>         d-6. 如果报错就返回  
 >     e. `k`增加1
 > 1. 返回`A`
 
