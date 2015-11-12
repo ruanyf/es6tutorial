@@ -461,6 +461,19 @@ Array.from(['a',,'b'])
 new Array(3).fill('a') // ["a","a","a"]
 ```
 
+`for...of`循环也会遍历空位。
+
+```javascript
+let arr = [, ,];
+for (let i of arr) {
+  console.log(1);
+}
+// 1
+// 1
+```
+
+上面代码中，数组`arr`有两个空位，`for...of`并没有忽略它们。如果改成`map`方法遍历，空位是会跳过的。
+
 `entries()`、`keys()`、`values()`、`find()`和`findIndex()`会将空位处理成`undefined`。
 
 ```javascript
