@@ -523,7 +523,7 @@ ES6一共有6种方法可以遍历对象的属性。
 
 `Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含Symbol属性，但是包括不可枚举属性）。
 
-**4）Object.getOwnPropertySymbols(obj)**
+**（4）Object.getOwnPropertySymbols(obj)**
 
 `Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有Symbol属性。
 
