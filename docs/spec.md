@@ -49,12 +49,12 @@ ECMAScript 6规格的26章之中，第1章到第3章是对文件本身的介绍�
 > 1. If `Type(x)` is Number and `Type(y)` is String,  
 >  return the result of the comparison `x == ToNumber(y)`.
 > 1. If `Type(x)` is String and `Type(y)` is Number,  
->  return the result of the comparison ToNumber(x) == y.
+>  return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(x)` is Boolean, return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(y)` is Boolean, return the result of the comparison `x == ToNumber(y)`.
 > 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then  
 >  return the result of the comparison `x == ToPrimitive(y)`.
-> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then
+> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then  
 >  return the result of the comparison `ToPrimitive(x) == y`.
 > 1. Return `false`.
 
@@ -73,7 +73,7 @@ ECMAScript 6规格的26章之中，第1章到第3章是对文件本身的介绍�
 > 1. 如果`Type(x)`是对象，`Type(y)`是字符串或数值或`Symbol`值，返回`ToPrimitive(x) == y`的结果。
 > 1. 返回`false`。
 
-由于`0`的类型是数值，`null`的类型是Null（这是规格[4.3.13小节](http://www.ecma-international.org/ecma-262/6.0/#sec-4.3.13)的规定，是内部Type运算的结果，跟`typeof`运算符无关）。因此上面的前11步运算步骤都得不到结果，要到第12步才能得到`false`。
+由于`0`的类型是数值，`null`的类型是Null（这是规格[4.3.13小节](http://www.ecma-international.org/ecma-262/6.0/#sec-4.3.13)的规定，是内部Type运算的结果，跟`typeof`运算符无关）。因此上面的前11步都得不到结果，要到第12步才能得到`false`。
 
 ```javascript
 0 == null // false
@@ -139,27 +139,27 @@ a2.map(n => 1) // [, , ,]
 后面的算法描述是这样的。
 
 > 1. Let `O` be `ToObject(this value)`.
-> 1. ReturnIfAbrupt(O).
-> 1. Let len be ToLength(Get(O, "length")).
-> 1. ReturnIfAbrupt(len).
-> 1. If IsCallable(callbackfn) is false, throw a TypeError exception.
-> 1. If thisArg was supplied, let T be thisArg; else let T be undefined.
-> 1. Let A be ArraySpeciesCreate(O, len).
-> 1. ReturnIfAbrupt(A).
-> 1. Let k be 0.
-> 1. Repeat, while k < len  
->     a. Let Pk be ToString(k).  
->     b. Let kPresent be HasProperty(O, Pk).  
->     c. ReturnIfAbrupt(kPresent).  
->     d. If kPresent is true, then  
->         d-1. Let kValue be Get(O, Pk).  
->         d-2. ReturnIfAbrupt(kValue).  
->         d-3. Let mappedValue be Call(callbackfn, T, «kValue, k, O»).  
->         d-4. ReturnIfAbrupt(mappedValue).  
->         d-5. Let status be CreateDataPropertyOrThrow (A, Pk, mappedValue).  
->         d-6. ReturnIfAbrupt(status).  
->     e. Increase k by 1.
-> 1. Return A.
+> 1. `ReturnIfAbrupt(O)`.
+> 1. Let `len` be `ToLength(Get(O, "length"))`.
+> 1. `ReturnIfAbrupt(len)`.
+> 1. If `IsCallable(callbackfn)` is `false`, throw a TypeError exception.
+> 1. If `thisArg` was supplied, let `T` be `thisArg`; else let `T` be `undefined`.
+> 1. Let `A` be `ArraySpeciesCreate(O, len)`.
+> 1. `ReturnIfAbrupt(A)`.
+> 1. Let `k` be 0.
+> 1. Repeat, while `k` < `len`  
+>     a. Let `Pk` be `ToString(k)`.  
+>     b. Let `kPresent` be `HasProperty(O, Pk)`.  
+>     c. `ReturnIfAbrupt(kPresent)`.  
+>     d. If `kPresent` is `true`, then  
+>     d-1. Let `kValue` be `Get(O, Pk)`.  
+>     d-2. `ReturnIfAbrupt(kValue)`.  
+>     d-3. Let `mappedValue` be `Call(callbackfn, T, «kValue, k, O»)`.  
+>     d-4. `ReturnIfAbrupt(mappedValue)`.  
+>     d-5. Let `status` be `CreateDataPropertyOrThrow (A, Pk, mappedValue)`.  
+>     d-6. `ReturnIfAbrupt(status)`.  
+>     e. Increase `k` by 1.
+> 1. Return `A`.
 
 翻译如下。
 
@@ -177,12 +177,12 @@ a2.map(n => 1) // [, , ,]
 >     b. 设定`kPresent`等于`HasProperty(O, Pk)`，即求当前数组有没有指定属性  
 >     c. 如果报错就返回  
 >     d. 如果`kPresent`等于`true`，则进行下面步骤  
->         d-1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性  
->         d-2. 如果报错就返回  
->         d-3. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数  
->         d-4. 如果报错就返回  
->         d-5. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置  
->         d-6. 如果报错就返回  
+>     d-1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性  
+>     d-2. 如果报错就返回  
+>     d-3. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数  
+>     d-4. 如果报错就返回  
+>     d-5. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置  
+>     d-6. 如果报错就返回  
 >     e. `k`增加1
 > 1. 返回`A`
 
