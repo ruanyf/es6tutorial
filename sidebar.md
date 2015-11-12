@@ -27,6 +27,7 @@
 1. [Decorator](#docs/decorator)
 1. [Module](#docs/module)
 1. [编程风格](#docs/style)
+1. [读懂规格](#docs/spec)
 1. [参考链接](#docs/reference)
 
 ## 其他

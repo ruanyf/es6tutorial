@@ -450,7 +450,7 @@ run(gen);
 
 上面代码的run函数，就是一个Generator函数的自动执行器。内部的next函数就是Thunk的回调函数。next函数先将指针移到Generator函数的下一步（gen.next方法），然后判断Generator函数是否结束（result.done 属性），如果没结束，就将next函数再传入Thunk函数（result.value属性），否则就直接退出。
 
-有了这个执行器，执行Generator函数方便多了。不管有多少个异步操作，直接传入run函数即可。当然，前提是每一个异步操作，都要是Thunk函数，也就是说，跟在yield命令后面的必须是Thunk函数。
+有了这个执行器，执行Generator函数方便多了。不管有多少个异步操作，直接传入`run`函数即可。当然，前提是每一个异步操作，都要是Thunk函数，也就是说，跟在`yield`命令后面的必须是Thunk函数。
 
 ```javascript
 var gen = function* (){
@@ -463,7 +463,7 @@ var gen = function* (){
 run(gen);
 ```
 
-上面代码中，函数gen封装了n个异步的读取文件操作，只要执行run函数，这些操作就会自动完成。这样一来，异步操作不仅可以写得像同步操作，而且一行代码就可以执行。
+上面代码中，函数`gen`封装了`n`个异步的读取文件操作，只要执行`run`函数，这些操作就会自动完成。这样一来，异步操作不仅可以写得像同步操作，而且一行代码就可以执行。
 
 Thunk函数并不是Generator函数自动执行的唯一方案。因为自动执行的关键是，必须有一种机制，自动控制Generator函数的流程，接收和交还程序的执行权。回调函数可以做到这一点，Promise 对象也可以做到这一点。
 
@@ -697,7 +697,7 @@ function* somethingAsync(x) {
 
 ### 含义
 
-async 函数是什么？一句话，async函数就是Generator函数的语法糖。
+ES7提供了`async`函数，使得异步操作变得更加方便。async 函数是什么？一句话，async函数就是Generator函数的语法糖。
 
 前文有一个Generator函数，依次读取两个文件。
 
@@ -742,9 +742,15 @@ async 函数对 Generator 函数的改进，体现在以下三点。
 var result = asyncReadFile();
 ```
 
-（2）更好的语义。async和await，比起星号和yield，语义更清楚了。async表示函数里有异步操作，await 表示紧跟在后面的表达式需要等待结果。
+上面的代码调用了`asyncReadFile`函数，然后它就会自动执行，输出最后结果。这完全不像Generator函数，需要调用`next`方法，或者用co模块，才能得到真正执行，得到最后结果。
 
-（3）更广的适用性。 co模块约定，yield命令后面只能是Thunk函数或Promise对象，而async函数的await命令后面，可以跟Promise对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+（2）更好的语义。`async`和`await`，比起星号和`yield`，语义更清楚了。`async`表示函数里有异步操作，`await`表示紧跟在后面的表达式需要等待结果。
+
+（3）更广的适用性。 co模块约定，`yield`命令后面只能是Thunk函数或Promise对象，而`async`函数的`await`命令后面，可以是Promise对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+
+（4）返回值是Promise。async函数的返回值是Promise对象，这比Generator函数的返回值是Iterator对象方便多了。你可以用`then`方法指定下一步的操作。
+
+进一步说，async函数完全可以看作多个异步操作，包装成的一个Promise对象，而`await`命令就是内部`then`命令的语法糖。
 
 ### async函数的实现
 
