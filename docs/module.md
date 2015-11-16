@@ -160,7 +160,7 @@ import { foo } from 'my_module';
 如果在一个模块之中，先输入后输出同一个模块，`import`语句可以与`export`语句写在一起。
 
 ```javascript
-export { es6 as default } from './someModule';
+export { default as es6 } from './someModule';
 
 // 等同于
 import { es6 } from './someModule';
