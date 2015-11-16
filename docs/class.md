@@ -793,27 +793,7 @@ var descriptor = Object.getOwnPropertyDescriptor(
 "set" in descriptor  // true
 ```
 
-上面代码中，存值函数和取值函数是定义在html属性的描述对象上面，这与ES5完全一致。
-
-下面的例子针对所有属性，设置存值函数和取值函数。
-
-```javascript
-class Jedi {
-  constructor(options = {}) {
-    // ...
-  }
-
-  set(key, val) {
-    this[key] = val;
-  }
-
-  get(key) {
-    return this[key];
-  }
-}
-```
-
-上面代码中，Jedi实例所有属性的存取，都会通过存值函数和取值函数。
+上面代码中，存值函数和取值函数是定义在`html`属性的描述对象上面，这与ES5完全一致。
 
 ## Class的Generator方法
 
