@@ -287,13 +287,19 @@ export default foo;
 下面比较一下默认输出和正常输出。
 
 ```javascript
+// 输出
+export default function crc32() {
+  // ...
+}
+// 输入
 import crc32 from 'crc32';
-// 对应的输出
-export default function crc32(){}
 
-import { crc32 } from 'crc32';
-// 对应的输出
-export function crc32(){};
+// 输出
+export function crc32() {
+  // ...
+};
+// 输入
+import {crc32} from 'crc32';
 ```
 
 上面代码的两组写法，第一组是使用`export default`时，对应的`import`语句不需要使用大括号；第二组是不使用`export default`时，对应的`import`语句需要使用大括号。
