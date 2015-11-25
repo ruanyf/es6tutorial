@@ -12,7 +12,7 @@ ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经�
 
 该标准从一开始就是针对JavaScript语言制定的，但是之所以不叫JavaScript，有两个原因。一是商标，Java是Sun公司的商标，根据授权协议，只有Netscape公司可以合法地使用JavaScript这个名字，且JavaScript本身也已经被Netscape公司注册为商标。二是想体现这门语言的制定者是ECMA，不是Netscape，这样有利于保证这门语言的开放性和中立性。
 
-因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现。在日常场合，这两个词是可以互换的。
+因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现（另外的ECMAScript方言还有Jscript和ActionScript）。在日常场合，这两个词是可以互换的。
 
 ## ECMAScript的历史
 
@@ -93,7 +93,7 @@ $ node --v8-options | grep harmony
 
 上面命令的输出结果，会因为版本的不同而有所不同。
 
-我写了一个[ES-Checker](https://github.com/ruanyf/es-checker)模块，用来检查各种运行环境对ES6的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的浏览器支持ES6的程度。运行下面的命令，可以查看本机支持ES6的程度。
+我写了一个[ES-Checker](https://github.com/ruanyf/es-checker)模块，用来检查各种运行环境对ES6的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的默认浏览器支持ES6的程度。运行下面的命令，可以查看本机支持ES6的程度。
 
 ```bash
 $ npm install -g es-checker
@@ -126,7 +126,7 @@ input.map(function (item) {
 命令行下，Babel的安装命令如下。
 
 ```bash
-$ npm install --global babel
+$ npm install --global babel-cli
 ```
 
 Babel自带一个`babel-node`命令，提供支持ES6的REPL环境。它支持Node的REPL环境的所有功能，而且可以直接运行ES6代码。
@@ -255,6 +255,10 @@ require("babel/register");
 
 有了上面这行语句，后面所有通过`require`命令加载的后缀名为`.es6`、`.es`、`.jsx`和`.js`的脚本，都会先通过`babel`转码后再加载。
 
+### 在线转换
+
+Babel提供一个[REPL在线编译器](https://babeljs.io/repl/)，可以在线将ES6代码转为ES5代码。转换后的代码，可以直接作为ES5代码插入网页运行
+
 ## Traceur转码器
 
 Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，也可以将ES6代码转为ES5代码。
@@ -307,7 +311,7 @@ Traceur允许将ES6代码直接插入网页。首先，必须在网页头部加�
 
 ### 在线转换
 
-Traceur提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将ES6代码转为ES5代码。转换后的代码，可以直接作为ES5代码插入网页运行。
+Traceur也提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将ES6代码转为ES5代码。转换后的代码，可以直接作为ES5代码插入网页运行。
 
 上面的例子转为ES5代码运行，就是下面这个样子。
 
@@ -437,10 +441,4 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
 
-Babel转码器对Stage 2及以上阶段的功能，是默认支持的。对于那些默认没有打开的功能，需要手动打开。
-
-```bash
-$ babel --stage 0
-$ babel --optional es7.decorators
-```
-
+Babel转码器可以通过安装和使用插件来使用各个stage的语言。
