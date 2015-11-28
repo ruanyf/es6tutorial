@@ -297,6 +297,34 @@ s.includes('Hello', 6) // false
 'na'.repeat('3') // "nanana"
 ```
 
+## padStart()，padEnd()
+
+ES7推出了字符串补全长度的功能。如果某个字符串不够指定长度，会在头部或尾部补全。`padStart`用于头部补全，`padEnd`用于尾部补全。
+
+```javascript
+'x'.padStart(5, 'ab') // 'ababx'
+'x'.padStart(4, 'ab') // 'abax'
+
+'x'.padEnd(5, 'ab') // 'xabab'
+'x'.padEnd(4, 'ab') // 'xaba'
+```
+
+上面代码中，`padStart`和`padEnd`一共接受两个参数，第一个参数用来指定字符串的最小长度，第二个参数是用来补全的字符串。
+
+如果原字符串的长度，等于或大于指定的最小长度，则返回原字符串。
+
+```javascript
+'xxx'.padStart(2, 'ab') // 'xxx'
+'xxx'.padEnd(2, 'ab') // 'xxx'
+```
+
+如果省略第二个参数，则会用空格补全长度。
+
+```javascript
+'x'.padStart(4) // '   x'
+'x'.padEnd(4) // 'x   '
+```
+
 ## 模板字符串
 
 传统的JavaScript语言，输出模板通常是这样写的。

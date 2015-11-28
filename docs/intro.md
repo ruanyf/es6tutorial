@@ -93,7 +93,7 @@ $ node --v8-options | grep harmony
 
 上面命令的输出结果，会因为版本的不同而有所不同。
 
-我写了一个[ES-Checker](https://github.com/ruanyf/es-checker)模块，用来检查各种运行环境对ES6的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的默认浏览器支持ES6的程度。运行下面的命令，可以查看本机支持ES6的程度。
+我写了一个[ES-Checker](https://github.com/ruanyf/es-checker)模块，用来检查各种运行环境对ES6的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的浏览器支持ES6的程度。运行下面的命令，可以查看本机支持ES6的程度。
 
 ```bash
 $ npm install -g es-checker
