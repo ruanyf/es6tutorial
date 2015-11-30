@@ -977,10 +977,10 @@ var fix = f => (x => f(v => x(x)(v)))
 ```javascript
 foo::bar;
 // 等同于
-bar.call(foo);
+bar.bind(foo);
 
 foo::bar(...arguments);
-i// 等同于
+// 等同于
 bar.apply(foo, arguments);
 
 const hasOwnProperty = Object.prototype.hasOwnProperty;
