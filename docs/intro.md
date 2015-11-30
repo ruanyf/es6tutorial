@@ -127,6 +127,16 @@ input.map(function (item) {
 
 ```bash
 $ npm install --global babel-cli
+$ npm install --save babel-preset-es2015
+```
+
+然后在当前目录下，新建一个配置文件`.babelrc`。
+
+```javascript
+// .babelrc
+{
+  "presets": ['es2015']
+}
 ```
 
 Babel自带一个`babel-node`命令，提供支持ES6的REPL环境。它支持Node的REPL环境的所有功能，而且可以直接运行ES6代码。
@@ -181,10 +191,10 @@ $ babel -d build-dir source-dir -s
 
 ### 浏览器环境
 
-Babel也可以用于浏览器。它的浏览器版本，可以通过安装`babel-core`模块获取。
+Babel也可以用于浏览器。但是，从Babel 6.0开始，不再直接提供浏览器版本，而是要用构建工具构建出来。如果你没有或不想使用构建工具，只有通过安装5.x版本的`babel-core`模块获取。
 
 ```bash
-$ npm install babel-core
+$ npm install babel-core@5
 ```
 
 运行上面的命令以后，就可以在当前目录的`node_modules/babel-core/`子目录里面，找到`babel`的浏览器版本`browser.js`（未精简）和`browser.min.js`（已精简）。
@@ -202,23 +212,27 @@ $ npm install babel-core
 
 这种写法是实时将ES6代码转为ES5，对网页性能会有影响。生产环境需要加载已经转码完成的脚本。
 
-`Babel`配合`Browserify`一起使用，可以生成浏览器能够直接加载的脚本。
+下面是`Babel`配合`Browserify`一起使用，可以生成浏览器能够直接加载的脚本。首先，安装`babelify`模块。
 
 ```bash
-$ browserify script.js -t babelify --outfile bundle.js
+$ npm install --save-dev babelify babel-preset-2015
 ```
 
-上面代码将ES6脚本`script.js`，转为`bundle.js`。浏览器直接加载后者就可以了，不用再加载`browser.js`。
+然后，再用命令行转换ES6脚本。
+
+```bash
+$  browserify script.js -o bundle.js \
+  -t [ babelify --presets [ es2015 react ] ]
+```
+
+上面代码将ES6脚本`script.js`，转为`bundle.js`，浏览器直接加载后者就可以了。
 
 在`package.json`设置下面的代码，就不用每次命令行都输入参数了。
 
 ```javascript
 {
-  // ...
   "browserify": {
-    "transform": [
-      ["babelify", { "stage": [0] }]
-    ]
+    "transform": [["babelify", { "presets": ["es2015"] }]]
   }
 }
 ```
@@ -227,33 +241,62 @@ $ browserify script.js -t babelify --outfile bundle.js
 
 Node脚本之中，需要转换ES6脚本，可以像下面这样写。
 
-先安装`babel-core`。
+先安装`babel-core`和`babel-preset-2015`。
 
 ```javascript
-$ npm install --save-dev babel-core
+$ npm install --save-dev babel-core babel-preset-2015
+```
+
+然后，在项目根目录下新建一个`.babelrc`文件。
+
+```javascript
+{
+  "presets": ["es2015"]
+}
 ```
 
 然后在脚本中，调用`babel-core`的`transform`方法。
 
 ```javascript
-require("babel-core").transform("code", options);
+var es5Code = 'let x = n => n + 1';
+var es6Code = require('babel-core')
+  .transform(es5Code, {presets: ['es2015']})
+  .code;
+// '"use strict";\n\nvar x = function x(n) {\n  return n + 1;\n};'
 ```
 
-上面代码中，`transform`方法的第一个参数是一个字符串，表示ES6代码。
+上面代码中，`transform`方法的第一个参数是一个字符串，表示需要转换的ES5代码，第二个参数是转换的配置对象。
 
-Node脚本还有一种特殊的`babel`用法，即把`babel`加载为`require`命令的一个钩子。先将`babel`全局安装。
+Node脚本还有一种特殊的`babel`用法，即把`babel`加载为`require`命令的一个钩子。安装`babel-core`和`babel-preset-es2015`以后，先在项目的根目录下面，设置一个配置文件`.babelrc`。
 
-```bash
-$ npm install -g babel
+```javascript
+// .babelrc
+{
+  "presets": ["es2015"]
+}
 ```
 
 然后，在你的应用的入口脚本（entry script）头部，加入下面的语句。
 
 ```javascript
-require("babel/register");
+require("babel-core/register");
 ```
 
 有了上面这行语句，后面所有通过`require`命令加载的后缀名为`.es6`、`.es`、`.jsx`和`.js`的脚本，都会先通过`babel`转码后再加载。
+
+需要注意的是，Babel默认不会转换Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）。如果你用到了这些功能，当前的运行环境又不支持。就需要安装`babel-polyfill`模块。
+
+```bash
+$ npm install babel-polyfill --save
+```
+
+然后，在所有脚本头部加上一行。
+
+```javascript
+require('babel-polyfill');
+// 或者
+import 'babel-polyfill';
+```
 
 ### 在线转换
 
