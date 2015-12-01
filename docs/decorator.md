@@ -571,16 +571,28 @@ class MyClass {}
 
 ## Babel转码器的支持
 
-目前，Babel转码器已经支持Decorator，命令行的用法如下。
+目前，Babel转码器已经支持Decorator。
+
+首先，安装`babel-core`和`babel-plugin-transform-decorators`。由于后者包括在`babel-preset-stage-0`之中，所以改为安装`babel-preset-stage-0`亦可。
 
 ```bash
-$ babel --optional es7.decorators
+$ npm install babel-core babel-plugin-transform-decorators
 ```
+
+然后，设置配置文件`.babelrc`。
+
+```javascript
+{
+  "plugins": ["transform-decorators"]
+}
+```
+
+这时，Babel就可以对Decorator转码了。
 
 脚本中打开的命令如下。
 
 ```javascript
-babel.transform("code", {optional: ["es7.decorators"]})
+babel.transform("code", {plugins: ["transform-decorators"]})
 ```
 
 Babel的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选Experimental，就能支持Decorator的在线转码。

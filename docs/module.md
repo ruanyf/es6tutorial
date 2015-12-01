@@ -689,7 +689,7 @@ TypeError: even is not a function
 
 ## ES6模块的转码
 
-浏览器目前还不支持ES6模块，为了现在就能使用，可以将转为ES5的写法。
+浏览器目前还不支持ES6模块，为了现在就能使用，可以将转为ES5的写法。除了Babel可以用来转码之外，还有以下两个方法，也可以用来转码。
 
 ### ES6 module transpiler
 
@@ -707,7 +707,7 @@ $ npm install -g es6-module-transpiler
 $ compile-modules convert file1.js file2.js
 ```
 
-o参数可以指定转码后的文件名。
+`-o`参数可以指定转码后的文件名。
 
 ```bash
 $ compile-modules convert -o out.js file1.js
