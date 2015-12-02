@@ -225,21 +225,6 @@ console.log("圆面积：" + circle.area(4));
 console.log("圆周长：" + circle.circumference(14));
 ```
 
-## module命令
-
-module命令可以取代import语句，达到整体输入模块的作用。
-
-```javascript
-// main.js
-
-module circle from './circle';
-
-console.log("圆面积：" + circle.area(4));
-console.log("圆周长：" + circle.circumference(14));
-```
-
-module命令后面跟一个变量，表示输入的模块定义在该变量上。
-
 ## export default命令
 
 从前面的例子可以看出，使用`import`命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
