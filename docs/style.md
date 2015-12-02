@@ -260,12 +260,11 @@ const nodes = Array.from(foo);
 });
 
 // good
-[1, 2, 3].map(x => {
-  return x * x;
-});
+[1, 2, 3].map(x => x * x);
 
-// with more than one argument
+// with more argument and code
 [1, 2, 3].map((x,i) => {
+  console.log(x);
   return x * i;
 });
 ```
