@@ -21,22 +21,22 @@ var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>';
 var menu = new Array();
 
 function initialize() {
-    // initialize sidebar and buttons
-    if (ditto.sidebar) {
-        init_sidebar_section();
-    }
+  // initialize sidebar and buttons
+  if (ditto.sidebar) {
+    init_sidebar_section();
+  }
 
-    if (ditto.back_to_top_button) {
-        init_back_to_top_button();
-    }
+  if (ditto.back_to_top_button) {
+    init_back_to_top_button();
+  }
 
-    if (ditto.edit_button) {
-        init_edit_button();
-    }
+  if (ditto.edit_button) {
+    init_edit_button();
+  }
 
-    // page router
-    router();
-    $(window).on('hashchange', router);
+  // page router
+  router();
+  $(window).on('hashchange', router);
 }
 
 function init_sidebar_section() {
@@ -99,8 +99,8 @@ function init_edit_button() {
 }
 
 function replace_symbols(text) {
-    // replace symbols with underscore
-    return text.replace(/[&\/\\#,+=()$~%.'":*?<>{}\ \]\[]/g, "_");
+  // replace symbols with underscore
+  return text.replace(/[&\/\\#,+=()$~%.'":*?<>{}\ \]\[]/g, "_");
 }
 
 function li_create_linkage(li_tag, header_level) {
@@ -193,119 +193,117 @@ function show_loading() {
 }
 
 function router() {	
+  var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
-    var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
+  if (ditto.save_progress && store.get('menu-progress') !== location.hash) {
+    store.set('menu-progress', location.hash);
+    store.set('page-progress', 0);
+  }
 
-    if (ditto.save_progress && store.get('menu-progress') !== location.hash) {
-        store.set('menu-progress', location.hash);
-        store.set('page-progress', 0);
-    }
+  // default page if hash is empty
+  if (location.pathname === "/index.html") {
+    path = location.pathname.replace("index.html", ditto.index);
+    normalize_paths();
+  } else if (path === "") {
+    path = window.location + ditto.index;
+    normalize_paths();
+  } else {
+    path = path + ".md";
+  }
 
-    // default page if hash is empty
-    if (location.pathname === "/index.html") {
-        path = location.pathname.replace("index.html", ditto.index);
-        normalize_paths();
-    } else if (path === "") {
-        path = window.location + ditto.index;
-        normalize_paths();
+  // 取消scroll事件的监听函数
+  // 防止改变下面的变量perc的值
+  $(window).off('scroll');
+
+  // otherwise get the markdown and render it
+  var loading = show_loading();
+  $.get(path, function(data) {
+    $(ditto.error_id).hide();
+    $(ditto.content_id).html(marked(data) + disqusCode);
+    if ($(ditto.content_id + " h1").text() === ditto.document_title) {
+      document.title = ditto.document_title;
     } else {
-        path = path + ".md";
+      document.title = $(ditto.content_id + " h1").text() + " - " + ditto.document_title;
     }
+    normalize_paths();
+    create_page_anchors();
 
-	// 取消scroll事件的监听函数
-	// 防止改变下面的变量perc的值
-	$(window).off('scroll');
+    // 完成代码高亮
+    $('#content code').map(function() {
+      Prism.highlightElement(this);
+    });
 
-    // otherwise get the markdown and render it
-    var loading = show_loading();
-    $.get(path, function(data) {
-        $(ditto.error_id).hide();
-        $(ditto.content_id).html(marked(data) + disqusCode);
-        if ($(ditto.content_id + " h1").text() === ditto.document_title) {
-            document.title = ditto.document_title;
-        } else {
-            document.title = $(ditto.content_id + " h1").text() + " - " + ditto.document_title;
-        }
-        normalize_paths();
-        create_page_anchors();
+    // 加载disqus
+    (function() {
+      // http://docs.disqus.com/help/2/
+      window.disqus_shortname = 'es6';
+      window.disqus_identifier = (location.hash ? location.hash.replace("#", "") : 'READEME');
+      window.disqus_title = $(ditto.content_id + " h1").text();
+      window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
 
-        // 完成代码高亮
-        $('#content code').map(function() {
-            Prism.highlightElement(this);
-        });
-
-        // 加载disqus
-        (function() {
-            // http://docs.disqus.com/help/2/
-            window.disqus_shortname = 'es6';
-            window.disqus_identifier = (location.hash ? location.hash.replace("#", "") : 'READEME');
-            window.disqus_title = $(ditto.content_id + " h1").text();
-            window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
-
-            // http://docs.disqus.com/developers/universal/
-            (function() {
-                var dsq = document.createElement('script');
-                dsq.type = 'text/javascript';
-                dsq.async = true;
-                dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
-                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-            })();
-        })();
+      // http://docs.disqus.com/developers/universal/
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    })();
 
     var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
-		if(location.hash !== '' || Boolean(perc)){
-			if (!Boolean(perc)){
-				$('html, body').animate({
-					scrollTop: ($('#content').offset().top + 10)
-				}, 300);
-				$('html, body').animate({
-					scrollTop: ($('#content').offset().top)
-				}, 300);
-			} else {
-				$('html, body').animate({
-					scrollTop: ($('body').height()-$(window).height())*perc
-				}, 200);
-			}
-		}
+    if (location.hash !== '' || Boolean(perc)) {
+      if (!Boolean(perc)) {
+        $('html, body').animate({
+          scrollTop: ($('#content').offset().top + 10)
+        }, 300);
+        $('html, body').animate({
+          scrollTop: ($('#content').offset().top)
+        }, 300);
+      } else {
+        $('html, body').animate({
+          scrollTop: ($('body').height()-$(window).height())*perc
+        }, 200);
+      }
+    }
 
-        if (location.hash === '' || location.hash === menu[0]) {
-            $('#pageup').css('display', 'none');
-        } else {
-            $('#pageup').css('display', 'inline-block');
-        }
+    if (location.hash === '' || location.hash === menu[0]) {
+      $('#pageup').css('display', 'none');
+    } else {
+      $('#pageup').css('display', 'inline-block');
+    }
 
-        if (location.hash === menu[(menu.length - 1)]) {
-            $('#pagedown').css('display', 'none');
-        } else {
-            $('#pagedown').css('display', 'inline-block');
-        }
+    if (location.hash === menu[(menu.length - 1)]) {
+      $('#pagedown').css('display', 'none');
+    } else {
+      $('#pagedown').css('display', 'inline-block');
+    }
 
-        (function() {
-            var $w = $(window);
-            var $prog2 = $('.progress-indicator-2');
-            var wh = $w.height();
-            var h = $('body').height();
-            var sHeight = h - wh;
+    (function() {
+      var $w = $(window);
+      var $prog2 = $('.progress-indicator-2');
+      var wh = $w.height();
+      var h = $('body').height();
+      var sHeight = h - wh;
+      $w.on('scroll', function() {
+        window.requestAnimationFrame(function(){
+          var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
+          updateProgress(perc);
+        });
+      });
 
-            $w.on('scroll', function() {
-              window.requestAnimationFrame(function(){
-                var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
-                updateProgress(perc);
-              });
-            });
+      function updateProgress(perc) {
+        $prog2.css({width: perc * 100 + '%'});
+        ditto.save_progress && store.set('page-progress', perc);
+      }
 
-            function updateProgress(perc) {
-                $prog2.css({width: perc * 100 + '%'});
-                ditto.save_progress && store.set('page-progress', perc);
-            }
+    }());
 
-        }());
-
-    }).fail(function() {
-        show_error();
-    }).always(function() {
-        clearInterval(loading);
-        $(ditto.loading_id).hide();
-    });
+  }).fail(function() {
+    show_error();
+  }).always(function() {
+    clearInterval(loading);
+    $(ditto.loading_id).hide();
+  });
 }
