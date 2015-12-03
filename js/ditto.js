@@ -70,12 +70,22 @@ function init_sidebar_section() {
 }
 
 function init_back_to_top_button() {
-    $(ditto.back_to_top_id).show();
-    $(ditto.back_to_top_id).on("click", function() {
-        $("html body").animate({
-            scrollTop: 0
-        }, 200);
-    });
+  $(ditto.back_to_top_id).show();
+  $(ditto.back_to_top_id).on('click', goTop);
+}
+
+function goTop(e) {
+  if(e) e.preventDefault();
+  $('html body').animate({
+    scrollTop: 0
+  }, 200);
+  history.pushState(null, null, '#' + location.hash.split('#')[1]);
+}
+
+function goSection(sectionId){
+  $('html, body').animate({
+    scrollTop: ($('#' + sectionId).offset().top)
+  }, 300);
 }
 
 function init_edit_button() {
@@ -100,100 +110,126 @@ function init_edit_button() {
 
 function replace_symbols(text) {
   // replace symbols with underscore
-  return text.replace(/[&\/\\#,+=()$~%.'":*?<>{}\ \]\[]/g, "_");
+  return text
+    .replace(/, /g, ',')
+    .replace(/[&\/\\#,.+=$~%'":*?<>{}\ \]\[]/g, "-")
+    .replace(/[()]/g, '');
 }
 
 function li_create_linkage(li_tag, header_level) {
-    // add custom id and class attributes
-    html_safe_tag = replace_symbols(li_tag.text());
-    li_tag.attr("id", html_safe_tag);
-    li_tag.attr("class", "link");
+  // add custom id and class attributes
+  html_safe_tag = replace_symbols(li_tag.text());
+  li_tag.attr('data-src', html_safe_tag);
+  li_tag.attr("class", "link");
 
-    // add click listener - on click scroll to relevant header section
-    $(ditto.content_id + " li#" + li_tag.attr("id")).click(function() {
-        // scroll to relevant section
-        var header = $(
-            ditto.content_id + " h" + header_level + "." + li_tag.attr("id")
-        );
-        $('html, body').animate({
-            scrollTop: header.offset().top
-        }, 200);
+  // add click listener - on click scroll to relevant header section
+  li_tag.click(function(e) {
+    e.preventDefault();
+    // scroll to relevant section
+    var header = $(
+      ditto.content_id + " h" + header_level + "." + li_tag.attr('data-src')
+    );
+    $('html, body').animate({
+      scrollTop: header.offset().top
+    }, 200);
 
-        // highlight the relevant section
-        original_color = header.css("color");
-        header.animate({ color: "#ED1C24", }, 500, function() {
-            // revert back to orig color
-            $(this).animate({color: original_color}, 2500);
-        });
+    // highlight the relevant section
+    original_color = header.css("color");
+    header.animate({ color: "#ED1C24", }, 500, function() {
+      // revert back to orig color
+      $(this).animate({color: original_color}, 2500);
     });
+    history.pushState(null, null, '#' + location.hash.split('#')[1] + '#' + li_tag.attr('data-src'));
+  });
 }
 
 function create_page_anchors() {
-    // create page anchors by matching li's to headers
-    // if there is a match, create click listeners
-    // and scroll to relevant sections
+  // create page anchors by matching li's to headers
+  // if there is a match, create click listeners
+  // and scroll to relevant sections
 
-    // go through header level 1 to 3
-    for (var i = 1; i <= 4; i++) {
-        // parse all headers
-        var headers = [];
-        $('#content h' + i).map(function() {
-            headers.push($(this).text());
-            $(this).addClass(replace_symbols($(this).text()));
-            this.id = 'h' + i + '-' + replace_symbols($(this).text());
-        });
+  // go through header level 1 to 3
+  for (var i = 2; i <= 4; i++) {
+    // parse all headers
+    var headers = [];
+    $('#content h' + i).map(function() {
+      var content = $(this).text();
+      headers.push(content);
+      $(this).addClass(replace_symbols(content));
+      this.id = replace_symbols(content);
+      $(this).hover(function () {
+        $(this).html(content +
+          ' <a href="#' + location.hash.split('#')[1] +
+          '#' +
+          replace_symbols(content) +
+          '" class="section-link">§</a> <a href="#' +
+          location.hash.split('#')[1] + '" onclick="goTop()">⇧</a>');
+      }, function () {
+        $(this).html(content);
+      });
+      $(this).on('click', 'a.section-link', function(event) {
+        event.preventDefault();
+        history.pushState(null, null, '#' + location.hash.split('#')[1] + '#' + replace_symbols(content));
+        goSection(replace_symbols(content));
+      });
+    });
 
-        if ((i === 2) && headers.length !== 0) {
-            var ul_tag = $('<ol></ol>')
-                .insertAfter('#content h1')
-                .addClass("content-toc")
-                .attr('id', 'content-toc');
-            for (var j = 0; j < headers.length; j++) {
-                var li_tag = $('<li></li>').text(headers[j]);
-                ul_tag.append(li_tag);
-                li_create_linkage(li_tag, i);
-            }
-        }
+    if ((i === 2) && headers.length !== 0) {
+      var ul_tag = $('<ol></ol>')
+        .insertAfter('#content h1')
+        .addClass('content-toc')
+        .attr('id', 'content-toc');
+      for (var j = 0; j < headers.length; j++) {
+        var li_tag = $('<li></li>').html('<a href="#' + location.hash.split('#')[1] + '#' + headers[j] + '">' + headers[j] + '</a>');
+        ul_tag.append(li_tag);
+        li_create_linkage(li_tag, i);
+      }
     }
+  }
 }
 
 function normalize_paths() {
-    // images
-    $(ditto.content_id + " img").map(function() {
-        var src = $(this).attr("src").replace("./", "");
-        if ($(this).attr("src").slice(0, 5) !== "http") {
-            var url = location.hash.replace("#", "");
+  // images
+  $(ditto.content_id + " img").map(function() {
+    var src = $(this).attr("src").replace("./", "");
+    if ($(this).attr("src").slice(0, 5) !== "http") {
+      var url = location.hash.replace("#", "");
 
-            // split and extract base dir
-            url = url.split("/");
-            var base_dir = url.slice(0, url.length - 1).toString();
+      // split and extract base dir
+      url = url.split("/");
+      var base_dir = url.slice(0, url.length - 1).toString();
 
-            // normalize the path (i.e. make it absolute)
-            $(this).attr("src", base_dir + "/" + src);
-        }
-    });
-
+      // normalize the path (i.e. make it absolute)
+      $(this).attr("src", base_dir + "/" + src);
+    }
+  });
 }
 
 function show_error() {
-    console.log("SHOW ERORR!");
-    $(ditto.error_id).show();
+  console.log("SHOW ERORR!");
+  $(ditto.error_id).show();
 }
 
 function show_loading() {
-    $(ditto.loading_id).show();
-    $(ditto.content_id).html("");  // clear content
+  $(ditto.loading_id).show();
+  $(ditto.content_id).html('');  // clear content
 
-    // infinite loop until clearInterval() is called on loading
-    var loading = setInterval(function() {
-        $(ditto.loading_id).fadeIn(1000).fadeOut(1000);
-    }, 2000);
+  // infinite loop until clearInterval() is called on loading
+  var loading = setInterval(function() {
+    $(ditto.loading_id).fadeIn(1000).fadeOut(1000);
+  }, 2000);
 
-    return loading;
+  return loading;
 }
 
 function router() {	
   var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
+
+  var hashArr = location.hash.split('#');
+  var sectionId;
+  if (hashArr.length > 2 && !(/^comment-/.test(hashArr[2]))) {
+    sectionId = hashArr[2];
+  }
 
   if (ditto.save_progress && store.get('menu-progress') !== location.hash) {
     store.set('menu-progress', location.hash);
@@ -205,7 +241,7 @@ function router() {
     path = location.pathname.replace("index.html", ditto.index);
     normalize_paths();
   } else if (path === "") {
-    path = window.location + ditto.index;
+    path = location.pathname + ditto.index;
     normalize_paths();
   } else {
     path = path + ".md";
@@ -253,18 +289,24 @@ function router() {
 
     var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
-    if (location.hash !== '' || Boolean(perc)) {
-      if (!Boolean(perc)) {
-        $('html, body').animate({
-          scrollTop: ($('#content').offset().top + 10)
-        }, 300);
-        $('html, body').animate({
-          scrollTop: ($('#content').offset().top)
-        }, 300);
-      } else {
-        $('html, body').animate({
-          scrollTop: ($('body').height()-$(window).height())*perc
-        }, 200);
+    if (sectionId) {
+      $('html, body').animate({
+        scrollTop: ($('#' + sectionId).offset().top)
+      }, 300);
+    } else {
+      if (location.hash !== '' || Boolean(perc)) {
+        if (!Boolean(perc)) {
+          $('html, body').animate({
+            scrollTop: ($('#content').offset().top + 10)
+          }, 300);
+          $('html, body').animate({
+            scrollTop: ($('#content').offset().top)
+          }, 300);
+        } else {
+          $('html, body').animate({
+            scrollTop: ($('body').height()-$(window).height())*perc
+          }, 200);
+        }
       }
     }
 

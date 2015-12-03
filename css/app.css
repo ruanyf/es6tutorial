@@ -191,6 +191,11 @@ body {
     border-top: 1px dotted #777;
 }
 
+#content h2:hover,
+#content h3:hover {
+  color: #ED1C24;
+}
+
 #content img {
     max-width: 90%;
     display: block;
