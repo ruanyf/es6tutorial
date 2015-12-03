@@ -263,6 +263,9 @@ const nodes = Array.from(foo);
 [1, 2, 3].map((x) => {
   return x * x;
 });
+
+// best
+[1, 2, 3].map(x => x * x);
 ```
 
 箭头函数取代`Function.prototype.bind`，不应再用self/\_this/that绑定 this。
