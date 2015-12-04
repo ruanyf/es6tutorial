@@ -215,7 +215,7 @@ $ npm install babel-core@5
 下面是`Babel`配合`Browserify`一起使用，可以生成浏览器能够直接加载的脚本。首先，安装`babelify`模块。
 
 ```bash
-$ npm install --save-dev babelify babel-preset-2015
+$ npm install --save-dev babelify babel-preset-es2015
 ```
 
 然后，再用命令行转换ES6脚本。
@@ -241,10 +241,10 @@ $  browserify script.js -o bundle.js \
 
 Node脚本之中，需要转换ES6脚本，可以像下面这样写。
 
-先安装`babel-core`和`babel-preset-2015`。
+先安装`babel-core`和`babel-preset-es2015`。
 
 ```javascript
-$ npm install --save-dev babel-core babel-preset-2015
+$ npm install --save-dev babel-core babel-preset-es2015
 ```
 
 然后，在项目根目录下新建一个`.babelrc`文件。
@@ -395,7 +395,7 @@ $ npm install -g traceur
 
 安装成功后，就可以在命令行下使用traceur了。
 
-traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的calc.js为例。
+traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的`calc.js`为例。
 
 ```bash
 $ traceur calc.js

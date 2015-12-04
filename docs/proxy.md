@@ -137,9 +137,9 @@ fproxy.foo; // 'Hello, foo'
 
 拦截`for (var x in proxy)`，返回一个遍历器。
 
-**（6）hasOwn(target, propKey)**
+**（6）has(target, propKey)**
 
-拦截`proxy.hasOwnProperty('foo')`，返回一个布尔值。
+拦截`in`运算符，返回一个布尔值。
 
 **（7）ownKeys(target)**
 
@@ -820,30 +820,24 @@ var loggedObj = new Proxy(obj, {
 
 ## Reflect对象的方法
 
-Reflect对象的方法清单如下。
+Reflect对象的方法清单如下，共14个。
 
-- Reflect.getOwnPropertyDescriptor(target,name)
-- Reflect.defineProperty(target,name,desc)
-- Reflect.getOwnPropertyNames(target)
-- Reflect.getPrototypeOf(target)
-- Reflect.setPrototypeOf(target, prototype)
-- Reflect.deleteProperty(target,name)
-- Reflect.enumerate(target)
-- Reflect.freeze(target)
-- Reflect.seal(target)
-- Reflect.preventExtensions(target)
-- Reflect.isFrozen(target)
-- Reflect.isSealed(target)
-- Reflect.isExtensible(target)
-- Reflect.has(target,name)
-- Reflect.hasOwn(target,name)
-- Reflect.keys(target)
-- Reflect.get(target,name,receiver)
-- Reflect.set(target,name,value,receiver)
 - Reflect.apply(target,thisArg,args)
 - Reflect.construct(target,args)
+- Reflect.get(target,name,receiver)
+- Reflect.set(target,name,value,receiver)
+- Reflect.defineProperty(target,name,desc)
+- Reflect.deleteProperty(target,name)
+- Reflect.has(target,name)
+- Reflect.ownKeys(target)
+- Reflect.enumerate(target)
+- Reflect.isExtensible(target)
+- Reflect.preventExtensions(target)
+- Reflect.getOwnPropertyDescriptor(target, name)
+- Reflect.getPrototypeOf(target)
+- Reflect.setPrototypeOf(target, prototype)
 
-上面这些方法的作用，大部分与Object对象的同名方法的作用都是相同的。下面是对其中几个方法的解释。
+上面这些方法的作用，大部分与`Object`对象的同名方法的作用都是相同的，而且它与`Proxy`对象的方法是一一对应的。下面是对其中几个方法的解释。
 
 **（1）Reflect.get(target,name,receiver)**
 
@@ -876,15 +870,15 @@ Reflect.get(obj, "foo", wrapper);
 
 **（5）Reflect.construct(target, args)**
 
-等同于`new target(...args)`，这提供了一种不使用new，来调用构造函数的方法。
+等同于`new target(...args)`，这提供了一种不使用`new`，来调用构造函数的方法。
 
 **（6）Reflect.getPrototypeOf(obj)**
 
-读取对象的\_\_proto\_\_属性，等同于`Object.getPrototypeOf(obj)`。
+读取对象的`__proto__`属性，对应`Object.getPrototypeOf(obj)`。
 
 **（7）Reflect.setPrototypeOf(obj, newProto)**
 
-设置对象的\_\_proto\_\_属性。注意，Object对象没有对应这个方法的方法。
+设置对象的`__proto__`属性，对应`Object.setPrototypeOf(obj, newProto)`。
 
 **（8）Reflect.apply(fun,thisArg,args)**
 
