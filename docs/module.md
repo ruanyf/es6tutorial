@@ -9,18 +9,26 @@ ES6的Class只是面向对象编程的语法糖，升级了ES5的构造函数的
 ES6模块的设计思想，是尽量的静态化，使得编译时就能确定模块的依赖关系，以及输入和输出的变量。CommonJS和AMD模块，都只能在运行时确定这些东西。比如，CommonJS模块就是对象，输入时必须查找对象属性。
 
 ```javascript
+// CommonJS模块
 let { stat, exists, readFile } = require('fs');
+
+// 等同于
+let _fs = require('fs');
+let stat = _fs.stat, exists = _fs.exists, readfile = _fs.readfile;
 ```
 
-上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），然后使用时用到3个方法。这种加载称为“运行时加载”。
+上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），生成一个对象（`_fs`），然后再从这个对象上面读取3个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
 
-ES6模块不是对象，而是通过export命令显式指定输出的代码，输入时也采用静态命令的形式。
+ES6模块不是对象，而是通过`export`命令显式指定输出的代码，输入时也采用静态命令的形式。
 
 ```javascript
+// ES6模块
 import { stat, exists, readFile } from 'fs';
 ```
 
-上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”，即ES6可以在编译时就完成模块编译，效率要比CommonJS模块的加载方式高。
+上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”，即ES6可以在编译时就完成模块编译，效率要比CommonJS模块的加载方式高。当然，这也导致了没法引用ES6模块本身，因为它不是对象。
+
+由于ES6模块是编译时加载，使得静态分析成为可能。有了它，就能进一步拓宽JavaScript的语法，比如引入宏（macro）和类型检验（type system）这些只能靠静态分析实现的功能。
 
 除了静态加载带来的各种好处，ES6模块还有以下好处。
 
@@ -105,10 +113,10 @@ export {
 
 上面代码使用`as`关键字，重命名了函数`v1`和`v2`的对外接口。重命名后，`v2`可以用不同的名字输出两次。
 
-最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的`import`命令也是如此。
+最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。
 
 ```javascript
-function foo () {
+function foo() {
   export default 'bar' // SyntaxError
 }
 foo()
@@ -377,9 +385,7 @@ console.log(exp(math.E));
 
 ES6模块加载的机制，与CommonJS模块完全不同。CommonJS模块输出的是一个值的拷贝，而ES6模块输出的是值的引用。
 
-CommonJS模块输入的是被输出值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个例子。
-
-下面是一个模块文件`lib.js`。
+CommonJS模块输出的是被输出值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个模块文件`lib.js`的例子。
 
 ```javascript
 // lib.js
@@ -393,9 +399,7 @@ module.exports = {
 };
 ```
 
-上面代码输出内部变量`counter`和改写这个变量的内部方法`incCounter`。
-
-然后，加载上面的模块。
+上面代码输出内部变量`counter`和改写这个变量的内部方法`incCounter`。然后，在`main.js`里面加载这个模块。
 
 ```javascript
 // main.js
@@ -420,14 +424,14 @@ export function incCounter() {
   counter++;
 }
 
-// main1.js
+// main.js
 import { counter, incCounter } from './lib';
 console.log(counter); // 3
 incCounter();
 console.log(counter); // 4
 ```
 
-上面代码说明，ES6模块输入的变量`counter`是活的，完全反映其所在模块`lib.js`内部的变化。
+上面代码说明，ES6模块输入的变量`counter`是活的，完全反应其所在模块`lib.js`内部的变化。
 
 再举一个出现在`export`一节中的例子。
 
@@ -503,13 +507,13 @@ CommonJS的一个模块，就是一个脚本文件。`require`命令第一次加
 }
 ```
 
-上面代码中，该对象的id属性是模块名，`exports`属性是模块输出的各个接口，`loaded`属性是一个布尔值，表示该模块的脚本是否执行完毕。其他还有很多属性，这里都省略了。
+上面代码中，该对象的`id`属性是模块名，`exports`属性是模块输出的各个接口，`loaded`属性是一个布尔值，表示该模块的脚本是否执行完毕。其他还有很多属性，这里都省略了。
 
-以后需要用到这个模块的时候，就会到exports属性上面取值。即使再次执行require命令，也不会再次执行该模块，而是到缓存之中取值。
+以后需要用到这个模块的时候，就会到`exports`属性上面取值。即使再次执行`require`命令，也不会再次执行该模块，而是到缓存之中取值。也就是说，CommonJS模块无论加载多少次，都只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
 
 ### CommonJS模块的循环加载
 
-CommonJS模块的重要特性是加载时执行，即脚本代码在`require`的时候，就会全部执行。CommonJS的做法是，一旦出现某个模块被"循环加载"，就只输出已经执行的部分，还未执行的部分不会输出。
+CommonJS模块的重要特性是加载时执行，即脚本代码在`require`的时候，就会全部执行。一旦出现某个模块被"循环加载"，就只输出已经执行的部分，还未执行的部分不会输出。
 
 让我们来看，Node[官方文档](https://nodejs.org/api/modules.html#modules_cycles)里面的例子。脚本文件`a.js`代码如下。
 
@@ -570,6 +574,23 @@ exports.done = true;
 ```
 
 总之，CommonJS输入的是被输出值的拷贝，不是引用。
+
+另外，由于CommonJS模块遇到循环加载时，返回的是当前已经执行的部分的值，而不是代码全部执行后的值，两者可能会有差异。所以，输入变量的时候，必须非常小心。
+
+```javascript
+var a = require('a'); // 安全的写法
+var foo = require('a').foo; // 危险的写法
+
+exports.good = function (arg) {
+  return a.foo('good', arg); // 使用的是 a.foo 的最新值
+};
+
+exports.bad = function (arg) {
+  return foo('bad', arg); // 使用的是一个部分加载时的值
+};
+```
+
+上面代码中，如果发生循环加载，`require('a').foo`的值很可能后面会被改写，改用`require('a')`会更保险一点。
 
 ### ES6模块的循环加载
 
