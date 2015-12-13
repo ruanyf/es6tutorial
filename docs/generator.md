@@ -108,9 +108,9 @@ setTimeout(function () {
 }, 2000);
 ```
 
-上面代码中，函数`f`如果是普通函数，在为变量generator赋值时就会执行。但是，函数`f`是一个Generator函数，就变成只有调用`next`方法时，函数`f`才会执行。
+上面代码中，函数`f`如果是普通函数，在为变量`generator`赋值时就会执行。但是，函数`f`是一个Generator函数，就变成只有调用`next`方法时，函数`f`才会执行。
 
-另外需要注意，yield语句不能用在普通函数中，否则会报错。
+另外需要注意，`yield`语句不能用在普通函数中，否则会报错。
 
 ```javascript
 (function (){
@@ -126,9 +126,9 @@ setTimeout(function () {
 ```javascript
 var arr = [1, [[2, 3], 4], [5, 6]];
 
-var flat = function* (a){
-  a.forEach(function(item){
-    if (typeof item !== 'number'){
+var flat = function* (a) {
+  a.forEach(function (item) {
+    if (typeof item !== 'number') {
       yield* flat(item);
     } else {
       yield item;
@@ -141,16 +141,16 @@ for (var f of flat(arr)){
 }
 ```
 
-上面代码也会产生句法错误，因为`forEach`方法的参数是一个普通函数，但是在里面使用了`yield`语句。一种修改方法是改用`for`循环。
+上面代码也会产生句法错误，因为`forEach`方法的参数是一个普通函数，但是在里面使用了`yield`语句（这个函数里面还使用了`yield*`语句，这里可以不用理会，详细说明见后文）。一种修改方法是改用`for`循环。
 
 ```javascript
 var arr = [1, [[2, 3], 4], [5, 6]];
 
-var flat = function* (a){
+var flat = function* (a) {
   var length = a.length;
-  for(var i =0;i<length;i++){
+  for (var i = 0; i < length; i++) {
     var item = a[i];
-    if (typeof item !== 'number'){
+    if (typeof item !== 'number') {
       yield* flat(item);
     } else {
       yield item;
@@ -158,7 +158,7 @@ var flat = function* (a){
   }
 };
 
-for (var f of flat(arr)){
+for (var f of flat(arr)) {
   console.log(f);
 }
 // 1, 2, 3, 4, 5, 6
@@ -429,7 +429,7 @@ try {
 // 外部捕获 b
 ```
 
-上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获，然后Generator函数执行完成，于是第二个错误被函数体外的`catch`语句捕获。
+上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获，此时Generator函数就算执行完成了，不会再继续执行了。遍历器对象`i`第二次抛出错误，由于Generator函数内部的`catch`语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了Generator函数体，被函数体外的`catch`语句捕获。
 
 注意，不要混淆遍历器对象的`throw`方法和全局的`throw`命令。上面代码的错误，是用遍历器对象的`throw`方法抛出的，而不是用`throw`命令抛出的。后者只能被函数体外的`catch`语句捕获。
 
@@ -457,9 +457,9 @@ try {
 // 外部捕获 [Error: a]
 ```
 
-上面代码之所以只捕获了`a`，是因为函数体外的catch语句块，捕获了抛出的`a`错误以后，就不会再继续执行try语句块了。
+上面代码之所以只捕获了`a`，是因为函数体外的`catch`语句块，捕获了抛出的`a`错误以后，就不会再继续`try`代码块里面剩余的语句了。
 
-如果Generator函数内部没有部署try...catch代码块，那么throw方法抛出的错误，将被外部try...catch代码块捕获。
+如果Generator函数内部没有部署`try...catch`代码块，那么`throw`方法抛出的错误，将被外部`try...catch`代码块捕获。
 
 ```javascript
 var g = function* () {
@@ -481,28 +481,29 @@ try {
 // 外部捕获 a
 ```
 
-上面代码中，遍历器函数`g`内部，没有部署try...catch代码块，所以抛出的错误直接被外部catch代码块捕获。
+上面代码中，遍历器函数`g`内部没有部署`try...catch`代码块，所以抛出的错误直接被外部`catch`代码块捕获。
 
-如果Generator函数内部部署了try...catch代码块，那么遍历器的throw方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
+如果Generator函数内部部署了`try...catch`代码块，那么遍历器的`throw`方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
 
 ```javascript
 var gen = function* gen(){
-  yield console.log('hello');
+  try {
+    yield console.log('hello');
+  } catch (e) {
+    // ...
+  }
   yield console.log('world');
 }
 
 var g = gen();
 g.next();
-
-try {
-  g.throw();
-} catch (e) {
-  g.next();
-}
+g.throw();
+g.next();
 // hello
+// world
 ```
 
-上面代码只输出`hello`就结束了，因为第二次调用`next`方法时，遍历器状态已经变成终止了。但是，如果使用`throw`命令抛出错误，不会影响遍历器状态。
+上面代码在两次`next`方法之间，使用`throw`方法抛出了一个错误。由于这个错误在Generator函数内部被捕获了，所以不影响第二次`next`方法的执行。
 
 ```javascript
 var gen = function* gen(){

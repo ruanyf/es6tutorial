@@ -589,7 +589,7 @@ f({z: 3, y: 2, x: 1})
 
 解构赋值对提取JSON对象中的数据，尤其有用。
 
-```js
+```javascript
 var jsonData = {
   id: 42,
   status: "OK",
