@@ -3,13 +3,6 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- jQuery -->
-  <script src="js/jquery-1.11.0.min.js"></script>
-  <script src="js/jquery-ui.min.js"></script>
-  <script src="js/marked.js"></script>
-  <script src="js/store.js"></script>
-  <script src="js/ditto.js"></script>
-  <script src="js/prism.js"></script>
   <link rel="stylesheet" href="app/bower_components/normalize-css/normalize.css">
   <link rel="stylesheet" href="css/app.css">
   <title>ECMAScript 6入门</title>
@@ -18,8 +11,8 @@
 </head>
 <body>
   <!-- essential -->
-		<div id="sidebar"></div>
-		<div id="content"></div>
+  <div id="sidebar"></div>
+  <div id="content"></div>
   <!-- optional -->
   <div id="back_to_top">back to top</div>
   <div id="edit">edit</div>
@@ -28,21 +21,20 @@
   <div id="flip"><div id="pageup">上一章</div><div id="pagedown">下一章</div></div>
   <div class="progress-indicator-2"></div>
 
+  <script src="js/jquery-1.11.0.min.js"></script>
+  <script src="js/jquery-ui.min.js"></script>
+  <script src="js/marked.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/ditto.js"></script>
+  <script src="js/prism.js"></script>
+  <script src="config.js"></script>
   <script>
-  // essential settings
-  ditto.index = "README.md";
-  ditto.sidebar_file = "sidebar.md";
-  ditto.document_title = "ECMAScript 6入门";
-  // where the docs are actually stored on github - so you can edit
-  ditto.base_url = "https://github.com/ruanyf/es6tutorial/edit/gh-pages";  // <------- EDIT ME!!
-
-  // run
-  ditto.run();
+    ditto.run();
   </script>
   <noscript>
-	  <p>《ECMAScript 6入门》是一本开源的JavaScript语言教程，全面介绍ECMAScript 6新增的语法特性。</p>
-	  <p>本书力争覆盖ES6与ES5的所有不同之处，对涉及的语法知识给予详细介绍，并给出大量简洁易懂的示例代码。</p>
-	  <p>本书为中级难度，适合已有一定JavaScript语言基础的读者，了解这门语言的最新进展；也可当作参考手册，查寻新增的语法点。</p>
+    <p>《ECMAScript 6入门》是一本开源的JavaScript语言教程，全面介绍ECMAScript 6新增的语法特性。</p>
+    <p>本书力争覆盖ES6与ES5的所有不同之处，对涉及的语法知识给予详细介绍，并给出大量简洁易懂的示例代码。</p>
+    <p>本书为中级难度，适合已有一定JavaScript语言基础的读者，了解这门语言的最新进展；也可当作参考手册，查寻新增的语法点。</p>
   </noscript>
 </body>
 </html>
