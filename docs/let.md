@@ -428,7 +428,7 @@ console.log(B); // 3
 
 ## 全局对象的属性
 
-全局对象是最顶层的对象，在浏览器环境指的是`window`象，在Node.js指的是`global`对象。ES5之中，全局对象的属性与全局变量是等价的。
+全局对象是最顶层的对象，在浏览器环境指的是`window`对象，在Node.js指的是`global`对象。ES5之中，全局对象的属性与全局变量是等价的。
 
 ```javascript
 window.a = 1;
