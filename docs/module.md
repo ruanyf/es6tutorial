@@ -374,9 +374,9 @@ export { area as circleArea } from 'circle';
 ```javascript
 // main.js
 
-module math from "circleplus";
+import * as math from "circleplus";
 import exp from "circleplus";
-console.log(exp(math.E));
+console.log(exp(math.e));
 ```
 
 上面代码中的`import exp`表示，将`circleplus`模块的默认方法加载为`exp`方法。
