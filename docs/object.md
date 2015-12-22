@@ -227,7 +227,7 @@ var baz = { [foo]: 'abc'};
 
 ```javascript
 var person = {
-  sayName: function() {
+  sayName() {
     console.log(this.name);
   },
   get firstName() {
