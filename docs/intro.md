@@ -484,4 +484,4 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
 
-Babel转码器可以通过安装和使用插件来使用各个stage的语言。
+Babel转码器可以通过安装和使用插件来使用各个stage的语法。
