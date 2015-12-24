@@ -406,13 +406,10 @@ Generator函数返回的遍历器对象，都有一个`throw`方法，可以在�
 
 ```javascript
 var g = function* () {
-  while (true) {
-    try {
-      yield;
-    } catch (e) {
-      if (e != 'a') throw e;
-      console.log('内部捕获', e);
-    }
+  try {
+    yield;
+  } catch (e) {
+    console.log('内部捕获', e);
   }
 };
 
@@ -429,7 +426,7 @@ try {
 // 外部捕获 b
 ```
 
-上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获，此时Generator函数就算执行完成了，不会再继续执行了。遍历器对象`i`第二次抛出错误，由于Generator函数内部的`catch`语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了Generator函数体，被函数体外的`catch`语句捕获。
+上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获。`i`第二次抛出错误，由于Generator函数内部的`catch`语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了Generator函数体，被函数体外的`catch`语句捕获。
 
 注意，不要混淆遍历器对象的`throw`方法和全局的`throw`命令。上面代码的错误，是用遍历器对象的`throw`方法抛出的，而不是用`throw`命令抛出的。后者只能被函数体外的`catch`语句捕获。
 
