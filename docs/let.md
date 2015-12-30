@@ -62,20 +62,14 @@ a[6](); // 6
 `let`不像`var`那样会发生“变量提升”现象。所以，变量一定要在声明后使用，否则报错。
 
 ```javascript
-console.log(foo); // ReferenceError
-let foo = 2;
+console.log(foo); // 输出undefined
+console.log(bar); // 报错ReferenceError
+
+var foo = 2;
+let bar = 2;
 ```
 
-上面代码在声明`foo`之前，就使用这个变量，结果会抛出一个错误。
-
-这也意味着`typeof`不再是一个百分之百安全的操作。
-
-```javascript
-typeof x; // ReferenceError
-let x;
-```
-
-上面代码中，由于`typeof`运行时，`x`还没有声明，所以会抛出一个`ReferenceError`。
+上面代码中，变量`foo`用`var`命令声明，会发生变量提升，即脚本开始运行时，变量`foo`已经存在了，但是没有值，所以会输出`undefined`。变量`bar`用`let`命令声明，不会发生变量提升。这表示在声明它之前，变量`bar`是不存在的，这时如果用到它，就会抛出一个错误。
 
 ### 暂时性死区
 
@@ -111,6 +105,23 @@ if (true) {
 ```
 
 上面代码中，在`let`命令声明变量`tmp`之前，都属于变量`tmp`的“死区”。
+
+“暂时性死区”也意味着`typeof`不再是一个百分之百安全的操作。
+
+```javascript
+typeof x; // ReferenceError
+let x;
+```
+
+上面代码中，变量`x`使用`let`命令声明，所以在声明之前，都属于`x`的“死区”，只要用到该变量就会报错。因此，`typeof`运行时就会抛出一个`ReferenceError`。
+
+作为比较，如果一个变量根本没有被声明，使用`typeof`反而不会报错。
+
+```javascript
+typeof undeclared_variable // "undefined"
+```
+
+上面代码中，`undeclared_variable`是一个不存在的变量名，结果返回“undefined”。所以，在没有`let`之前，`typeof`运算符是百分之百安全的，永远不会报错。现在这一点不成立了。这样的设计是为了让大家养成良好的编程习惯，变量一定要在声明之后使用，否则就报错。
 
 有些“死区”比较隐蔽，不太容易发现。
 
@@ -306,6 +317,7 @@ f() // "secret"
 const也用来声明变量，但是声明的是常量。一旦声明，常量的值就不能改变。
 
 ```javascript
+'use strict';
 const PI = 3.1415;
 PI // 3.1415
 
@@ -313,16 +325,29 @@ PI = 3;
 // TypeError: "PI" is read-only
 ```
 
-上面代码表明改变常量的值会报错。
+上面代码表明改变常量的值会报错。注意，如果是常规模式，对常量赋值不会报错，但也是无效的。
+
+```javascript
+const PI = 3.1415;
+PI = 3; // 常规模式时，重新赋值无效，但不报错
+PI // 3.1415
+```
 
 const声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。
 
 ```javascript
+'use strict';
 const foo;
 // SyntaxError: missing = in const declaration
 ```
 
-上面代码表示，对于const来说，只声明不赋值，就会报错。
+上面代码表示，对于const来说，只声明不赋值，就会报错。同样的，这行命令在常规模式下不报错，但`foo`以后也没法重新赋值了。
+
+```javascript
+const foo;
+foo = 1; // 常规模式，重新赋值无效
+foo // undefined
+```
 
 const的作用域与let命令相同：只在声明所在的块级作用域内有效。
 
@@ -365,7 +390,7 @@ foo.prop = 123;
 foo.prop
 // 123
 
-foo = {} // TypeError: "foo" is read-only不起作用
+foo = {} // TypeError: "foo" is read-only
 ```
 
 上面代码中，常量`foo`储存的是一个地址，这个地址指向一个对象。不可变的只是这个地址，即不能把`foo`指向另一个地址，但对象本身是可变的，所以依然可以为其添加新属性。
@@ -385,10 +410,13 @@ a = ["Dave"];    // 报错
 
 ```javascript
 const foo = Object.freeze({});
-foo.prop = 123; // 不起作用
+
+// 常规模式时，下面一行不起作用；
+// 严格模式时，该行会报错
+foo.prop = 123;
 ```
 
-上面代码中，常量`foo`指向一个冻结的对象，所以添加新属性不起作用。
+上面代码中，常量`foo`指向一个冻结的对象，所以添加新属性不起作用，严格模式时还会报错。
 
 除了将对象本身冻结，对象的属性也应该冻结。下面是一个将对象彻底冻结的函数。
 
