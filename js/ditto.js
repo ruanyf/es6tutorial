@@ -200,7 +200,7 @@ function normalize_paths() {
       var base_dir = url.slice(0, url.length - 1).toString();
 
       // normalize the path (i.e. make it absolute)
-      $(this).attr("src", base_dir + "/" + src);
+      $(this).attr("src", location.pathname + base_dir + "/" + src);
     }
   });
 }
