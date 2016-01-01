@@ -193,6 +193,7 @@ function normalize_paths() {
   $(ditto.content_id + " img").map(function() {
     var src = $(this).attr("src").replace("./", "");
     if ($(this).attr("src").slice(0, 5) !== "http") {
+      var pathname = location.pathname.substr(0, location.pathname.length - 1);
       var url = location.hash.replace("#", "");
 
       // split and extract base dir
@@ -200,7 +201,7 @@ function normalize_paths() {
       var base_dir = url.slice(0, url.length - 1).toString();
 
       // normalize the path (i.e. make it absolute)
-      $(this).attr("src", location.pathname + base_dir + "/" + src);
+      $(this).attr("src", pathname + base_dir + "/" + src);
     }
   });
 }
