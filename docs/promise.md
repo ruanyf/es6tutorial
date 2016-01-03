@@ -405,10 +405,10 @@ someAsyncThing().then(function() {
 `Promise.all`方法用于将多个Promise实例，包装成一个新的Promise实例。
 
 ```javascript
-var p = Promise.all([p1,p2,p3]);
+var p = Promise.all([p1, p2, p3]);
 ```
 
-上面代码中，`Promise.all`方法接受一个数组作为参数，`p1`、`p2`、`p3`都是Promise对象的实例，如果不是，就会先调用下面讲到的`Promise.resolve`方法，将参数转为Promise实例，再进一步处理。（`Promise.all`方法的参数不一定是数组，但是必须具有iterator接口，且返回的每个成员都是Promise实例。）
+上面代码中，`Promise.all`方法接受一个数组作为参数，`p1`、`p2`、`p3`都是Promise对象的实例，如果不是，就会先调用下面讲到的`Promise.resolve`方法，将参数转为Promise实例，再进一步处理。（`Promise.all`方法的参数可以不是数组，但必须具有Iterator接口，且返回的每个成员都是Promise实例。）
 
 `p`的状态由`p1`、`p2`、`p3`决定，分成两种情况。
 
@@ -420,16 +420,39 @@ var p = Promise.all([p1,p2,p3]);
 
 ```javascript
 // 生成一个Promise对象的数组
-var promises = [2, 3, 5, 7, 11, 13].map(function(id){
+var promises = [2, 3, 5, 7, 11, 13].map(function (id) {
   return getJSON("/post/" + id + ".json");
 });
 
-Promise.all(promises).then(function(posts) {
+Promise.all(promises).then(function (posts) {
   // ...
 }).catch(function(reason){
   // ...
 });
 ```
+
+上面代码中，`promises`是包含6个Promise实例的数组，只有这6个实例的状态都变成`fulfilled`，或者其中有一个变为`rejected`，才会调用`Promise.all`方法后面的回调函数。
+
+下面是另一个例子。
+
+```javascript
+const databasePromise = connectDatabase();
+
+const booksPromise = databaseProimse
+  .then(findAllBooks);
+
+const userPromise = databasePromise
+  .then(getCurrentUser);
+
+Promise.all([
+  booksPromise,
+  userPromise
+])
+.then(([books, user]) => pickTopRecommentations(books, user));
+```
+
+上面代码中，`booksPromise`和`userPromise`是两个异步操作，只有等到它们的结果都返回了，才会触发`pickTopRecommentations`这个回调函数。
+
 ## Promise.race()
 
 `Promise.race`方法同样是将多个Promise实例，包装成一个新的Promise实例。

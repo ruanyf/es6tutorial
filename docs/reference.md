@@ -143,6 +143,7 @@
 - Steven Sanderson, [Experiments with Koa and JavaScript Generators](http://blog.stevensanderson.com/2013/12/21/experiments-with-koa-and-javascript-generators/): Generator入门介绍，以Koa框架为例
 - Mahdi Dibaiee, [ES7 Array and Generator comprehensions](http://dibaiee.ir/es7-array-generator-comprehensions/)：ES7的Generator推导
 - Nicolas Bevacqua, [ES6 Generators in Depth](http://ponyfoo.com/articles/es6-generators-in-depth)
+- Axel Rauschmayer, [ES6 generators in depth](http://www.2ality.com/2015/03/es6-generators.html): Generator规格的详尽讲解
 
 ## Promise对象
 
@@ -150,13 +151,16 @@
 - Tilde, [rsvp.js](https://github.com/tildeio/rsvp.js)
 - Sandeep Panda, [An Overview of JavaScript Promises](http://www.sitepoint.com/overview-javascript-promises/): ES6 Promise入门介绍
 - Dave Atchley, [ES6 Promises](http://www.datchley.name/es6-promises/): Promise的语法介绍
-- Jafar Husain, [Async Generators](https://docs.google.com/file/d/0B4PVbLpUIdzoMDR5dWstRllXblU/view?sle=true): 对async与Generator混合使用的一些讨论
 - Axel Rauschmayer, [ECMAScript 6 promises (2/2): the API](http://www.2ality.com/2014/10/es6-promises-api.html): 对ES6 Promise规格和用法的详细介绍
 - Jack Franklin, [Embracing Promises in JavaScript](http://javascriptplayground.com/blog/2015/02/promises/): catch方法的例子
+- Ronald Chen, [How to escape Promise Hell](https://medium.com/@pyrolistical/how-to-get-out-of-promise-hell-8c20e0ab0513#.2an1he6vf): 如何使用`Promise.all`方法的一些很好的例子
+
+## 异步操作和Async函数
+
 - Luke Hoban, [Async Functions for ECMAScript](https://github.com/lukehoban/ecmascript-asyncawait): Async函数的设计思想，与Promise、Gernerator函数的关系
 - Jafar Husain, [Asynchronous Generators for ES7](https://github.com/jhusain/asyncgenerator): Async函数的深入讨论
 - Nolan Lawson, [Taming the asynchronous beast with ES7](http://pouchdb.com/2015/03/05/taming-the-async-beast-with-es7.html): async函数通俗的实例讲解
-- Axel Rauschmayer, [ES6 generators in depth](http://www.2ality.com/2015/03/es6-generators.html): Generator规格的详尽讲解
+- Jafar Husain, [Async Generators](https://docs.google.com/file/d/0B4PVbLpUIdzoMDR5dWstRllXblU/view?sle=true): 对async与Generator混合使用的一些讨论
 
 ## Class
 
