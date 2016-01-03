@@ -387,7 +387,7 @@ function f(a, ...b, c) {
 
 ### 含义
 
-扩展运算符（spread）是三个点（...）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。
+扩展运算符（spread）是三个点（`...`）。它好比rest参数的逆运算，将一个数组转为用逗号分隔的参数序列。
 
 ```javascript
 console.log(...[1, 2, 3])
@@ -431,12 +431,16 @@ f(-1, ...args, 2, ...[3]);
 
 ```javascript
 // ES5的写法
-function f(x, y, z) {}
+function f(x, y, z) {
+  // ...
+}
 var args = [0, 1, 2];
 f.apply(null, args);
 
 // ES6的写法
-function f(x, y, z) {}
+function f(x, y, z) {
+  // ...
+}
 var args = [0, 1, 2];
 f(...args);
 ```
@@ -559,7 +563,7 @@ var d = new Date(...dateFields);
 扩展运算符还可以将字符串转为真正的数组。
 
 ```javascript
-[..."hello"]
+[...'hello']
 // [ "h", "e", "l", "l", "o" ]
 ```
 
@@ -603,7 +607,23 @@ var nodeList = document.querySelectorAll('div');
 var array = [...nodeList];
 ```
 
-上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象，扩展运算符可以将其转为真正的数组。
+上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了Iterator接口。
+
+对于那些没有部署Iterator接口的类似数组的对象，扩展运算符就无法将其转为真正的数组。
+
+```javascript
+let arrayLike = {
+  '0': 'a',
+  '1': 'b',
+  '2': 'c',
+  length: 3
+};
+
+// TypeError: Cannot spread non-iterable object.
+let arr = [...arrayLike];
+```
+
+上面代码中，`arrayLike`是一个类似数组的对象，但是没有部署Iterator接口，扩展运算符就会报错。这时，可以改为使用`Array.from`方法将`arrayLike`转为真正的数组。
 
 **（6）Map和Set结构，Generator函数**
 

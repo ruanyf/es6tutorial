@@ -50,6 +50,8 @@ var o = {
 下面是一个实际的例子。
 
 ```javascript
+var birth = '2000/01/01';
+
 var Person = {
 
   name: '张三',
