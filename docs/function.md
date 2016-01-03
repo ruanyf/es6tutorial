@@ -594,9 +594,9 @@ str.split('').reverse().join('')
 
 上面代码中，如果不用扩展运算符，字符串的`reverse`操作就不正确。
 
-**（5）类似数组的对象**
+**（5）实现了Iterator接口的对象**
 
-任何类似数组的对象，都可以用扩展运算符转为真正的数组。
+任何Iterator接口的对象，都可以用扩展运算符转为真正的数组。
 
 ```javascript
 var nodeList = document.querySelectorAll('div');
