@@ -163,7 +163,7 @@ function* gen(x){
 
 var g = gen(1);
 g.next();
-g.throw（'出错了'）;
+g.throw('出错了');
 // 出错了
 ```
 
