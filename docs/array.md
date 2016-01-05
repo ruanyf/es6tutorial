@@ -89,7 +89,7 @@ const toArray = (() =>
 
 `Array.from`还可以接受第二个参数，作用类似于数组的`map`方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
 
-```JavaScript
+```javascript
 Array.from(arrayLike, x => x * x);
 // 等同于
 Array.from(arrayLike).map(x => x * x);
