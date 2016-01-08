@@ -328,7 +328,7 @@ ws.delete(window);
 ws.has(window);    // false
 ```
 
-WeakSet没有size属性，没有办法遍历它的成员。
+WeakSet没有`size`属性，没有办法遍历它的成员。
 
 ```javascript
 ws.size // undefined
@@ -338,11 +338,11 @@ ws.forEach(function(item){ console.log('WeakSet has ' + item)})
 // TypeError: undefined is not a function
 ```
 
-上面代码试图获取size和forEach属性，结果都不能成功。
+上面代码试图获取`size`和`forEach`属性，结果都不能成功。
 
 WeakSet不能遍历，是因为成员都是弱引用，随时可能消失，遍历机制无法保证成员的存在，很可能刚刚遍历结束，成员就取不到了。WeakSet的一个用处，是储存DOM节点，而不用担心这些节点从文档移除时，会引发内存泄漏。
 
-下面是WeakMap的另一个例子。
+下面是WeakSet的另一个例子。
 
 ```javascript
 const foos = new WeakSet()
