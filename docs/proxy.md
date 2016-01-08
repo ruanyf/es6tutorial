@@ -137,45 +137,41 @@ fproxy.foo; // 'Hello, foo'
 
 拦截`for (var x in proxy)`，返回一个遍历器。
 
-**（6）has(target, propKey)**
-
-拦截`in`运算符，返回一个布尔值。
-
-**（7）ownKeys(target)**
+**（6）ownKeys(target)**
 
 拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回对象所有自身的属性，而`Object.keys()`仅返回对象可遍历的属性。
 
-**（8）getOwnPropertyDescriptor(target, propKey)**
+**（7）getOwnPropertyDescriptor(target, propKey)**
 
 拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
 
-**（9）defineProperty(target, propKey, propDesc)**
+**（8）defineProperty(target, propKey, propDesc)**
 
 拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
 
-**（10）preventExtensions(target)**
+**（9）preventExtensions(target)**
 
 拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
 
-**（11）getPrototypeOf(target)**
+**（10）getPrototypeOf(target)**
 
 拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
 
-**（12）isExtensible(target)**
+**（11）isExtensible(target)**
 
 拦截`Object.isExtensible(proxy)`，返回一个布尔值。
 
-**（13）setPrototypeOf(target, proto)**
+**（12）setPrototypeOf(target, proto)**
 
 拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。
 
 如果目标对象是函数，那么还有两种额外操作可以拦截。
 
-**（14）apply(target, object, args)**
+**（13）apply(target, object, args)**
 
 拦截Proxy实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
 
-**（15）construct(target, args, proxy)**
+**（14）construct(target, args, proxy)**
 
 拦截Proxy实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
