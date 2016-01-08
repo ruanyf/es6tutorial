@@ -532,7 +532,7 @@ p.then(function () {
 ```javascript
 var p = Promise.reject('出错了');
 // 等同于
-var p = new Promise((resolve, reject) => reject('foo'))
+var p = new Promise((resolve, reject) => reject('出错了'))
 
 p.then(null, function (s){
   console.log(s)
