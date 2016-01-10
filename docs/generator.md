@@ -1131,10 +1131,10 @@ var clock = function() {
 ```javascript
 var clock = function*() {
   while (true) {
-    yield;
     console.log('Tick!');
     yield;
     console.log('Tock!');
+    yield;
   }
 };
 ```
