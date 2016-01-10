@@ -1129,11 +1129,11 @@ var clock = function() {
 上面代码的clock函数一共有两种状态（Tick和Tock），每运行一次，就改变一次状态。这个函数如果用Generator实现，就是下面这样。
 
 ```javascript
-var clock = function*(_) {
+var clock = function*() {
   while (true) {
-    yield _;
+    yield;
     console.log('Tick!');
-    yield _;
+    yield;
     console.log('Tock!');
   }
 };
