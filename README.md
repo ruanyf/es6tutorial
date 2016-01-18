@@ -12,7 +12,7 @@
 
 感谢张春雨编辑支持我将全书开源的做法。如果您认可这本书，建议购买纸版。这样可以使出版社不因出版开源书籍而亏钱，进而鼓励更多的作者开源自己的书籍。
 
-- [京东](http://item.jd.com/10092234533.html)
+- [京东](http://item.jd.com/11849235.html)
 - [当当](http://product.dangdang.com/23840431.html)
 - [亚马逊](http://www.amazon.cn/ES6-%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8-%E9%98%AE%E4%B8%80%E5%B3%B0/dp/B01A18WWAG/)
 - [China-pub](http://product.china-pub.com/4904712)
