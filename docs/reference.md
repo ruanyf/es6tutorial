@@ -173,6 +173,7 @@
 ## Decorator
 
 - Maximiliano Fierro, [Declarative vs Imperative](http://elmasse.github.io/js/decorators-bindings-es7.html): Decorators和Mixin介绍
+- Justin Fagnani, ["Real" Mixins with JavaScript Classes](http://justinfagnani.com/2015/12/21/real-mixins-with-javascript-classes/): 使用类的继承实现Mixin
 - Addy Osmani, [Exploring ES2016 Decorators](https://medium.com/google-developers/exploring-es7-decorators-76ecb65fb841): Decorator的深入介绍
 - Sebastian McKenzie, [Allow decorators for functions as well](https://github.com/wycats/javascript-decorators/issues/4): 为什么修饰器不能用于函数
 - Maximiliano Fierro, [Traits with ES7 Decorators](http://cocktailjs.github.io/blog/traits-with-es7-decorators.html): Trait的用法介绍
