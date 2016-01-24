@@ -77,7 +77,7 @@ const b = 'foo' + a + 'bar';
 const c = `foobar`;
 
 // good
-const a  = 'foobar';
+const a = 'foobar';
 const b = `foo${a}bar`;
 const c = 'foobar';
 ```
