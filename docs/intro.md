@@ -107,7 +107,7 @@ Your runtime supports 57% of ECMAScript 6
 
 ## Babel转码器
 
-[Babel](https://babeljs.io/)是一个广泛使用的ES6转码器，可以将ES6代码转为ES5代码，从而在浏览器或其他环境执行。这意味着，你可以用ES6的方式编写程序，又不用担心现有环境是否支持。下面是一个例子。
+[Babel](https://babeljs.io/)是一个广泛使用的ES6转码器，可以将ES6代码转为ES5代码，从而在现有环境执行。这意味着，你可以用ES6的方式编写程序，又不用担心现有环境是否支持。下面是一个例子。
 
 ```javascript
 // 转码前
@@ -134,7 +134,7 @@ Babel的配置文件是`.babelrc`，存放在项目的根目录下。使用Babel
 }
 ```
 
-`preset`字段设定转码规则，官方提供以下的规则集，你可以根据需要安装。
+`presets`字段设定转码规则，官方提供以下的规则集，你可以根据需要安装。
 
 ```bash
 # ES2015转码规则
@@ -175,13 +175,14 @@ Babel提供`babel-cli`工具，用于命令行转码。
 $ npm install --global babel-cli
 ```
 
-它的命令行基本用法如下。
+基本用法如下。
 
 ```bash
 # 转码结果输出到标准输出
 $ babel example.js
 
 # 转码结果写入一个文件
+# --out-file 或 -o 参数指定输出文件
 $ babel example.js --out-file compiled.js
 # 或者
 $ babel example.js -o compiled.js
@@ -196,7 +197,7 @@ $ babel src -d lib
 $ babel src -d lib -s
 ```
 
-上面代码是在全局环境下，进行Babel转码。但这意味着，如果项目要运行，全局环境必须有Babel，这就让项目产生了对环境的依赖，也无法支持不同项目使用不同版本的Babel。
+上面代码是在全局环境下，进行Babel转码。这意味着，如果项目要运行，全局环境必须有Babel，也就是说项目产生了对环境的依赖。另一方面，这样做也无法支持不同项目使用不同版本的Babel。
 
 一个解决办法是将`babel-cli`安装在项目之中。
 
@@ -237,7 +238,7 @@ $ babel-node
 2
 ```
 
-`babel-node`命令也可以直接运行ES6脚本。假定将上面的代码放入脚本文件`es6.js`。
+`babel-node`命令可以直接运行ES6脚本。将上面的代码放入脚本文件`es6.js`，然后直接运行。
 
 ```bash
 $ babel-node es6.js
@@ -247,7 +248,6 @@ $ babel-node es6.js
 `babel-node`也可以安装在项目中。
 
 ```bash
-# 安装
 $ npm install --save-dev babel-cli
 ```
 
@@ -261,11 +261,11 @@ $ npm install --save-dev babel-cli
 }
 ```
 
-上面代码中，使用`babel-node`替代`node`，这样`script.js`本身就不用做任何改变。
+上面代码中，使用`babel-node`替代`node`，这样`script.js`本身就不用做任何转码处理。
 
 ### babel-register
 
-`babel-register`模块改写`require`命令，为它加上一个钩子。每当使用`require`加载某个文件，就会先用Babel进行转码。
+`babel-register`模块改写`require`命令，为它加上一个钩子。此后，每当使用`require`加载`.js`、`.jsx`、`.es`和`.es6`后缀名的文件，就会先用Babel进行转码。
 
 ```bash
 $ npm install --save-dev babel-register
@@ -284,30 +284,30 @@ require("./index.js");
 
 ### babel-core
 
-如果某些代码需要调用API进行转码，就要使用`babel-core`模块。
+如果某些代码需要调用Babel的API进行转码，就要使用`babel-core`模块。
 
 安装命令如下。
 
 ```bash
-$ npm install babel-core
+$ npm install babel-core --save
 ```
 
 然后，在项目中就可以调用`babel-core`。
 
 ```javascript
-var babel = require("babel-core");
+var babel = require('babel-core');
 
 // 字符串转码
-babel.transform("code();", options);
+babel.transform('code();', options);
 // => { code, map, ast }
 
 // 文件转码（异步）
-babel.transformFile("filename.js", options, function(err, result) {
+babel.transformFile('filename.js', options, function(err, result) {
   result; // => { code, map, ast }
 });
 
 // 文件转码（同步）
-babel.transformFileSync("filename.js", options);
+babel.transformFileSync('filename.js', options);
 // => { code, map, ast }
 
 // Babel AST转码
@@ -333,9 +333,9 @@ var es6Code = require('babel-core')
 
 ### babel-polyfill
 
-Babel默认只转换新的JavaScript句法（syntax），而不转换新的API，比如Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）。
+Babel默认只转换新的JavaScript句法（syntax），而不转换新的API，比如Iterator、Generator、Set、Maps、Proxy、Reflect、Symbol、Promise等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）都不会转码。
 
-举例来说，ES6在`Array`对象上新增了`Array.from`方法。Babel就不会转换这个方法。如果想让这个方法运行，必须使用`babel-polyfill`。
+举例来说，ES6在`Array`对象上新增了`Array.from`方法。Babel就不会转码这个方法。如果想让这个方法运行，必须使用`babel-polyfill`，为当前环境提供一个垫片。
 
 安装命令如下。
 
@@ -351,11 +351,11 @@ import 'babel-polyfill';
 require('babel-polyfill');
 ```
 
-Babel默认不转码的API非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[`definitions.js`](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/definitions.js)文件。
+Babel默认不转码的API非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[definitions.js](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/definitions.js)文件。
 
 ### 浏览器环境
 
-Babel也可以用于浏览器。但是，从Babel 6.0开始，不再直接提供浏览器版本，而是要用构建工具构建出来。如果你没有或不想使用构建工具，只有通过安装5.x版本的`babel-core`模块获取。
+Babel也可以用于浏览器环境。但是，从Babel 6.0开始，不再直接提供浏览器版本，而是要用构建工具构建出来。如果你没有或不想使用构建工具，可以通过安装5.x版本的`babel-core`模块获取。
 
 ```bash
 $ npm install babel-core@5
@@ -374,9 +374,18 @@ $ npm install babel-core@5
 
 上面代码中，`browser.js`是Babel提供的转换器脚本，可以在浏览器运行。用户的ES6脚本放在`script`标签之中，但是要注明`type="text/babel"`。
 
-这种写法是实时将ES6代码转为ES5，对网页性能会有影响。生产环境需要加载已经转码完成的脚本。
+另一种方法是使用[babel-standalone](https://github.com/Daniel15/babel-standalone)模块提供的浏览器版本，将其插入网页。
 
-下面是`Babel`配合`Browserify`一起使用，可以生成浏览器能够直接加载的脚本。首先，安装`babelify`模块。
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.4.4/babel.min.js"></script>
+<script type="text/babel">
+// Your ES6 code
+</script>
+```
+
+注意，网页中实时将ES6代码转为ES5，对性能会有影响。生产环境需要加载已经转码完成的脚本。
+
+下面是如何将代码打包成浏览器可以使用的脚本，以`Babel`配合`Browserify`为例。首先，安装`babelify`模块。
 
 ```bash
 $ npm install --save-dev babelify babel-preset-es2015
@@ -441,13 +450,15 @@ $ npm install --save-dev eslint babel-eslint
   }
 ```
 
-Mocha则是一个测试框架，如果需要执行使用ES6语法的测试脚本，可以修改`package.json`的`scripts.test`脚本如下。
+Mocha则是一个测试框架，如果需要执行使用ES6语法的测试脚本，可以修改`package.json`的`scripts.test`。
 
 ```javascript
+"scripts": {
   "test": "mocha --ui qunit --compilers js:babel-core/register"
+}
 ```
 
-上面命令中，`--compilers`参数指定脚本的转码器，意为后缀名为`js`的文件，都需要使用`babel-core/register`先转码。
+上面命令中，`--compilers`参数指定脚本的转码器，规定后缀名为`js`的文件，都需要使用`babel-core/register`先转码。
 
 ## Traceur转码器
 
