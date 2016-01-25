@@ -74,7 +74,6 @@ class Point {
 // 等同于
 
 Point.prototype = {
-  constructor(){},
   toString(){},
   toValue(){}
 }
