@@ -393,6 +393,7 @@ class MyClass {
 }
 var o = new MyClass();
 o instanceof Array // false
+o[Symbol.hasInstance]([1,2,3]) // true
 ```
 
 ### Symbol.isConcatSpreadable
