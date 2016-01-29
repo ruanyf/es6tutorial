@@ -391,8 +391,8 @@ class MyClass {
     return foo instanceof Array;
   }
 }
-var o = new MyClass();
-o instanceof Array // false
+
+[1, 2, 3] instanceof MyClass() // true
 ```
 
 ### Symbol.isConcatSpreadable
