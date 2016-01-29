@@ -190,6 +190,7 @@
 
 ## 工具
 
+- Babel, [Babel Handbook](https://github.com/thejameskyle/babel-handbook/tree/master/translations/en): Babel的用法介绍
 - Google, [traceur-compiler](https://github.com/google/traceur-compiler): Traceur编译器
 - Casper Beyer, [ECMAScript 6 Features and Tools](http://caspervonb.github.io/2014/03/05/ecmascript6-features-and-tools.html)
 - Stoyan Stefanov, [Writing ES6 today with jstransform](http://www.phpied.com/writing-es6-today-with-jstransform/)
