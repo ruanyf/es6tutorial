@@ -670,6 +670,117 @@ Object.getPrototypeOf(rec) === Rectangle.prototype
 // false
 ```
 
+## Object.values()，Object.entries()
+
+### Object.keys()
+
+ES5引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
+
+```javascript
+var obj = { foo: "bar", baz: 42 };
+Object.keys(obj)
+// ["foo", "baz"]
+```
+
+目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
+
+```javascript
+let obj = { a: 1, b: 2, c: 3 };
+
+for (let key of keys(obj)) {
+  // ['a', 'b', 'c']
+}
+
+for (let value of values(obj)) {
+  // [1, 2, 3]
+}
+
+for (let [key, value] of entries(obj)) {
+  // [['a', 1], ['b', 2], ['c', 3]]
+}
+```
+
+### Object.values()
+
+`Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
+
+```javascript
+var obj = { foo: "bar", baz: 42 };
+Object.values(obj)
+// ["bar", 42]
+```
+
+返回数组的成员顺序，与本章的《属性的遍历》部分介绍的排列规则一致。
+
+```javascript
+var obj = { 100: 'a', 2: 'b', 7: 'c' };
+Object.values(obj)
+// ["b", "c", "a"]
+```
+
+上面代码中，属性名为数值的属性，是按照数值大小，从小到大遍历的，因此返回的顺序是`b`、`c`、`a`。
+
+`Object.values`只返回对象自身的可遍历属性。
+
+```javascript
+var obj = Object.create({}, {p: 42});
+Object.values(obj) // []
+```
+
+上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的。`Object.values`不会返回这个属性。
+
+如果`Object.values`方法的参数是一个字符串，会返回各个字符组成的一个数组。
+
+```javascript
+Object.values('foo')
+// ['f', 'o', 'o']
+```
+
+上面代码中，字符串会先转成一个类似数组的对象。字符串的每个字符，就是该对象的一个属性。因此，`Object.values`返回每个属性的键值，就是各个字符组成的一个数组。
+
+如果参数不是对象，`Object.values`会先将其转为对象。由于数值和布尔值的包装对象，都不会为实例添加非继承的属性。所以，`Object.values`会返回空数组。
+
+```javascript
+Object.values(42) // []
+Object.values(true) // []
+```
+
+### Object.entries
+
+`Object.entries`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
+
+```javascript
+var obj = { foo: 'bar', baz: 42 };
+Object.entries(obj)
+// [ ["foo", "bar"], ["baz", 42] ]
+```
+
+除了返回值不一样，该方法的行为与`Object.values`基本一致。
+
+`Object.entries`方法的一个用处是，将对象转为真正的`Map`结构。
+
+```javascript
+var obj = { foo: 'bar', baz: 42 };
+var map = new Map(Object.entries(obj));
+map // Map { foo: "bar", baz: 42 }
+```
+
+自己实现`Object.entries`方法，非常简单。
+
+```javascript
+// Generator函数的版本
+function* entries(obj) {
+  for (let key of Object.keys(obj)) {
+    yield [key, obj[key]];
+  }
+}
+
+// 非Generator函数的版本
+function entries(obj) {
+  return (for (key of Object.keys(obj)) [key, obj[key]]);
+}
+```
+
 ## 对象的扩展运算符
 
 目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将rest参数/扩展运算符（...）引入对象。Babel转码器已经支持这项功能。
@@ -696,7 +807,7 @@ obj.a.b = 2;
 x.a.b // 2
 ```
 
-上面代码中，x是Rest参数，拷贝了对象obj的a属性。a属性引用了一个对象，修改这个对象的值，会影响到Rest参数对它的引用。
+上面代码中，`x`是Rest参数，拷贝了对象`obj`的`a`属性。a属性引用了一个对象，修改这个对象的值，会影响到Rest参数对它的引用。
 
 另外，Rest参数不会拷贝继承自原型对象的属性。
 

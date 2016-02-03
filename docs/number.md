@@ -512,7 +512,7 @@ ES6新增了4个对数相关方法。
 
 **（1） Math.expm1()**
 
-`Math.expm1(x)`返回e<sub>x</sub> - 1，即`Math.exp(x) - 1`。
+`Math.expm1(x)`返回e<sup>x</sup> - 1，即`Math.exp(x) - 1`。
 
 ```javascript
 Math.expm1(-1); // -0.6321205588285577

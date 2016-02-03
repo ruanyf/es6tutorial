@@ -2,9 +2,9 @@
 
 ## Promise的含义
 
-`Promise`在JavaScript语言早有实现，ES6将其写进了语言标准，统一了用法，原生提供了`Promise`对象。
+Promise是异步编程的一种解决方案，比传统的解决方案——回调函数和事件——更合理和更强大。它由社区最早提出和实现，ES6将其写进了语言标准，统一了用法，原生提供了`Promise`对象。
 
-所谓`Promise`，就是一个对象，用来传递异步操作的消息。它代表了某个未来才会知道结果的事件（通常是一个异步操作），并且这个事件提供统一的API，可供进一步处理。
+所谓`Promise`，简单说就是一个容器，里面保存着某个未来才会结束的事件（通常是一个异步操作）的结果。从语法上说，Promise是一个对象，从它可以获取异步操作的消息。Promise提供统一的API，各种异步操作都可以用同样的方法进行处理。
 
 `Promise`对象有以下两个特点。
 
@@ -67,6 +67,27 @@ timeout(100).then((value) => {
 ```
 
 上面代码中，`timeout`方法返回一个Promise实例，表示一段时间以后才会发生的结果。过了指定的时间（`ms`参数）以后，Promise实例的状态变为Resolved，就会触发`then`方法绑定的回调函数。
+
+Promise新建后就会立即执行。
+
+```javascript
+let promise = new Promise(function(resolve, reject) {
+  console.log('Promise');
+  resolve();
+});
+
+promise.then(function() {
+  console.log('Resolved.');
+});
+
+console.log('Hi!');
+
+// Promise
+// Hi!
+// Resolved
+```
+
+上面代码中，Promise新建后立即执行，所以首先输出的是“Promise”。然后，`then`方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以“Resolved”最后输出。
 
 下面是异步加载图片的例子。
 
@@ -198,7 +219,7 @@ getJSON("/post/1.json").then(
 
 ## Promise.prototype.catch()
 
-Promise.prototype.catch方法是`.then(null, rejection)`的别名，用于指定发生错误时的回调函数。
+`Promise.prototype.catch`方法是`.then(null, rejection)`的别名，用于指定发生错误时的回调函数。
 
 ```javascript
 getJSON("/posts.json").then(function(posts) {
@@ -209,7 +230,7 @@ getJSON("/posts.json").then(function(posts) {
 });
 ```
 
-上面代码中，`getJSON`方法返回一个Promise对象，如果该对象状态变为Resolved，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为Rejected，就会调用`catch`方法指定的回调函数，处理这个错误。
+上面代码中，`getJSON`方法返回一个Promise对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。
 
 ```javascript
 p.then((val) => console.log("fulfilled:", val))
@@ -225,15 +246,41 @@ p.then((val) => console.log(fulfilled:", val))
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
-  throw new Error('test')
+  throw new Error('test');
 });
-promise.catch(function(error) { console.log(error) });
+promise.catch(function(error) {
+  console.log(error);
+});
 // Error: test
 ```
 
-上面代码中，Promise抛出一个错误，就被`catch`方法指定的回调函数捕获。
+上面代码中，Promise抛出一个错误，就被`catch`方法指定的回调函数捕获。注意，上面的写法与下面两种写法是等价的。
 
-如果Promise状态已经变成resolved，再抛出错误是无效的。
+```javascript
+// 写法一
+var promise = new Promise(function(resolve, reject) {
+  try {
+    throw new Error('test');
+  } catch(e) {
+    reject(e);
+  }
+});
+promise.catch(function(error) {
+  console.log(error);
+});
+
+// 写法二
+var promise = new Promise(function(resolve, reject) {
+  reject(new Error('test'));
+});
+promise.catch(function(error) {
+  console.log(error);
+});
+```
+
+比较上面两种写法，可以发现`reject`方法的作用，等同于抛出错误。
+
+如果Promise状态已经变成`Resolved`，再抛出错误是无效的。
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
@@ -300,7 +347,7 @@ someAsyncThing().then(function() {
 });
 ```
 
-上面代码中，`someAsyncThing`函数产生的Promise对象会报错，但是由于没有指定`catch`方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。
+上面代码中，`someAsyncThing`函数产生的Promise对象会报错，但是由于没有指定`catch`方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。注意，Chrome浏览器不遵守这条规定，它会抛出错误“ReferenceError: x is not defined”。
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
@@ -312,7 +359,7 @@ promise.then(function(value) { console.log(value) });
 // Uncaught Error: test
 ```
 
-上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用try...catch语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
+上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用`try...catch`语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
 
 Node.js有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误。
 
@@ -482,7 +529,7 @@ p.catch(error => console.log(error))
 
 ## Promise.resolve()
 
-有时需要将现有对象转为Promise对象，Promise.resolve方法就起到这个作用。
+有时需要将现有对象转为Promise对象，`Promise.resolve`方法就起到这个作用。
 
 ```javascript
 var jsPromise = Promise.resolve($.ajax('/whatever.json'));
@@ -498,7 +545,44 @@ Promise.resolve('foo')
 new Promise(resolve => resolve('foo'))
 ```
 
-如果Promise.resolve方法的参数，不是具有then方法的对象（又称thenable对象），则返回一个新的Promise对象，且它的状态为Resolved。
+`Promise.resolve`方法的参数分成四种情况。
+
+**（1）参数是一个Promise实例**
+
+如果参数是Promise实例，那么`Promise.resolve`将不做任何修改、原封不动地返回这个实例。
+
+**（2）参数是一个`thenable`对象**
+
+`thenable`对象指的是具有`then`方法的对象，比如下面这个对象。
+
+```javascript
+let thenable = {
+  then: function(resolve, reject) {
+    resolve(42);
+  }
+};
+```
+
+`Promise.resolve`方法会将这个对象转为Promise对象，然后就立即执行`thenable`对象的`then`方法。
+
+```javascript
+let thenable = {
+  then: function(resolve, reject) {
+    resolve(42);
+  }
+};
+
+let p1 = Promise.resolve(thenable);
+p1.then(function(value) {
+  console.log(value);  // 42
+});
+```
+
+上面代码中，`thenable`对象的`then`方法执行后，对象`p1`的状态就变为`resolved`，从而立即执行最后那个`then`方法指定的回调函数，输出42。
+
+**（3）参数不是具有`then`方法的对象，或根本就不是对象**
+
+如果参数是一个原始值，或者是一个不具有`then`方法的对象，则`Promise.resolve`方法返回一个新的Promise对象，状态为`Resolved`。
 
 ```javascript
 var p = Promise.resolve('Hello');
@@ -509,9 +593,13 @@ p.then(function (s){
 // Hello
 ```
 
-上面代码生成一个新的Promise对象的实例p。由于字符串Hello不属于异步操作（判断方法是它不是具有then方法的对象），返回Promise实例的状态从一生成就是Resolved，所以回调函数会立即执行。Promise.resolve方法的参数，会同时传给回调函数。
+上面代码生成一个新的Promise对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是它不是具有then方法的对象），返回Promise实例的状态从一生成就是`Resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
 
-Promise.resolve方法允许调用时不带参数。所以，如果希望得到一个Promise对象，比较方便的方法就是直接调用Promise.resolve方法。
+**（4）不带有任何参数**
+
+`Promise.resolve`方法允许调用时不带参数，直接返回一个`Resolved`状态的Promise对象。
+
+所以，如果希望得到一个Promise对象，比较方便的方法就是直接调用`Promise.resolve`方法。
 
 ```javascript
 var p = Promise.resolve();
@@ -521,13 +609,11 @@ p.then(function () {
 });
 ```
 
-上面代码的变量p就是一个Promise对象。
-
-如果Promise.resolve方法的参数是一个Promise实例，则会被原封不动地返回。
+上面代码的变量`p`就是一个Promise对象。
 
 ## Promise.reject()
 
-`Promise.reject(reason)`方法也会返回一个新的Promise实例，该实例的状态为`rejected`。`Promise.reject`方法的参数`reason`，会被传递给实例的回调函数。
+`Promise.reject(reason)`方法也会返回一个新的Promise实例，该实例的状态为`rejected`。它的参数用法与`Promise.resolve`方法完全一致。
 
 ```javascript
 var p = Promise.reject('出错了');

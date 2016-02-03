@@ -735,7 +735,7 @@ function* bar() {
 function* bar() {
   yield 'x';
   for (let v of foo()) {
-    console.log(v);
+    yield v;
   }
   yield 'y';
 }
