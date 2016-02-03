@@ -74,6 +74,7 @@
 - Ragan Wald, [Destructuring and Recursion in ES6](http://raganwald.com/2015/02/02/destructuring.html): rest参数和扩展运算符的详细介绍
 - Axel Rauschmayer, [The names of functions in ES6](http://www.2ality.com/2015/09/function-names-es6.html): 函数的name属性的详细介绍
 - Kyle Simpson, [Arrow This](http://blog.getify.com/arrow-this/): 箭头函数并没有自己的this
+- Mark McDonnell, [Understanding recursion in functional JavaScript programming](http://www.integralist.co.uk/posts/js-recursion.html): 如何自己实现尾递归优化
 
 ## 对象
 

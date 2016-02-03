@@ -424,7 +424,7 @@ ESLint用于静态检查代码的语法和风格，安装命令如下。
 $ npm install --save-dev eslint babel-eslint
 ```
 
-然后，在项目根目录下，新建一个配置文件`.eslint`，在其中加入`parser`字段。
+然后，在项目根目录下，新建一个配置文件`.eslintrc`，在其中加入`parser`字段。
 
 ```javascript
 {
