@@ -245,7 +245,7 @@ arr[-1] // c
 
 上面代码中，数组的位置参数是`-1`，就会输出数组的倒数最后一个成员。
 
-利用proxy，可以将读取属性的操作（`get`），转变为执行某个函数，从而实现属性的链式操作。
+利用Proxy，可以将读取属性的操作（`get`），转变为执行某个函数，从而实现属性的链式操作。
 
 ```javascript
 var pipe = (function () {
@@ -276,11 +276,46 @@ pipe(3).double.pow.reverseInt.get
 
 上面代码设置Proxy以后，达到了将函数名链式使用的效果。
 
+下面的例子则是利用`get`拦截，实现一个生成各种DOM节点的通用函数`dom`。
+
+```javascript
+const el = dom.div({},
+  'Hello, my name is ',
+  dom.a({href: '//example.com'}, 'Mark'),
+  '. I like:',
+  dom.ul({},
+    dom.li({}, 'The web'),
+    dom.li({}, 'Food'),
+    dom.li({}, '…actually that\'s it')
+  )
+);
+
+document.body.appendChild(el);
+
+const dom = new Proxy({}, {
+  get(target, property) {
+    return function(attrs = {}, ...children) {
+      const el = document.createElement(property);
+      for (let prop of Object.keys(attrs)) {
+        el.setAttribute(prop, attrs[prop]);
+      }
+      for (let child of children) {
+        if (typeof child === 'string') {
+          child = document.createTextNode(child);
+        }
+        el.appendChild(child);
+      }
+      return el;
+    }
+  }
+});
+```
+
 ### set()
 
 `set`方法用来拦截某个属性的赋值操作。
 
-假定Person对象有一个`age`属性，该属性应该是一个不大于200的整数，那么可以使用Proxy对象保证`age`的属性值符合要求。
+假定`Person`对象有一个`age`属性，该属性应该是一个不大于200的整数，那么可以使用`Proxy`保证`age`的属性值符合要求。
 
 ```javascript
 let validator = {
@@ -364,8 +399,8 @@ var handler = {
 
 var p = new Proxy(target, handler);
 
-p() === 'I am the proxy';
-// true
+p()
+// "I am the proxy"
 ```
 
 上面代码中，变量`p`是Proxy的实例，当它作为函数调用时（`p()`），就会被`apply`方法拦截，返回一个字符串。
@@ -387,7 +422,7 @@ proxy.call(null, 5, 6) // 22
 proxy.apply(null, [7, 8]) // 30
 ```
 
-上面代码中，每当执行`proxy`函数，就会被`apply`方法拦截。
+上面代码中，每当执行`proxy`函数（直接调用或`call`和`apply`调用），就会被`apply`方法拦截。
 
 另外，直接调用`Reflect.apply`方法，也会被拦截。
 

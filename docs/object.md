@@ -729,6 +729,13 @@ Object.values(obj) // []
 
 上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的。`Object.values`不会返回这个属性。
 
+`Object.values`会过滤属性名为Symbol值的属性。
+
+```javascript
+Object.entries({ [Symbol()]: 123, foo: 'abc' });
+// ['abc']
+```
+
 如果`Object.values`方法的参数是一个字符串，会返回各个字符组成的一个数组。
 
 ```javascript
@@ -756,6 +763,26 @@ Object.entries(obj)
 ```
 
 除了返回值不一样，该方法的行为与`Object.values`基本一致。
+
+如果原对象的属性名是一个Symbol值，该属性会被省略。
+
+```javascript
+Object.entries({ [Symbol()]: 123, foo: 'abc' });
+// [ [ 'foo', 'abc' ] ]
+```
+
+上面代码中，原对象有两个属性，`Object.entries`只输出属性名非Symbol值的属性。将来可能会有`Reflect.ownEntries()`方法，返回对象自身的所有属性。
+
+`Object.entries`的基本用途是遍历对象的属性。
+
+```javascript
+let obj = { one: 1, two: 2 };
+for (let [k, v] of Object.entries(obj)) {
+  console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+}
+// "one": 1
+// "two": 2
+```
 
 `Object.entries`方法的一个用处是，将对象转为真正的`Map`结构。
 
@@ -896,3 +923,174 @@ let runtimeError = {
 ```javascript
 let emptyObject = { ...null, ...undefined }; // 不报错
 ```
+
+## Object.getOwnPropertyDescriptors()
+
+ES5有一个`Object.getOwnPropertyDescriptor`方法，返回某个对象属性的描述对象（descriptor）。
+
+```javascript
+var obj = { p: 'a' };
+
+Object.getOwnPropertyDescriptor(obj, 'p')
+// Object { value: "a",
+//   writable: true,
+//   enumerable: true,
+//   configurable: true
+// }
+```
+
+ES7有一个提案，提出了`Object.getOwnPropertyDescriptors`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
+
+```javascript
+const obj = {
+  foo: 123,
+  get bar() { return 'abc' },
+};
+
+Object.getOwnPropertyDescriptors(obj)
+// { foo:
+//    { value: 123,
+//      writable: true,
+//      enumerable: true,
+//      configurable: true },
+//   bar:
+//    { get: [Function: bar],
+//      set: undefined,
+//      enumerable: true,
+//      configurable: true } }
+```
+
+`Object.getOwnPropertyDescriptors`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
+
+该方法的实现非常容易。
+
+```javascript
+function getOwnPropertyDescriptors(obj) {
+  const result = {};
+  for (let key of Reflect.ownKeys(obj)) {
+    result[key] = Object.getOwnPropertyDescriptor(obj, key);
+  }
+  return result;
+}
+```
+
+该方法的提出目的，主要是为了解决`Object.assign()`无法正确拷贝`get`属性和`set`属性的问题。
+
+```javascript
+const source = {
+  set foo(value) {
+    console.log(value);
+  }
+};
+
+const target1 = {};
+Object.assign(target1, source);
+
+Object.getOwnPropertyDescriptor(target1, 'foo')
+// { value: undefined,
+//   writable: true,
+//   enumerable: true,
+//   configurable: true }
+```
+
+上面代码中，`source`对象的`foo`属性的值是一个赋值函数，`Object.assign`方法将这个属性拷贝给`target1`对象，结果该属性的值变成了`undefined`。这是因为`Object.assign`方法总是拷贝一个属性的值，而不会拷贝它背后的赋值方法或取值方法。
+
+这时，`Object.getOwnPropertyDescriptors`方法配合`Object.defineProperties`方法，就可以实现正确拷贝。
+
+```javascript
+const source = {
+  set foo(value) {
+    console.log(value);
+  }
+};
+
+const target2 = {};
+Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source));
+Object.getOwnPropertyDescriptor(target2, 'foo')
+// { get: undefined,
+//   set: [Function: foo],
+//   enumerable: true,
+//   configurable: true }
+```
+
+上面代码中，将两个对象合并的逻辑提炼出来，就是下面这样。
+
+```javascript
+const shallowMerge = (target, source) => Object.defineProperties(
+  target,
+  Object.getOwnPropertyDescriptors(source)
+);
+```
+
+`Object.getOwnPropertyDescriptors`方法的另一个用处，是配合`Object.create`方法，将对象属性克隆到一个新对象。这属于浅拷贝。
+
+```javascript
+const clone = Object.create(Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj));
+
+// 或者
+
+const shallowClone = (obj) => Object.create(
+  Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj)
+);
+```
+
+上面代码会克隆对象`obj`。
+
+另外，`Object.getOwnPropertyDescriptors`方法可以实现，一个对象继承另一个对象。以前，继承另一个对象，常常写成下面这样。
+
+```javascript
+const obj = {
+  __proto__: prot,
+  foo: 123,
+};
+```
+
+ES6规定`__proto__`只有浏览器要部署，其他环境不用部署。如果去除`__proto__`，上面代码就要改成下面这样。
+
+```javascript
+const obj = Object.create(prot);
+obj.foo = 123;
+
+// 或者
+
+const obj = Object.assign(
+  Object.create(prot),
+  {
+    foo: 123,
+  }
+);
+```
+
+有了`Object.getOwnPropertyDescriptors`，我们就有了另一种写法。
+
+```javascript
+const obj = Object.create(
+  prot,
+  Object.getOwnPropertyDescriptors({
+    foo: 123,
+  })
+);
+```
+
+`Object.getOwnPropertyDescriptors`也可以用来实现Mixin（混入）模式。
+
+```javascript
+let mix = (object) => ({
+  with: (...mixins) => mixins.reduce(
+    (c, mixin) => Object.create(
+      c, Object.getOwnPropertyDescriptors(mixin)
+    ), object)
+});
+
+// multiple mixins example
+let a = {a: 'a'};
+let b = {b: 'b'};
+let c = {c: 'c'};
+let d = mix(c).with(a, b);
+```
+
+上面代码中，对象`a`和`b`被混入了对象`c`。
+
+出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。

@@ -82,6 +82,8 @@
 - Sella Rafaeli, [Native JavaScript Data-Binding](http://www.sellarafaeli.com/blog/native_javascript_data_binding): 如何使用Object.observe方法，实现数据对象与DOM对象的双向绑定
 - Axel Rauschmayer, [`__proto__` in ECMAScript 6](http://www.2ality.com/2015/09/proto-es6.html)
 - Axel Rauschmayer, [Enumerability in ECMAScript 6](http://www.2ality.com/2015/10/enumerability-es6.html)
+- Axel Rauschmayer, [ES proposal: Object.getOwnPropertyDescriptors()](http://www.2ality.com/2016/02/object-getownpropertydescriptors.html)
+- TC39, [Object.getOwnPropertyDescriptors Proposal](https://github.com/tc39/proposal-object-getownpropertydescriptors)
 
 ## Proxy和Reflect
 
