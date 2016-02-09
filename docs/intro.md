@@ -624,15 +624,15 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 **Stage 0**：
 
-- Function Bind Syntax 函数的绑定运算符
-- String.prototype.at 字符串的静态方法at
+- Function Bind Syntax：函数的绑定运算符
+- String.prototype.at：字符串的静态方法at
 
 **Stage 1**：
 
-- Class and Property Decorators Class的修饰器
-- Class Property Declarations Class的属性声明
+- Class and Property Decorators：Class的修饰器
+- Class Property Declarations：Class的属性声明
 - es7.exportExtensions：export的写法改进
-- String.prototype.{trimLeft,trimRight} 字符串删除头尾空格的方法
+- String.prototype.{trimLeft,trimRight}：字符串删除头尾空格的方法
 
 **Stage 2**：
 
@@ -640,17 +640,17 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 **Stage 3**
 
-- SIMD API “单指令，多数据”命令集
-- Async Functions async函数
-- Object.values/Object.entries Object的静态方法values()和entries()
-- String padding 字符串长度补全
-- Trailing commas in function parameter lists and calls 函数参数的尾逗号
-- Object.getOwnPropertyDescriptors Object的静态方法getOwnPropertyDescriptors
+- SIMD API：“单指令，多数据”命令集
+- Async Functions：async函数
+- Object.values/Object.entries：Object的静态方法values()和entries()
+- String padding：字符串长度补全
+- Trailing commas in function parameter lists and calls：函数参数的尾逗号
+- Object.getOwnPropertyDescriptors：Object的静态方法getOwnPropertyDescriptors
 
 **Stage 4**：
 
-- Array.prototype.includes 数组实例的includes方法
-- Exponentiation Operator 指数运算符
+- Array.prototype.includes：数组实例的includes方法
+- Exponentiation Operator：指数运算符
 
 ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
 
