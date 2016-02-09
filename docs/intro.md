@@ -631,12 +631,12 @@ fs.writeFileSync('out.js.map', result.sourceMap);
 
 - Class and Property Decorators：Class的修饰器
 - Class Property Declarations：Class的属性声明
-- es7.exportExtensions：export的写法改进
+- Additional export-from Statements：export的写法改进
 - String.prototype.{trimLeft,trimRight}：字符串删除头尾空格的方法
 
 **Stage 2**：
 
-- es7.objectRestSpread：对象的Rest参数和扩展运算符
+- Rest/Spread Properties：对象的Rest参数和扩展运算符
 
 **Stage 3**
 
