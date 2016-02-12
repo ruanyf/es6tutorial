@@ -565,7 +565,7 @@ function* g(){
 反过来，Generator函数内抛出的错误，也可以被函数体外的`catch`捕获。
 
 ```javascript
-function *foo() {
+function* foo() {
   var x = yield 3;
   var y = x.toUpperCase();
   yield y;
