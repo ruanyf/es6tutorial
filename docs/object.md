@@ -810,11 +810,11 @@ function entries(obj) {
 
 ## 对象的扩展运算符
 
-目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将rest参数/扩展运算符（...）引入对象。Babel转码器已经支持这项功能。
+目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将Rest解构赋值/扩展运算符（...）引入对象。Babel转码器已经支持这项功能。
 
-**（1）Rest参数**
+**（1）Rest解构赋值**
 
-Rest参数用于从一个对象取值，相当于将所有可遍历的、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
+对象的Rest解构赋值用于从一个对象取值，相当于将所有可遍历的、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
 
 ```javascript
 let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
@@ -823,9 +823,25 @@ y // 2
 z // { a: 3, b: 4 }
 ```
 
-上面代码中，变量z是Rest参数所在的对象。它获取等号右边的所有尚未读取的键（a和b），将它们和它们的值拷贝过来。
+上面代码中，变量`z`是Rest解构赋值所在的对象。它获取等号右边的所有尚未读取的键（`a`和`b`），将它们和它们的值拷贝过来。
 
-注意，Rest参数的拷贝是浅拷贝，即如果一个键的值是复合类型的值（数组、对象、函数）、那么Rest参数拷贝的是这个值的引用，而不是这个值的副本。
+由于Rest解构赋值要求等号右边是一个对象，所以如果等号右边是`undefined`或`null`，就会报错，因为它们无法转为对象。
+
+```javascript
+let { x, y, ...z } = null; // 运行时错误
+let { x, y, ...z } = undefined; // 运行时错误
+```
+
+Rest解构赋值必须是最后一个参数，否则会报错。
+
+```javascript
+let { ...x, y, z } = obj; // 句法错误
+let { x, ...y, ...z } = obj; // 句法错误
+```
+
+上面代码中，Rest解构赋值不是最后一个参数，所以会报错。
+
+注意，Rest解构赋值的拷贝是浅拷贝，即如果一个键的值是复合类型的值（数组、对象、函数）、那么Rest解构赋值拷贝的是这个值的引用，而不是这个值的副本。
 
 ```javascript
 let obj = { a: { b: 1 } };
@@ -834,9 +850,9 @@ obj.a.b = 2;
 x.a.b // 2
 ```
 
-上面代码中，`x`是Rest参数，拷贝了对象`obj`的`a`属性。a属性引用了一个对象，修改这个对象的值，会影响到Rest参数对它的引用。
+上面代码中，`x`是Rest解构赋值所在的对象，拷贝了对象`obj`的`a`属性。`a`属性引用了一个对象，修改这个对象的值，会影响到Rest解构赋值对它的引用。
 
-另外，Rest参数不会拷贝继承自原型对象的属性。
+另外，Rest解构赋不会拷贝继承自原型对象的属性。
 
 ```javascript
 let o1 = { a: 1 };
@@ -846,11 +862,40 @@ let o3 = { ...o2 };
 o3 // { b: 2 }
 ```
 
-上面代码中，对象o3是o2的复制，但是只复制了o2自身的属性，没有复制它的原型对象o1的属性。
+上面代码中，对象`o3`是`o2`的拷贝，但是只复制了`o2`自身的属性，没有复制它的原型对象`o1`的属性。
+
+下面是另一个例子。
+
+```javascript
+var o = Object.create({ x: 1, y: 2 });
+o.z = 3;
+
+let { x, ...{ y, z } = o;
+x; // 1
+y; // undefined
+z; // 3
+```
+
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取继承的属性；Rest解构赋值产生的变量`y`和`z`，只能读取对象自身的属性，所以只有变量`z`可以赋值成功。
+
+Rest解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
+
+```javascript
+function baseFunction({ a, b }) {
+  // ...
+}
+function wrapperFunction({ x, y, ...restConfig }) {
+  // 使用x和y参数进行操作
+  // 其余参数传给原始函数
+  return baseFunction(restConfig);
+}
+```
+
+上面代码中，原始函数`baseFunction`接受`a`和`b`作为参数，函数`wrapperFunction`在`baseFunction`的基础上进行了扩展，能够接受多余的参数，并且保留原始函数的行为。
 
 **（2）扩展运算符**
 
-扩展运算符用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
+扩展运算符（`...`）用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
 
 ```javascript
 let z = { a: 3, b: 4 };
@@ -870,9 +915,11 @@ let aClone = Object.assign({}, a);
 
 ```javascript
 let ab = { ...a, ...b };
+// 等同于
+let ab = Object.assign({}, a, b);
 ```
 
-扩展运算符还可以用自定义属性，会在新对象之中，覆盖掉原有参数。
+如果用户自定义的属性，放在扩展运算符后面，则扩展运算符内部的同名属性会被覆盖掉。
 
 ```javascript
 let aWithOverrides = { ...a, x: 1, y: 2 };
@@ -884,7 +931,18 @@ let x = 1, y = 2, aWithOverrides = { ...a, x, y };
 let aWithOverrides = Object.assign({}, a, { x: 1, y: 2 });
 ```
 
-上面代码中，a对象的x属性和y属性，拷贝到新对象后会被覆盖掉。
+上面代码中，`a`对象的`x`属性和`y`属性，拷贝到新对象后会被覆盖掉。
+
+这用来修改现有对象部分的部分属性就很方便了。
+
+```javascript
+let newVersion = {
+  ...previousVersion,
+  name: 'New Name', // Override the name property
+};
+```
+
+上面代码中，`newVersion`对象自定义了`name`属性，其他属性全部复制自`previousVersion`对象。
 
 如果把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
 
@@ -918,7 +976,7 @@ let runtimeError = {
 };
 ```
 
-如果扩展运算符的参数是null或undefined，这个两个值会被忽略，不会报错。
+如果扩展运算符的参数是`null`或`undefined`，这个两个值会被忽略，不会报错。
 
 ```javascript
 let emptyObject = { ...null, ...undefined }; // 不报错
