@@ -691,7 +691,7 @@ function* somethingAsync(x) {
 }
 ```
 
-上面的代码允许并发三个somethingAsync异步操作，等到它们全部完成，才会进行下一步。
+上面的代码允许并发三个`somethingAsync`异步操作，等到它们全部完成，才会进行下一步。
 
 ## async函数
 
@@ -721,7 +721,7 @@ var gen = function* (){
 };
 ```
 
-写成 async 函数，就是下面这样。
+写成`async`函数，就是下面这样。
 
 ```javascript
 var asyncReadFile = async function (){
@@ -734,7 +734,7 @@ var asyncReadFile = async function (){
 
 一比较就会发现，`async`函数就是将Generator函数的星号（`*`）替换成`async`，将`yield`替换成`await`，仅此而已。
 
-`async`函数对 Generator 函数的改进，体现在以下三点。
+`async`函数对 Generator 函数的改进，体现在以下四点。
 
 （1）内置执行器。Generator函数的执行必须靠执行器，所以才有了`co`模块，而`async`函数自带执行器。也就是说，`async`函数的执行，与普通函数一模一样，只要一行。
 
@@ -751,6 +751,8 @@ var result = asyncReadFile();
 （4）返回值是Promise。`async`函数的返回值是Promise对象，这比Generator函数的返回值是Iterator对象方便多了。你可以用`then`方法指定下一步的操作。
 
 进一步说，async函数完全可以看作多个异步操作，包装成的一个Promise对象，而`await`命令就是内部`then`命令的语法糖。
+
+正常情况下，`await`命令后面是一个Promise对象，否则会被转成Promise。
 
 ### async函数的实现
 
@@ -770,9 +772,9 @@ function fn(args){
 }
 ```
 
-所有的 async 函数都可以写成上面的第二种形式，其中的 spawn 函数就是自动执行器。
+所有的`async`函数都可以写成上面的第二种形式，其中的 spawn 函数就是自动执行器。
 
-下面给出 spawn 函数的实现，基本就是前文自动执行器的翻版。
+下面给出`spawn`函数的实现，基本就是前文自动执行器的翻版。
 
 ```javascript
 function spawn(genF) {
@@ -798,11 +800,11 @@ function spawn(genF) {
 }
 ```
 
-async 函数是非常新的语法功能，新到都不属于 ES6，而是属于 ES7。目前，它仍处于提案阶段，但是转码器 Babel 和 regenerator 都已经支持，转码后就能使用。
+`async`函数是非常新的语法功能，新到都不属于 ES6，而是属于 ES7。目前，它仍处于提案阶段，但是转码器`Babel`和`regenerator`都已经支持，转码后就能使用。
 
 ### async 函数的用法
 
-同Generator函数一样，async函数返回一个Promise对象，可以使用then方法添加回调函数。当函数执行的时候，一旦遇到 await 就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
+同Generator函数一样，`async`函数返回一个Promise对象，可以使用`then`方法添加回调函数。当函数执行的时候，一旦遇到`await`就会先返回，等到触发的异步操作完成，再接着执行函数体内后面的语句。
 
 下面是一个例子。
 
@@ -813,12 +815,12 @@ async function getStockPriceByName(name) {
   return stockPrice;
 }
 
-getStockPriceByName('goog').then(function (result){
+getStockPriceByName('goog').then(function (result) {
   console.log(result);
 });
 ```
 
-上面代码是一个获取股票报价的函数，函数前面的async关键字，表明该函数内部有异步操作。调用该函数时，会立即返回一个Promise对象。
+上面代码是一个获取股票报价的函数，函数前面的`async`关键字，表明该函数内部有异步操作。调用该函数时，会立即返回一个`Promise`对象。
 
 下面的例子，指定多少毫秒后输出一个值。
 
@@ -838,6 +840,22 @@ asyncPrint('hello world', 50);
 ```
 
 上面代码指定50毫秒以后，输出"hello world"。
+
+Async函数有多种使用形式。
+
+```javascript
+// 函数声明
+async function foo() {}
+
+// 函数表达式
+const foo = async function () {};
+
+// 对象的方法
+let obj = { async foo() {} }
+
+// 箭头函数
+const foo = async () => {};
+```
 
 ### 注意点
 
