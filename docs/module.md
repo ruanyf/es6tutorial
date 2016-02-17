@@ -394,9 +394,7 @@ function incCounter() {
   counter++;
 }
 module.exports = {
-  get counter() {
-    return counter;
-  },
+  counter: counter,
   incCounter: incCounter,
 };
 ```
@@ -405,17 +403,38 @@ module.exports = {
 
 ```javascript
 // main.js
-var counter = require('./lib').counter;
-var incCounter = require('./lib').incCounter;
+var mod = require('./lib');
 
-console.log(counter);  // 3
-incCounter();
-console.log(counter); // 3
+console.log(mod.counter);  // 3
+mod.incCounter();
+console.log(mod.counter); // 3
 ```
 
-上面代码说明，`counter`输出以后，`lib.js`模块内部的变化就影响不到`counter`了。
+上面代码说明，`lib.js`模块加载以后，它的内部变化就影响不到输出的`mod.counter`了。这是因为`mod.counter`是一个原始类型的值，会被缓存。除非写成一个函数，才能得到内部变动后的值。
 
-ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，输入值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+```javascript
+// lib.js
+var counter = 3;
+function incCounter() {
+  counter++;
+}
+module.exports = {
+  get counter() {
+    return counter
+  },
+  incCounter: incCounter,
+};
+```
+
+上面代码中，输出的`counter`属性实际上是一个取值器函数。现在再执行`main.js`，就可以正确读取内部变量`counter`的变动了。
+
+```bash
+$ node main.js
+3
+4
+```
+
+ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，`import`输入的值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
 
 还是举上面的例子。
 
