@@ -190,6 +190,7 @@
 - Dave Herman, [Static module resolution](http://calculist.org/blog/2012/06/29/static-module-resolution/): ES6模块的静态化设计思想
 - Jason Orendorff, [ES6 In Depth: Modules](https://hacks.mozilla.org/2015/08/es6-in-depth-modules/): ES6模块设计思想的介绍
 - Ben Newman, [The Importance of import and export](http://benjamn.github.io/empirenode-2015/#/): ES6模块的设计思想
+- ESDiscuss, [Why is "export default var a = 1;" invalid syntax?](https://esdiscuss.org/topic/why-is-export-default-var-a-1-invalid-syntax)
 
 ## 工具
 

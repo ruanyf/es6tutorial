@@ -248,7 +248,7 @@ export default function () {
 
 上面代码是一个模块文件`export-default.js`，它的默认输出是一个函数。
 
-其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
+其他模块加载该模块时，`import`命令可以为该匿名函数指定任意名字。
 
 ```javascript
 // import-default.js
@@ -256,7 +256,7 @@ import customName from './export-default';
 customName(); // 'foo'
 ```
 
-上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
+上面代码的`impor`t命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
 
 `export default`命令用在非匿名函数前，也是可以的。
 
@@ -307,10 +307,30 @@ function add(x, y) {
   return x * y;
 };
 export {add as default};
+// 等同于
+// export default add;
 
 // app.js
 import { default as xxx } from 'modules';
+// 等同于
+// import xxx from 'modules';
 ```
+
+正是因为`export default`命令其实只是输出一个叫做`default`的变量，所以它后面不能跟变量声明语句。
+
+```javascript
+// 正确
+export var a = 1;
+
+// 正确
+var a = 1;
+export default a;
+
+// 错误
+export default var a = 1;
+```
+
+上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
 
 有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
 
