@@ -623,7 +623,7 @@ function tag(stringArr, ...values){
 - 第二个参数: 15
 - 第三个参数：50
 
-也就是说，`tag`数实际上以下面的形式调用。
+也就是说，`tag`函数实际上以下面的形式调用。
 
 ```javascript
 tag(['Hello ', ' world ', ''], 15, 50)
