@@ -105,6 +105,12 @@ body {
     font-size: 0.7rem;
 }
 
+input[type=search] {
+  display: block;
+  width: 180px;
+  text-align: left;
+}
+
 #content {
     padding-top: 10px;
     padding-bottom: 150px;

@@ -12,6 +12,7 @@ var ditto = {
     edit_button: true,
     back_to_top_button: true,
     save_progress: true, // 保存阅读进度
+    search_bar: true,
 
     // initialize function
     run: initialize
@@ -40,8 +41,13 @@ function initialize() {
 }
 
 function init_sidebar_section() {
-    $.get(ditto.sidebar_file, function(data) {
+    $.get(ditto.sidebar_file, function (data) {
         $(ditto.sidebar_id).html(marked(data));
+
+        if (ditto.search_bar) {
+           init_searchbar();
+        }
+
         // 初始化内容数组
         var menuOL = $(ditto.sidebar_id + ' ol');
         menuOL.attr('start', 0);
@@ -66,8 +72,24 @@ function init_sidebar_section() {
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
-
 }
+
+function init_searchbar() {
+  var search = '<input name="search" type="search">';
+  $(ditto.sidebar_id).find('h2').first().before($(search));
+  $('input[name=search]').keydown(searchbar_listener);
+}
+
+function searchbar_listener(event) {
+  if (event.which === 13) {
+    var q = $('input[name=search]').val();
+    if (q !== '') {
+      var url = 'https://github.com/ruanyf/es6tutorial/search?utf8=✓&q=' + encodeURIComponent(q);
+      location.href = url;
+    }
+  }
+}
+
 
 function init_back_to_top_button() {
   $(ditto.back_to_top_id).show();
