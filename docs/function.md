@@ -839,7 +839,7 @@ foo.call( { id: 42 } );
 // id: 42
 ```
 
-上面代码中，`setTimeout`的参数是一个箭头函数，100毫秒后执行。如果是普通函数，执行时`this`应该指向全局对象，但是箭头函数导致`this`总是指向函数所在的对象。
+上面代码中，`setTimeout`的参数是一个箭头函数，100毫秒后执行。如果是普通函数，执行时`this`应该指向全局对象`window`，但是箭头函数导致`this`总是指向函数所在的对象（本例是`{id: 42}`）。
 
 下面是另一个例子。
 
@@ -858,7 +858,7 @@ var handler = {
 };
 ```
 
-上面代码的`init`方法中，使用了箭头函数，这导致`this`总是指向`handler`对象。否则，回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向全局对象。
+上面代码的`init`方法中，使用了箭头函数，这导致`this`总是指向`handler`对象。否则，回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向`document`对象。
 
 ```javascript
 function Timer () {
