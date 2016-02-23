@@ -248,7 +248,7 @@ $ babel-node es6.js
 `babel-node`也可以安装在项目中。
 
 ```bash
-$ npm install --save-dev babel-cli
+$ npm install --save-dev babel-node
 ```
 
 然后，改写`package.json`。
