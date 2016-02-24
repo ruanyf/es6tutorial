@@ -599,7 +599,7 @@ var jsonData = {
 let { id, status, data: number } = jsonData;
 
 console.log(id, status, number)
-// 42, OK, [867, 5309]
+// 42, "OK", [867, 5309]
 ```
 
 上面代码可以快速提取JSON数据的值。
