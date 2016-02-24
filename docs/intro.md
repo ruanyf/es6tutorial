@@ -320,8 +320,8 @@ babel.transformFromAst(ast, code, options);
 下面是一个例子。
 
 ```javascript
-var es5Code = 'let x = n => n + 1';
-var es6Code = require('babel-core')
+var es6Code = 'let x = n => n + 1';
+var es5Code = require('babel-core')
   .transform(es5Code, {
     presets: ['es2015']
   })
@@ -329,7 +329,7 @@ var es6Code = require('babel-core')
 // '"use strict";\n\nvar x = function x(n) {\n  return n + 1;\n};'
 ```
 
-上面代码中，`transform`方法的第一个参数是一个字符串，表示需要转换的ES5代码，第二个参数是转换的配置对象。
+上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的ES6代码，第二个参数是转换的配置对象。
 
 ### babel-polyfill
 
