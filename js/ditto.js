@@ -329,7 +329,7 @@ function router() {
 
     if (sectionId) {
       $('html, body').animate({
-        scrollTop: ($('#' + sectionId).offset().top)
+        scrollTop: ($('#' + decodeURI(sectionId)).offset().top)
       }, 300);
     } else {
       if (location.hash !== '' || Boolean(perc)) {
