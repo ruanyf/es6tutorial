@@ -716,7 +716,7 @@ foo.bind({}).name // "bound foo"
 
 ### 基本用法
 
-ES6允许使用“箭头”（=>）定义函数。
+ES6允许使用“箭头”（`=>`）定义函数。
 
 ```javascript
 var f = v => v;
@@ -830,16 +830,18 @@ headAndTail(1, 2, 3, 4, 5)
 
 ```javascript
 function foo() {
-   setTimeout( () => {
-      console.log("id:", this.id);
-   },100);
+  setTimeout( () => {
+    console.log("id:", this.id);
+  },100);
 }
+
+var id = 21;
 
 foo.call( { id: 42 } );
 // id: 42
 ```
 
-上面代码中，`setTimeout`的参数是一个箭头函数，100毫秒后执行。如果是普通函数，执行时`this`应该指向全局对象`window`，但是箭头函数导致`this`总是指向函数所在的对象（本例是`{id: 42}`）。
+上面代码中，`setTimeout`的参数是一个箭头函数，这个箭头函数的定义生效是在`foo`函数生成时，而它的真正执行要等到100毫秒后。如果是普通函数，执行时`this`应该指向全局对象`window`，这时应该输出`21`。但是，箭头函数导致`this`总是指向函数定义生效时所在的对象（本例是`{id: 42}`），所以输出的是`42`。
 
 下面是另一个例子。
 
@@ -858,7 +860,7 @@ var handler = {
 };
 ```
 
-上面代码的`init`方法中，使用了箭头函数，这导致`this`总是指向`handler`对象。否则，回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向`document`对象。
+上面代码的`init`方法中，使用了箭头函数，这导致这个箭头函数里面的`this`，总是指向`handler`对象。否则，回调函数运行时，`this.doSomething`这一行会报错，因为此时`this`指向`document`对象。
 
 ```javascript
 function Timer () {
@@ -870,28 +872,58 @@ setTimeout(() => console.log(timer.seconds), 3100)
 // 3
 ```
 
-上面代码中，`Timer`函数内部的`setInterval`调用了`this.seconds`属性，通过箭头函数让`this`总是指向Timer的实例对象。否则，输出结果是0，而不是3。
+上面代码中，`Timer`函数内部的`setInterval`调用了`this.seconds`属性，通过箭头函数让`this`总是指向`Timer`的实例对象。否则，输出结果是0，而不是3。
 
 `this`指向的固定化，并不是因为箭头函数内部有绑定`this`的机制，实际原因是箭头函数根本没有自己的`this`，导致内部的`this`就是外层代码块的`this`。正是因为它没有`this`，所以也就不能用作构造函数。
+
+所以，箭头函数转成ES5的代码如下。
+
+```javascript
+// ES6
+function foo() {
+  setTimeout( () => {
+    console.log("id:", this.id);
+  },100);
+}
+
+// ES5
+function foo() {
+  setTimeout(function () {
+    console.log("id:", this.id);
+  }.bind(this), 100);
+}
+
+// 或者
+function foo() {
+  var _this = this;
+
+  setTimeout(function () {
+    console.log("id:", _this.id);
+  }, 100);
+}
+```
 
 请问下面的代码之中有几个`this`？
 
 ```javascript
 function foo() {
-   return () => {
+  return () => {
+    return () => {
       return () => {
-         return () => {
-            console.log("id:", this.id);
-         };
+        console.log("id:", this.id);
       };
-   };
+    };
+  };
 }
 
-foo.call( { id: 42 } )()()();
-// id: 42
+var f = foo.call({id: 1});
+
+var t1 = f.call({id: 2})()(); // id: 1
+var t2 = f().call({id: 3})(); // id: 1
+var t3 = f()().call({id: 4}); // id: 1
 ```
 
-上面代码之中，只有一个`this`，就是函数`foo`的`this`。因为所有的内层函数都是箭头函数，都没有自己的`this`，所以它们的`this`其实都是最外层`foo`函数的`this`。
+上面代码之中，只有一个`this`，就是函数`foo`的`this`，所以`t1`、`t2`、`t3`都输出同样的结果。因为所有的内层函数都是箭头函数，都没有自己的`this`，所以它们的`this`其实都是最外层`foo`函数的`this`。
 
 除了`this`，以下三个变量在箭头函数之中也是不存在的，指向外层函数的对应变量：`arguments`、`super`、`new.target`。
 
