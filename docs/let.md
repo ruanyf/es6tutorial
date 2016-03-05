@@ -310,7 +310,42 @@ let f;
 f() // "secret"
 ```
 
-需要注意的是，如果在严格模式下，函数只能在顶层作用域和函数内声明，其他情况（比如if代码块、循环代码块）的声明都会报错。
+ES5的严格模式规定，函数只能在顶层作用域和函数内声明，其他情况（比如if代码块、循环代码块）的声明都会报错。
+
+```javascript
+// ES5
+'use strict';
+if (true) {
+  function f() {} // 报错
+}
+```
+
+ES6由于引入了块级作用域，这种情况可以理解成函数在块级作用域内声明，因此不报错，但是构成区块的大括号不能少，否则还是会报错。
+
+```javascript
+// 不报错
+'use strict';
+if (true) {
+  function f() {}
+}
+
+// 报错
+'use strict';
+if (true)
+  function f() {}
+```
+
+另外，这样声明的函数，在区块外是不可用的。
+
+```javascript
+'use strict';
+if (true) {
+  function f() {}
+}
+f() // ReferenceError: f is not defined
+```
+
+上面代码中，函数`f`是在块级作用域内部声明的，外部是不可用的。
 
 ## const命令
 

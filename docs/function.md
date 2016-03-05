@@ -888,13 +888,6 @@ function foo() {
 
 // ES5
 function foo() {
-  setTimeout(function () {
-    console.log("id:", this.id);
-  }.bind(this), 100);
-}
-
-// 或者
-function foo() {
   var _this = this;
 
   setTimeout(function () {
@@ -903,6 +896,8 @@ function foo() {
 }
 ```
 
+上面代码中，箭头函数转成ES5代码时，内部的`this`需要改为引用外部的`this`。
+
 请问下面的代码之中有几个`this`？
 
 ```javascript
@@ -910,7 +905,7 @@ function foo() {
   return () => {
     return () => {
       return () => {
-        console.log("id:", this.id);
+        console.log(`id:`, this.id);
       };
     };
   };
