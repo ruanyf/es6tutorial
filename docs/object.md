@@ -748,7 +748,7 @@ Object.values(obj) // []
 `Object.values`会过滤属性名为Symbol值的属性。
 
 ```javascript
-Object.entries({ [Symbol()]: 123, foo: 'abc' });
+Object.values({ [Symbol()]: 123, foo: 'abc' });
 // ['abc']
 ```
 
@@ -886,7 +886,7 @@ o3 // { b: 2 }
 var o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
-let { x, ...{ y, z } = o;
+let { x, ...{ y, z } } = o;
 x; // 1
 y; // undefined
 z; // 3
