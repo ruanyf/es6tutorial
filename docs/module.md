@@ -38,7 +38,7 @@ import { stat, exists, readFile } from 'fs';
 
 ## 严格模式
 
-ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
+ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`。
 
 严格模式主要有以下限制。
 
@@ -181,16 +181,16 @@ export default es6;
 
 ```javascript
 // 提案的写法
-export v from "mod";
+export v from 'mod';
 
 // 现行的写法
-export {v} from "mod";
+export {v} from 'mod';
 ```
 
 `import`语句会执行所加载的模块，因此可以有下面的写法。
 
 ```javascript
-import 'lodash'
+import 'lodash';
 ```
 
 上面代码仅仅执行`lodash`模块，但是不输入任何值。
@@ -220,8 +220,8 @@ export function circumference(radius) {
 
 import { area, circumference } from './circle';
 
-console.log("圆面积：" + area(4));
-console.log("圆周长：" + circumference(14));
+console.log('圆面积：' + area(4));
+console.log('圆周长：' + circumference(14));
 ```
 
 上面写法是逐一指定要加载的方法，整体加载的写法如下。
@@ -229,8 +229,8 @@ console.log("圆周长：" + circumference(14));
 ```javascript
 import * as circle from './circle';
 
-console.log("圆面积：" + circle.area(4));
-console.log("圆周长：" + circle.circumference(14));
+console.log('圆面积：' + circle.area(4));
+console.log('圆周长：' + circle.circumference(14));
 ```
 
 ## export default命令
@@ -394,8 +394,8 @@ export { area as circleArea } from 'circle';
 ```javascript
 // main.js
 
-import * as math from "circleplus";
-import exp from "circleplus";
+import * as math from 'circleplus';
+import exp from 'circleplus';
 console.log(exp(math.e));
 ```
 
