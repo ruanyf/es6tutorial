@@ -701,18 +701,19 @@ Object.keys(obj)
 目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
 
 ```javascript
+ let {keys, values, entries} = Object;
 let obj = { a: 1, b: 2, c: 3 };
 
 for (let key of keys(obj)) {
-  // ['a', 'b', 'c']
+  console.log(key); // 'a', 'b', 'c'
 }
 
 for (let value of values(obj)) {
-  // [1, 2, 3]
+  console.log(value); // 1, 2, 3
 }
 
 for (let [key, value] of entries(obj)) {
-  // [['a', 1], ['b', 2], ['c', 3]]
+  console.log([key, value]); // ['a', 1], ['b', 2], ['c', 3]
 }
 ```
 
@@ -739,7 +740,7 @@ Object.values(obj)
 `Object.values`只返回对象自身的可遍历属性。
 
 ```javascript
-var obj = Object.create({}, {p: 42});
+var obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 

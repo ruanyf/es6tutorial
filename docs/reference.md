@@ -35,6 +35,7 @@
 - kangax, [Why typeof is no longer “safe”](http://es-discourse.com/t/why-typeof-is-no-longer-safe/15): 讨论在块级作用域内，let命令的变量声明和赋值的行为
 - Axel Rauschmayer, [Variables and scoping in ECMAScript 6](http://www.2ality.com/2015/02/es6-scoping.html): 讨论块级作用域与let和const的行为
 - Nicolas Bevacqua, [ES6 Let, Const and the “Temporal Dead Zone” (TDZ) in Depth](http://ponyfoo.com/articles/es6-let-const-and-temporal-dead-zone-in-depth)
+- acorn, [Function statements in strict mode](https://github.com/ternjs/acorn/issues/118): 块级作用域对严格模式的函数声明的影响
 
 ## 解构赋值
 
