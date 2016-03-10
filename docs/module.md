@@ -256,7 +256,7 @@ import customName from './export-default';
 customName(); // 'foo'
 ```
 
-上面代码的`impor`t命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
+上面代码的`import`命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
 
 `export default`命令用在非匿名函数前，也是可以的。
 
