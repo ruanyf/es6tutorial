@@ -116,7 +116,7 @@ function goTop(e) {
   $('html body').animate({
     scrollTop: 0
   }, 200);
-  history.pushState(null, null, '#' + location.hash.split('#')[1]);
+  history.pushState(null, null, '#' + (location.hash.split('#')[1] || 'README'));
 }
 
 function goSection(sectionId){
