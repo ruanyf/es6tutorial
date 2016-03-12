@@ -1,23 +1,23 @@
 # 字符串的扩展
 
-ES6加强了对Unicode的支持，并且扩展了字符串对象。
+ES6加强+了对Unicode的支持，并且扩展了字符串对象。
 
 ## 字符的Unicode表示法
 
 JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示字符的码点。
 
 ```javascript
-"\u0061"
+'\u0061'
 // "a"
 ```
 
 但是，这种表示法只限于`\u0000`——`\uFFFF`之间的字符。超出这个范围的字符，必须用两个双字节的形式表达。
 
 ```javascript
-"\uD842\uDFB7"
+'\uD842\uDFB7'
 // "𠮷"
 
-"\u20BB7"
+'\u20BB7'
 // " 7"
 ```
 
@@ -26,10 +26,10 @@ JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示�
 ES6对这一点做出了改进，只要将码点放入大括号，就能正确解读该字符。
 
 ```javascript
-"\u{20BB7}"
+'\u{20BB7}'
 // "𠮷"
 
-"\u{41}\u{42}\u{43}"
+'\u{41}\u{42}\u{43}'
 // "ABC"
 
 let hello = 123;
@@ -56,7 +56,7 @@ hell\u{6F} // 123
 JavaScript内部，字符以UTF-16的格式储存，每个字符固定为2个字节。对于那些需要4个字节储存的字符（Unicode码点大于0xFFFF的字符），JavaScript会认为它们是两个字符。
 
 ```javascript
-var s = "𠮷";
+var s = '𠮷';
 
 s.length // 2
 s.charAt(0) // ''
@@ -109,8 +109,8 @@ function is32Bit(c) {
   return c.codePointAt(0) > 0xFFFF;
 }
 
-is32Bit("𠮷") // true
-is32Bit("a") // false
+is32Bit('𠮷') // true
+is32Bit('a') // false
 ```
 
 ## String.fromCodePoint()
@@ -354,18 +354,18 @@ ES7推出了字符串补全长度的功能。如果某个字符串不够指定�
 传统的JavaScript语言，输出模板通常是这样写的。
 
 ```javascript
-$("#result").append(
-  "There are <b>" + basket.count + "</b> " +
-  "items in your basket, " +
-  "<em>" + basket.onSale +
-  "</em> are on sale!"
+$('#result').append(
+  'There are <b>' + basket.count + '</b> ' +
+  'items in your basket, ' +
+  '<em>' + basket.onSale +
+  '</em> are on sale!'
 );
 ```
 
 上面这种写法相当繁琐不方便，ES6引入了模板字符串解决这个问题。
 
 ```javascript
-$("#result").append(`
+$('#result').append(`
   There are <b>${basket.count}</b> items
    in your basket, <em>${basket.onSale}</em>
   are on sale!
@@ -386,7 +386,7 @@ console.log(`string text line 1
 string text line 2`);
 
 // 字符串中嵌入变量
-var name = "Bob", time = "today";
+var name = 'Bob', time = 'today';
 `Hello ${name}, how are you ${time}?`
 ```
 
@@ -399,7 +399,7 @@ var greeting = `\`Yo\` World!`;
 如果使用模板字符串表示多行字符串，所有的空格和缩进都会被保留在输出之中。
 
 ```javascript
-$("#warning").html(`
+$('#warning').html(`
   <h1>Watch out!</h1>
   <p>Unauthorized hockeying can result in penalties
   of up to ${maxPenalty} minutes.</p>
@@ -444,7 +444,7 @@ var obj = {x: 1, y: 2};
 
 ```javascript
 function fn() {
-  return "Hello World";
+  return 'Hello World';
 }
 
 `foo ${fn()} bar`
@@ -530,7 +530,7 @@ template = 'echo(`' + template + '`);';
 ```javascript
 var script =
 `(function parse(data){
-  var output = "";
+  var output = '';
 
   function echo(html){
     output += html;
@@ -559,7 +559,7 @@ function compile(template){
 
   var script =
   `(function parse(data){
-    var output = "";
+    var output = '';
 
     function echo(html){
       output += html;
@@ -578,7 +578,7 @@ function compile(template){
 
 ```javascript
 var parse = eval(compile(template));
-div.innerHTML = parse({ supplies: [ "broom", "mop", "cleaner" ] });
+div.innerHTML = parse({ supplies: [ 'broom', 'mop', 'cleaner' ] });
 //   <ul>
 //     <li>broom</li>
 //     <li>mop</li>
@@ -644,7 +644,7 @@ function tag(s, v1, v2) {
   console.log(v1);
   console.log(v2);
 
-  return "OK";
+  return 'OK';
 }
 
 tag`Hello ${ a + b } world ${ a * b}`;
@@ -663,7 +663,7 @@ var total = 30;
 var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
 
 function passthru(literals) {
-  var result = "";
+  var result = '';
   var i = 0;
 
   while (i < literals.length) {
@@ -685,7 +685,7 @@ msg // "The total is 30 (31.5 with tax)"
 
 ```javascript
 function passthru(literals, ...values) {
-  var output = "";
+  var output = '';
   for (var index = 0; index < values.length; index++) {
     output += literals[index] + values[index];
   }
@@ -707,9 +707,9 @@ function SaferHTML(templateData) {
     var arg = String(arguments[i]);
 
     // Escape special characters in the substitution.
-    s += arg.replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+    s += arg.replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
 
     // Don't escape special characters in the template.
     s += templateData[i];
@@ -763,7 +763,7 @@ jsx`
 java`
 class HelloWorldApp {
   public static void main(String[] args) {
-    System.out.println(“Hello World!”); // Display the string.
+    System.out.println("Hello World!"); // Display the string.
   }
 }
 `
@@ -781,7 +781,7 @@ function tag(strings) {
 }
 ```
 
-上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
+上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`['First line\nSecond line']`，那么`strings.raw`数组就是`['First line\\nSecond line']`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
 
 ## String.raw()
 
@@ -808,7 +808,7 @@ String.raw`Hi\\n`
 
 ```javascript
 String.raw = function (strings, ...values) {
-  var output = "";
+  var output = '';
   for (var index = 0; index < values.length; index++) {
     output += strings.raw[index] + values[index];
   }

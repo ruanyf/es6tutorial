@@ -30,7 +30,7 @@ foo // 1
 bar // 2
 baz // 3
 
-let [ , , third] = ["foo", "bar", "baz"];
+let [ , , third] = ['foo', 'bar', 'baz'];
 third // "baz"
 
 let [x, , y] = [1, 2, 3];
@@ -96,7 +96,7 @@ const [v1, v2, ..., vN ] = array;
 对于Set结构，也可以使用数组的解构赋值。
 
 ```javascript
-let [x, y, z] = new Set(["a", "b", "c"])
+let [x, y, z] = new Set(['a', 'b', 'c']);
 x // "a"
 ```
 
@@ -179,7 +179,7 @@ let [x = y, y = 1] = [];     // ReferenceError
 解构不仅可以用于数组，还可以用于对象。
 
 ```javascript
-var { foo, bar } = { foo: "aaa", bar: "bbb" };
+var { foo, bar } = { foo: 'aaa', bar: 'bbb' };
 foo // "aaa"
 bar // "bbb"
 ```
@@ -187,11 +187,11 @@ bar // "bbb"
 对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。
 
 ```javascript
-var { bar, foo } = { foo: "aaa", bar: "bbb" };
+var { bar, foo } = { foo: 'aaa', bar: 'bbb' };
 foo // "aaa"
 bar // "bbb"
 
-var { baz } = { foo: "aaa", bar: "bbb" };
+var { baz } = { foo: 'aaa', bar: 'bbb' };
 baz // undefined
 ```
 
@@ -200,7 +200,7 @@ baz // undefined
 如果变量名与属性名不一致，必须写成下面这样。
 
 ```javascript
-var { foo: baz } = { foo: "aaa", bar: "bbb" };
+var { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 
 let obj = { first: 'hello', last: 'world' };
@@ -212,13 +212,13 @@ l // 'world'
 这实际上说明，对象的解构赋值是下面形式的简写（参见《对象的扩展》一章）。
 
 ```javascript
-var { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
+var { foo: foo, bar: bar } = { foo: 'aaa', bar: 'bbb' };
 ```
 
 也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。真正被赋值的是后者，而不是前者。
 
 ```javascript
-var { foo: baz } = { foo: "aaa", bar: "bbb" };
+var { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 foo // error: foo is not defined
 ```
@@ -250,8 +250,8 @@ let baz;
 ```javascript
 var obj = {
   p: [
-    "Hello",
-    { y: "World" }
+    'Hello',
+    { y: 'World' }
   ]
 };
 
@@ -302,7 +302,7 @@ var {x, y = 5} = {x: 1};
 x // 1
 y // 5
 
-var { message: msg = "Something went wrong" } = {};
+var { message: msg = 'Something went wrong' } = {};
 msg // "Something went wrong"
 ```
 
@@ -343,7 +343,6 @@ _tmp.foo.bar // 报错
 
 ```javascript
 // 错误的写法
-
 var x;
 {x} = {x: 1};
 // SyntaxError: syntax error
@@ -554,14 +553,12 @@ function f([(z)]) { return z; }
 
 ```javascript
 // 返回一个数组
-
 function example() {
   return [1, 2, 3];
 }
 var [a, b, c] = example();
 
 // 返回一个对象
-
 function example() {
   return {
     foo: 1,
@@ -592,7 +589,7 @@ f({z: 3, y: 2, x: 1})
 ```javascript
 var jsonData = {
   id: 42,
-  status: "OK",
+  status: 'OK',
   data: [867, 5309]
 }
 
@@ -634,7 +631,7 @@ map.set('first', 'hello');
 map.set('second', 'world');
 
 for (let [key, value] of map) {
-  console.log(key + " is " + value);
+  console.log(key + ' is ' + value);
 }
 // first is hello
 // second is world
@@ -660,6 +657,6 @@ for (let [,value] of map) {
 
 ```javascript
 
-const { SourceMapConsumer, SourceNode } = require("source-map");
+const { SourceMapConsumer, SourceNode } = require('source-map');
 
 ```
