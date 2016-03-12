@@ -116,7 +116,7 @@ function goTop(e) {
   $('html body').animate({
     scrollTop: 0
   }, 200);
-  history.pushState(null, null, '#' + location.hash.split('#')[1]);
+  history.pushState(null, null, '#' + (location.hash.split('#')[1] || 'README'));
 }
 
 function goSection(sectionId){
@@ -316,13 +316,26 @@ function router() {
       window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
 
       // http://docs.disqus.com/developers/universal/
-      (function() {
-        var dsq = document.createElement('script');
-        dsq.type = 'text/javascript';
-        dsq.async = true;
-        dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
+      if(document.getElementById('dsq') === null || typeof DISQUS === 'undefined') {
+        (function() {
+          var dsq = document.createElement('script');
+          dsq.id = 'dsq';
+          dsq.type = 'text/javascript';
+          dsq.async = true;
+          dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      }
+      else {
+        DISQUS.reset({
+            reload: true,
+            config: function () {
+                this.page.identifier = window.disqus_identifier;
+                this.page.url = window.disqus_url;
+                this.page.title = window.disqus_title;
+            }
+        });
+      }
     })();
 
     var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
