@@ -105,6 +105,30 @@ body {
     font-size: 0.7rem;
 }
 
+form.searchBox {
+  width: 180px;
+  border: 1px solid #4682BE;
+  height:20px;
+  position: relative;
+}
+
+input[type=search] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 160px;
+  height: 18px;
+  text-align: left;
+  border: none;
+}
+
+input.searchButton {
+  position: absolute;
+  top: 0;
+  left: 160px;
+  height: 18px;
+}
+
 #content {
     padding-top: 10px;
     padding-bottom: 150px;

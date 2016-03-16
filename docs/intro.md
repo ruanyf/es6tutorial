@@ -230,7 +230,7 @@ $ npm run build
 
 `babel-cli`工具自带一个`babel-node`命令，提供一个支持ES6的REPL环境。它支持Node的REPL环境的所有功能，而且可以直接运行ES6代码。
 
-它不用单独安装，而是随`babel-cli`一起安装。然后，执行`babel-node`就进入PEPL环境。
+它不用单独安装，而是随`babel-cli`一起安装。然后，执行`babel-node`就进入REPL环境。
 
 ```bash
 $ babel-node
@@ -320,8 +320,8 @@ babel.transformFromAst(ast, code, options);
 下面是一个例子。
 
 ```javascript
-var es5Code = 'let x = n => n + 1';
-var es6Code = require('babel-core')
+var es6Code = 'let x = n => n + 1';
+var es5Code = require('babel-core')
   .transform(es5Code, {
     presets: ['es2015']
   })
@@ -329,7 +329,7 @@ var es6Code = require('babel-core')
 // '"use strict";\n\nvar x = function x(n) {\n  return n + 1;\n};'
 ```
 
-上面代码中，`transform`方法的第一个参数是一个字符串，表示需要转换的ES5代码，第二个参数是转换的配置对象。
+上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的ES6代码，第二个参数是转换的配置对象。
 
 ### babel-polyfill
 

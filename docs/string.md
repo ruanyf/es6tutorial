@@ -180,12 +180,14 @@ ES5对字符串对象提供`charAt`方法，返回字符串给定位置的字符
 
 上面代码中，`charAt`方法返回的是UTF-16编码的第一个字节，实际上是无法显示的。
 
-ES7提供了字符串实例的`at`方法，可以识别Unicode编号大于`0xFFFF`的字符，返回正确的字符。Chrome浏览器已经支持该方法。
+目前，有一个提案，提出字符串实例的`at`方法，可以识别Unicode编号大于`0xFFFF`的字符，返回正确的字符。
 
 ```javascript
 'abc'.at(0) // "a"
 '𠮷'.at(0) // "𠮷"
 ```
+
+这个方法可以通过[垫片库](https://github.com/es-shims/String.prototype.at)实现。
 
 ## normalize()
 
@@ -623,7 +625,7 @@ function tag(stringArr, ...values){
 - 第二个参数: 15
 - 第三个参数：50
 
-也就是说，`tag`数实际上以下面的形式调用。
+也就是说，`tag`函数实际上以下面的形式调用。
 
 ```javascript
 tag(['Hello ', ' world ', ''], 15, 50)

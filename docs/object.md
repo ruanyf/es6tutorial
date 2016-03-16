@@ -312,7 +312,7 @@ Object.defineProperty(Object, 'is', {
 
 ## Object.assign()
 
-`Object.assign`方法用来将源对象（source）的所有可枚举属性，复制到目标对象（target）。它至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
+`Object.assign`方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
 
 ```javascript
 var target = { a: 1 };
@@ -323,6 +323,8 @@ var source2 = { c: 3 };
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
 ```
+
+`Object.assign`方法至少需要两个对象作为参数，第一个参数是目标对象，后面的参数都是源对象。只要有一个参数不是对象，就会抛出TypeError错误。
 
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
 
@@ -357,7 +359,19 @@ Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
 // { a: 'b', Symbol(c): 'd' }
 ```
 
-对于嵌套的对象，`Object.assign`的处理方法是替换，而不是添加。
+`Object.assign`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
+
+```javascript
+var obj1 = {a: {b: 1}};
+var obj2 = Object.assign({}, obj1);
+
+obj1.a.b = 2;
+obj2.a.b // 2
+```
+
+上面代码中，源对象`obj1`的`a`属性的值是一个对象，`Object.assign`拷贝得到的是这个对象的引用。这个对象的任何变化，都会反映到目标对象上面。
+
+对于这种嵌套的对象，一旦遇到同名属性，`Object.assign`的处理方法是替换，而不是添加。
 
 ```javascript
 var target = { a: { b: 'c', d: 'e' } }
@@ -366,7 +380,9 @@ Object.assign(target, source)
 // { a: { b: 'hello' } }
 ```
 
-上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。有一些函数库提供`Object.assign`的定制版本（比如Lodash的`_.defaultsDeep`方法），可以解决深拷贝的问题。
+上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。
+
+有一些函数库提供`Object.assign`的定制版本（比如Lodash的`_.defaultsDeep`方法），可以解决浅拷贝的问题，得到深拷贝的合并。
 
 注意，`Object.assign`可以用来处理数组，但是会把数组视为对象。
 
@@ -685,18 +701,19 @@ Object.keys(obj)
 目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
 
 ```javascript
+ let {keys, values, entries} = Object;
 let obj = { a: 1, b: 2, c: 3 };
 
 for (let key of keys(obj)) {
-  // ['a', 'b', 'c']
+  console.log(key); // 'a', 'b', 'c'
 }
 
 for (let value of values(obj)) {
-  // [1, 2, 3]
+  console.log(value); // 1, 2, 3
 }
 
 for (let [key, value] of entries(obj)) {
-  // [['a', 1], ['b', 2], ['c', 3]]
+  console.log([key, value]); // ['a', 1], ['b', 2], ['c', 3]
 }
 ```
 
@@ -723,7 +740,7 @@ Object.values(obj)
 `Object.values`只返回对象自身的可遍历属性。
 
 ```javascript
-var obj = Object.create({}, {p: 42});
+var obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 
@@ -732,7 +749,7 @@ Object.values(obj) // []
 `Object.values`会过滤属性名为Symbol值的属性。
 
 ```javascript
-Object.entries({ [Symbol()]: 123, foo: 'abc' });
+Object.values({ [Symbol()]: 123, foo: 'abc' });
 // ['abc']
 ```
 
@@ -870,7 +887,7 @@ o3 // { b: 2 }
 var o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
-let { x, ...{ y, z } = o;
+let { x, ...{ y, z } } = o;
 x; // 1
 y; // undefined
 z; // 3

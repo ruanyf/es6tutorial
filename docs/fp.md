@@ -188,4 +188,4 @@ f.zipWith = (op, ...xs) =>
 
 ## 参考链接
 
-- Mateo Gianolio, [Haskell in ES6: Part 1](http://casualjavascript.com/javascript/es6/haskell/native/implementation/2015/11/12/haskell-in-es6-part-1.html)
+- Mateo Gianolio, [Haskell in ES6: Part 1](http://casualjavascript.com/?1)

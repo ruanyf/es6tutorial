@@ -796,7 +796,7 @@ var descriptor = Object.getOwnPropertyDescriptor(
 
 ## Class的Generator方法
 
-如果某个方法之前加上星号（*），就表示该方法是一个Generator函数。
+如果某个方法之前加上星号（`*`），就表示该方法是一个Generator函数。
 
 ```javascript
 class Foo {
@@ -874,7 +874,7 @@ class Bar extends Foo {
 Bar.classMethod();
 ```
 
-## Class的静态属性
+## Class的静态属性和实例属性
 
 静态属性指的是Class本身的属性，即`Class.propname`，而不是定义在实例对象（`this`）上的属性。
 
@@ -886,7 +886,7 @@ Foo.prop = 1;
 Foo.prop // 1
 ```
 
-上面的写法可以读写`Foo`类的静态属性`prop`。
+上面的写法为`Foo`类定义了一个静态属性`prop`。
 
 目前，只有这种写法可行，因为ES6明确规定，Class内部只有静态方法，没有静态属性。
 
@@ -908,8 +908,11 @@ ES7有一个静态属性的[提案](https://github.com/jeffmo/es-class-propertie
 
 这个提案对实例属性和静态属性，都规定了新的写法。
 
+（1）类的实例属性
+
+类的实例属性可以用等式，写入类的定义之中。
+
 ```javascript
-// 实例属性的新写法
 class MyClass {
   myProp = 42;
 
@@ -917,8 +920,56 @@ class MyClass {
     console.log(this.myProp); // 42
   }
 }
+```
 
-// 静态属性的新写法
+上面代码中，`myProp`就是`MyClass`的实例属性。在`MyClass`的实例上，可以读取这个属性。
+
+以前，我们定义实例属性，只能写在类的`constructor`方法里面。
+
+```javascript
+class ReactCounter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0
+    };
+  }
+}
+```
+
+上面代码中，构造方法`constructor`里面，定义了`this.state`属性。
+
+有了新的写法以后，可以不在`constructor`方法里面定义。
+
+```javascript
+class ReactCounter extends React.Component {
+  state = {
+    count: 0
+  };
+}
+```
+
+这种写法比以前更清晰。
+
+为了可读性的目的，对于那些在`constructor`里面已经定义的实例属性，新写法允许直接列出。
+
+```javascript
+class ReactCounter extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      count: 0
+    };
+  }
+  state;
+}
+```
+
+（2）类的静态属性
+
+类的静态属性只要在上面的实例属性写法前面，加上`static`关键字就可以了。
+
+```javascript
 class MyClass {
   static myStaticProp = 42;
 
@@ -928,9 +979,25 @@ class MyClass {
 }
 ```
 
+同样的，这个新写法大大方便了静态属性的表达。
+
+```javascript
+// 老写法
+class Foo {
+}
+Foo.prop = 1;
+
+// 新写法
+class Foo {
+  static prop = 1;
+}
+```
+
+上面代码中，老写法的静态属性定义在类的外部。整个类生成以后，再生成静态属性。这样让人很容易忽略这个静态属性，也不符合相关代码应该放在一起的代码组织原则。另外，新写法是显式声明（declarative），而不是赋值处理，语义更好。
+
 ## new.target属性
 
-new是从构造函数生成实例的命令。ES6为new命令引入了一个`new.target`属性，（在构造函数中）返回new命令作用于的那个构造函数。如果构造函数不是通过new命令调用的，`new.target`会返回undefined，因此这个属性可以用来确定构造函数是怎么调用的。
+`new`是从构造函数生成实例的命令。ES6为`new`命令引入了一个`new.target`属性，（在构造函数中）返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
 
 ```javascript
 function Person(name) {

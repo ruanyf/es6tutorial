@@ -225,12 +225,12 @@ getJSON("/post/1.json").then(
 getJSON("/posts.json").then(function(posts) {
   // ...
 }).catch(function(error) {
-  // 处理前一个回调函数运行时发生的错误
+  // 处理 getJSON 和 前一个回调函数运行时发生的错误
   console.log('发生错误！', error);
 });
 ```
 
-上面代码中，`getJSON`方法返回一个Promise对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。
+上面代码中，`getJSON`方法返回一个Promise对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
 
 ```javascript
 p.then((val) => console.log("fulfilled:", val))
@@ -254,7 +254,7 @@ promise.catch(function(error) {
 // Error: test
 ```
 
-上面代码中，Promise抛出一个错误，就被`catch`方法指定的回调函数捕获。注意，上面的写法与下面两种写法是等价的。
+上面代码中，`promise`抛出一个错误，就被`catch`方法指定的回调函数捕获。注意，上面的写法与下面两种写法是等价的。
 
 ```javascript
 // 写法一
@@ -284,7 +284,7 @@ promise.catch(function(error) {
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
-  resolve("ok");
+  resolve('ok');
   throw new Error('test');
 });
 promise
@@ -330,9 +330,9 @@ promise
   });
 ```
 
-上面代码中，第二种写法要好于第一种写法，理由是前者更接近同步的写法（try/catch）。
+上面代码中，第二种写法要好于第一种写法，理由是第二种写法可以捕获前面`then`方法执行中的错误，也更接近同步的写法（`try/catch`）。因此，建议总是使用`catch`方法，而不使用`then`方法的第二个参数。
 
-跟传统的try/catch代码块不同的是，如果没有使用`catch`方法指定错误处理的回调函数，Promise对象抛出的错误不会传递到外层代码，即不会有任何反应。
+跟传统的`try/catch`代码块不同的是，如果没有使用`catch`方法指定错误处理的回调函数，Promise对象抛出的错误不会传递到外层代码，即不会有任何反应。
 
 ```javascript
 var someAsyncThing = function() {

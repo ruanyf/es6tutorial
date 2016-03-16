@@ -38,7 +38,7 @@ import { stat, exists, readFile } from 'fs';
 
 ## 严格模式
 
-ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict"`。
+ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`。
 
 严格模式主要有以下限制。
 
@@ -113,7 +113,7 @@ export {
 
 上面代码使用`as`关键字，重命名了函数`v1`和`v2`的对外接口。重命名后，`v2`可以用不同的名字输出两次。
 
-最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下面的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。
+最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下一节的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。
 
 ```javascript
 function foo() {
@@ -181,16 +181,16 @@ export default es6;
 
 ```javascript
 // 提案的写法
-export v from "mod";
+export v from 'mod';
 
 // 现行的写法
-export {v} from "mod";
+export {v} from 'mod';
 ```
 
 `import`语句会执行所加载的模块，因此可以有下面的写法。
 
 ```javascript
-import 'lodash'
+import 'lodash';
 ```
 
 上面代码仅仅执行`lodash`模块，但是不输入任何值。
@@ -220,8 +220,8 @@ export function circumference(radius) {
 
 import { area, circumference } from './circle';
 
-console.log("圆面积：" + area(4));
-console.log("圆周长：" + circumference(14));
+console.log('圆面积：' + area(4));
+console.log('圆周长：' + circumference(14));
 ```
 
 上面写法是逐一指定要加载的方法，整体加载的写法如下。
@@ -229,8 +229,8 @@ console.log("圆周长：" + circumference(14));
 ```javascript
 import * as circle from './circle';
 
-console.log("圆面积：" + circle.area(4));
-console.log("圆周长：" + circle.circumference(14));
+console.log('圆面积：' + circle.area(4));
+console.log('圆周长：' + circle.circumference(14));
 ```
 
 ## export default命令
@@ -248,7 +248,7 @@ export default function () {
 
 上面代码是一个模块文件`export-default.js`，它的默认输出是一个函数。
 
-其他模块加载该模块时，import命令可以为该匿名函数指定任意名字。
+其他模块加载该模块时，`import`命令可以为该匿名函数指定任意名字。
 
 ```javascript
 // import-default.js
@@ -256,7 +256,7 @@ import customName from './export-default';
 customName(); // 'foo'
 ```
 
-上面代码的import命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
+上面代码的`import`命令，可以用任意名称指向`export-default.js`输出的方法，这时就不需要知道原模块输出的函数名。需要注意的是，这时`import`命令后面，不使用大括号。
 
 `export default`命令用在非匿名函数前，也是可以的。
 
@@ -307,10 +307,30 @@ function add(x, y) {
   return x * y;
 };
 export {add as default};
+// 等同于
+// export default add;
 
 // app.js
 import { default as xxx } from 'modules';
+// 等同于
+// import xxx from 'modules';
 ```
+
+正是因为`export default`命令其实只是输出一个叫做`default`的变量，所以它后面不能跟变量声明语句。
+
+```javascript
+// 正确
+export var a = 1;
+
+// 正确
+var a = 1;
+export default a;
+
+// 错误
+export default var a = 1;
+```
+
+上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
 
 有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
 
@@ -374,8 +394,8 @@ export { area as circleArea } from 'circle';
 ```javascript
 // main.js
 
-import * as math from "circleplus";
-import exp from "circleplus";
+import * as math from 'circleplus';
+import exp from 'circleplus';
 console.log(exp(math.e));
 ```
 
@@ -394,9 +414,7 @@ function incCounter() {
   counter++;
 }
 module.exports = {
-  get counter() {
-    return counter;
-  },
+  counter: counter,
   incCounter: incCounter,
 };
 ```
@@ -405,17 +423,38 @@ module.exports = {
 
 ```javascript
 // main.js
-var counter = require('./lib').counter;
-var incCounter = require('./lib').incCounter;
+var mod = require('./lib');
 
-console.log(counter);  // 3
-incCounter();
-console.log(counter); // 3
+console.log(mod.counter);  // 3
+mod.incCounter();
+console.log(mod.counter); // 3
 ```
 
-上面代码说明，`counter`输出以后，`lib.js`模块内部的变化就影响不到`counter`了。
+上面代码说明，`lib.js`模块加载以后，它的内部变化就影响不到输出的`mod.counter`了。这是因为`mod.counter`是一个原始类型的值，会被缓存。除非写成一个函数，才能得到内部变动后的值。
 
-ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，输入值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+```javascript
+// lib.js
+var counter = 3;
+function incCounter() {
+  counter++;
+}
+module.exports = {
+  get counter() {
+    return counter
+  },
+  incCounter: incCounter,
+};
+```
+
+上面代码中，输出的`counter`属性实际上是一个取值器函数。现在再执行`main.js`，就可以正确读取内部变量`counter`的变动了。
+
+```bash
+$ node main.js
+3
+4
+```
+
+ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，`import`输入的值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
 
 还是举上面的例子。
 

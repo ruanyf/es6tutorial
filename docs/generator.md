@@ -10,7 +10,7 @@ Generator函数有多种理解角度。从语法上，首先可以把它理解�
 
 执行Generator函数会返回一个遍历器对象，也就是说，Generator函数除了状态机，还是一个遍历器对象生成函数。返回的遍历器对象，可以依次遍历Generator函数内部的每一个状态。
 
-形式上，Generator函数是一个普通函数，但是有两个特征。一是，`function`命令与函数名之间有一个星号；二是，函数体内部使用`yield`语句，定义不同的内部状态（yield语句在英语里的意思就是“产出”）。
+形式上，Generator函数是一个普通函数，但是有两个特征。一是，`function`关键字与函数名之间有一个星号；二是，函数体内部使用`yield`语句，定义不同的内部状态（yield语句在英语里的意思就是“产出”）。
 
 ```javascript
 function* helloWorldGenerator() {
@@ -235,7 +235,7 @@ function* foo(x) {
 var a = foo(5);
 a.next() // Object{value:6, done:false}
 a.next() // Object{value:NaN, done:false}
-a.next() // Object{value:NaN, done:false}
+a.next() // Object{value:NaN, done:true}
 
 var b = foo(5);
 b.next() // { value:6, done:false }
@@ -599,7 +599,7 @@ function log(generator) {
   var v;
   console.log('starting generator');
   try {
-    v = generator.next(); // { value: undefined, done: true }   
+    v = generator.next();
     console.log('第一次运行next方法', v);
   } catch (err) {
     console.log('捕捉错误', v);
@@ -1129,17 +1129,17 @@ var clock = function() {
 上面代码的clock函数一共有两种状态（Tick和Tock），每运行一次，就改变一次状态。这个函数如果用Generator实现，就是下面这样。
 
 ```javascript
-var clock = function*(_) {
+var clock = function*() {
   while (true) {
-    yield _;
     console.log('Tick!');
-    yield _;
+    yield;
     console.log('Tock!');
+    yield;
   }
 };
 ```
 
-上面的Generator实现与ES5实现对比，可以看到少了用来保存状态的外部变量ticking，这样就更简洁，更安全（状态不会被非法篡改）、更符合函数式编程的思想，在写法上也更优雅。Generator之所以可以不用外部变量保存状态，是因为它本身就包含了一个状态信息，即目前是否处于暂停态。
+上面的Generator实现与ES5实现对比，可以看到少了用来保存状态的外部变量`ticking`，这样就更简洁，更安全（状态不会被非法篡改）、更符合函数式编程的思想，在写法上也更优雅。Generator之所以可以不用外部变量保存状态，是因为它本身就包含了一个状态信息，即目前是否处于暂停态。
 
 ### Generator与协程
 
