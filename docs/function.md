@@ -502,7 +502,7 @@ var arr2 = ['c'];
 var arr3 = ['d', 'e'];
 
 // ES5的合并数组
-arr1.concat(arr2, arr3));
+arr1.concat(arr2, arr3);
 // [ 'a', 'b', 'c', 'd', 'e' ]
 
 // ES6的合并数组
