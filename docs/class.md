@@ -427,7 +427,7 @@ cp instanceof ColorPoint // true
 cp instanceof Point // true
 ```
 
-上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
+上面代码中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与ES5的行为完全一致。
 
 ### 类的prototype属性和\_\_proto\_\_属性
 
@@ -740,6 +740,20 @@ myerror.stack
 //     at MyError.ExtendableError
 //     ...
 ```
+
+注意，继承`Object`的子类，有一个[行为差异](http://stackoverflow.com/questions/36203614/super-does-not-pass-arguments-when-instantiating-a-class-extended-from-object)。
+
+```javascript
+class NewObj extends Object{
+  constructor(){
+    super(...arguments);
+  }
+}
+var o = new NewObj({attr: true});
+console.log(o.attr === true);  // false
+```
+
+上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为ES6改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，ES6规定`Object`构造函数会忽略参数。
 
 ## Class的取值函数（getter）和存值函数（setter）
 

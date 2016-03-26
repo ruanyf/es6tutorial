@@ -288,7 +288,7 @@ ws.add(Symbol())
 // TypeError: invalid value used in weak set
 ```
 
-上面代码试图向WeakSet添加一个数值和`Symbol`值，结果报错。
+上面代码试图向WeakSet添加一个数值和`Symbol`值，结果报错，因为WeakSet只能放置对象。
 
 WeakSet是一个构造函数，可以使用`new`命令，创建WeakSet数据结构。
 
@@ -303,7 +303,17 @@ var a = [[1,2], [3,4]];
 var ws = new WeakSet(a);
 ```
 
-上面代码中，a是一个数组，它有两个成员，也都是数组。将a作为WeakSet构造函数的参数，a的成员会自动成为WeakSet的成员。
+上面代码中，`a`是一个数组，它有两个成员，也都是数组。将`a`作为WeakSet构造函数的参数，`a`的成员会自动成为WeakSet的成员。
+
+注意，是`a`数组的成员成为WeakSet的成员，而不是`a`数组本身。这意味着，数组的成员只能是对象。
+
+```javascript
+var b = [3, 4];
+var ws = new WeakSet(b);
+// Uncaught TypeError: Invalid value used in weak set(…)
+```
+
+上面代码中，数组`b`的成员不是对象，加入WeaKSet就会报错。
 
 WeakSet结构有以下三个方法。
 
