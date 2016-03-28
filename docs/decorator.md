@@ -381,7 +381,7 @@ export default function publish(topic, channel) {
 ```javascript
 import publish from "path/to/decorators/publish";
 
-class FooComponent () {
+class FooComponent {
   @publish("foo.some.message", "component")
   someMethod() {
     return {
