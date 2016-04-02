@@ -373,14 +373,13 @@ function router() {
         }
       }
     }
-
-    if (location.hash === '' || location.hash === menu[0]) {
+    if (location.hash === '' || '#' + getHash().nav === menu[0]) {
       $('#pageup').css('display', 'none');
     } else {
       $('#pageup').css('display', 'inline-block');
     }
 
-    if (location.hash === menu[(menu.length - 1)]) {
+    if ('#' + getHash().nav === menu[(menu.length - 1)]) {
       $('#pagedown').css('display', 'none');
     } else {
       $('#pagedown').css('display', 'inline-block');
