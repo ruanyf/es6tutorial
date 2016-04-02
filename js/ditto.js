@@ -18,6 +18,30 @@ var ditto = {
     run: initialize
 };
 
+/**
+ * 获取当前hash
+ *
+ * @param {string} hash 要解析的hash，默认取当前页面的hash，如： nav#类目 => {nav:nav, anchor:类目}
+ * @description 分导航和页面锚点
+ * @return {Object} {nav:导航, anchor:页面锚点}
+ */
+var getHash = function (hash) {
+  hash = hash || window.location.hash.substr(1);
+
+  if (!hash) {
+    return {
+      nav: '',
+      anchor: ''
+    }
+  }
+
+  hash = hash.split('#');
+  return {
+    nav: hash[0],
+    anchor: decodeURIComponent(hash[1] || '')
+  }
+};
+
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>';
 var menu = new Array();
 
@@ -56,16 +80,18 @@ function init_sidebar_section() {
             menu.push(this.href.slice(this.href.indexOf('#')));
         });
         $('#pageup').on('click', function() {
+            var hash = getHash().nav;
             for (var i = 0; i < menu.length; i++) {
-                if (location.hash === '') break;
-                if (menu[i] === location.hash) break;
+                if (hash === '') break;
+                if (menu[i] === '#' + hash) break;
             }
             location.hash = menu[i - 1]
         });
         $('#pagedown').on('click', function() {
+            var hash = getHash().nav;
             for (var i = 0; i < menu.length; i++) {
-                if (location.hash === '') break;
-                if (menu[i] === location.hash) break;
+                if (hash === '') break;
+                if (menu[i] === '#' + hash) break;
             }
             location.hash = menu[i + 1];
         });
@@ -260,7 +286,7 @@ function show_loading() {
   return loading;
 }
 
-function router() {	
+function router() { 
   var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
   var hashArr = location.hash.split('#');
