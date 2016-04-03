@@ -47,7 +47,7 @@ Node.js是JavaScript语言的服务器运行环境，对ES6的支持度比浏览
 安装nvm需要打开命令行窗口，运行下面的命令。
 
 ```bash
-$ curl -o https://raw.githubusercontent.com/creationix/nvm/<version number>/install.sh | bash
+$ curl -o- https://raw.githubusercontent.com/creationix/nvm/<version number>/install.sh | bash
 ```
 
 上面命令的`version number`处，需要用版本号替换。本节写作时的版本号是`v0.29.0`。该命令运行后，`nvm`会默认安装在用户主目录的`.nvm`子目录。
@@ -468,20 +468,20 @@ Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，
 
 Traceur允许将ES6代码直接插入网页。首先，必须在网页头部加载Traceur库文件。
 
-```javascript
-<!-- 加载Traceur编译器 -->
-<script src="http://google.github.io/traceur-compiler/bin/traceur.js"
-        type="text/javascript"></script>
-<!-- 将Traceur编译器用于网页 -->
-<script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
-        type="text/javascript"></script>
-<!-- 打开实验选项，否则有些特性可能编译不成功 -->
-<script>
-        traceur.options.experimental = true;
+```html
+<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+<script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
+<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
+<script type="module">
+  import './Greeter.js';
 </script>
 ```
 
-接下来，就可以把ES6代码放入上面这些代码的下方。
+上面代码中，一共有4个`script`标签。第一个是加载Traceur的库文件，第二个和第三个是将这个库文件用于浏览器环境，第四个则是加载用户脚本，这个脚本里面可以使用ES6代码。
+
+注意，第四个`script`标签的`type`属性的值是`module`，而不是`text/javascript`。这是Traceur编译器识别ES6代码的标志，编译器会自动将所有`type=module`的代码编译为ES5，然后再交给浏览器执行。
+
+除了引用外部ES6脚本，也可以直接在网页中放置ES6代码。
 
 ```javascript
 <script type="module">
@@ -501,14 +501,33 @@ Traceur允许将ES6代码直接插入网页。首先，必须在网页头部加�
 
 正常情况下，上面代码会在控制台打印出9。
 
-注意，`script`标签的`type`属性的值是`module`，而不是`text/javascript`。这是Traceur编译器识别ES6代码的标识，编译器会自动将所有`type=module`的代码编译为ES5，然后再交给浏览器执行。
-
-如果ES6代码是一个外部文件，也可以用`script`标签插入网页。
+如果想对Traceur的行为有精确控制，可以采用下面参数配置的写法。
 
 ```javascript
-<script type="module" src="calc.js" >
+<script>
+  // Create the System object
+  window.System = new traceur.runtime.BrowserTraceurLoader();
+  // Set some experimental options
+  var metadata = {
+    traceurOptions: {
+      experimental: true,
+      properTailCalls: true,
+      symbols: true,
+      arrayComprehension: true,
+      asyncFunctions: true,
+      asyncGenerators: exponentiation,
+      forOn: true,
+      generatorComprehension: true
+    }
+  };
+  // Load your module
+  System.import('./myModule.js', {metadata: metadata}).catch(function(ex) {
+    console.error('Import failed', ex.stack || ex);
+  });
 </script>
 ```
+
+上面代码中，首先生成Traceur的全局对象`window.System`，然后`System.import`方法可以用来加载ES6模块。加载的时候，需要传入一个配置对象`metadata`，该对象的`traceurOptions`属性可以配置支持ES6功能。如果设为`experimental: true`，就表示除了ES6以外，还支持一些实验性的新功能。
 
 ### 在线转换
 
@@ -517,13 +536,9 @@ Traceur也提供一个[在线编译器](http://google.github.io/traceur-compiler
 上面的例子转为ES5代码运行，就是下面这个样子。
 
 ```javascript
-<script src="http://google.github.io/traceur-compiler/bin/traceur.js"
-        type="text/javascript"></script>
-<script src="http://google.github.io/traceur-compiler/src/bootstrap.js"
-        type="text/javascript"></script>
-<script>
-        traceur.options.experimental = true;
-</script>
+<script src="https://google.github.io/traceur-compiler/bin/traceur.js"></script>
+<script src="https://google.github.io/traceur-compiler/bin/BrowserSystem.js"></script>
+<script src="https://google.github.io/traceur-compiler/src/bootstrap.js"></script>
 <script>
 $traceurRuntime.ModuleStore.getAnonymousModule(function() {
   "use strict";
@@ -545,15 +560,15 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
 
 ### 命令行转换
 
-作为命令行工具使用时，Traceur是一个Node.js的模块，首先需要用npm安装。
+作为命令行工具使用时，Traceur是一个Node的模块，首先需要用Npm安装。
 
 ```bash
 $ npm install -g traceur
 ```
 
-安装成功后，就可以在命令行下使用traceur了。
+安装成功后，就可以在命令行下使用Traceur了。
 
-traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的`calc.js`为例。
+Traceur直接运行es6脚本文件，会在标准输出显示运行结果，以前面的`calc.js`为例。
 
 ```bash
 $ traceur calc.js
@@ -561,7 +576,7 @@ Calc constructor
 9
 ```
 
-如果要将ES6脚本转为ES5保存，要采用下面的写法
+如果要将ES6脚本转为ES5保存，要采用下面的写法。
 
 ```bash
 $ traceur --script calc.es6.js --out calc.es5.js
@@ -575,7 +590,7 @@ $ traceur --script calc.es6.js --out calc.es5.js
 $ traceur --script calc.es6.js --out calc.es5.js --experimental
 ```
 
-命令行下转换的文件，就可以放到浏览器中运行。
+命令行下转换生成的文件，就可以直接放到浏览器中运行。
 
 ### Node.js环境的用法
 
