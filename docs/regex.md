@@ -23,7 +23,7 @@ var regex = /xyz/i;
 但是，ES5不允许此时使用第二个参数，添加修饰符，否则会报错。
 
 ```javascript
-var regex = new RegExp(/xyz/, i);
+var regex = new RegExp(/xyz/, 'i');
 // Uncaught TypeError: Cannot supply flags when constructing one RegExp from another
 ```
 
