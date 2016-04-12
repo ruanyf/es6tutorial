@@ -111,7 +111,7 @@ prototype对象的constructor属性，直接指向“类”的本身，这与ES5
 Point.prototype.constructor === Point // true
 ```
 
-另外，类的内部所有定义的方法，都是不可枚举的（enumerable）。
+另外，类的内部所有定义的方法，都是不可枚举的（non-enumerable）。
 
 ```javascript
 class Point {
@@ -130,7 +130,7 @@ Object.getOwnPropertyNames(Point.prototype)
 // ["constructor","toString"]
 ```
 
-上面代码中，toString方法是Point类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
+上面代码中，`toString`方法是`Point`类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
 
 ```javascript
 var Point = function (x, y){
