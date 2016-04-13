@@ -45,7 +45,7 @@ Promise实例生成以后，可以用then方法分别指定Resolved状态和Reje
 ```javascript
 promise.then(function(value) {
   // success
-}, function(value) {
+}, function(error) {
   // failure
 });
 ```
