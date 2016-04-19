@@ -182,7 +182,7 @@ Obj.prototype[Symbol.iterator] = function(){
   function next(){
     if (current){
       var value = current.value;
-      var done = current == null;
+      var done = current === null;
       current = current.next;
       return {
         done: done,
