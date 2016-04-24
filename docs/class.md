@@ -561,7 +561,7 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 `super`这个关键字，有两种用法，含义不同。
 
-（1）作为函数调用时（即`super(...args)`），`super`代表父类的构建函数。
+（1）作为函数调用时（即`super(...args)`），`super`代表父类的构造函数。
 
 （2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`即可以引用父类实例的属性和方法，也可以引用父类的静态方法。
 
