@@ -1,6 +1,8 @@
 # 编程风格
 
-本章探讨如何将ES6的新语法，运用到编码实践之中，与传统的JavaScript语法结合在一起，写出合理的、易于阅读和维护的代码。多家公司和组织已经公开了它们的风格规范，具体可参阅[jscs.info](http://jscs.info/)，下面的内容主要参考了[Airbnb](https://github.com/airbnb/javascript)的JavaScript风格规范。
+本章探讨如何将ES6的新语法，运用到编码实践之中，与传统的JavaScript语法结合在一起，写出合理的、易于阅读和维护的代码。
+
+多家公司和组织已经公开了它们的风格规范，具体可参阅[jscs.info](http://jscs.info/)，下面的内容主要参考了[Airbnb](https://github.com/airbnb/javascript)的JavaScript风格规范。
 
 ## 块级作用域
 
@@ -20,7 +22,7 @@ for (let i = 0; i < 10; i++) {
 }
 ```
 
-上面代码如果用`var`替代`let`，实际上就声明了一个全局变量，这显然不是本意。变量应该只在其声明的代码块内有效，`var`命令做不到这一点。
+上面代码如果用`var`替代`let`，实际上就声明了两个全局变量，这显然不是本意。变量应该只在其声明的代码块内有效，`var`命令做不到这一点。
 
 `var`命令存在变量提升效用，`let`命令没有这个问题。
 
@@ -59,10 +61,6 @@ const [a, b, c] = [1, 2, 3];
 所有的函数都应该设置为常量。
 
 长远来看，JavaScript可能会有多线程的实现（比如Intel的River Trail那一类的项目），这时`let`表示的变量，只应出现在单线程运行的代码中，不能是多线程共享的，这样有利于保证线程安全。
-
-**（3）严格模式**
-
-V8引擎只在严格模式之下，支持`let`。结合前两点，这实际上意味着，将来所有的编程都是针对严格模式的。
 
 ## 字符串
 
@@ -329,7 +327,7 @@ function handleThings(opts = {}) {
 
 ## Map结构
 
-注意区分Object和Map，只有模拟实体对象时，才使用Object。如果只是需要`key: value`的数据结构，使用Map结构。因为Map有内建的遍历机制。
+注意区分Object和Map，只有模拟现实世界的实体对象时，才使用Object。如果只是需要`key: value`的数据结构，使用Map结构。因为Map有内建的遍历机制。
 
 ```javascript
 let map = new Map(arr);
