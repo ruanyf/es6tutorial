@@ -122,7 +122,7 @@ var getJSON = function(url) {
     client.send();
 
     function handler() {
-      if ( this.readyState !== 4 ) {
+      if (this.readyState !== 4) {
         return;
       }
       if (this.status === 200) {
