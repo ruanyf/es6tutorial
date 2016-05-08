@@ -183,9 +183,24 @@ let input = yield; // OK
 
 ### 与Iterator接口的关系
 
-上一章说过，任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器对象生成函数，调用该函数会返回该对象的一个遍历器对象。
+上一章说过，任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
 
-遍历器对象本身也有`Symbol.iterator`方法，执行后返回自身。
+由于Generator函数就是遍历器生成函数，因此可以把Generator赋值给对象的`Symbol.iterator`属性，从而使得该对象具有Iterator接口。
+
+```javascript
+var myIterable = {};
+myIterable[Symbol.iterator] = function* () {
+  yield 1;
+  yield 2;
+  yield 3;
+};
+
+[...myIterable] // [1, 2, 3]
+```
+
+上面代码中，Generator函数赋值给`Symbol.iterator`属性，从而使得`myIterable`对象具有了Iterator接口，可以被`...`运算符遍历了。
+
+Generator函数执行后，返回一个遍历器对象。该对象本身也具有`Symbol.iterator`属性，执行后返回自身。
 
 ```javascript
 function* gen(){
@@ -644,13 +659,13 @@ function* gen() {
 var g = gen();
 
 g.next()        // { value: 1, done: false }
-g.return("foo") // { value: "foo", done: true }
+g.return('foo') // { value: "foo", done: true }
 g.next()        // { value: undefined, done: true }
 ```
 
 上面代码中，遍历器对象`g`调用`return`方法后，返回值的`value`属性就是`return`方法的参数`foo`。并且，Generator函数的遍历就终止了，返回值的`done`属性为`true`，以后再调用`next`方法，`done`属性总是返回`true`。
 
-如果`return`方法调用时，不提供参数，则返回值的`vaule`属性为`undefined`。
+如果`return`方法调用时，不提供参数，则返回值的`value`属性为`undefined`。
 
 ```javascript
 function* gen() {

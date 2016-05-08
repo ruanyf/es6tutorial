@@ -19,16 +19,10 @@ log('Hello', '') // Hello World
 
 上面代码检查函数`log`的参数`y`有没有赋值，如果没有，则指定默认值为`World`。这种写法的缺点在于，如果参数`y`赋值了，但是对应的布尔值为`false`，则该赋值不起作用。就像上面代码的最后一行，参数`y`等于空字符，结果被改为默认值。
 
-为了避免这个问题，通常需要先判断一下参数y是否被赋值，如果没有，再等于默认值。这有两种写法。
+为了避免这个问题，通常需要先判断一下参数`y`是否被赋值，如果没有，再等于默认值。
 
 ```javascript
-// 写法一
 if (typeof y === 'undefined') {
-  y = 'World';
-}
-
-// 写法二
-if (arguments.length === 1) {
   y = 'World';
 }
 ```
@@ -57,9 +51,9 @@ var p = new Point();
 p // { x: 0, y: 0 }
 ```
 
-除了简洁，ES6的写法还有两个好处：首先，阅读代码的人，可以立刻意识到哪些参数是可以省略的，不用查看函数体或文档；其次，有利于将来的代码优化，即使未来的版本彻底拿掉这个参数，也不会导致以前的代码无法运行。
+除了简洁，ES6的写法还有两个好处：首先，阅读代码的人，可以立刻意识到哪些参数是可以省略的，不用查看函数体或文档；其次，有利于将来的代码优化，即使未来的版本在对外接口中，彻底拿掉这个参数，也不会导致以前的代码无法运行。
 
-参数变量是默认声明的，所以不能用let或const再次声明。
+参数变量是默认声明的，所以不能用`let`或`const`再次声明。
 
 ```javascript
 function foo(x = 5) {
@@ -68,7 +62,7 @@ function foo(x = 5) {
 }
 ```
 
-上面代码中，参数变量`x`是默认声明的，在函数体中，不能用let或const再次声明，否则会报错。
+上面代码中，参数变量`x`是默认声明的，在函数体中，不能用`let`或`const`再次声明，否则会报错。
 
 ### 与解构赋值默认值结合使用
 
@@ -343,8 +337,9 @@ add(2, 5, 3) // 10
 
 ```javascript
 // arguments变量的写法
-const sortNumbers = () =>
-  Array.prototype.slice.call(arguments).sort();
+function sortNumbers() {
+  return Array.prototype.slice.call(arguments).sort();
+}
 
 // rest参数的写法
 const sortNumbers = (...numbers) => numbers.sort();
@@ -502,7 +497,7 @@ var arr2 = ['c'];
 var arr3 = ['d', 'e'];
 
 // ES5的合并数组
-arr1.concat(arr2, arr3));
+arr1.concat(arr2, arr3);
 // [ 'a', 'b', 'c', 'd', 'e' ]
 
 // ES6的合并数组
@@ -1165,7 +1160,7 @@ function addOne(a){
 }
 ```
 
-上面的函数不会进行尾调用优化，因为内层函数`inner`用到了，外层函数`addOne`的内部变量`one`。
+上面的函数不会进行尾调用优化，因为内层函数`inner`用到了外层函数`addOne`的内部变量`one`。
 
 ### 尾递归
 

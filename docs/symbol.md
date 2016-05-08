@@ -517,7 +517,20 @@ separator[Symbol.split](this, limit)
 
 ### Symbol.iterator
 
-对象的Symbol.iterator属性，指向该对象的默认遍历器方法，即该对象进行for...of循环时，会调用这个方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+对象的`Symbol.iterator`属性，指向该对象的默认遍历器方法。
+
+```javascript
+var myIterable = {};
+myIterable[Symbol.iterator] = function* () {
+  yield 1;
+  yield 2;
+  yield 3;
+};
+
+[...myIterable] // [1, 2, 3]
+```
+
+对象进行`for...of`循环时，会调用`Symbol.iterator`方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
 
 ```javascript
 class Collection {

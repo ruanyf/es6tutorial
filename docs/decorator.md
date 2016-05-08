@@ -2,7 +2,7 @@
 
 ## 类的修饰
 
-修饰器（Decorator）是一个表达式，用来修改类的行为。这是ES7的一个[提案](https://github.com/wycats/javascript-decorators)，目前Babel转码器已经支持。
+修饰器（Decorator）是一个函数，用来修改类的行为。这是ES7的一个[提案](https://github.com/wycats/javascript-decorators)，目前Babel转码器已经支持。
 
 修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。
 
@@ -17,7 +17,7 @@ class MyTestableClass {}
 console.log(MyTestableClass.isTestable) // true
 ```
 
-上面代码中，`@testable`就是一个修饰器。它修改了MyTestableClass这个类的行为，为它加上了静态属性`isTestable`。
+上面代码中，`@testable`就是一个修饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。
 
 基本上，修饰器的行为就是下面这样。
 
@@ -31,9 +31,19 @@ class A {}
 A = decorator(A) || A;
 ```
 
-也就是说，修饰器本质上就是能在编译时执行的函数。
+也就是说，修饰器本质就是编译时执行的函数。
 
-修饰器函数可以接受三个参数，依次是目标函数、属性名和该属性的描述对象。后两个参数可省略。上面代码中，testable函数的参数target，就是所要修饰的对象。如果希望修饰器的行为，能够根据目标对象的不同而不同，就要在外面再封装一层函数。
+修饰器函数的第一个参数，就是所要修饰的目标类。
+
+```javascript
+function testable(target) {
+  // ...
+}
+```
+
+上面代码中，`testable`函数的参数`target`，就是会被修饰的类。
+
+如果觉得一个参数不够用，可以在修饰器外面再封装一层函数。
 
 ```javascript
 function testable(isTestable) {
@@ -53,7 +63,7 @@ MyClass.isTestable // false
 
 上面代码中，修饰器`testable`可以接受参数，这就等于可以修改修饰器的行为。
 
-如果想要为类的实例添加方法，可以在修饰器函数中，为目标类的prototype属性添加方法。
+前面的例子是为类添加一个静态属性，如果想添加实例属性，可以通过目标类的`prototype`对象操作。
 
 ```javascript
 function testable(target) {
@@ -67,7 +77,7 @@ let obj = new MyTestableClass();
 obj.isTestable // true
 ```
 
-上面代码中，修饰器函数`testable`是在目标类的`prototype`属性添加属性，因此就可以在类的实例上调用添加的属性。
+上面代码中，修饰器函数`testable`是在目标类的`prototype`对象上添加属性，因此就可以在实例上调用。
 
 下面是另外一个例子。
 
@@ -93,9 +103,7 @@ let obj = new MyClass()
 obj.foo() // 'foo'
 ```
 
-上面代码通过修饰器`mixins`，可以为类添加指定的方法。
-
-修饰器可以用`Object.assign()`模拟。
+上面代码通过修饰器`mixins`，把`Foo`类的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
 
 ```javascript
 const Foo = {
@@ -121,13 +129,11 @@ class Person {
 }
 ```
 
-上面代码中，修饰器readonly用来修饰“类”的name方法。
+上面代码中，修饰器`readonly`用来修饰“类”的`name`方法。
 
 此时，修饰器函数一共可以接受三个参数，第一个参数是所要修饰的目标对象，第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
 
 ```javascript
-readonly(Person.prototype, 'name', descriptor);
-
 function readonly(target, name, descriptor){
   // descriptor对象原来的值如下
   // {
@@ -140,10 +146,14 @@ function readonly(target, name, descriptor){
   return descriptor;
 }
 
+readonly(Person.prototype, 'name', descriptor);
+// 类似于
 Object.defineProperty(Person.prototype, 'name', descriptor);
 ```
 
-上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。下面是另一个例子。
+上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。
+
+下面是另一个例子，修改属性描述对象的`enumerable`属性，使得该属性不可遍历。
 
 ```javascript
 class Person {
@@ -157,6 +167,35 @@ function nonenumerable(target, name, descriptor) {
 }
 ```
 
+下面的`@log`修饰器，可以起到输出日志的作用。
+
+```bash
+class Math {
+  @log
+  add(a, b) {
+    return a + b;
+  }
+}
+
+function log(target, name, descriptor) {
+  var oldValue = descriptor.value;
+
+  descriptor.value = function() {
+    console.log(`Calling "${name}" with`, arguments);
+    return oldValue.apply(null, arguments);
+  };
+
+  return descriptor;
+}
+
+const math = new Math();
+
+// passed parameters should get logged now
+math.add(2, 4);
+```
+
+上面代码中，`@log`修饰器的作用就是在执行原始的操作之前，执行一次`console.log`，从而达到输出日志的目的。
+
 修饰器有注释的作用。
 
 ```javascript
@@ -169,6 +208,27 @@ class Person {
 ```
 
 从上面代码中，我们一眼就能看出，`Person`类是可测试的，而`name`方法是只读和不可枚举的。
+
+如果同一个方法有多个修饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
+
+```javascript
+function dec(id){
+    console.log('evaluated', id);
+    return (target, property, descriptor) => console.log('executed', id);
+}
+
+class Example {
+    @dec(1)
+    @dec(2)
+    method(){}
+}
+// evaluated 1
+// evaluated 2
+// executed 2
+// executed 1
+```
+
+上面代码中，外层修饰器`@dec(1)`先进入，但是内层修饰器`@dec(2)`先执行。
 
 除了注释，修饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
 
@@ -188,7 +248,7 @@ function foo() {
 }
 ```
 
-上面的代码，意图是执行后，counter等于1，但是实际上结果是couter等于0。因为函数提升，使得实际执行的代码是下面这样。
+上面的代码，意图是执行后`counter`等于1，但是实际上结果是`counter`等于0。因为函数提升，使得实际执行的代码是下面这样。
 
 ```javascript
 var counter;
@@ -381,7 +441,7 @@ export default function publish(topic, channel) {
 ```javascript
 import publish from "path/to/decorators/publish";
 
-class FooComponent () {
+class FooComponent {
   @publish("foo.some.message", "component")
   someMethod() {
     return {

@@ -2,7 +2,7 @@
 
 ## Class基本语法
 
-**（1）概述**
+### 概述
 
 JavaScript语言的传统方法是通过构造函数，定义并生成新对象。下面是一个例子。
 
@@ -19,12 +19,11 @@ Point.prototype.toString = function () {
 
 上面这种写法跟传统的面向对象语言（比如C++和Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
 
-ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过class关键字，可以定义类。基本上，ES6的class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的class写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
+ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过`class`关键字，可以定义类。基本上，ES6的class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
 
 ```javascript
 //定义类
 class Point {
-
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -33,13 +32,12 @@ class Point {
   toString() {
     return '(' + this.x + ', ' + this.y + ')';
   }
-
 }
 ```
 
-上面代码定义了一个“类”，可以看到里面有一个`constructor`方法，这就是构造方法，而`this`关键字则代表实例对象。也就是说，ES5的构造函数Point，对应ES6的Point类的构造方法。
+上面代码定义了一个“类”，可以看到里面有一个`constructor`方法，这就是构造方法，而`this`关键字则代表实例对象。也就是说，ES5的构造函数`Point`，对应ES6的`Point`类的构造方法。
 
-Point类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个保留字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
+Point类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个关键字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
 
 ES6的类，完全可以看作构造函数的另一种写法。
 
@@ -54,7 +52,7 @@ Point === Point.prototype.constructor // true
 
 上面代码表明，类的数据类型就是函数，类本身就指向构造函数。
 
-构造函数的prototype属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的prototype属性上面。
+构造函数的`prototype`属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
 
 ```javascript
 class Point {
@@ -90,7 +88,7 @@ b.constructor === B.prototype.constructor // true
 
 上面代码中，`b`是B类的实例，它的`constructor`方法就是B类原型的`constructor`方法。
 
-由于类的方法（除`constructor`以外）都定义在`prototype`对象上面，所以类的新方法可以添加在`prototype`对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
+由于类的方法都定义在`prototype`对象上面，所以类的新方法可以添加在`prototype`对象上面。`Object.assign`方法可以很方便地一次向类添加多个方法。
 
 ```javascript
 class Point {
@@ -105,13 +103,13 @@ Object.assign(Point.prototype, {
 })
 ```
 
-prototype对象的constructor属性，直接指向“类”的本身，这与ES5的行为是一致的。
+`prototype`对象的`constructor`属性，直接指向“类”的本身，这与ES5的行为是一致的。
 
 ```javascript
 Point.prototype.constructor === Point // true
 ```
 
-另外，类的内部所有定义的方法，都是不可枚举的（enumerable）。
+另外，类的内部所有定义的方法，都是不可枚举的（non-enumerable）。
 
 ```javascript
 class Point {
@@ -130,7 +128,7 @@ Object.getOwnPropertyNames(Point.prototype)
 // ["constructor","toString"]
 ```
 
-上面代码中，toString方法是Point类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
+上面代码中，`toString`方法是`Point`类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
 
 ```javascript
 var Point = function (x, y){
@@ -147,7 +145,7 @@ Object.getOwnPropertyNames(Point.prototype)
 // ["constructor","toString"]
 ```
 
-上面代码采用ES5的写法，toString方法就是可枚举的。
+上面代码采用ES5的写法，`toString`方法就是可枚举的。
 
 类的属性名，可以采用表达式。
 
@@ -166,15 +164,15 @@ class Square{
 
 上面代码中，Square类的方法名getArea，是从表达式得到的。
 
-**（2）constructor方法**
+### constructor方法
 
-constructor方法是类的默认方法，通过new命令生成对象实例时，自动调用该方法。一个类必须有constructor方法，如果没有显式定义，一个空的constructor方法会被默认添加。
+`constructor`方法是类的默认方法，通过`new`命令生成对象实例时，自动调用该方法。一个类必须有`constructor`方法，如果没有显式定义，一个空的`constructor`方法会被默认添加。
 
 ```javascript
 constructor() {}
 ```
 
-constructor方法默认返回实例对象（即this），完全可以指定返回另外一个对象。
+`constructor`方法默认返回实例对象（即`this`），完全可以指定返回另外一个对象。
 
 ```javascript
 class Foo {
@@ -187,11 +185,11 @@ new Foo() instanceof Foo
 // false
 ```
 
-上面代码中，constructor函数返回一个全新的对象，结果导致实例对象不是Foo类的实例。
+上面代码中，`constructor`函数返回一个全新的对象，结果导致实例对象不是`Foo`类的实例。
 
-**（3）实例对象**
+### 类的实例对象
 
-生成实例对象的写法，与ES5完全一样，也是使用new命令。如果忘记加上new，像函数那样调用Class，将会报错。
+生成类的实例对象的写法，与ES5完全一样，也是使用`new`命令。如果忘记加上`new`，像函数那样调用`Class`，将会报错。
 
 ```javascript
 // 报错
@@ -201,7 +199,7 @@ var point = Point(2, 3);
 var point = new Point(2, 3);
 ```
 
-与ES5一样，实例的属性除非显式定义在其本身（即定义在this对象上），否则都是定义在原型上（即定义在class上）。
+与ES5一样，实例的属性除非显式定义在其本身（即定义在`this`对象上），否则都是定义在原型上（即定义在`class`上）。
 
 ```javascript
 //定义类
@@ -213,7 +211,7 @@ class Point {
   }
 
   toString() {
-    return '('+this.x+', '+this.y+')';
+    return '(' + this.x + ', ' + this.y + ')';
   }
 
 }
@@ -228,7 +226,7 @@ point.hasOwnProperty('toString') // false
 point.__proto__.hasOwnProperty('toString') // true
 ```
 
-上面代码中，x和y都是实例对象point自身的属性（因为定义在this变量上），所以hasOwnProperty方法返回true，而toString是原型对象的属性（因为定义在Point类上），所以hasOwnProperty方法返回false。这些都与ES5的行为保持一致。
+上面代码中，`x`和`y`都是实例对象`point`自身的属性（因为定义在`this`变量上），所以`hasOwnProperty`方法返回`true`，而`toString`是原型对象的属性（因为定义在`Point`类上），所以`hasOwnProperty`方法返回`false`。这些都与ES5的行为保持一致。
 
 与ES5一样，类的所有实例共享一个原型对象。
 
@@ -259,18 +257,18 @@ p3.printName() // "Oops"
 
 上面代码在`p1`的原型上添加了一个`printName`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
 
-**（4）name属性**
+### name属性
 
-由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括name属性。
+由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括`name`属性。
 
 ```javascript
 class Point {}
 Point.name // "Point"
 ```
 
-name属性总是返回紧跟在class关键字后面的类名。
+`name`属性总是返回紧跟在`class`关键字后面的类名。
 
-**（5）Class表达式**
+### Class表达式
 
 与函数一样，Class也可以使用表达式的形式定义。
 
@@ -282,7 +280,7 @@ const MyClass = class Me {
 };
 ```
 
-上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是MyClass而不是`Me`，`Me`只在Class的内部代码可用，指代当前类。
+上面代码使用表达式定义了一个类。需要注意的是，这个类的名字是`MyClass`而不是`Me`，`Me`只在Class的内部代码可用，指代当前类。
 
 ```javascript
 let inst = new MyClass();
@@ -292,7 +290,7 @@ Me.name // ReferenceError: Me is not defined
 
 上面代码表示，`Me`只在Class内部有定义。
 
-如果Class内部没用到的话，可以省略Me，也就是可以写成下面的形式。
+如果Class内部没用到的话，可以省略`Me`，也就是可以写成下面的形式。
 
 ```javascript
 const MyClass = class { /* ... */ };
@@ -309,14 +307,14 @@ let person = new class {
   sayName() {
     console.log(this.name);
   }
-}("张三");
+}('张三');
 
 person.sayName(); // "张三"
 ```
 
 上面代码中，person是一个立即执行的Class的实例。
 
-**（6）不存在变量提升**
+### 不存在变量提升
 
 Class不存在变量提升（hoist），这一点与ES5完全不同。
 
@@ -325,7 +323,7 @@ new Foo(); // ReferenceError
 class Foo {}
 ```
 
-上面代码中，Foo类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
 
 ```javascript
 {
@@ -335,9 +333,9 @@ class Foo {}
 }
 ```
 
-如果存在Class的提升，上面代码将报错，因为let命令也是不提升的。
+上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在Class的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
 
-**（7）严格模式**
+### 严格模式
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
 
@@ -353,11 +351,10 @@ Class之间可以通过`extends`关键字实现继承，这比ES5的通过修改
 class ColorPoint extends Point {}
 ```
 
-上面代码定义了一个ColorPoint类，该类通过extends关键字，继承了Point类的所有属性和方法。但是由于没有部署任何代码，所以这两个类完全一样，等于复制了一个Point类。下面，我们在ColorPoint内部加上代码。
+上面代码定义了一个`ColorPoint`类，该类通过`extends`关键字，继承了`Point`类的所有属性和方法。但是由于没有部署任何代码，所以这两个类完全一样，等于复制了一个`Point`类。下面，我们在`ColorPoint`内部加上代码。
 
 ```javascript
 class ColorPoint extends Point {
-
   constructor(x, y, color) {
     super(x, y); // 调用父类的constructor(x, y)
     this.color = color;
@@ -366,13 +363,12 @@ class ColorPoint extends Point {
   toString() {
     return this.color + ' ' + super.toString(); // 调用父类的toString()
   }
-
 }
 ```
 
-上面代码中，constructor方法和toString方法之中，都出现了super关键字，它指代父类的实例（即父类的this对象）。
+上面代码中，`constructor`方法和`toString`方法之中，都出现了`super`关键字，它在这里表示父类的构造函数，用来新建父类的`this`对象。
 
-子类必须在constructor方法中调用super方法，否则新建实例时会报错。这是因为子类没有自己的this对象，而是继承父类的this对象，然后对其进行加工。如果不调用super方法，子类就得不到this对象。
+子类必须在`constructor`方法中调用`super`方法，否则新建实例时会报错。这是因为子类没有自己的`this`对象，而是继承父类的`this`对象，然后对其进行加工。如果不调用`super`方法，子类就得不到`this`对象。
 
 ```javascript
 class Point { /* ... */ }
@@ -385,11 +381,11 @@ class ColorPoint extends Point {
 let cp = new ColorPoint(); // ReferenceError
 ```
 
-上面代码中，ColorPoint继承了父类Point，但是它的构造函数没有调用super方法，导致新建实例时报错。
+上面代码中，`ColorPoint`继承了父类`Point`，但是它的构造函数没有调用`super`方法，导致新建实例时报错。
 
-ES5的继承，实质是先创造子类的实例对象this，然后再将父类的方法添加到this上面（`Parent.apply(this)`）。ES6的继承机制完全不同，实质是先创造父类的实例对象this（所以必须先调用super方法），然后再用子类的构造函数修改this。
+ES5的继承，实质是先创造子类的实例对象`this`，然后再将父类的方法添加到`this`上面（`Parent.apply(this)`）。ES6的继承机制完全不同，实质是先创造父类的实例对象`this`（所以必须先调用`super`方法），然后再用子类的构造函数修改`this`。
 
-如果子类没有定义constructor方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有constructor方法。
+如果子类没有定义`constructor`方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有`constructor`方法。
 
 ```javascript
 constructor(...args) {
@@ -397,7 +393,7 @@ constructor(...args) {
 }
 ```
 
-另一个需要注意的地方是，在子类的构造函数中，只有调用super之后，才可以使用`this`关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有super方法才能返回父类实例。
+另一个需要注意的地方是，在子类的构造函数中，只有调用`super`之后，才可以使用`this`关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有`super`方法才能返回父类实例。
 
 ```javascript
 class Point {
@@ -427,7 +423,7 @@ cp instanceof ColorPoint // true
 cp instanceof Point // true
 ```
 
-上面代码中，实例对象cp同时是ColorPoint和Point两个类的实例，这与ES5的行为完全一致。
+上面代码中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与ES5的行为完全一致。
 
 ### 类的prototype属性和\_\_proto\_\_属性
 
@@ -435,7 +431,7 @@ cp instanceof Point // true
 
 （1）子类的`__proto__`属性，表示构造函数的继承，总是指向父类。
 
-（2）子类prototype属性的`__proto__`属性，表示方法的继承，总是指向父类的prototype属性。
+（2）子类`prototype`属性的`__proto__`属性，表示方法的继承，总是指向父类的`prototype`属性。
 
 ```javascript
 class A {
@@ -448,7 +444,7 @@ B.__proto__ === A // true
 B.prototype.__proto__ === A.prototype // true
 ```
 
-上面代码中，子类B的`__proto__`属性指向父类A，子类B的prototype属性的`__proto__`属性指向父类A的prototype属性。
+上面代码中，子类`B`的`__proto__`属性指向父类`A`，子类`B`的`prototype`属性的`__proto__`属性指向父类`A`的`prototype`属性。
 
 这样的结果是因为，类的继承是按照下面的模式实现的。
 
@@ -487,7 +483,7 @@ Object.setPrototypeOf(B, A);
 B.__proto__ = A;
 ```
 
-这两条继承链，可以这样理解：作为一个对象，子类（B）的原型（`__proto__`属性）是父类（A）；作为一个构造函数，子类（B）的原型（prototype属性）是父类的实例。
+这两条继承链，可以这样理解：作为一个对象，子类（`B`）的原型（`__proto__`属性）是父类（`A`）；作为一个构造函数，子类（`B`）的原型（`prototype`属性）是父类的实例。
 
 ```javascript
 B.prototype = new A();
@@ -497,14 +493,14 @@ B.prototype.__proto__ = A.prototype;
 
 ### Extends 的继承目标
 
-extends关键字后面可以跟多种类型的值。
+`extends`关键字后面可以跟多种类型的值。
 
 ```javascript
 class B extends A {
 }
 ```
 
-上面代码的A，只要是一个有prototype属性的函数，就能被B继承。由于函数都有prototype属性，因此A可以是任意函数。
+上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性，因此`A`可以是任意函数。
 
 下面，讨论三种特殊情况。
 
@@ -518,7 +514,7 @@ A.__proto__ === Object // true
 A.prototype.__proto__ === Object.prototype // true
 ```
 
-这种情况下，A其实就是构造函数Object的复制，A的实例就是Object的实例。
+这种情况下，`A`其实就是构造函数`Object`的复制，`A`的实例就是`Object`的实例。
 
 第二种特殊情况，不存在任何继承。
 
@@ -530,7 +526,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === Object.prototype // true
 ```
 
-这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回一个空对象（即Object实例），所以`A.prototype.__proto__`指向构造函数（Object）的prototype属性。
+这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
 
 第三种特殊情况，子类继承`null`。
 
@@ -542,7 +538,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === undefined // true
 ```
 
-这种情况与第二种情况非常像。A也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
 
 ```javascript
 class C extends null {
@@ -552,7 +548,7 @@ class C extends null {
 
 ### Object.getPrototypeOf()
 
-Object.getPrototypeOf方法可以用来从子类上获取父类。
+`Object.getPrototypeOf`方法可以用来从子类上获取父类。
 
 ```javascript
 Object.getPrototypeOf(ColorPoint) === Point
@@ -563,7 +559,11 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 ### super关键字
 
-上面讲过，在子类中，super关键字代表父类实例。
+`super`这个关键字，有两种用法，含义不同。
+
+（1）作为函数调用时（即`super(...args)`），`super`代表父类的构造函数。
+
+（2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`即可以引用父类实例的属性和方法，也可以引用父类的静态方法。
 
 ```javascript
 class B extends A {
@@ -576,9 +576,9 @@ class B extends A {
 }
 ```
 
-上面代码中，子类通过super关键字，调用父类的实例。
+上面代码中，子类通过`super`关键字，调用父类实例的`_p`属性。
 
-由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用super关键字。
+由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
 ```javascript
 var obj = {
@@ -602,7 +602,7 @@ p2.__proto__ === p1.__proto__ // false
 p2.__proto__.__proto__ === p1.__proto__ // true
 ```
 
-上面代码中，ColorPoint继承了Point，导致前者原型的原型是后者的原型。
+上面代码中，`ColorPoint`继承了`Point`，导致前者原型的原型是后者的原型。
 
 因此，通过子类实例的`__proto__.__proto__`属性，可以修改父类实例的行为。
 
@@ -614,7 +614,7 @@ p2.__proto__.__proto__.printName = function () {
 p1.printName() // "Ha"
 ```
 
-上面代码在ColorPoint的实例p2上向Point类添加方法，结果影响到了Point的实例p1。
+上面代码在`ColorPoint`的实例`p2`上向`Point`类添加方法，结果影响到了`Point`的实例`p1`。
 
 ## 原生构造函数的继承
 
@@ -630,7 +630,7 @@ p1.printName() // "Ha"
 - Error()
 - Object()
 
-以前，这些原生构造函数是无法继承的，比如，不能自己定义一个Array的子类。
+以前，这些原生构造函数是无法继承的，比如，不能自己定义一个`Array`的子类。
 
 ```javascript
 function MyArray() {
@@ -647,7 +647,7 @@ MyArray.prototype = Object.create(Array.prototype, {
 });
 ```
 
-上面代码定义了一个继承Array的`MyArray`类。但是，这个类的行为与Array完全不一致。
+上面代码定义了一个继承Array的`MyArray`类。但是，这个类的行为与`Array`完全不一致。
 
 ```javascript
 var colors = new MyArray();
@@ -660,7 +660,7 @@ colors[0]  // "red"
 
 之所以会发生这种情况，是因为子类无法获得原生构造函数的内部属性，通过`Array.apply()`或者分配给原型对象都不行。ES5是先新建子类的实例对象`this`，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数。比如，Array构造函数有一个内部属性`[[DefineOwnProperty]]`，用来定义新属性时，更新`length`属性，这个内部属性无法在子类获取，导致子类的`length`属性行为不正常。
 
-ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。下面是一个继承Array的例子。
+ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。下面是一个继承`Array`的例子。
 
 ```javascript
 class MyArray extends Array {
@@ -677,7 +677,7 @@ arr.length = 0;
 arr[0] // undefined
 ```
 
-上面代码定义了一个MyArray类，继承了Array构造函数，因此就可以从MyArray生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
+上面代码定义了一个`MyArray`类，继承了`Array`构造函数，因此就可以从`MyArray`生成数组的实例。这意味着，ES6可以自定义原生数据结构（比如Array、String等）的子类，这是ES5无法做到的。
 
 上面这个例子也说明，`extends`关键字不仅可以用来继承类，还可以用来继承原生的构造函数。因此可以在原生数据结构的基础上，定义自己的数据结构。下面就是定义了一个带版本功能的数组。
 
@@ -741,9 +741,23 @@ myerror.stack
 //     ...
 ```
 
+注意，继承`Object`的子类，有一个[行为差异](http://stackoverflow.com/questions/36203614/super-does-not-pass-arguments-when-instantiating-a-class-extended-from-object)。
+
+```javascript
+class NewObj extends Object{
+  constructor(){
+    super(...arguments);
+  }
+}
+var o = new NewObj({attr: true});
+console.log(o.attr === true);  // false
+```
+
+上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为ES6改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，ES6规定`Object`构造函数会忽略参数。
+
 ## Class的取值函数（getter）和存值函数（setter）
 
-与ES5一样，在Class内部可以使用get和set关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
+与ES5一样，在Class内部可以使用`get`和`set`关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
 
 ```javascript
 class MyClass {
@@ -854,7 +868,7 @@ class Bar extends Foo {
 Bar.classMethod(); // 'hello'
 ```
 
-上面代码中，父类Foo有一个静态方法，子类Bar可以调用这个方法。
+上面代码中，父类`Foo`有一个静态方法，子类`Bar`可以调用这个方法。
 
 静态方法也是可以从`super`对象上调用的。
 
@@ -1021,7 +1035,7 @@ var person = new Person('张三'); // 正确
 var notAPerson = Person.call(person, '张三');  // 报错
 ```
 
-上面代码确保构造函数只能通过new命令调用。
+上面代码确保构造函数只能通过`new`命令调用。
 
 Class内部调用`new.target`，返回当前Class。
 
@@ -1080,7 +1094,7 @@ var x = new Shape();  // 报错
 var y = new Rectangle(3, 4);  // 正确
 ```
 
-上面代码中，Shape类不能被实例化，只能用于继承。
+上面代码中，`Shape`类不能被实例化，只能用于继承。
 
 注意，在函数外部，使用`new.target`会报错。
 
@@ -1113,7 +1127,7 @@ function copyProperties(target, source) {
 }
 ```
 
-上面代码的mix函数，可以将多个对象合成为一个类。使用的时候，只要继承这个类即可。
+上面代码的`mix`函数，可以将多个对象合成为一个类。使用的时候，只要继承这个类即可。
 
 ```javascript
 class DistributedEdit extends mix(Loggable, Serializable) {
