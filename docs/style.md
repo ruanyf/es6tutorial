@@ -286,7 +286,7 @@ const boundMethod = (...params) => method.apply(this, params);
 
 所有配置项都应该集中在一个对象，放在最后一个参数，布尔值不可以直接作为参数。
 
-```bash
+```javascript
 // bad
 function divide(a, b, option = false ) {
 }
