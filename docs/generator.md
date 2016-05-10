@@ -1041,87 +1041,87 @@ obj.a // undefined
 
 上面代码中，Generator函数`g`在`this`对象上面添加了一个属性`a`，但是`obj`对象拿不到这个属性。
 
+Generator函数也不能跟`new`命令一起用，会报错。
 
 ```javascript
-function* F(){
+function* F() {
   yield this.x = 2;
   yield this.y = 3;
 }
+
+new F()
+// TypeError: F is not a constructor
 ```
 
-上面代码中，函数F是一个构造函数，又是一个Generator函数。这时，使用new命令就无法生成F的实例了，因为F返回的是一个内部指针。
+上面代码中，`new`命令跟构造函数`F`一起使用，结果报错，因为`F`不是构造函数。
+
+那么，有没有办法让Generator函数返回一个正常的对象实例，既可以用`next`方法，又可以获得正常的`this`？
+
+下面是一个变通方法。首先，生成一个空对象，使用`bind`方法绑定Generator函数内部的`this`。这样，构造函数调用以后，这个空对象就是Generator函数的实例对象了。
 
 ```javascript
-'next' in (new F())
-// true
-```
-
-上面代码中，由于`new F()`返回的是一个Iterator对象，具有next方法，所以上面的表达式为true。
-
-如果要把Generator函数当作正常的构造函数使用，可以采用下面的变通方法。首先，生成一个空对象，使用`bind`方法绑定Generator函数内部的`this`。这样，构造函数调用以后，这个空对象就是Generator函数的实例对象了。
-
-```javascript
-function* F(){
-  yield this.x = 2;
-  yield this.y = 3;
+function* F() {
+  this.a = 1;
+  yield this.b = 2;
+  yield this.c = 3;
 }
 var obj = {};
-var f = F.bind(obj)();
+var f = F.call(obj);
 
 f.next();  // Object {value: 2, done: false}
 f.next();  // Object {value: 3, done: false}
 f.next();  // Object {value: undefined, done: true}
 
-obj // { x: 2, y: 3 }
+obj.a // 1
+obj.b // 2
+obj.c // 3
 ```
 
 上面代码中，首先是`F`内部的`this`对象绑定`obj`对象，然后调用它，返回一个Iterator对象。这个对象执行三次`next`方法（因为`F`内部有两个`yield`语句），完成F内部所有代码的运行。这时，所有内部属性都绑定在`obj`对象上了，因此`obj`对象也就成了`F`的实例。
 
-## Generator函数推导
+上面代码中，执行的是遍历器对象`f`，但是生成的对象实例是`obj`，有没有办法将这两个对象统一呢？
 
-ES7在数组推导的基础上，提出了Generator函数推导（Generator comprehension）。
+一个办法就是将`obj`换成`F.prototype`。
 
 ```javascript
-let generator = function* () {
-  for (let i = 0; i < 6; i++) {
-    yield i;
-  }
+function* F() {
+  this.a = 1;
+  yield this.b = 2;
+  yield this.c = 3;
 }
+var f = F.call(F.prototype);
 
-let squared = ( for (n of generator()) n * n );
-// 等同于
-// let squared = Array.from(generator()).map(n => n * n);
+f.next();  // Object {value: 2, done: false}
+f.next();  // Object {value: 3, done: false}
+f.next();  // Object {value: undefined, done: true}
 
-console.log(...squared);
-// 0 1 4 9 16 25
+f.a // 1
+f.b // 2
+f.c // 3
 ```
 
-“推导”这种语法结构，不仅可以用于数组，ES7将其推广到了Generator函数。for...of循环会自动调用遍历器的next方法，将返回值的value属性作为数组的一个成员。
-
-Generator函数推导是对数组结构的一种模拟，它的最大优点是惰性求值，即直到真正用到时才会求值，这样可以保证效率。请看下面的例子。
+再将`F`改成构造函数，就可以对它执行`new`命令了。
 
 ```javascript
-let bigArray = new Array(100000);
-for (let i = 0; i < 100000; i++) {
-  bigArray[i] = i;
+function* gen() {
+  this.a = 1;
+  yield this.b = 2;
+  yield this.c = 3;
 }
 
-let first = bigArray.map(n => n * n)[0];
-console.log(first);
-```
-
-上面例子遍历一个大数组，但是在真正遍历之前，这个数组已经生成了，占用了系统资源。如果改用Generator函数推导，就能避免这一点。下面代码只在用到时，才会生成一个大数组。
-
-```javascript
-let bigGenerator = function* () {
-  for (let i = 0; i < 100000; i++) {
-    yield i;
-  }
+function F() {
+  return gen.call(gen.prototype);
 }
 
-let squared = ( for (n of bigGenerator()) n * n );
+var f = new F();
 
-console.log(squared.next());
+f.next();  // Object {value: 2, done: false}
+f.next();  // Object {value: 3, done: false}
+f.next();  // Object {value: undefined, done: true}
+
+f.a // 1
+f.b // 2
+f.c // 3
 ```
 
 ## 含义
