@@ -349,7 +349,7 @@ f() // ReferenceError: f is not defined
 
 ## const命令
 
-const也用来声明变量，但是声明的是常量。一旦声明，常量的值就不能改变。
+const 声明一个只读的常量。一旦声明，常量的值就不能改变。
 
 ```javascript
 'use strict';
