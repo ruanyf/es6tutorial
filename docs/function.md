@@ -179,7 +179,7 @@ f(1, undefined, 2) // [1, 5, 2]
 
 ```javascript
 function foo(x = 5, y = 6){
-  console.log(x,y);
+  console.log(x, y);
 }
 
 foo(undefined, null)
@@ -193,17 +193,24 @@ foo(undefined, null)
 指定了默认值以后，函数的`length`属性，将返回没有指定默认值的参数个数。也就是说，指定了默认值后，`length`属性将失真。
 
 ```javascript
-(function(a){}).length // 1
-(function(a = 5){}).length // 0
-(function(a, b, c = 5){}).length // 2
+(function (a) {}).length // 1
+(function (a = 5) {}).length // 0
+(function (a, b, c = 5) {}).length // 2
 ```
 
-上面代码中，`length`属性的返回值，等于函数的参数个数减去指定了默认值的参数个数。比如，上面最后一个函数，定义了3个参数，其中有一个参数`c`指定了默认值，因此`length`属性等于3减去1，最后得到2。
+上面代码中，`length`属性的返回值，等于函数的参数个数减去指定了默认值的参数个数。比如，上面最后一个函数，定义了3个参数，其中有一个参数`c`指定了默认值，因此`length`属性等于`3`减去`1`，最后得到`2`。
 
 这是因为`length`属性的含义是，该函数预期传入的参数个数。某个参数指定默认值以后，预期传入的参数个数就不包括这个参数了。同理，rest参数也不会计入`length`属性。
 
 ```javascript
 (function(...args) {}).length // 0
+```
+
+如果设置了默认值的参数不是尾参数，那么`length`属性也不再计入后面的参数了。
+
+```javascript
+(function (a = 0, b, c) {}).length // 0
+(function (a, b = 1, c) {}).length // 1
 ```
 
 ### 作用域

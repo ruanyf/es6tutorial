@@ -20,7 +20,7 @@ Iterator的遍历过程是这样的。
 
 每一次调用`next`方法，都会返回数据结构的当前成员的信息。具体来说，就是返回一个包含`value`和`done`两个属性的对象。其中，`value`属性是当前成员的值，`done`属性是一个布尔值，表示遍历是否结束。
 
-下面是一个模拟next方法返回值的例子。
+下面是一个模拟`next`方法返回值的例子。
 
 ```javascript
 var it = makeIterator(['a', 'b']);
@@ -172,7 +172,6 @@ function Obj(value){
 }
 
 Obj.prototype[Symbol.iterator] = function(){
-
   var iterator = {
     next: next
   };
@@ -182,7 +181,7 @@ Obj.prototype[Symbol.iterator] = function(){
   function next(){
     if (current){
       var value = current.value;
-      var done = current === null;
+      var done = current.next === undefined;
       current = current.next;
       return {
         done: done,
