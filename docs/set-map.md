@@ -11,9 +11,11 @@ Set本身是一个构造函数，用来生成Set数据结构。
 ```javascript
 var s = new Set();
 
-[2,3,5,4,5,2,2].map(x => s.add(x))
+[2, 3, 5, 4, 5, 2, 2].map(x => s.add(x))
 
-for (let i of s) {console.log(i)}
+for (let i of s) {
+  console.log(i);
+}
 // 2 3 5 4
 ```
 
@@ -22,13 +24,16 @@ for (let i of s) {console.log(i)}
 Set函数可以接受一个数组（或类似数组的对象）作为参数，用来初始化。
 
 ```javascript
+// 例一
 var set = new Set([1, 2, 3, 4, 4])
 [...set]
 // [1, 2, 3, 4]
 
+// 例二
 var items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);
 items.size // 5
 
+// 例三
 function divs () {
   return [...document.querySelectorAll('div')]
 }
@@ -39,6 +44,15 @@ set.size // 56
 // 类似于
 divs().forEach(div => set.add(div))
 set.size // 56
+```
+
+上面代码中，例一和例二都是`Set`函数接受数组作为参数，例三是接受类似数组的对象作为参数。
+
+上面代码中，也展示了一种去除数组重复成员的方法。
+
+```javascript
+// 去除数组的重复成员
+[...new Set(array)]
 ```
 
 向Set加入值的时候，不会发生类型转换，所以`5`和`"5"`是两个不同的值。Set内部判断两个值是否不同，使用的算法叫做“Same-value equality”，它类似于精确相等运算符（`===`），主要的区别是`NaN`等于自身，而精确相等运算符认为`NaN`不等于自身。
@@ -72,15 +86,15 @@ set.size // 2
 
 Set结构的实例有以下属性。
 
-- Set.prototype.constructor：构造函数，默认就是Set函数。
-- Set.prototype.size：返回Set实例的成员总数。
+- `Set.prototype.constructor`：构造函数，默认就是`Set`函数。
+- `Set.prototype.size`：返回`Set`实例的成员总数。
 
 Set实例的方法分为两大类：操作方法（用于操作数据）和遍历方法（用于遍历成员）。下面先介绍四个操作方法。
 
-- add(value)：添加某个值，返回Set结构本身。
-- delete(value)：删除某个值，返回一个布尔值，表示删除是否成功。
-- has(value)：返回一个布尔值，表示该值是否为Set的成员。
-- clear()：清除所有成员，没有返回值。
+- `add(value)`：添加某个值，返回Set结构本身。
+- `delete(value)`：删除某个值，返回一个布尔值，表示删除是否成功。
+- `has(value)`：返回一个布尔值，表示该值是否为`Set`的成员。
+- `clear()`：清除所有成员，没有返回值。
 
 上面这些属性和方法的实例如下。
 
@@ -98,13 +112,13 @@ s.delete(2);
 s.has(2) // false
 ```
 
-下面是一个对比，看看在判断是否包括一个键上面，Object结构和Set结构的写法不同。
+下面是一个对比，看看在判断是否包括一个键上面，`Object`结构和`Set`结构的写法不同。
 
 ```javascript
 // 对象的写法
 var properties = {
-  "width": 1,
-  "height": 1
+  'width': 1,
+  'height': 1
 };
 
 if (properties[someName]) {
@@ -114,60 +128,60 @@ if (properties[someName]) {
 // Set的写法
 var properties = new Set();
 
-properties.add("width");
-properties.add("height");
+properties.add('width');
+properties.add('height');
 
 if (properties.has(someName)) {
   // do something
 }
 ```
 
-Array.from方法可以将Set结构转为数组。
+`Array.from`方法可以将Set结构转为数组。
 
 ```javascript
 var items = new Set([1, 2, 3, 4, 5]);
 var array = Array.from(items);
 ```
 
-这就提供了一种去除数组的重复元素的方法。
+这就提供了去除数组重复成员的另一种方法。
 
 ```javascript
 function dedupe(array) {
   return Array.from(new Set(array));
 }
 
-dedupe([1,1,2,3]) // [1, 2, 3]
+dedupe([1, 1, 2, 3]) // [1, 2, 3]
 ```
 
 ### 遍历操作
 
 Set结构的实例有四个遍历方法，可以用于遍历成员。
 
-- keys()：返回一个键名的遍历器
-- values()：返回一个键值的遍历器
-- entries()：返回一个键值对的遍历器
-- forEach()：使用回调函数遍历每个成员
+- `keys()`：返回一个键名的遍历器
+- `values()`：返回一个键值的遍历器
+- `entries()`：返回一个键值对的遍历器
+- `forEach()`：使用回调函数遍历每个成员
 
 `key`方法、`value`方法、`entries`方法返回的都是遍历器对象（详见《Iterator对象》一章）。由于Set结构没有键名，只有键值（或者说键名和键值是同一个值），所以`key`方法和`value`方法的行为完全一致。
 
 ```javascript
 let set = new Set(['red', 'green', 'blue']);
 
-for ( let item of set.keys() ){
+for (let item of set.keys()) {
   console.log(item);
 }
 // red
 // green
 // blue
 
-for ( let item of set.values() ){
+for (let item of set.values()) {
   console.log(item);
 }
 // red
 // green
 // blue
 
-for ( let item of set.entries() ){
+for (let item of set.entries()) {
   console.log(item);
 }
 // ["red", "red"]
@@ -197,7 +211,7 @@ for (let x of set) {
 // blue
 ```
 
-由于扩展运算符（...）内部使用`for...of`循环，所以也可以用于Set结构。
+由于扩展运算符（`...`）内部使用`for...of`循环，所以也可以用于Set结构。
 
 ```javascript
 let set = new Set(['red', 'green', 'blue']);
@@ -205,7 +219,7 @@ let arr = [...set];
 // ['red', 'green', 'blue']
 ```
 
-这就提供了另一种便捷的去除数组重复元素的方法。
+扩展运算符和Set结构相结合，就可以去除数组的重复成员。
 
 ```javascript
 let arr = [3, 5, 2, 2, 5, 5];
@@ -244,7 +258,7 @@ let difference = new Set([...a].filter(x => !b.has(x)));
 // [1]
 ```
 
-Set结构的实例的forEach方法，用于对每个成员执行某种操作，没有返回值。
+Set结构的实例的`forEach`方法，用于对每个成员执行某种操作，没有返回值。
 
 ```javascript
 let set = new Set([1, 2, 3]);

@@ -466,28 +466,7 @@ var constantize = (obj) => {
 };
 ```
 
-ES5只有两种声明变量的方法：var命令和function命令。ES6除了添加let和const命令，后面章节还会提到，另外两种声明变量的方法：import命令和class命令。所以，ES6一共有6种声明变量的方法。
-
-## 跨模块常量
-
-上面说过，const声明的常量只在当前代码块有效。如果想设置跨模块的常量，可以采用下面的写法。
-
-```javascript
-// constants.js 模块
-export const A = 1;
-export const B = 3;
-export const C = 4;
-
-// test1.js 模块
-import * as constants from './constants';
-console.log(constants.A); // 1
-console.log(constants.B); // 3
-
-// test2.js 模块
-import {A, B} from './constants';
-console.log(A); // 1
-console.log(B); // 3
-```
+ES5只有两种声明变量的方法：`var`命令和`function`命令。ES6除了添加`let`和`const`命令，后面章节还会提到，另外两种声明变量的方法：`import`命令和`class`命令。所以，ES6一共有6种声明变量的方法。
 
 ## 全局对象的属性
 
@@ -503,7 +482,9 @@ window.a // 2
 
 上面代码中，全局对象的属性赋值与全局变量的赋值，是同一件事。（对于Node来说，这一条只对REPL环境适用，模块环境之中，全局变量必须显式声明成`global`对象的属性。）
 
-这种规定被视为JavaScript语言的一大问题，因为很容易不知不觉就创建了全局变量。ES6为了改变这一点，一方面规定，var命令和function命令声明的全局变量，依旧是全局对象的属性；另一方面规定，let命令、const命令、class命令声明的全局变量，不属于全局对象的属性。
+未声明的全局变量，自动成为全局对象`window`的属性，这被认为是JavaScript语言最大的设计败笔之一。这样的设计带来了两个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道，其次程序员很容易不知不觉地就创建了全局变量（比如打字出错）。另一方面，从语义上讲，语言的顶层对象是一个有实体含义的对象，也是不合适的。
+
+ES6为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是全局对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于全局对象的属性。也就是说，从ES6开始，全局变量将逐步与全局对象的属性脱钩。
 
 ```javascript
 var a = 1;
