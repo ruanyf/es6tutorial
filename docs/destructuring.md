@@ -96,7 +96,7 @@ const [v1, v2, ..., vN ] = array;
 对于Set结构，也可以使用数组的解构赋值。
 
 ```javascript
-let [x, y, z] = new Set(["a", "b", "c"])
+let [x, y, z] = new Set(["a", "b", "c"]);
 x // "a"
 ```
 
@@ -126,8 +126,8 @@ sixth // 5
 var [foo = true] = [];
 foo // true
 
-[x, y = 'b'] = ['a'] // x='a', y='b'
-[x, y = 'b'] = ['a', undefined] // x='a', y='b'
+[x, y = 'b'] = ['a']; // x='a', y='b'
+[x, y = 'b'] = ['a', undefined]; // x='a', y='b'
 ```
 
 注意，ES6内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，如果一个数组成员不严格等于`undefined`，默认值是不会生效的。
@@ -145,7 +145,7 @@ x // null
 如果默认值是一个表达式，那么这个表达式是惰性求值的，即只有在用到的时候，才会求值。
 
 ```javascript
-function f(){
+function f() {
   console.log('aaa');
 }
 
@@ -321,7 +321,7 @@ x // null
 如果解构失败，变量的值等于`undefined`。
 
 ```javascript
-var {foo} = {bar: 'baz'}
+var {foo} = {bar: 'baz'};
 foo // undefined
 ```
 
@@ -329,7 +329,7 @@ foo // undefined
 
 ```javascript
 // 报错
-var {foo: {bar}} = {baz: 'baz'}
+var {foo: {bar}} = {baz: 'baz'};
 ```
 
 上面代码中，等号左边对象的`foo`属性，对应一个子对象。该子对象的`bar`属性，解构时会报错。原因很简单，因为`foo`这时等于`undefined`，再取子属性就会报错，请看下面的代码。
@@ -426,7 +426,7 @@ function add([x, y]){
   return x + y;
 }
 
-add([1, 2]) // 3
+add([1, 2]); // 3
 ```
 
 上面代码中，函数`add`的参数表面上是一个数组，但在传入参数的那一刻，数组参数就被解构成变量`x`和`y`。对于函数内部的代码来说，它们能感受到的参数就是`x`和`y`。
@@ -434,7 +434,7 @@ add([1, 2]) // 3
 下面是另一个例子。
 
 ```javascript
-[[1, 2], [3, 4]].map(([a, b]) => a + b)
+[[1, 2], [3, 4]].map(([a, b]) => a + b);
 // [ 3, 7 ]
 ```
 
@@ -471,7 +471,7 @@ move(); // [0, 0]
 `undefined`就会触发函数参数的默认值。
 
 ```javascript
-[1, undefined, 3].map((x = 'yes') => x)
+[1, undefined, 3].map((x = 'yes') => x);
 // [ 1, 'yes', 3 ]
 ```
 
@@ -583,11 +583,11 @@ var { foo, bar } = example();
 ```javascript
 // 参数是一组有次序的值
 function f([x, y, z]) { ... }
-f([1, 2, 3])
+f([1, 2, 3]);
 
 // 参数是一组无次序的值
 function f({x, y, z}) { ... }
-f({z: 3, y: 2, x: 1})
+f({z: 3, y: 2, x: 1});
 ```
 
 **（4）提取JSON数据**
@@ -599,11 +599,11 @@ var jsonData = {
   id: 42,
   status: "OK",
   data: [867, 5309]
-}
+};
 
 let { id, status, data: number } = jsonData;
 
-console.log(id, status, number)
+console.log(id, status, number);
 // 42, "OK", [867, 5309]
 ```
 

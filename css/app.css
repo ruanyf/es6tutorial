@@ -166,7 +166,8 @@ input.searchButton {
 }
 
 #content code {
-    padding-right: 5px;
+    padding-left: 3px;
+    padding-right: 3px;
 
     color: #a6e22e;
     font-size: 0.7rem;

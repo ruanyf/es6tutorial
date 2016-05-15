@@ -21,9 +21,9 @@ b // 1
 `for`循环的计数器，就很合适使用let命令。
 
 ```javascript
-for(let i = 0; i < arr.length; i++){}
+for (let i = 0; i < arr.length; i++) {}
 
-console.log(i)
+console.log(i);
 //ReferenceError: i is not defined
 ```
 
@@ -189,14 +189,14 @@ ES5只有全局作用域和函数作用域，没有块级作用域，这带来�
 ```javascript
 var tmp = new Date();
 
-function f(){
+function f() {
   console.log(tmp);
-  if (false){
+  if (false) {
     var tmp = "hello world";
   }
 }
 
-f() // undefined
+f(); // undefined
 ```
 
 上面代码中，函数f执行后，输出结果为`undefined`，原因在于变量提升，导致内层的tmp变量覆盖了外层的tmp变量。
@@ -206,7 +206,7 @@ f() // undefined
 ```javascript
 var s = 'hello';
 
-for (var i = 0; i < s.length; i++){
+for (var i = 0; i < s.length; i++) {
   console.log(s[i]);
 }
 
@@ -251,7 +251,7 @@ ES6允许块级作用域的任意嵌套。
 ```javascript
 {{{{
   let insane = 'Hello World';
-  {let insane = 'Hello World';}
+  {let insane = 'Hello World'}
 }}}};
 ```
 
@@ -294,7 +294,7 @@ function f() { console.log('I am outside!'); }
     return a;
   }
 }
-f() // 报错
+f(); // 报错
 ```
 
 上面代码中，块级作用域外部，无法调用块级作用域内部定义的函数。如果确实需要调用，就要像下面这样处理。
@@ -305,9 +305,9 @@ let f;
   let a = 'secret';
   f = function () {
     return a;
-  }
+  };
 }
-f() // "secret"
+f(); // "secret"
 ```
 
 ES5的严格模式规定，函数只能在顶层作用域和函数内声明，其他情况（比如`if`代码块、循环代码块）的声明都会报错。
@@ -342,7 +342,7 @@ if (true)
 if (true) {
   function f() {}
 }
-f() // ReferenceError: f is not defined
+f(); // ReferenceError: f is not defined
 ```
 
 上面代码中，函数`f`是在块级作用域内部声明的，外部是不可用的。
@@ -425,7 +425,7 @@ foo.prop = 123;
 foo.prop
 // 123
 
-foo = {} // TypeError: "foo" is read-only
+foo = {}; // TypeError: "foo" is read-only
 ```
 
 上面代码中，常量`foo`储存的是一个地址，这个地址指向一个对象。不可变的只是这个地址，即不能把`foo`指向另一个地址，但对象本身是可变的，所以依然可以为其添加新属性。
