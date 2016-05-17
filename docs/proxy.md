@@ -272,6 +272,31 @@ var reverseInt = n => n.toString().split('').reverse().join('') | 0;
 
 pipe(3).double.pow.reverseInt.get
 // 63
+
+var pipe = (function () {
+ return function (value) {
+		var funcStack = [];            // 认为和上面pipe同名不利于理解，换了一个名
+		var oproxy = new Proxy({} , {  // 使用了一个oproxy 存储Proxy的指向
+			get : function (pipeObject , fnName) {
+				if (fnName === "get") {
+					return funcStack.reduce(function (val , fn) {
+						return fn(val);
+					},value);
+				} 
+				funcStack.push(window[fnName]);
+				return oproxy;
+			}
+		});
+		
+		return oproxy;
+	}
+}());
+
+var double = n => n * 2;
+var pow    = n => n * n;
+var reverseInt = n => n.toString().split("").reverse().join("") | 0;
+
+pipe(3).double.pow.reverseInt.get; // 63
 ```
 
 上面代码设置Proxy以后，达到了将函数名链式使用的效果。
