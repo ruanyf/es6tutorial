@@ -11,7 +11,7 @@ Set本身是一个构造函数，用来生成Set数据结构。
 ```javascript
 var s = new Set();
 
-[2, 3, 5, 4, 5, 2, 2].map(x => s.add(x))
+[2, 3, 5, 4, 5, 2, 2].map(x => s.add(x));
 
 for (let i of s) {
   console.log(i);
@@ -25,7 +25,7 @@ Set函数可以接受一个数组（或类似数组的对象）作为参数，�
 
 ```javascript
 // 例一
-var set = new Set([1, 2, 3, 4, 4])
+var set = new Set([1, 2, 3, 4, 4]);
 [...set]
 // [1, 2, 3, 4]
 
@@ -35,14 +35,14 @@ items.size // 5
 
 // 例三
 function divs () {
-  return [...document.querySelectorAll('div')]
+  return [...document.querySelectorAll('div')];
 }
 
-var set = new Set(divs())
+var set = new Set(divs());
 set.size // 56
 
 // 类似于
-divs().forEach(div => set.add(div))
+divs().forEach(div => set.add(div));
 set.size // 56
 ```
 
@@ -73,10 +73,10 @@ set // Set {NaN}
 ```javascript
 let set = new Set();
 
-set.add({})
+set.add({});
 set.size // 1
 
-set.add({})
+set.add({});
 set.size // 2
 ```
 
@@ -376,7 +376,7 @@ class Foo {
   }
   method () {
     if (!foos.has(this)) {
-      throw new TypeError('Foo.prototype.method 只能在Foo的实例上调用！')
+      throw new TypeError('Foo.prototype.method 只能在Foo的实例上调用！');
     }
   }
 }
