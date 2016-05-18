@@ -35,7 +35,7 @@ obj.count = 1
 ES6原生提供Proxy构造函数，用来生成Proxy实例。
 
 ```javascript
-var proxy = new Proxy(target, handler)
+var proxy = new Proxy(target, handler);
 ```
 
 Proxy对象的所有用法，都是上面这种形式，不同的只是`handler`参数的写法。其中，`new Proxy()`表示生成一个Proxy实例，target参数表示所要拦截的目标对象，`handler`参数也是一个对象，用来定制拦截行为。
@@ -73,7 +73,7 @@ target.a // "b"
 一个技巧是将Proxy对象，设置到`object.proxy`属性，从而可以在`object`对象上调用。
 
 ```javascript
-var object = { proxy: new Proxy(target, handler) }
+var object = { proxy: new Proxy(target, handler) };
 ```
 
 Proxy实例也可以作为其他对象的原型对象。
@@ -97,15 +97,15 @@ obj.time // 35
 var handler = {
   get: function(target, name) {
     if (name === 'prototype') return Object.prototype;
-    return 'Hello, '+ name;
+    return 'Hello, ' + name;
   },
   apply: function(target, thisBinding, args) { return args[0]; },
   construct: function(target, args) { return args[1]; }
 };
 
-var fproxy = new Proxy(function(x,y) {
-  return x+y;
-},  handler);
+var fproxy = new Proxy(function(x, y) {
+  return x + y;
+}, handler);
 
 fproxy(1,2); // 1
 new fproxy(1,2); // 2
@@ -357,7 +357,7 @@ var handler = {
     invariant(key, 'set');
     return true;
   }
-}
+};
 function invariant (key, action) {
   if (key[0] === '_') {
     throw new Error(`Invalid attempt to ${action} private "${key}" property`);
@@ -382,7 +382,7 @@ var handler = {
   apply (target, ctx, args) {
     return Reflect.apply(...arguments);
   }
-}
+};
 ```
 
 `apply`方法可以接受三个参数，分别是目标对象、目标对象的上下文对象（`this`）和目标对象的参数数组。
@@ -461,7 +461,7 @@ var p = new Proxy(obj, {
   }
 });
 
-"a" in p; // TypeError is thrown
+"a" in p // TypeError is thrown
 ```
 
 上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
@@ -475,7 +475,7 @@ var handler = {
   construct (target, args) {
     return new target(...args);
   }
-}
+};
 ```
 
 下面是一个例子。
@@ -515,15 +515,15 @@ var handler = {
     invariant(key, 'delete');
     return true;
   }
-}
+};
 function invariant (key, action) {
   if (key[0] === '_') {
     throw new Error(`Invalid attempt to ${action} private "${key}" property`);
   }
 }
 
-var target = { _prop: 'foo' }
-var proxy = new Proxy(target, handler)
+var target = { _prop: 'foo' };
+var proxy = new Proxy(target, handler);
 delete proxy._prop
 // Error: Invalid attempt to delete private "_prop" property
 ```
@@ -537,11 +537,11 @@ delete proxy._prop
 ```javascript
 var handler = {
   defineProperty (target, key, descriptor) {
-    return false
+    return false;
   }
-}
-var target = {}
-var proxy = new Proxy(target, handler)
+};
+var target = {};
+var proxy = new Proxy(target, handler);
 proxy.foo = 'bar'
 // TypeError: proxy defineProperty handler returned false for property '"foo"'
 ```
@@ -557,9 +557,9 @@ var handler = {
   enumerate (target) {
     return Object.keys(target).filter(key => key[0] !== '_')[Symbol.iterator]();
   }
-}
-var target = { prop: 'foo', _bar: 'baz', _prop: 'foo' }
-var proxy = new Proxy(target, handler)
+};
+var target = { prop: 'foo', _bar: 'baz', _prop: 'foo' };
+var proxy = new Proxy(target, handler);
 for (let key in proxy) {
   console.log(key);
   // "prop"
@@ -607,11 +607,11 @@ for (var x in p) {} // 报错
 var handler = {
   getOwnPropertyDescriptor (target, key) {
     if (key[0] === '_') {
-      return
+      return;
     }
-    return Object.getOwnPropertyDescriptor(target, key)
+    return Object.getOwnPropertyDescriptor(target, key);
   }
-}
+};
 var target = { _foo: 'bar', baz: 'tar' };
 var proxy = new Proxy(target, handler);
 Object.getOwnPropertyDescriptor(proxy, 'wat')
@@ -682,7 +682,7 @@ var p = new Proxy({}, {
   }
 });
 
-Object.isExtensible(p); // 报错
+Object.isExtensible(p) // 报错
 ```
 
 ### ownKeys()
@@ -732,7 +732,7 @@ for (let key of Object.keys(proxy)) {
 
 `preventExtensions`方法拦截`Object.preventExtensions()`。该方法必须返回一个布尔值。
 
-这个方法有一个限制，只有当`Object.isExtensible(proxy)`为`false`（即不可扩展）时，`proxy.preventExtensions`才能返回true，否则会报错。
+这个方法有一个限制，只有当`Object.isExtensible(proxy)`为`false`（即不可扩展）时，`proxy.preventExtensions`才能返回`true`，否则会报错。
 
 ```javascript
 var p = new Proxy({}, {
@@ -741,7 +741,7 @@ var p = new Proxy({}, {
   }
 });
 
-Object.preventExtensions(p); // 报错
+Object.preventExtensions(p) // 报错
 ```
 
 上面代码中，`proxy.preventExtensions`方法返回`true`，但这时`Object.isExtensible(proxy)`会返回`true`，因此报错。
@@ -773,7 +773,7 @@ var handler = {
   setPrototypeOf (target, proto) {
     throw new Error('Changing the prototype is forbidden');
   }
-}
+};
 var proto = {};
 var target = function () {};
 var proxy = new Proxy(target, handler);
@@ -915,7 +915,7 @@ Reflect.apply(Math.floor, undefined, [1.75]) // 1
 var obj = {
   get foo() { return this.bar(); },
   bar: function() { ... }
-}
+};
 
 // 下面语句会让 this.bar()
 // 变成调用 wrapper.bar()
