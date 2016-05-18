@@ -177,7 +177,7 @@ input.searchButton {
     border-radius: 2px;
 }
 
-#content p>code,
+#content p code,
 #content li>code,
 #content h2>code,
 #content h3>code{
