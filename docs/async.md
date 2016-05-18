@@ -498,7 +498,7 @@ co函数返回一个Promise对象，因此可以用then方法添加回调函数�
 ```javascript
 co(gen).then(function (){
   console.log('Generator 函数执行完成');
-})
+});
 ```
 
 上面代码中，等到Generator函数执行结束，就会输出一行提示。
@@ -552,7 +552,7 @@ g.next().value.then(function(data){
   g.next(data).value.then(function(data){
     g.next(data);
   });
-})
+});
 ```
 
 手动执行其实就是用then方法，层层添加回调函数。理解了这一点，就可以写出一个自动执行器。
@@ -863,7 +863,7 @@ async function foo() {}
 const foo = async function () {};
 
 // 对象的方法
-let obj = { async foo() {} }
+let obj = { async foo() {} };
 
 // 箭头函数
 const foo = async () => {};
@@ -1000,7 +1000,7 @@ function chainAnimationsPromise(elem, animations) {
     p = p.then(function(val) {
       ret = val;
       return anim(elem);
-    })
+    });
   }
 
   // 返回一个部署了错误捕捉机制的Promise
@@ -1029,7 +1029,7 @@ function chainAnimationsGenerator(elem, animations) {
     } catch(e) {
       /* 忽略错误，继续执行 */
     }
-      return ret;
+    return ret;
   });
 
 }
