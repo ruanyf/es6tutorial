@@ -84,7 +84,7 @@ foo() // TypeError: Cannot read property 'x' of undefined
 下面是另一个对象的解构赋值默认值的例子。
 
 ```javascript
-function fetch(url, { body = '', method = 'GET', headers = {} }){
+function fetch(url, { body = '', method = 'GET', headers = {} }) {
   console.log(method);
 }
 
@@ -100,7 +100,7 @@ fetch('http://example.com')
 上面的写法不能省略第二个参数，如果结合函数参数的默认值，就可以省略第二个参数。这时，就出现了双重默认值。
 
 ```javascript
-function fetch(url, { method = 'GET' } = {}){
+function fetch(url, { method = 'GET' } = {}) {
   console.log(method);
 }
 
@@ -178,7 +178,7 @@ f(1, undefined, 2) // [1, 5, 2]
 如果传入`undefined`，将触发该参数等于默认值，`null`则没有这个效果。
 
 ```javascript
-function foo(x = 5, y = 6){
+function foo(x = 5, y = 6) {
   console.log(x, y);
 }
 
@@ -764,7 +764,7 @@ var getTempItem = id => ({ id: id, name: "Temp" });
 const full = ({ first, last }) => first + ' ' + last;
 
 // 等同于
-function full( person ) {
+function full(person) {
   return person.first + ' ' + person.last;
 }
 ```
@@ -832,14 +832,14 @@ headAndTail(1, 2, 3, 4, 5)
 
 ```javascript
 function foo() {
-  setTimeout( () => {
+  setTimeout(() => {
     console.log('id:', this.id);
   }, 100);
 }
 
 var id = 21;
 
-foo.call( { id: 42 } );
+foo.call({ id: 42 });
 // id: 42
 ```
 
@@ -848,7 +848,7 @@ foo.call( { id: 42 } );
 箭头函数可以让`setTimeout`里面的`this`，绑定定义时所在的作用域，而不是指向运行时所在的作用域。下面是另一个例子。
 
 ```javascript
-function Timer () {
+function Timer() {
   this.s1 = 0;
   this.s2 = 0;
   // 箭头函数
@@ -895,9 +895,9 @@ var handler = {
 ```javascript
 // ES6
 function foo() {
-  setTimeout( () => {
+  setTimeout(() => {
     console.log('id:', this.id);
-  },100);
+  }, 100);
 }
 
 // ES5
@@ -955,7 +955,7 @@ foo(2, 4, 6, 8)
 (function() {
   return [
     (() => this.x).bind({ x: 'inner' })()
-  ]
+  ];
 }).call({ x: 'outer' });
 // ['outer']
 ```
@@ -1363,7 +1363,7 @@ function tco(f) {
       active = false;
       return value;
     }
-  }
+  };
 }
 
 var sum = tco(function(x, y) {
