@@ -468,7 +468,40 @@ var msg = `Hello, ${place}`;
 // "Hello World"
 ```
 
-如果需要引用模板字符串本身，可以像下面这样写。
+模板字符串甚至还能嵌套。
+
+```javascript
+const tmpl = addrs => `
+  <table>
+  ${addrs.map(addr => `
+    <tr><td>${addr.first}</td></tr>
+    <tr><td>${addr.last}</td></tr>
+  `).join('')}
+  </table>
+`;
+```
+
+上面代码中，模板字符串的变量之中，又嵌入了另一个模板字符串，使用方法如下。
+
+```javascript
+const data = [
+    { first: '<Jane>', last: 'Bond' },
+    { first: 'Lars', last: '<Croft>' },
+];
+
+console.log(tmpl(data));
+// <table>
+//
+//   <tr><td><Jane></td></tr>
+//   <tr><td>Bond</td></tr>
+//
+//   <tr><td>Lars</td></tr>
+//   <tr><td><Croft></td></tr>
+//
+// </table>
+```
+
+如果需要引用模板字符串本身，在需要时执行，可以像下面这样写。
 
 ```javascript
 // 写法一
@@ -590,6 +623,12 @@ div.innerHTML = parse({ supplies: [ "broom", "mop", "cleaner" ] });
 
 模板字符串的功能，不仅仅是上面这些。它可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。这被称为“标签模板”功能（tagged template）。
 
+```javascript
+alert`123`
+// 等同于
+alert(123)
+```
+
 标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的就是函数，紧跟在后面的模板字符串就是它的参数。
 
 ```javascript
@@ -663,7 +702,7 @@ var total = 30;
 var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
 
 function passthru(literals) {
-  var result = "";
+  var result = '';
   var i = 0;
 
   while (i < literals.length) {
