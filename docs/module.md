@@ -635,7 +635,7 @@ CommonJS的一个模块，就是一个脚本文件。`require`命令第一次加
 }
 ```
 
-上面代码中，该对象的`id`属性是模块名，`exports`属性是模块输出的各个接口，`loaded`属性是一个布尔值，表示该模块的脚本是否执行完毕。其他还有很多属性，这里都省略了。
+上面代码就是Node内部加载模块后生成的一个对象。该对象的`id`属性是模块名，`exports`属性是模块输出的各个接口，`loaded`属性是一个布尔值，表示该模块的脚本是否执行完毕。其他还有很多属性，这里都省略了。
 
 以后需要用到这个模块的时候，就会到`exports`属性上面取值。即使再次执行`require`命令，也不会再次执行该模块，而是到缓存之中取值。也就是说，CommonJS模块无论加载多少次，都只会在第一次加载时运行一次，以后再加载，就返回第一次运行的结果，除非手动清除系统缓存。
 
@@ -722,14 +722,45 @@ exports.bad = function (arg) {
 
 ### ES6模块的循环加载
 
-ES6处理“循环加载”与CommonJS有本质的不同。ES6模块是动态引用，遇到模块加载命令`import`时，不会去执行模块，只是生成一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
+ES6处理“循环加载”与CommonJS有本质的不同。ES6模块是动态引用，如果使用`import`从一个模块加载变量（即`import foo from 'foo'`），那些变量不会被缓存，而是成为一个指向被加载模块的引用，需要开发者自己保证，真正取值的时候能够取到值。
 
-请看下面的例子（摘自 Dr. Axel Rauschmayer 的[《Exploring ES6》](http://exploringjs.com/es6/ch_modules.html)）。
+请看下面这个例子。
+
+```javascript
+// a.js如下
+import {bar} from './b.js';
+console.log('a.js');
+console.log(bar);
+export let foo = 'foo';
+
+// b.js
+import {foo} from './a.js';
+console.log('b.js');
+console.log(foo);
+export let bar = 'bar';
+```
+
+上面代码中，`a.js`加载`b.js`，`b.js`又加载`a.js`，构成循环加载。执行`a.js`，结果如下。
+
+```bash
+$ babel-node a.js
+b.js
+undefined
+a.js
+bar
+```
+
+上面代码中，由于`a.js`的第一行是加载`b.js`，所以先执行的是`b.js`。而`b.js`的第一行又是加载`a.js`，这时由于`a.js`已经开始执行了，所以不会重复执行，而是继续往下执行`b.js`，所以第一行输出的是`b.js`。
+
+接着，`b.js`要打印变量`foo`，这时`a.js`还没执行完，取不到`foo`的值，导致打印出来是`undefined`。`b.js`执行完，开始执行`a.js`，这时就一切正常了。
+
+再看一个稍微复杂的例子（摘自 Dr. Axel Rauschmayer 的[《Exploring ES6》](http://exploringjs.com/es6/ch_modules.html)）。
 
 ```javascript
 // a.js
 import {bar} from './b.js';
 export function foo() {
+  console.log('foo');
   bar();
   console.log('执行完毕');
 }
@@ -738,6 +769,7 @@ foo();
 // b.js
 import {foo} from './a.js';
 export function bar() {
+  console.log('bar');
   if (Math.random() > 0.5) {
     foo();
   }
@@ -750,11 +782,54 @@ export function bar() {
 
 ```bash
 $ babel-node a.js
+foo
+bar
+执行完毕
 
+// 执行结果也有可能是
+foo
+bar
+foo
+bar
+执行完毕
 执行完毕
 ```
 
-`a.js`之所以能够执行，原因就在于ES6加载的变量，都是动态引用其所在的模块。只要引用是存在的，代码就能执行。
+上面代码中，`a.js`之所以能够执行，原因就在于ES6加载的变量，都是动态引用其所在的模块。只要引用存在，代码就能执行。
+
+下面，我们详细分析这段代码的运行过程。
+
+```javascript
+// a.js
+
+// 这一行建立一个引用，
+// 从`b.js`引用`bar`
+import {bar} from './b.js';
+
+export function foo() {
+  // 执行时第一行输出 foo
+  console.log('foo');
+  // 到 b.js 执行 bar
+  bar();
+  console.log('执行完毕');
+}
+foo();
+
+// b.js
+
+// 建立`a.js`的`foo`引用
+import {foo} from './a.js';
+
+export function bar() {
+  // 执行时，第二行输出 bar
+  console.log('bar');
+  // 递归执行 foo，一旦随机数
+  // 小于等于0.5，就停止执行
+  if (Math.random() > 0.5) {
+    foo();
+  }
+}
+```
 
 我们再来看ES6模块加载器[SystemJS](https://github.com/ModuleLoader/es6-module-loader/blob/master/docs/circular-references-bindings.md)给出的一个例子。
 
