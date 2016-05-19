@@ -91,7 +91,7 @@ export {firstName, lastName, year};
 export命令除了输出变量，还可以输出函数或类（class）。
 
 ```javascript
-export function multiply (x, y) {
+export function multiply(x, y) {
   return x * y;
 };
 ```
@@ -350,7 +350,7 @@ import {crc32} from 'crc32';
 // modules.js
 function add(x, y) {
   return x * y;
-};
+}
 export {add as default};
 // 等同于
 // export default add;
@@ -402,7 +402,7 @@ export default 42;
 export default class { ... }
 
 // main.js
-import MyClass from 'MyClass'
+import MyClass from 'MyClass';
 let o = new MyClass();
 ```
 
@@ -499,7 +499,7 @@ $ node main.js
 4
 ```
 
-ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的”符号连接“，原始值变了，`import`输入的值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+ES6模块的运行机制与CommonJS不一样，它遇到模块加载命令`import`时，不会去执行模块，而是只生成一个动态的只读引用。等到真的需要用到时，再到模块里面去取值，换句话说，ES6的输入有点像Unix系统的“符号连接”，原始值变了，`import`输入的值也会跟着变。因此，ES6模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
 
 还是举上面的例子。
 
@@ -545,7 +545,7 @@ baz
 
 上面代码表明，ES6模块不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块。
 
-由于ES6输入的模块变量，只是一个”符号连接“，所以这个变量是只读的，对它进行重新赋值会报错。
+由于ES6输入的模块变量，只是一个“符号连接”，所以这个变量是只读的，对它进行重新赋值会报错。
 
 ```javascript
 // lib.js
@@ -571,7 +571,7 @@ function C() {
   };
   this.show = function () {
     console.log(this.sum);
-  }
+  };
 }
 
 export let c = new C();
@@ -616,7 +616,7 @@ var a = require('a');
 
 通常，“循环加载”表示存在强耦合，如果处理不好，还可能导致递归加载，使得程序无法执行，因此应该避免出现。
 
-但是实际上，这是很难避免的，尤其是依赖关系复杂的大项目，很容易出现`a`依赖b，`b`依赖`c`，`c`又依赖`a`这样的情况。这意味着，模块加载机制必须考虑“循环加载”的情况。
+但是实际上，这是很难避免的，尤其是依赖关系复杂的大项目，很容易出现`a`依赖`b`，`b`依赖`c`，`c`又依赖`a`这样的情况。这意味着，模块加载机制必须考虑“循环加载”的情况。
 
 对于JavaScript语言来说，目前最常见的两种模块格式CommonJS和ES6，处理“循环加载”的方法是不一样的，返回的结果也不一样。
 
