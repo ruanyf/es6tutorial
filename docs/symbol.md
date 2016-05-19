@@ -154,7 +154,7 @@ Symbol类型还可以用于定义一组常量，保证这组常量的值都是�
 log.levels = {
   DEBUG: Symbol('debug'),
   INFO: Symbol('info'),
-  WARN: Symbol('warn'),
+  WARN: Symbol('warn')
 };
 log(log.levels.DEBUG, 'debug message');
 log(log.levels.INFO, 'info message');

@@ -14,7 +14,7 @@ function Point(x,y){
 
 Point.prototype.toString = function () {
   return '(' + this.x + ', ' + this.y + ')';
-}
+};
 ```
 
 上面这种写法跟传统的面向对象语言（比如C++和Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
@@ -74,7 +74,7 @@ class Point {
 Point.prototype = {
   toString(){},
   toValue(){}
-}
+};
 ```
 
 在类的实例上面调用方法，其实就是调用原型上的方法。
@@ -100,7 +100,7 @@ class Point {
 Object.assign(Point.prototype, {
   toString(){},
   toValue(){}
-})
+});
 ```
 
 `prototype`对象的`constructor`属性，直接指向“类”的本身，这与ES5的行为是一致的。
@@ -133,11 +133,11 @@ Object.getOwnPropertyNames(Point.prototype)
 ```javascript
 var Point = function (x, y){
   // ...
-}
+};
 
 Point.prototype.toString = function() {
   // ...
-}
+};
 
 Object.keys(Point.prototype)
 // ["toString"]
@@ -585,7 +585,7 @@ var obj = {
   toString() {
     return "MyObject: " + super.toString();
   }
-}
+};
 
 obj.toString(); // MyObject: [object Object]
 ```
