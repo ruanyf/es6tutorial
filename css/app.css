@@ -2,14 +2,14 @@
 
 /* Small screens (default) */
 html { font-size: 100%; }
- 
+
 /* Medium screens (640px) */
-@media (min-width: 40rem) { 
+@media (min-width: 40rem) {
   html { font-size: 112%; }
 }
- 
+
 /* Large screens (1024px) */
-@media (min-width: 64rem) { 
+@media (min-width: 64rem) {
   html { font-size: 120%; }
 }
 
@@ -139,7 +139,7 @@ input.searchButton {
 
     /* border: 1px solid black; */
 
-	counter-reset: section; 
+	counter-reset: section;
 }
 
 @media (min-width: 40rem) {
@@ -166,9 +166,6 @@ input.searchButton {
 }
 
 #content code {
-    padding-left: 3px;
-    padding-right: 3px;
-
     color: #a6e22e;
     font-size: 0.7rem;
     font-weight: normal;
@@ -178,10 +175,12 @@ input.searchButton {
     border-radius: 2px;
 }
 
-#content p>code,
+#content p code,
 #content li>code,
 #content h2>code,
 #content h3>code{
+  padding-left: 3px;
+  padding-right: 3px;
   color: #c7254e;
   background: #f9f2f4;
 }
@@ -361,7 +360,7 @@ input.searchButton {
 		margin-left: 560px;
 
 		font-size: 14px;
-	}	
+	}
 }
 
 #flip{
