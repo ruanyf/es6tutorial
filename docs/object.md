@@ -146,7 +146,7 @@ var obj = {
   * m(){
     yield 'hello world';
   }
-}
+};
 ```
 
 ## 属性名表达式
@@ -233,9 +233,9 @@ var person = {
     console.log(this.name);
   },
   get firstName() {
-    return "Nicholas"
+    return "Nicholas";
   }
-}
+};
 
 person.sayName.name   // "sayName"
 person.firstName.name // "get firstName"
@@ -633,12 +633,12 @@ Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
 // es6的写法
 var obj = {
   method: function() { ... }
-}
+};
 obj.__proto__ = someOtherObj;
 
 // es5的写法
 var obj = Object.create(someOtherObj);
-obj.method = function() { ... }
+obj.method = function() { ... };
 ```
 
 该属性没有写入ES6的正文，而是写入了附录，原因是`__proto__`前后的双下划线，说明它本质上是一个内部属性，而不是一个正式的对外的API，只是由于浏览器广泛支持，才被加入了ES6。标准明确规定，只有浏览器必须部署这个属性，其他运行环境不一定需要部署，而且新的代码最好认为这个属性是不存在的。因此，无论从语义的角度，还是从兼容性的角度，都不要使用这个属性，而是使用下面的`Object.setPrototypeOf()`（写操作）、`Object.getPrototypeOf()`（读操作）、`Object.create()`（生成操作）代替。
@@ -662,7 +662,7 @@ Object.defineProperty(Object.prototype, '__proto__', {
       return undefined;
     }
     let status = Reflect.setPrototypeOf(this, proto);
-    if (! status) {
+    if (!status) {
       throw new TypeError();
     }
   },
@@ -756,7 +756,7 @@ Object.keys(obj)
 目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
 
 ```javascript
- let {keys, values, entries} = Object;
+let {keys, values, entries} = Object;
 let obj = { a: 1, b: 2, c: 3 };
 
 for (let key of keys(obj)) {
@@ -943,9 +943,9 @@ var o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
 let { x, ...{ y, z } } = o;
-x; // 1
-y; // undefined
-z; // 3
+x // 1
+y // undefined
+z // 3
 ```
 
 上面代码中，变量`x`是单纯的解构赋值，所以可以读取继承的属性；Rest解构赋值产生的变量`y`和`z`，只能读取对象自身的属性，所以只有变量`z`可以赋值成功。
@@ -1010,7 +1010,7 @@ let aWithOverrides = Object.assign({}, a, { x: 1, y: 2 });
 ```javascript
 let newVersion = {
   ...previousVersion,
-  name: 'New Name', // Override the name property
+  name: 'New Name' // Override the name property
 };
 ```
 
@@ -1074,7 +1074,7 @@ ES7有一个提案，提出了`Object.getOwnPropertyDescriptors`方法，返回�
 ```javascript
 const obj = {
   foo: 123,
-  get bar() { return 'abc' },
+  get bar() { return 'abc' }
 };
 
 Object.getOwnPropertyDescriptors(obj)
