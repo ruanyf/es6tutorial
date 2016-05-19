@@ -273,6 +273,7 @@ function f(thunk){
 ```
 
 上面代码中，函数f的参数`x + 5`被一个函数替换了。凡是用到原参数的地方，对`Thunk`函数求值即可。
+
 这就是Thunk函数的定义，它是"传名调用"的一种实现策略，用来替换某个表达式。
 
 ### JavaScript语言的Thunk函数
@@ -299,12 +300,22 @@ var Thunk = function (fileName){
 任何函数，只要参数有回调函数，就能写成Thunk函数的形式。下面是一个简单的Thunk函数转换器。
 
 ```javascript
+// ES5版本
 var Thunk = function(fn){
   return function (){
     var args = Array.prototype.slice.call(arguments);
     return function (callback){
       args.push(callback);
       return fn.apply(this, args);
+    }
+  };
+};
+
+// ES6版本
+var Thunk = function(fn) {
+  return function (...args) {
+    return function (callback) {
+      return fn.call(this, ...args, callback);
     }
   };
 };
@@ -315,6 +326,18 @@ var Thunk = function(fn){
 ```javascript
 var readFileThunk = Thunk(fs.readFile);
 readFileThunk(fileA)(callback);
+```
+
+下面是另一个完整的例子。
+
+```javascript
+function f(a, cb) {
+  cb(a);
+}
+let ft = Thunk(f);
+
+let log = console.log.bind(console);
+ft(1)(log) // 1
 ```
 
 ### Thunkify模块
