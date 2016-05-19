@@ -94,12 +94,12 @@ import { mixins } from './mixins'
 
 const Foo = {
   foo() { console.log('foo') }
-}
+};
 
 @mixins(Foo)
 class MyClass {}
 
-let obj = new MyClass()
+let obj = new MyClass();
 obj.foo() // 'foo'
 ```
 
@@ -108,7 +108,7 @@ obj.foo() // 'foo'
 ```javascript
 const Foo = {
   foo() { console.log('foo') }
-}
+};
 
 class MyClass {}
 
@@ -169,7 +169,7 @@ function nonenumerable(target, name, descriptor) {
 
 下面的`@log`修饰器，可以起到输出日志的作用。
 
-```bash
+```javascript
 class Math {
   @log
   add(a, b) {
@@ -498,7 +498,7 @@ export function mixins(...list) {
 然后，就可以使用上面这个修饰器，为类“混入”各种方法。
 
 ```javascript
-import { mixins } from './mixins'
+import { mixins } from './mixins';
 
 const Foo = {
   foo() { console.log('foo') }
@@ -600,7 +600,7 @@ Trait也是一种修饰器，效果与Mixin类似，但是提供更多功能，�
 下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的traits修饰器，不仅可以接受对象，还可以接受ES6类作为参数。
 
 ```javascript
-import { traits } from 'traits-decorator'
+import { traits } from 'traits-decorator';
 
 class TFoo {
   foo() { console.log('foo') }
@@ -608,12 +608,12 @@ class TFoo {
 
 const TBar = {
   bar() { console.log('bar') }
-}
+};
 
 @traits(TFoo, TBar)
 class MyClass { }
 
-let obj = new MyClass()
+let obj = new MyClass();
 obj.foo() // foo
 obj.bar() // bar
 ```
@@ -623,7 +623,7 @@ obj.bar() // bar
 Trait不允许“混入”同名方法。
 
 ```javascript
-import {traits } from 'traits-decorator'
+import { traits } from 'traits-decorator';
 
 class TFoo {
   foo() { console.log('foo') }
@@ -632,7 +632,7 @@ class TFoo {
 const TBar = {
   bar() { console.log('bar') },
   foo() { console.log('foo') }
-}
+};
 
 @traits(TFoo, TBar)
 class MyClass { }
@@ -647,7 +647,7 @@ class MyClass { }
 一种解决方法是排除TBar的foo方法。
 
 ```javascript
-import { traits, excludes } from 'traits-decorator'
+import { traits, excludes } from 'traits-decorator';
 
 class TFoo {
   foo() { console.log('foo') }
@@ -656,12 +656,12 @@ class TFoo {
 const TBar = {
   bar() { console.log('bar') },
   foo() { console.log('foo') }
-}
+};
 
 @traits(TFoo, TBar::excludes('foo'))
 class MyClass { }
 
-let obj = new MyClass()
+let obj = new MyClass();
 obj.foo() // foo
 obj.bar() // bar
 ```
@@ -671,7 +671,7 @@ obj.bar() // bar
 另一种方法是为TBar的foo方法起一个别名。
 
 ```javascript
-import { traits, alias } from 'traits-decorator'
+import { traits, alias } from 'traits-decorator';
 
 class TFoo {
   foo() { console.log('foo') }
@@ -680,12 +680,12 @@ class TFoo {
 const TBar = {
   bar() { console.log('bar') },
   foo() { console.log('foo') }
-}
+};
 
 @traits(TFoo, TBar::alias({foo: 'aliasFoo'}))
 class MyClass { }
 
-let obj = new MyClass()
+let obj = new MyClass();
 obj.foo() // foo
 obj.aliasFoo() // foo
 obj.bar() // bar
