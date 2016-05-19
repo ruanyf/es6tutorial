@@ -279,19 +279,6 @@ pipe(3).double.pow.reverseInt.get; // 63
 下面的例子则是利用`get`拦截，实现一个生成各种DOM节点的通用函数`dom`。
 
 ```javascript
-const el = dom.div({},
-  'Hello, my name is ',
-  dom.a({href: '//example.com'}, 'Mark'),
-  '. I like:',
-  dom.ul({},
-    dom.li({}, 'The web'),
-    dom.li({}, 'Food'),
-    dom.li({}, '…actually that\'s it')
-  )
-);
-
-document.body.appendChild(el);
-
 const dom = new Proxy({}, {
   get(target, property) {
     return function(attrs = {}, ...children) {
@@ -309,6 +296,19 @@ const dom = new Proxy({}, {
     }
   }
 });
+
+const el = dom.div({},
+  'Hello, my name is ',
+  dom.a({href: '//example.com'}, 'Mark'),
+  '. I like:',
+  dom.ul({},
+    dom.li({}, 'The web'),
+    dom.li({}, 'Food'),
+    dom.li({}, '…actually that\'s it')
+  )
+);
+
+document.body.appendChild(el);
 ```
 
 ### set()
