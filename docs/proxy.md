@@ -466,6 +466,42 @@ var p = new Proxy(obj, {
 
 上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
 
+has 也可以用于拦截for...in操作
+
+```javascript
+let stu1 = {
+  name: "Owen",
+  score: 59
+}
+
+let stu2 = {
+  name: "Mark",
+  score: 99
+}
+
+let handler = {
+  has(target , prop) {
+    if(prop === "score" && target[prop] < 60) {
+    	console.log(`${target["name"]}偷偷地把考砸的分数藏起来了`);
+    	return false;
+    }
+
+    return prop in target; 
+  }
+}
+
+let oproxy1 = new Proxy(stu1 , handler);
+let oproxy2 = new Proxy(stu2 , handler);
+
+for(let a in oproxy1) {
+	console.log(oproxy1[a]);
+}
+
+for(let b in oproxy2) {
+	console.log(oproxy2[b]);
+}
+```
+
 ### construct()
 
 `construct`方法用于拦截`new`命令。
