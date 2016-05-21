@@ -745,21 +745,21 @@ Object.keys(proxy)
 下面的例子是拦截第一个字符为下划线的属性名。
 
 ```javascript
-var target = {
+let target = {
   _bar: 'foo',
   _prop: 'bar',
   prop: 'baz'
 };
 
-var handler = {
+let handler = {
   ownKeys (target) {
     return Reflect.ownKeys(target).filter(key => key[0] !== '_');
   }
 };
 
-var proxy = new Proxy(target, handler);
+let proxy = new Proxy(target, handler);
 for (let key of Object.keys(proxy)) {
-  console.log(key)
+  console.log(target[key]);
 }
 // "baz"
 ```
