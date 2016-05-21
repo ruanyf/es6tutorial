@@ -432,7 +432,9 @@ Reflect.apply(proxy, null, [9, 10]) // 38
 
 ### has()
 
-`has`方法可以隐藏某些属性，不被`in`操作符发现。
+`has`方法用来拦截`HasProperty`操作，即判断对象是否具有某个属性时，这个方法会生效。典型的操作就是`in`运算符。
+
+下面的例子使用`has`方法隐藏某些属性，不被`in`运算符发现。
 
 ```javascript
 var handler = {
@@ -461,46 +463,44 @@ var p = new Proxy(obj, {
   }
 });
 
-"a" in p // TypeError is thrown
+'a' in p // TypeError is thrown
 ```
 
 上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
 
-has 也可以用于拦截for...in操作
+值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，而是继承的属性。由于`for...in`操作内部也会用到`HasProperty`操作，所以`has`方法在`for...in`循环时也会生效。
 
 ```javascript
-let stu1 = {
-  name: "Owen",
-  score: 59
-}
-
-let stu2 = {
-  name: "Mark",
-  score: 99
-}
+let stu1 = {name: 'Owen', score: 59};
+let stu2 = {name: 'Mark', score: 99};
 
 let handler = {
-  has(target , prop) {
-    if(prop === "score" && target[prop] < 60) {
-    	console.log(`${target["name"]}偷偷地把考砸的分数藏起来了`);
-    	return false;
+  has(target, prop) {
+    if (prop === 'score' && target[prop] < 60) {
+      console.log(`${target.name} 不及格`);
+      return false;
     }
-
-    return prop in target; 
+    return prop in target;
   }
 }
 
-let oproxy1 = new Proxy(stu1 , handler);
-let oproxy2 = new Proxy(stu2 , handler);
+let oproxy1 = new Proxy(stu1, handler);
+let oproxy2 = new Proxy(stu2, handler);
 
-for(let a in oproxy1) {
-	console.log(oproxy1[a]);
+for (let a in oproxy1) {
+  console.log(oproxy1[a]);
 }
+// Owen
+// Owen 不及格
 
-for(let b in oproxy2) {
-	console.log(oproxy2[b]);
+for (let b in oproxy2) {
+  console.log(oproxy2[b]);
 }
+// Mark
+// Mark 59
 ```
+
+上面代码中，`for...in`循环时，`has`拦截会生效，导致不符合要求的属性被排除在`for...in`循环之外。
 
 ### construct()
 
