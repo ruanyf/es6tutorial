@@ -127,7 +127,7 @@ fproxy.foo; // 'Hello, foo'
 
 **（3）has(target, propKey)**
 
-拦截`propKey in proxy`的操作，返回一个布尔值。
+拦截`propKey in proxy`的操作，以及对象的`hasOwnProperty`方法，返回一个布尔值。
 
 **（4）deleteProperty(target, propKey)**
 
@@ -135,7 +135,7 @@ fproxy.foo; // 'Hello, foo'
 
 **（5）enumerate(target)**
 
-拦截`for (var x in proxy)`，返回一个遍历器。
+拦截`for...in`循环、`Object.getOwnPropertySymbols`方法、`Object.keys`方法和`JSON.stringify`方法，返回一个遍历器。
 
 **（6）ownKeys(target)**
 
@@ -550,12 +550,13 @@ proxy.foo = 'bar'
 
 ### enumerate()
 
-`enumerate`方法用来拦截`for...in`循环。注意与Proxy对象的`has`方法区分，后者用来拦截`in`操作符，对`for...in`循环无效。
+`enumerate`方法用来拦截遍历对象属性的行为，任何调用对象的Iterator接口的操作都会被拦截，最典型的就是`for...in`循环，以及`Object.getOwnPropertySymbols`方法、`Object.keys`方法和`JSON.stringify`方法等。
 
 ```javascript
 var handler = {
   enumerate (target) {
-    return Object.keys(target).filter(key => key[0] !== '_')[Symbol.iterator]();
+    let keys = Object.keys(target).filter(key => key[0] !== '_');
+    return keys[Symbol.iterator]();
   }
 };
 var target = { prop: 'foo', _bar: 'baz', _prop: 'foo' };
@@ -573,8 +574,8 @@ for (let key in proxy) {
 ```javascript
 var p = new Proxy({}, {
   enumerate(target) {
-    console.log("called");
-    return ["a", "b", "c"][Symbol.iterator]();
+    console.log('called');
+    return ['a', 'b', 'c'][Symbol.iterator]();
   }
 });
 
