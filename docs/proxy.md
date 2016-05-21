@@ -133,45 +133,41 @@ fproxy.foo; // 'Hello, foo'
 
 拦截`delete proxy[propKey]`的操作，返回一个布尔值。
 
-**（5）enumerate(target)**
-
-拦截`for...in`循环、`Object.getOwnPropertySymbols`方法、`Object.keys`方法和`JSON.stringify`方法，返回一个遍历器。
-
-**（6）ownKeys(target)**
+**（5）ownKeys(target)**
 
 拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回对象所有自身的属性，而`Object.keys()`仅返回对象可遍历的属性。
 
-**（7）getOwnPropertyDescriptor(target, propKey)**
+**（6）getOwnPropertyDescriptor(target, propKey)**
 
 拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
 
-**（8）defineProperty(target, propKey, propDesc)**
+**（7）defineProperty(target, propKey, propDesc)**
 
 拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
 
-**（9）preventExtensions(target)**
+**（8）preventExtensions(target)**
 
 拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
 
-**（10）getPrototypeOf(target)**
+**（9）getPrototypeOf(target)**
 
 拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
 
-**（11）isExtensible(target)**
+**（10）isExtensible(target)**
 
 拦截`Object.isExtensible(proxy)`，返回一个布尔值。
 
-**（12）setPrototypeOf(target, proto)**
+**（11）setPrototypeOf(target, proto)**
 
 拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。
 
 如果目标对象是函数，那么还有两种额外操作可以拦截。
 
-**（13）apply(target, object, args)**
+**（12）apply(target, object, args)**
 
 拦截Proxy实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
 
-**（14）construct(target, args, proxy)**
+**（13）construct(target, args, proxy)**
 
 拦截Proxy实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
@@ -497,7 +493,7 @@ for (let b in oproxy2) {
   console.log(oproxy2[b]);
 }
 // Mark
-// Mark 59
+// Mark 99
 ```
 
 上面代码中，`for...in`循环时，`has`拦截会生效，导致不符合要求的属性被排除在`for...in`循环之外。
@@ -583,58 +579,6 @@ proxy.foo = 'bar'
 ```
 
 上面代码中，`defineProperty`方法返回`false`，导致添加新属性会抛出错误。
-
-### enumerate()
-
-`enumerate`方法用来拦截遍历对象属性的行为，任何调用对象的Iterator接口的操作都会被拦截，最典型的就是`for...in`循环，以及`Object.getOwnPropertySymbols`方法、`Object.keys`方法和`JSON.stringify`方法等。
-
-```javascript
-var handler = {
-  enumerate (target) {
-    let keys = Object.keys(target).filter(key => key[0] !== '_');
-    return keys[Symbol.iterator]();
-  }
-};
-var target = { prop: 'foo', _bar: 'baz', _prop: 'foo' };
-var proxy = new Proxy(target, handler);
-for (let key in proxy) {
-  console.log(key);
-  // "prop"
-}
-```
-
-上面代码中，`enumerate`方法取出原对象的所有属性名，将其中第一个字符等于下划线的都过滤掉，然后返回这些符合条件的属性名的一个遍历器对象，供`for...in`循环消费。
-
-下面是另一个例子。
-
-```javascript
-var p = new Proxy({}, {
-  enumerate(target) {
-    console.log('called');
-    return ['a', 'b', 'c'][Symbol.iterator]();
-  }
-});
-
-for (var x in p) {
-  console.log(x);
-}
-// "called"
-// "a"
-// "b"
-// "c"
-```
-
-如果`enumerate`方法返回的不是一个对象，就会报错。
-
-```javascript
-var p = new Proxy({}, {
-  enumerate(target) {
-    return 1;
-  }
-});
-
-for (var x in p) {} // 报错
-```
 
 ### getOwnPropertyDescriptor()
 
@@ -923,7 +867,7 @@ Reflect.apply(Math.floor, undefined, [1.75]) // 1
 
 ## Reflect对象的方法
 
-`Reflect`对象的方法清单如下，共14个。
+`Reflect`对象的方法清单如下，共13个。
 
 - Reflect.apply(target,thisArg,args)
 - Reflect.construct(target,args)
@@ -933,7 +877,6 @@ Reflect.apply(Math.floor, undefined, [1.75]) // 1
 - Reflect.deleteProperty(target,name)
 - Reflect.has(target,name)
 - Reflect.ownKeys(target)
-- Reflect.enumerate(target)
 - Reflect.isExtensible(target)
 - Reflect.preventExtensions(target)
 - Reflect.getOwnPropertyDescriptor(target, name)
