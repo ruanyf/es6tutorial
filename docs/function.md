@@ -1221,9 +1221,9 @@ function Fibonacci2 (n , ac1 = 1 , ac2 = 1) {
   return Fibonacci2 (n-1 , ac2 , ac1 + ac2);
 }
 
-console.log(Fibonacci2(100)) // 354224848179262000000
-console.log(Fibonacci2(1000)) // 4.346655768693743e+208
-console.log(Fibonacci2(10000)) // Infinity
+Fibonacci2(100) // 354224848179262000000
+Fibonacci2(1000) // 4.346655768693743e+208
+Fibonacci2(10000) // Infinity
 ```
 
 由此可见，“尾调用优化”对递归操作意义重大，所以一些函数式编程语言将其写入了语言规格。ES6也是如此，第一次明确规定，所有ECMAScript的实现，都必须部署“尾调用优化”。这就是说，在ES6中，只要使用尾递归，就不会发生栈溢出，相对节省内存。
