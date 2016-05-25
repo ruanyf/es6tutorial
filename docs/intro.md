@@ -395,7 +395,7 @@ $ npm install --save-dev babelify babel-preset-es2015
 
 ```bash
 $  browserify script.js -o bundle.js \
-  -t [ babelify --presets [ es2015 react ] ]
+  -t [ babelify --presets [ es2015 ] ]
 ```
 
 上面代码将ES6脚本`script.js`，转为`bundle.js`，浏览器直接加载后者就可以了。
