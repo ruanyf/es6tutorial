@@ -133,7 +133,7 @@ String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
 // true
 ```
 
-上面代码中，如果`String.fromCharCode`方法有多个参数，则它们会被合并成一个字符串返回。
+上面代码中，如果`String.fromCodePoint`方法有多个参数，则它们会被合并成一个字符串返回。
 
 注意，`fromCodePoint`方法定义在`String`对象上，而`codePointAt`方法定义在字符串的实例对象上。
 
