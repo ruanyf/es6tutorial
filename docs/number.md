@@ -65,7 +65,7 @@ ES5可以通过下面的代码，部署`Number.isFinite`方法。
 })(this);
 ```
 
-`Number.isNaN()`用来检查一个值是否为NaN。
+`Number.isNaN()`用来检查一个值是否为`NaN`。
 
 ```javascript
 Number.isNaN(NaN) // true
@@ -236,6 +236,8 @@ Number.MIN_SAFE_INTEGER === -9007199254740991
 // true
 ```
 
+上面代码中，可以看到JavaScript能够精确表示的极限。
+
 `Number.isSafeInteger()`则是用来判断一个整数是否落在这个范围之内。
 
 ```javascript
@@ -256,7 +258,18 @@ Number.isSafeInteger(Number.MAX_SAFE_INTEGER) // true
 Number.isSafeInteger(Number.MAX_SAFE_INTEGER + 1) // false
 ```
 
-注意，验证运算结果是否落在安全整数的范围时，不要只验证运算结果，而要同时验证参与运算的每个值。
+这个函数的实现很简单，就是跟安全整数的两个边界值比较一下。
+
+```javascript
+Number.isSafeInteger = function (n) {
+  return (typeof n === 'number' &&
+    Math.round(n) === n &&
+    Number.MIN_SAFE_INTEGER <= n &&
+    n <= Number.MAX_SAFE_INTEGER);
+}
+```
+
+实际使用这个函数时，需要注意。验证运算结果是否落在安全整数的范围内，不要只验证运算结果，而要同时验证参与运算的每个值。
 
 ```javascript
 Number.isSafeInteger(9007199254740993)

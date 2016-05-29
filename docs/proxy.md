@@ -96,21 +96,29 @@ obj.time // 35
 ```javascript
 var handler = {
   get: function(target, name) {
-    if (name === 'prototype') return Object.prototype;
+    if (name === 'prototype') {
+      return Object.prototype;
+    }
     return 'Hello, ' + name;
   },
-  apply: function(target, thisBinding, args) { return args[0]; },
-  construct: function(target, args) { return args[1]; }
+
+  apply: function(target, thisBinding, args) {
+    return args[0];
+  },
+
+  construct: function(target, args) {
+    return {value: args[1]};
+  }
 };
 
 var fproxy = new Proxy(function(x, y) {
   return x + y;
 }, handler);
 
-fproxy(1,2); // 1
-new fproxy(1,2); // 2
-fproxy.prototype; // Object.prototype
-fproxy.foo; // 'Hello, foo'
+fproxy(1, 2) // 1
+new fproxy(1,2) // {value: 2}
+fproxy.prototype === Object.prototype // true
+fproxy.foo // "Hello, foo"
 ```
 
 下面是Proxy支持的拦截操作一览。
@@ -167,7 +175,7 @@ fproxy.foo; // 'Hello, foo'
 
 拦截Proxy实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
 
-**（13）construct(target, args, proxy)**
+**（13）construct(target, args)**
 
 拦截Proxy实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
@@ -500,15 +508,20 @@ for (let b in oproxy2) {
 
 ### construct()
 
-`construct`方法用于拦截`new`命令。
+`construct`方法用于拦截`new`命令，下面是拦截对象的写法。
 
 ```javascript
 var handler = {
-  construct (target, args) {
+  construct (target, args, newTarget) {
     return new target(...args);
   }
 };
 ```
+
+`construct`方法可以接受两个参数。
+
+- `target`: 目标对象
+- `args`：构建函数的参数对象
 
 下面是一个例子。
 
@@ -525,7 +538,7 @@ new p(1).value
 // 10
 ```
 
-如果`construct`方法返回的不是对象，就会抛出错误。
+如果`construct`方法返回的必须是一个对象，否则会报错。
 
 ```javascript
 var p = new Proxy(function() {}, {
