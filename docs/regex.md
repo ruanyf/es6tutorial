@@ -89,7 +89,7 @@ ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达�
 
 **（3）量词**
 
-使用`u`修饰符后，所有量词都会正确识别大于码点大于`0xFFFF`的Unicode字符。
+使用`u`修饰符后，所有量词都会正确识别码点大于`0xFFFF`的Unicode字符。
 
 ```javascript
 /a{2}/.test('aa') // true
