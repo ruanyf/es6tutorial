@@ -472,7 +472,7 @@ var p = new Proxy(obj, {
 
 上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
 
-值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，而是继承的属性。由于`for...in`操作内部也会用到`HasProperty`操作，所以`has`方法在`for...in`循环时也会生效。
+值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，还是继承的属性。由于`for...in`操作内部也会用到`HasProperty`操作，所以`has`方法在`for...in`循环时也会生效。
 
 ```javascript
 let stu1 = {name: 'Owen', score: 59};
@@ -538,7 +538,7 @@ new p(1).value
 // 10
 ```
 
-如果`construct`方法返回的必须是一个对象，否则会报错。
+`construct`方法返回的必须是一个对象，否则会报错。
 
 ```javascript
 var p = new Proxy(function() {}, {
