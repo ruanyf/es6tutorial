@@ -727,9 +727,9 @@ ES7提供了`async`函数，使得异步操作变得更加方便。`async`函数
 ```javascript
 var fs = require('fs');
 
-var readFile = function (fileName){
-  return new Promise(function (resolve, reject){
-    fs.readFile(fileName, function(error, data){
+var readFile = function (fileName) {
+  return new Promise(function (resolve, reject) {
+    fs.readFile(fileName, function(error, data) {
       if (error) reject(error);
       resolve(data);
     });
@@ -775,9 +775,42 @@ var result = asyncReadFile();
 
 进一步说，`async`函数完全可以看作多个异步操作，包装成的一个Promise对象，而`await`命令就是内部`then`命令的语法糖。
 
-正常情况下，`await`命令后面是一个Promise对象，否则会被转成Promise。
+### 语法
 
-下面是一个完整的例子。
+`async`函数的语法规则总体上比较简单，难点是错误处理机制。
+
+（1）`async`函数返回一个Promise对象。
+
+`async`函数内部`return`语句返回的值，会成为`then`方法回调函数的参数。
+
+```javascript
+async function f() {
+  return 'hello world';
+}
+
+f().then(v => console.log(v))
+// "hello world"
+```
+
+上面代码中，函数`f`内部`return`命令返回的值，会被`then`方法回调函数接收到。
+
+`async`函数内部抛出错误，会导致返回的Promise对象变为`reject`状态。抛出的错误对象会被`catch`方法回调函数接收到。
+
+```javascript
+async function f() {
+  throw new Error('出错了');
+}
+
+f().then(
+  v => console.log(v),
+  e => console.log(e)
+)
+// Error: 出错了
+```
+
+（2）`async`函数返回的Promise对象，必须等到内部所有`await`命令的Promise对象执行完，才会发生状态改变。也就是说，只有`async`函数内部的异步操作执行完，才会执行`then`方法指定的回调函数。
+
+下面是一个例子。
 
 ```javascript
 async function getTitle(url) {
@@ -787,6 +820,92 @@ async function getTitle(url) {
 }
 getTitle('https://tc39.github.io/ecma262/').then(console.log)
 // "ECMAScript 2017 Language Specification"
+```
+
+（3）正常情况下，`await`命令后面是一个Promise对象。如果不是，会被转成一个立即`resolve`的Promise对象。
+
+```javascript
+async function f() {
+  return await 123;
+}
+
+f().then(v => console.log(v))
+// 123
+```
+
+上面代码中，`await`命令的参数是数值`123`，它被转成Promise对象，并立即`resolve`。
+
+`await`命令后面的Promise对象如果变为`reject`状态，则`reject`的参数会被`catch`方法的回调函数接收到。
+
+```javascript
+async function f() {
+  await Promise.reject('出错了');
+}
+
+f()
+.then(v => console.log(v))
+.catch(e => console.log(e))
+// 出错了
+```
+
+注意，上面代码中，`await`语句前面没有`return`，但是`reject`方法的参数依然传入了`catch`方法的回调函数。这里如果在`await`前面加上`return`，效果是一样的。
+
+只要一个`await`语句后面的Promise变为`reject`，那么整个`async`函数都会中断执行。
+
+```javascript
+async function f() {
+  await Promise.reject('出错了');
+  await Promise.resolve('hello world'); // 不会执行
+}
+```
+
+上面代码中，第二个`await`语句是不会执行的，因为第一个`await`语句状态变成了`reject`。
+
+为了避免这个问题，可以将第一个`await`放在`try...catch`结构里面，这样第二个`await`就会执行。
+
+```javascript
+async function f() {
+  try {
+    await Promise.reject('出错了');
+  } catch(e) {
+  }
+  return await Promise.resolve('hello world');
+}
+
+f()
+.then(v => console.log(v))
+// hello world
+```
+
+（4）如果`await`后面的异步操作出错，那么等同于`async`函数返回的Promise对象被`reject`。
+
+```javascript
+async function f() {
+  await new Promise(function (resolve, reject) {
+    throw new Error('出错了');
+  });
+}
+
+f()
+.then(v => console.log(v))
+.catch(e => console.log(e))
+// Error：出错了
+```
+
+上面代码中，`async`函数`f`执行后，`await`后面的Promise对象会抛出一个错误对象，导致`catch`方法的回调函数被调用，它的参数就是抛出的错误对象。具体的执行机制，可以参考后文的“async函数的实现”。
+
+防止出错的方法，也是将其放在`try...catch`代码块之中。
+
+```javascript
+async function f() {
+  try {
+    await new Promise(function (resolve, reject) {
+      throw new Error('出错了');
+    });
+  } catch(e) {
+  }
+  return await('hello world');
+}
 ```
 
 ### async函数的实现
