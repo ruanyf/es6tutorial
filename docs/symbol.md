@@ -246,7 +246,7 @@ Symbol作为属性名，该属性不会出现在`for...in`、`for...of`循环中
 ```javascript
 var obj = {};
 var a = Symbol('a');
-var b = Symbol.for('b');
+var b = Symbol('b');
 
 obj[a] = 'Hello';
 obj[b] = 'World';
