@@ -543,27 +543,26 @@ function processContent(options) {
 
 ```javascript
 let obj = { foo: 123 };
- Object.getOwnPropertyDescriptor(obj, 'foo')
- //   { value: 123,
- //     writable: true,
- //     enumerable: true,
- //     configurable: true }
+Object.getOwnPropertyDescriptor(obj, 'foo')
+//  {
+//    value: 123,
+//    writable: true,
+//    enumerable: true,
+//    configurable: true
+//  }
 ```
 
 描述对象的`enumerable`属性，称为”可枚举性“，如果该属性为`false`，就表示某些操作会忽略当前属性。
 
 ES5有三个操作会忽略`enumerable`为`false`的属性。
 
-- for...in 循环：只遍历对象自身的和继承的可枚举的属性
-- Object.keys()：返回对象自身的所有可枚举的属性的键名
-- JSON.stringify()：只串行化对象自身的可枚举的属性
+- `for...in`循环：只遍历对象自身的和继承的可枚举的属性
+- `Object.keys()`：返回对象自身的所有可枚举的属性的键名
+- `JSON.stringify()`：只串行化对象自身的可枚举的属性
 
-ES6新增了两个操作，会忽略`enumerable`为`false`的属性。
+ES6新增了一个操作`Object.assign()`，会忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
 
-- Object.assign()：只拷贝对象自身的可枚举的属性
-- Reflect.enumerate()：返回所有`for...in`循环会遍历的属性
-
-这五个操作之中，只有`for...in`和`Reflect.enumerate()`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
+这四个操作之中，只有`for...in`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
 
 ```javascript
 Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
@@ -572,6 +571,8 @@ Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
 Object.getOwnPropertyDescriptor([], 'length').enumerable
 // false
 ```
+
+上面代码中，`toString`和`length`属性的`enumerable`都是`false`，因此`for...in`不会遍历到这两个继承自原型的属性。
 
 另外，ES6规定，所有Class的原型的方法都是不可枚举的。
 
@@ -584,7 +585,7 @@ Object.getOwnPropertyDescriptor(class {foo() {}}.prototype, 'foo').enumerable
 
 ## 属性的遍历
 
-ES6一共有6种方法可以遍历对象的属性。
+ES6一共有5种方法可以遍历对象的属性。
 
 **（1）for...in**
 
@@ -606,11 +607,7 @@ ES6一共有6种方法可以遍历对象的属性。
 
 `Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管是属性名是Symbol或字符串，也不管是否可枚举。
 
-**（6）Reflect.enumerate(obj)**
-
-`Reflect.enumerate`返回一个Iterator对象，遍历对象自身的和继承的所有可枚举属性（不含Symbol属性），与`for...in`循环相同。
-
-以上的6种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
+以上的5种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
 
 - 首先遍历所有属性名为数值的属性，按照数字排序。
 - 其次遍历所有属性名为字符串的属性，按照生成时间排序。
