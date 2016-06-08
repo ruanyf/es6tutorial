@@ -877,6 +877,21 @@ f()
 // hello world
 ```
 
+另一种方法是`await`后面的Promise对象再跟一个`catch`方面，处理前面可能出现的错误。
+
+```javascript
+async function f() {
+  await Promise.reject('出错了')
+    .catch(e => console.log(e));
+  return await Promise.resolve('hello world');
+}
+
+f()
+.then(v => console.log(v))
+// 出错了
+// hello world
+```
+
 （4）如果`await`后面的异步操作出错，那么等同于`async`函数返回的Promise对象被`reject`。
 
 ```javascript
