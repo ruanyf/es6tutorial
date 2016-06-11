@@ -892,6 +892,23 @@ f()
 // hello world
 ```
 
+如果有多个`await`命令，可以统一放在`try...catch`结构中。
+
+```javascript
+async function main() {
+  try {
+    var val1 = await firstStep();
+    var val2 = await secondStep(val1);
+    var val3 = await thirdStep(val1, val2);
+
+    console.log('Final: ', val3);
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+```
+
 （4）如果`await`后面的异步操作出错，那么等同于`async`函数返回的Promise对象被`reject`。
 
 ```javascript
@@ -1042,7 +1059,8 @@ async function myFunction() {
 // 另一种写法
 
 async function myFunction() {
-  await somethingThatReturnsAPromise().catch(function (err){
+  await somethingThatReturnsAPromise()
+  .catch(function (err) {
     console.log(err);
   };
 }
