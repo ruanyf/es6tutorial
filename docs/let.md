@@ -271,12 +271,55 @@ ES6允许块级作用域的任意嵌套。
 }
 ```
 
-另外，ES6也规定，函数本身的作用域，在其所在的块级作用域之内。
+### 块级作用域与函数声明
+
+函数能不能在块级作用域之中声明，是一个相当令人混淆的问题。
+
+ES5规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
+
+```javascript
+// 情况一
+if (true) {
+  function f() {}
+}
+
+// 情况二
+try {
+  function f() {}
+} catch(e) {
+}
+```
+
+上面代码的两种函数声明，根据ES5的规定都是非法的。
+
+但是，浏览器没有遵守这个规定，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。不过，“严格模式”下还是会报错。
+
+```javascript
+// ES5严格模式
+'use strict';
+if (true) {
+  function f() {}
+}
+// 报错
+```
+
+ES6引入了块级作用域，明确允许在块级作用域之中声明函数。
+
+```javascript
+// ES6严格模式
+'use strict';
+if (true) {
+  function f() {}
+}
+// 不报错
+```
+
+并且ES6规定，块级作用域之中，函数声明语句的行为类似于`let`，在块级作用域之外不可引用。
 
 ```javascript
 function f() { console.log('I am outside!'); }
 (function () {
-  if(false) {
+  if (false) {
     // 重复声明一次函数f
     function f() { console.log('I am inside!'); }
   }
@@ -285,42 +328,90 @@ function f() { console.log('I am outside!'); }
 }());
 ```
 
-上面代码在ES5中运行，会得到“I am inside!”，但是在ES6中运行，会得到“I am outside!”。这是因为ES5存在函数提升，不管会不会进入 `if`代码块，函数声明都会提升到当前作用域的顶部，得到执行；而ES6支持块级作用域，不管会不会进入if代码块，其内部声明的函数皆不会影响到作用域的外部。
+上面代码在ES5中运行，会得到“I am inside!”，因为在`if`内声明的函数`f`会被提升到函数头部，实际运行的代码如下。
 
 ```javascript
+// ES5版本
+function f() { console.log('I am outside!'); }
+(function () {
+  function f() { console.log('I am inside!'); }
+  if (false) {
+  }
+  f();
+}());
+```
+
+ES6的运行结果就完全不一样了，会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响，实际运行的代码如下。
+
+```javascript
+// ES6版本
+function f() { console.log('I am outside!'); }
+(function () {
+  f();
+}());
+```
+
+很显然，这种行为差异会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6在[附录B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
+
+- 允许在块级作用域内声明函数。
+- 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
+- 同时，函数声明还会提升到所在的块级作用域的头部。
+
+注意，上面三条规则只对ES6的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
+
+前面那段代码，在Chrome环境下运行会报错。
+
+```javascript
+// ES6的浏览器环境
+function f() { console.log('I am outside!'); }
+(function () {
+  if (false) {
+    // 重复声明一次函数f
+    function f() { console.log('I am inside!'); }
+  }
+
+  f();
+}());
+// Uncaught TypeError: f is not a function
+```
+
+上面的代码报错，是因为实际运行的是下面的代码。
+
+```javascript
+// ES6的浏览器环境
+function f() { console.log('I am outside!'); }
+(function () {
+  var f = undefined;
+  if (false) {
+    function f() { console.log('I am inside!'); }
+  }
+
+  f();
+}());
+// Uncaught TypeError: f is not a function
+```
+
+考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
+
+```javascript
+// 函数声明语句
 {
   let a = 'secret';
   function f() {
     return a;
   }
 }
-f(); // 报错
-```
 
-上面代码中，块级作用域外部，无法调用块级作用域内部定义的函数。如果确实需要调用，就要像下面这样处理。
-
-```javascript
-let f;
+// 函数表达式
 {
   let a = 'secret';
-  f = function () {
+  let f = function () {
     return a;
   };
 }
-f(); // "secret"
 ```
 
-ES5的严格模式规定，函数只能在顶层作用域和函数内声明，其他情况（比如`if`代码块、循环代码块）的声明都会报错。
-
-```javascript
-// ES5
-'use strict';
-if (true) {
-  function f() {} // 报错
-}
-```
-
-ES6由于引入了块级作用域，这种情况可以理解成函数在块级作用域内声明，因此不报错，但是构成区块的大括号不能少，否则还是会报错。
+另外，还有一个需要注意的地方。ES6的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。
 
 ```javascript
 // 不报错
@@ -335,56 +426,30 @@ if (true)
   function f() {}
 ```
 
-另外，这样声明的函数，在区块外是不可用的。
-
-```javascript
-'use strict';
-if (true) {
-  function f() {}
-}
-f(); // ReferenceError: f is not defined
-```
-
-上面代码中，函数`f`是在块级作用域内部声明的，外部是不可用的。
-
 ## const命令
 
-const 声明一个只读的常量。一旦声明，常量的值就不能改变。
+`const`声明一个只读的常量。一旦声明，常量的值就不能改变。
 
 ```javascript
-'use strict';
 const PI = 3.1415;
 PI // 3.1415
 
 PI = 3;
-// TypeError: "PI" is read-only
+// TypeError: Assignment to constant variable.
 ```
 
-上面代码表明改变常量的值会报错。注意，如果是常规模式，对常量赋值不会报错，但也是无效的。
+上面代码表明改变常量的值会报错。
 
-```javascript
-const PI = 3.1415;
-PI = 3; // 常规模式时，重新赋值无效，但不报错
-PI // 3.1415
-```
-
-const声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。
-
-```javascript
-'use strict';
-const foo;
-// SyntaxError: missing = in const declaration
-```
-
-上面代码表示，对于const来说，只声明不赋值，就会报错。同样的，这行命令在常规模式下不报错，但`foo`以后也没法重新赋值了。
+`const`声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。
 
 ```javascript
 const foo;
-foo = 1; // 常规模式，重新赋值无效
-foo // undefined
+// SyntaxError: Missing initializer in const declaration
 ```
 
-const的作用域与let命令相同：只在声明所在的块级作用域内有效。
+上面代码表示，对于`const`来说，只声明不赋值，就会报错。
+
+`const`的作用域与`let`命令相同：只在声明所在的块级作用域内有效。
 
 ```javascript
 if (true) {
@@ -394,7 +459,7 @@ if (true) {
 MAX // Uncaught ReferenceError: MAX is not defined
 ```
 
-const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
+`const`命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
 
 ```javascript
 if (true) {
@@ -405,7 +470,7 @@ if (true) {
 
 上面代码在常量`MAX`声明之前就调用，结果报错。
 
-const声明的常量，也与`let`一样不可重复声明。
+`const`声明的常量，也与`let`一样不可重复声明。
 
 ```javascript
 var message = "Hello!";
@@ -416,7 +481,7 @@ const message = "Goodbye!";
 const age = 30;
 ```
 
-对于复合类型的变量，变量名不指向数据，而是指向数据所在的地址。const命令只是保证变量名指向的地址不变，并不保证该地址的数据不变，所以将一个对象声明为常量必须非常小心。
+对于复合类型的变量，变量名不指向数据，而是指向数据所在的地址。`const`命令只是保证变量名指向的地址不变，并不保证该地址的数据不变，所以将一个对象声明为常量必须非常小心。
 
 ```javascript
 const foo = {};
@@ -434,9 +499,9 @@ foo = {}; // TypeError: "foo" is read-only
 
 ```js
 const a = [];
-a.push("Hello"); // 可执行
+a.push('Hello'); // 可执行
 a.length = 0;    // 可执行
-a = ["Dave"];    // 报错
+a = ['Dave'];    // 报错
 ```
 
 上面代码中，常量`a`是一个数组，这个数组本身是可写的，但是如果将另一个数组赋值给`a`，就会报错。
