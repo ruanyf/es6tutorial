@@ -98,7 +98,7 @@ Promise 的最大问题是代码冗余，原来的任务被Promise 包装了一�
 举例来说，读取文件的协程写法如下。
 
 ```javascript
-function *asnycJob() {
+function *asyncJob() {
   // ...其他代码
   var f = yield readFile(fileA);
   // ...其他代码
