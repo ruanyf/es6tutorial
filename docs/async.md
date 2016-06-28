@@ -1171,7 +1171,7 @@ function chainAnimationsPromise(elem, animations) {
   var p = Promise.resolve();
 
   // 使用then方法，添加所有动画
-  for(var anim in animations) {
+  for(var anim of animations) {
     p = p.then(function(val) {
       ret = val;
       return anim(elem);
