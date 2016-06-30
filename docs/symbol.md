@@ -392,7 +392,7 @@ class MyClass {
   }
 }
 
-[1, 2, 3] instanceof MyClass() // true
+[1, 2, 3] instanceof new MyClass() // true
 ```
 
 ### Symbol.isConcatSpreadable
@@ -420,17 +420,19 @@ obj[Symbol.isConcatSpreadable] = true;
 ['a', 'b'].concat(obj, 'e') // ['a', 'b', 'c', 'd', 'e']
 ```
 
-对于一个类来说，`Symbol.isConcatSpreadable`属性必须写成一个返回布尔值的方法。
+对于一个类来说，`Symbol.isConcatSpreadable`属性必须写成实例的属性。
 
 ```javascript
 class A1 extends Array {
-  [Symbol.isConcatSpreadable]() {
-    return true;
+  constructor(args) {
+    super(args);
+    this[Symbol.isConcatSpreadable] = true;
   }
 }
 class A2 extends Array {
-  [Symbol.isConcatSpreadable]() {
-    return false;
+  constructor(args) {
+    super(args);
+    this[Symbol.isConcatSpreadable] = false;
   }
 }
 let a1 = new A1();
@@ -443,7 +445,7 @@ a2[1] = 6;
 // [1, 2, 3, 4, [5, 6]]
 ```
 
-上面代码中，类`A1`是可扩展的，类`A2`是不可扩展的，所以使用`concat`时有不一样的结果。
+上面代码中，类`A1`是可展开的，类`A2`是不可展开的，所以使用`concat`时有不一样的结果。
 
 ### Symbol.species
 
@@ -582,7 +584,7 @@ let obj = {
 
 2 * obj // 246
 3 + obj // '3default'
-obj === 'default' // true
+obj == 'default' // true
 String(obj) // 'str'
 ```
 
