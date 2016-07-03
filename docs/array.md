@@ -414,7 +414,7 @@ ES5对空位的处理，已经很不一致了，大多数情况下会忽略空�
 
 ```javascript
 // forEach方法
-[,'a'].forEach((x,i) => log(i)); // 1
+[,'a'].forEach((x,i) => console.log(i)); // 1
 
 // filter方法
 ['a',,'b'].filter(x => true) // ['a','b']

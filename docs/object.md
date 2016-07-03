@@ -873,7 +873,11 @@ function* entries(obj) {
 
 // 非Generator函数的版本
 function entries(obj) {
-  return (for (key of Object.keys(obj)) [key, obj[key]]);
+  let arr = [];
+  for (key of Object.keys(obj)) {
+    arr.push([key, obj[key]]);
+  }
+  return arr;
 }
 ```
 
