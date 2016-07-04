@@ -100,7 +100,20 @@ for (let ch of s) {
 }
 // 20bb7
 // 61
-```
+```var a = 5;
+var b = 10;
+
+function tag(s, v1, v2) {
+  console.log(s[0]);
+  console.log(s[1]);
+  console.log(s[2]);
+  console.log(v1);
+  console.log(v2);
+
+  return "OK";
+}
+
+tag`Hello ${ a + b } world ${ a * b}`;
 
 `codePointAt`方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
@@ -512,6 +525,16 @@ console.log(tmpl(data));
 //   <tr><td><Croft></td></tr>
 //
 // </table>
+```
+
+注意，模板字符串是在声明的时候静态编译的。
+
+```
+var a = 1;
+var temple = `${a}`;
+console.log(temple); //1
+a = 2;
+console.log(temple); //1
 ```
 
 如果需要引用模板字符串本身，在需要时执行，可以像下面这样写。
