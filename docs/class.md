@@ -7,7 +7,7 @@
 JavaScript语言的传统方法是通过构造函数，定义并生成新对象。下面是一个例子。
 
 ```javascript
-function Point(x,y){
+function Point(x, y) {
   this.x = x;
   this.y = y;
 }
@@ -15,11 +15,13 @@ function Point(x,y){
 Point.prototype.toString = function () {
   return '(' + this.x + ', ' + this.y + ')';
 };
+
+var p = new Point(1, 2);
 ```
 
 上面这种写法跟传统的面向对象语言（比如C++和Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
 
-ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过`class`关键字，可以定义类。基本上，ES6的class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
+ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过`class`关键字，可以定义类。基本上，ES6的`class`可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
 
 ```javascript
 //定义类
@@ -37,12 +39,12 @@ class Point {
 
 上面代码定义了一个“类”，可以看到里面有一个`constructor`方法，这就是构造方法，而`this`关键字则代表实例对象。也就是说，ES5的构造函数`Point`，对应ES6的`Point`类的构造方法。
 
-Point类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个关键字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
+`Point`类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个关键字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
 
 ES6的类，完全可以看作构造函数的另一种写法。
 
 ```javascript
-class Point{
+class Point {
   // ...
 }
 
@@ -51,6 +53,19 @@ Point === Point.prototype.constructor // true
 ```
 
 上面代码表明，类的数据类型就是函数，类本身就指向构造函数。
+
+使用的时候，也是直接对类使用`new`命令，跟构造函数的用法完全一致。
+
+```javascript
+class Bar {
+  doStuff() {
+    console.log('stuff');
+  }
+}
+
+var b = new Bar();
+b.doStuff() // "stuff"
+```
 
 构造函数的`prototype`属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
 
@@ -131,7 +146,7 @@ Object.getOwnPropertyNames(Point.prototype)
 上面代码中，`toString`方法是`Point`类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
 
 ```javascript
-var Point = function (x, y){
+var Point = function (x, y) {
   // ...
 };
 
@@ -162,7 +177,7 @@ class Square{
 }
 ```
 
-上面代码中，Square类的方法名getArea，是从表达式得到的。
+上面代码中，`Square`类的方法名`getArea`，是从表达式得到的。
 
 ### constructor方法
 
@@ -186,6 +201,19 @@ new Foo() instanceof Foo
 ```
 
 上面代码中，`constructor`函数返回一个全新的对象，结果导致实例对象不是`Foo`类的实例。
+
+类的构造函数，不使用`new`是没法调用的，会报错。这是它跟普通构造函数的一个主要区别，后者不用`new`也可以执行。
+
+```javascript
+class Foo {
+  constructor() {
+    return Object.create(null);
+  }
+}
+
+Foo()
+// TypeError: Class constructor Foo cannot be invoked without 'new'
+```
 
 ### 类的实例对象
 
