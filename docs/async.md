@@ -52,7 +52,7 @@ fs.readFile(fileA, function (err, data) {
 
 不难想象，如果依次读取多个文件，就会出现多重嵌套。代码不是纵向发展，而是横向发展，很快就会乱成一团，无法管理。这种情况就称为"回调函数噩梦"（callback hell）。
 
-Promise就是为了解决这个问题而提出的。它不是新的语法功能，而是一种新的写法，允许将回调函数的嵌套，改成链式。采用Promise，连续读取多个文件，写法如下。
+Promise就是为了解决这个问题而提出的。它不是新的语法功能，而是一种新的写法，允许将回调函数的嵌套，改成链式调用。采用Promise，连续读取多个文件，写法如下。
 
 ```javascript
 var readFile = require('fs-readfile-promise');
