@@ -309,7 +309,7 @@ genObj.next('b')
 
 ## for...of循环
 
-`for...of`循环可以自动遍历Generator函数，且此时不再需要调用`next`方法。
+`for...of`循环可以自动遍历调用Generator函数时生成的Iterator对象，且此时不再需要调用`next`方法。
 
 ```javascript
 function *foo() {
