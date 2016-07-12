@@ -876,7 +876,7 @@ Foo.classMethod() // 'hello'
 
 var foo = new Foo();
 foo.classMethod()
-// TypeError: undefined is not a function
+// TypeError: foo.classMethod is not a function
 ```
 
 上面代码中，`Foo`类的`classMethod`方法前有`static`关键字，表明该方法是一个静态方法，可以直接在`Foo`类上调用（`Foo.classMethod()`），而不是在`Foo`类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
