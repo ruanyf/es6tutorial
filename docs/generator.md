@@ -783,7 +783,7 @@ for(let value of delegatingIterator) {
 
 上面代码中，`delegatingIterator`是代理者，`delegatedIterator`是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Generator函数，有递归的效果。
 
-`yield*`语句等同于在Generator函数内部，部署一个`for...of`循环。
+`yield*`后面的Generator函数没有`return`语句，等同于在Generator函数内部，部署一个`for...of`循环。
 
 ```javascript
 function* concat(iter1, iter2) {
@@ -803,7 +803,7 @@ function* concat(iter1, iter2) {
 }
 ```
 
-上面代码说明，`yield*`不过是`for...of`的一种简写形式，完全可以用后者替代前者。
+上面代码说明，`yield*`后面的Generator函数没有`return`语句时，不过是`for...of`的一种简写形式，完全可以用后者替代前者。反之，则需要用'var value=yield* Generator函数'的形式获取'return'语句的值。
 
 如果`yield*`后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
 
