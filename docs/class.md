@@ -492,7 +492,7 @@ Object.setPrototypeOf(B, A);
 
 《对象的扩展》一章给出过`Object.setPrototypeOf`方法的实现。
 
-```
+```javascript
 Object.setPrototypeOf = function (obj, proto) {
   obj.__proto__ = proto;
   return obj;
@@ -514,7 +514,7 @@ B.__proto__ = A;
 这两条继承链，可以这样理解：作为一个对象，子类（`B`）的原型（`__proto__`属性）是父类（`A`）；作为一个构造函数，子类（`B`）的原型（`prototype`属性）是父类的实例。
 
 ```javascript
-B.prototype = new A();
+bject.create(A.prototype);
 // 等同于
 B.prototype.__proto__ = A.prototype;
 ```
@@ -528,7 +528,7 @@ class B extends A {
 }
 ```
 
-上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性，因此`A`可以是任意函数。
+上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性（除了`Function.prototype`函数），因此`A`可以是任意函数。
 
 下面，讨论三种特殊情况。
 
