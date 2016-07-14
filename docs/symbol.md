@@ -402,13 +402,14 @@ class MyClass {
 ```javascript
 let arr1 = ['c', 'd'];
 ['a', 'b'].concat(arr1, 'e') // ['a', 'b', 'c', 'd', 'e']
+arr1[Symbol.isConcatSpreadable] // undefined
 
 let arr2 = ['c', 'd'];
 arr2[Symbol.isConcatSpreadable] = false;
 ['a', 'b'].concat(arr2, 'e') // ['a', 'b', ['c','d'], 'e']
 ```
 
-上面代码说明，数组的`Symbol.isConcatSpreadable`属性默认为`true`，表示可以展开。
+上面代码说明，数组的默认行为是可以展开。`Symbol.isConcatSpreadable`属性等于`true`或`undefined`，都有这个效果。
 
 类似数组的对象也可以展开，但它的`Symbol.isConcatSpreadable`属性默认为`false`，必须手动打开。
 

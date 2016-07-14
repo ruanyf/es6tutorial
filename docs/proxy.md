@@ -127,7 +127,9 @@ fproxy.foo // "Hello, foo"
 
 **（1）get(target, propKey, receiver)**
 
-拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数`receiver`可选，当`target`对象设置了`propKey`属性的`get`函数时，`receiver`对象会绑定`get`函数的`this`对象。
+拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
+
+最后一个参数`receiver`是一个对象，可选，参见下面`Reflect.get`的部分。
 
 **（2）set(target, propKey, value, receiver)**
 

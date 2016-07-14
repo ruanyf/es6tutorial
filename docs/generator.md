@@ -537,47 +537,9 @@ try {
 
 上面代码中，`throw`命令抛出的错误不会影响到遍历器的状态，所以两次执行`next`方法，都取到了正确的操作。
 
-这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
+这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数内部写一个错误处理语句。现在可以只在Generator函数内部写一次`catch`语句。
 
-```javascript
-foo('a', function (a) {
-  if (a.error) {
-    throw new Error(a.error);
-  }
-
-  foo('b', function (b) {
-    if (b.error) {
-      throw new Error(b.error);
-    }
-
-    foo('c', function (c) {
-      if (c.error) {
-        throw new Error(c.error);
-      }
-
-      console.log(a, b, c);
-    });
-  });
-});
-```
-
-使用Generator函数可以大大简化上面的代码。
-
-```javascript
-function* g(){
-  try {
-    var a = yield foo('a');
-    var b = yield foo('b');
-    var c = yield foo('c');
-  } catch (e) {
-    console.log(e);
-  }
-
-  console.log(a, b, c);
-}
-```
-
-反过来，Generator函数内抛出的错误，也可以被函数体外的`catch`捕获。
+Generator函数体外抛出的错误，可以在函数体内捕获；反过来，Generator函数体内抛出的错误，也可以被函数体外的`catch`捕获。
 
 ```javascript
 function *foo() {
