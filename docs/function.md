@@ -1232,11 +1232,11 @@ Fibonacci(10); // 89
 function Fibonacci2 (n , ac1 = 1 , ac2 = 1) {
   if( n <= 1 ) {return ac2};
 
-  return Fibonacci2 (n-1 , ac2 , ac1 + ac2);
+  return Fibonacci2 (n - 1, ac2, ac1 + ac2);
 }
 
-Fibonacci2(100) // 354224848179262000000
-Fibonacci2(1000) // 4.346655768693743e+208
+Fibonacci2(100) // 573147844013817200000
+Fibonacci2(1000) // 7.0330367711422765e+208
 Fibonacci2(10000) // Infinity
 ```
 
