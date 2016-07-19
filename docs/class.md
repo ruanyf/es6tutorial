@@ -285,16 +285,26 @@ p3.printName() // "Oops"
 
 上面代码在`p1`的原型上添加了一个`printName`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
 
-### name属性
+### 不存在变量提升
 
-由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括`name`属性。
+Class不存在变量提升（hoist），这一点与ES5完全不同。
 
 ```javascript
-class Point {}
-Point.name // "Point"
+new Foo(); // ReferenceError
+class Foo {}
 ```
 
-`name`属性总是返回紧跟在`class`关键字后面的类名。
+上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+
+```javascript
+{
+  let Foo = class {};
+  class Bar extends Foo {
+  }
+}
+```
+
+上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在Class的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
 
 ### Class表达式
 
@@ -342,32 +352,89 @@ person.sayName(); // "张三"
 
 上面代码中，person是一个立即执行的Class的实例。
 
-### 不存在变量提升
+### 私有方法
 
-Class不存在变量提升（hoist），这一点与ES5完全不同。
+私有方法是常见需求，但ES6不提供，只能通过变通方法模拟实现。
 
-```javascript
-new Foo(); // ReferenceError
-class Foo {}
-```
-
-上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+一种做法是在命名上加以区别。
 
 ```javascript
-{
-  let Foo = class {};
-  class Bar extends Foo {
+class Widget {
+
+  // 公有方法
+  foo (baz) {
+    this._bar(baz);
   }
+
+  // 私有方法
+  _bar(baz) {
+    return this.snaf = baz;
+  }
+
+  // ...
 }
 ```
 
-上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在Class的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
+上面代码中，`_bar`方法前面的下划线，表示这是一个只限于内部使用的私有方法。但是，这种命名是不保险的，在类的外部，还是可以调用到这个方法。
+
+另一种方法就是索性将私有方法移出模块，因为模块内部的所有方法都是对外可见的。
+
+```javascript
+class Widget {
+  foo (baz) {
+    bar.call(this, baz);
+  }
+
+  // ...
+}
+
+function bar(baz) {
+  return this.snaf = baz;
+}
+```
+
+上面代码中，`foo`是公有方法，内部调用了`bar.call(this, baz)`。这使得`bar`实际上成为了当前模块的私有方法。
+
+还有一种方法是利用`Symbol`值的唯一性，将私有方法的名字命名为一个Symbol值。
+
+```javascript
+const bar = Symbol('bar');
+const snaf = Symbol('snaf');
+
+export default subclassFactory({
+
+  // 共有方法
+  foo (baz) {
+    this[bar](baz);
+  }
+
+  // 私有方法
+  [bar](baz) {
+    return this[snaf] = baz;
+  }
+
+  // ...
+});
+```
+
+上面代码中，`bar`和`snaf`都是Symbol值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
 
 ### 严格模式
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
 
 考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+
+### name属性
+
+由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括`name`属性。
+
+```javascript
+class Point {}
+Point.name // "Point"
+```
+
+`name`属性总是返回紧跟在`class`关键字后面的类名。
 
 ## Class的继承
 

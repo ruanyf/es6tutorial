@@ -967,7 +967,7 @@ $ compile-modules convert -o out.js file1.js
 
 ```html
 <script>
-  System.import('./app');
+  System.import('./app.js');
 </script>
 ```
 
