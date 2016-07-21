@@ -267,15 +267,15 @@ let b = new Set([4, 3, 2]);
 
 // 并集
 let union = new Set([...a, ...b]);
-// [1, 2, 3, 4]
+// Set {1, 2, 3, 4}
 
 // 交集
 let intersect = new Set([...a].filter(x => b.has(x)));
-// [2, 3]
+// set {2, 3}
 
 // 差集
 let difference = new Set([...a].filter(x => !b.has(x)));
-// [1]
+// Set {1}
 ```
 
 如果想在遍历操作中，同步改变原来的Set结构，目前没有直接的方法，但有两种变通方法。一种是利用原Set结构映射出一个新的结构，然后赋值给原来的Set结构；另一种是利用`Array.from`方法。
@@ -400,13 +400,13 @@ JavaScript的对象（Object），本质上是键值对的集合（Hash结构）
 
 ```javascript
 var data = {};
-var element = document.getElementById("myDiv");
+var element = document.getElementById('myDiv');
 
-data[element] = metadata;
-data["[Object HTMLDivElement]"] // metadata
+data[element] = 'metadata';
+data['[object HTMLDivElement]'] // "metadata"
 ```
 
-上面代码原意是将一个DOM节点作为对象`data`的键，但是由于对象只接受字符串作为键名，所以`element`被自动转为字符串`[Object HTMLDivElement]`。
+上面代码原意是将一个DOM节点作为对象`data`的键，但是由于对象只接受字符串作为键名，所以`element`被自动转为字符串`[object HTMLDivElement]`。
 
 为了解决这个问题，ES6提供了Map数据结构。它类似于对象，也是键值对的集合，但是“键”的范围不限于字符串，各种类型的值（包括对象）都可以当作键。也就是说，Object结构提供了“字符串—值”的对应，Map结构提供了“值—值”的对应，是一种更完善的Hash结构实现。如果你需要“键值对”的数据结构，Map比Object更合适。
 
