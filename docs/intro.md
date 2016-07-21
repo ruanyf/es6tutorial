@@ -1,10 +1,10 @@
 # ECMAScript 6简介
 
-ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经在2015年6月正式发布了。它的目标，是使得JavaScript语言可以用来编写复杂的大型应用程序，成为企业级开发语言。
+ECMAScript 6.0（以下简称ES6）是JavaScript语言的下一代标准，已经在2015年6月正式发布了。它的目标，是使得JavaScript语言可以用来编写复杂的大型应用程序，成为企业级开发语言。
 
-标准的制定者有计划，以后每年发布一次标准，使用年份作为标准的版本。因为当前版本的ES6是在2015年发布的，所以又称ECMAScript 2015。
+标准的制定者有计划，以后每年发布一次标准，使用年份作为版本。因为ES6的第一个版本是在2015年发布的，所以又称ECMAScript 2015（简称ES2015）。
 
-2016年6月，发布了小幅修订的《ECMAScript 2016 标准》（简称 ES2016）。由于变动非常小（只新增了数组实例的`includes`方法和指数运算符），因此 ES2016 与 ES2015 基本上是同一个标准，都被看作是 ES6。根据计划，2017年6月将发布 ES2017 标准。
+2016年6月，小幅修订的《ECMAScript 2016 标准》（简称 ES2016）如期发布。由于变动非常小（只新增了数组实例的`includes`方法和指数运算符），因此 ES2016 与 ES2015 基本上是同一个标准，都被看作是 ES6。根据计划，2017年6月将发布 ES2017。
 
 ## ECMAScript和JavaScript的关系
 
@@ -14,7 +14,7 @@ ECMAScript 6（以下简称ES6）是JavaScript语言的下一代标准，已经�
 
 该标准从一开始就是针对JavaScript语言制定的，但是之所以不叫JavaScript，有两个原因。一是商标，Java是Sun公司的商标，根据授权协议，只有Netscape公司可以合法地使用JavaScript这个名字，且JavaScript本身也已经被Netscape公司注册为商标。二是想体现这门语言的制定者是ECMA，不是Netscape，这样有利于保证这门语言的开放性和中立性。
 
-因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现（另外的ECMAScript方言还有Jscript和ActionScript）。在日常场合，这两个词是可以互换的。
+因此，ECMAScript和JavaScript的关系是，前者是后者的规格，后者是前者的一种实现（另外的ECMAScript方言还有Jscript和ActionScript）。日常场合，这两个词是可以互换的。
 
 ## ECMAScript的历史
 

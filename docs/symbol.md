@@ -377,6 +377,64 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 上面代码中，iframe窗口生成的Symbol值，可以在主页面得到。
 
+## 实例：模块的 Singleton 模式
+
+Singleton模式指的是调用一个类，任何时候返回的都是同一个实例。
+
+对于 Node 来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
+
+很容易想到，可以把实例放到顶层对象`global`。
+
+```javascript
+// mod.js
+function A() {
+  this.foo = 'hello';
+}
+
+if (!global._foo) {
+  global._foo = new A();
+}
+
+module.exports = global._foo;
+```
+
+然后，加载上面的`mod.js`。
+
+```javascript
+var a = require('./mod.js');
+console.log(a.foo);
+```
+
+上面代码中，变量`a`任何时候加载的都是`A`的同一个实例。
+
+但是，这里有一个问题，全局变量`global._foo`是可写的，任何文件都可以修改。
+
+```javascript
+var a = require('./mod.js');
+global._foo = 123;
+```
+
+上面的代码，会使得别的脚本加载`mod.js`都失真。
+
+为了防止这种情况出现，我们就可以使用Symbol。
+
+```javascript
+// mod.js
+const FOO_KEY = Symbol.for('foo');
+
+function A() {
+  this.foo = 'hello';
+}
+
+if (!global[FOO_KEY]) {
+  global[FOO_KEY] = new A();
+}
+
+module.exports = global[FOO_KEY];
+```
+
+上面代码中，可以保证`global[FOO_KEY]`不会被其他脚本改写。
+
 ## 内置的Symbol值
 
 除了定义自己使用的Symbol值以外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法。
