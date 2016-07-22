@@ -255,6 +255,20 @@ function f(y = x) {
 f() // ReferenceError: x is not defined
 ```
 
+下面这样写，也会报错。
+
+```javascript
+var x = 1;
+
+function foo(x = x) {
+  // ...
+}
+
+foo() // ReferenceError: x is not defined
+```
+
+上面代码中，函数`foo`的参数`x`的默认值也是`x`。这时，默认值`x`的作用域是函数作用域，而不是全局作用域。由于在函数作用域中，存在变量`x`，但是默认值在`x`赋值之前先执行了，所以这时属于暂时性死区（参见《let和const命令》一章），任何对`x`的操作都会报错。
+
 如果函数`A`的参数默认值是函数`B`，由于函数的作用域是其声明时所在的作用域，那么函数`B`的作用域不是函数`A`，而是全局作用域。请看下面的例子。
 
 ```javascript

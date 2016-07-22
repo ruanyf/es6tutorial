@@ -705,9 +705,9 @@ let map2 = new Map(
 此外，Map还有一个`forEach`方法，与数组的`forEach`方法类似，也可以实现遍历。
 
 ```javascript
-map.forEach(function(value, key, map)) {
+map.forEach(function(value, key, map) {
   console.log("Key: %s, Value: %s", key, value);
-};
+});
 ```
 
 `forEach`方法还可以接受第二个参数，用来绑定`this`。
