@@ -443,6 +443,23 @@ try {
 
 上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获。`i`第二次抛出错误，由于Generator函数内部的`catch`语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了Generator函数体，被函数体外的`catch`语句捕获。
 
+`throw`方法可以接受一个参数，该参数会被`catch`语句接收，建议抛出`Error`对象的实例。
+
+```javascript
+var g = function* () {
+  try {
+    yield;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+var i = g();
+i.next();
+i.throw(new Error('出错了！'));
+// Error: 出错了！(…)
+```
+
 注意，不要混淆遍历器对象的`throw`方法和全局的`throw`命令。上面代码的错误，是用遍历器对象的`throw`方法抛出的，而不是用`throw`命令抛出的。后者只能被函数体外的`catch`语句捕获。
 
 ```javascript
@@ -493,29 +510,47 @@ try {
 // 外部捕获 a
 ```
 
-上面代码中，遍历器函数`g`内部没有部署`try...catch`代码块，所以抛出的错误直接被外部`catch`代码块捕获。
+上面代码中，Generator函数`g`内部没有部署`try...catch`代码块，所以抛出的错误直接被外部`catch`代码块捕获。
 
-如果Generator函数内部部署了`try...catch`代码块，那么遍历器的`throw`方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
+如果Generator函数内部和外部，都没有部署`try...catch`代码块，那么程序将报错，直接中断执行。
 
 ```javascript
 var gen = function* gen(){
-  try {
-    yield console.log('hello');
-  } catch (e) {
-    // ...
-  }
+  yield console.log('hello');
   yield console.log('world');
 }
 
 var g = gen();
 g.next();
 g.throw();
-g.next();
 // hello
-// world
+// Uncaught undefined
 ```
 
-上面代码在两次`next`方法之间，使用`throw`方法抛出了一个错误。由于这个错误在Generator函数内部被捕获了，所以不影响第二次`next`方法的执行。
+上面代码中，`g.throw`抛出错误以后，没有任何`try...catch`代码块可以捕获这个错误，导致程序报错，中断执行。
+
+`throw`方法被捕获以后，会附带执行下一条`yield`语句。也就是说，会附带执行一次`next`方法。
+
+```javascript
+var gen = function* gen(){
+  try {
+    yield console.log('a');
+  } catch (e) {
+    // ...
+  }
+  yield console.log('b');
+  yield console.log('c');
+}
+
+var g = gen();
+g.next() // a
+g.throw() // b
+g.next() // c
+```
+
+上面代码中，`g.throw`方法被捕获以后，自动执行了一次`next`方法，所以会打印`b`。另外，也可以看到，只要Generator函数内部部署了`try...catch`代码块，那么遍历器的`throw`方法抛出的错误，不影响下一次遍历。
+
+另外，`throw`命令与`g.throw`方法是无关的，两者互不影响。
 
 ```javascript
 var gen = function* gen(){
@@ -535,9 +570,9 @@ try {
 // world
 ```
 
-上面代码中，`throw`命令抛出的错误不会影响到遍历器的状态，所以两次执行`next`方法，都取到了正确的操作。
+上面代码中，`throw`命令抛出的错误不会影响到遍历器的状态，所以两次执行`next`方法，都进行了正确的操作。
 
-这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数内部写一个错误处理语句。现在可以只在Generator函数内部写一次`catch`语句。
+这种函数体内捕获错误的机制，大大方便了对错误的处理。多个`yield`语句，可以只用一个`try...catch`代码块来捕获错误。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数内部写一个错误处理语句，现在只在Generator函数内部写一次`catch`语句就可以了。
 
 Generator函数体外抛出的错误，可以在函数体内捕获；反过来，Generator函数体内抛出的错误，也可以被函数体外的`catch`捕获。
 
@@ -561,7 +596,7 @@ try {
 
 上面代码中，第二个`next`方法向函数体内传入一个参数42，数值是没有`toUpperCase`方法的，所以会抛出一个TypeError错误，被函数体外的`catch`捕获。
 
-一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将返回一个`value`属性等于`undefined`、`done`属性等于`true`的对象，即JavaScript引擎认为这个Generator已经运行结束了。
+一旦Generator执行过程中抛出错误，且没有被内部捕获，就不会再执行下去了。如果此后还调用`next`方法，将返回一个`value`属性等于`undefined`、`done`属性等于`true`的对象，即JavaScript引擎认为这个Generator已经运行结束了。
 
 ```javascript
 function* g() {

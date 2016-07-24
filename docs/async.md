@@ -414,7 +414,25 @@ ft(1, 2)(print);
 
 你可能会问， Thunk函数有什么用？回答是以前确实没什么用，但是ES6有了Generator函数，Thunk函数现在可以用于Generator函数的自动流程管理。
 
-以读取文件为例。下面的Generator函数封装了两个异步操作。
+Generator函数可以自动执行。
+
+```javascript
+function* gen() {
+  // ...
+}
+
+var g = gen();
+var res = g.next();
+
+while(!res.done){
+  console.log(res.value);
+  res = g.next();
+}
+```
+
+上面代码中，Generator函数`gen`会自动执行完所有步骤。
+
+但是，这不适合异步操作。如果必须保证前一步执行完，才能执行后一步，上面的自动执行就不可行。这时，Thunk函数就能派上用处。以读取文件为例。下面的Generator函数封装了两个异步操作。
 
 ```javascript
 var fs = require('fs');
