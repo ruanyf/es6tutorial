@@ -359,7 +359,7 @@ function f() { console.log('I am outside!'); }
 
 注意，上面三条规则只对ES6的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
 
-前面那段代码，在Chrome环境下运行会报错。
+前面那段代码，在老版本的Chrome环境下运行会报错。
 
 ```javascript
 // ES6的浏览器环境
