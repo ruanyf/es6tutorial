@@ -284,6 +284,8 @@ bar();
 
 上面代码中，函数`bar`的参数`func`的默认值是一个匿名函数，返回值为变量`foo`。这个匿名函数声明时，`bar`函数的作用域还没有形成，所以匿名函数里面的`foo`指向外层作用域的`foo`，输出`outer`。
 
+注释:  在 babel-node 和 traceur 默认安装下测试, 输出为 `inner`. ( npm install -g traceur && traceur test.js )
+
 如果写成下面这样，就会报错。
 
 ```javascript
