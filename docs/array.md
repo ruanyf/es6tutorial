@@ -74,7 +74,7 @@ function foo() {
 
 ```javascript
 Array.from({ length: 3 });
-// [ undefined, undefined, undefinded ]
+// [ undefined, undefined, undefined ]
 ```
 
 上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。扩展运算符转换不了这个对象。
