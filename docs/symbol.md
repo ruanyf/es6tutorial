@@ -453,6 +453,22 @@ class MyClass {
 [1, 2, 3] instanceof new MyClass() // true
 ```
 
+上面代码中，`MyClass`是一个类，`new MyClass()`会返回一个实例。该实例的`Symbol.hasInstance`方法，会在进行`instanceof`运算时自动调用，判断左侧的运算子是否为`Array`的实例。
+
+下面是另一个例子。
+
+```javascript
+class Even {
+  static [Symbol.hasInstance](obj) {
+    return Number(obj) % 2 === 0;
+  }
+}
+
+1 instanceof Even // false
+2 instanceof Even // true
+12345 instanceof Even // false
+```
+
 ### Symbol.isConcatSpreadable
 
 对象的`Symbol.isConcatSpreadable`属性等于一个布尔值，表示该对象使用`Array.prototype.concat()`时，是否可以展开。

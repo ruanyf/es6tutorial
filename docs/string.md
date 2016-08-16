@@ -774,7 +774,16 @@ function SaferHTML(templateData) {
 }
 ```
 
-上面代码中，经过`SaferHTML`函数处理，HTML字符串的特殊字符都会被转义。
+上面代码中，`sender`变量往往是用户提供的，经过`SaferHTML`函数处理，里面的特殊字符都会被转义。
+
+```javascript
+var sender = '<script>alert("abc")</script>'; // 恶意代码
+var message = SaferHTML`<p>${sender} has sent you a message.</p>`;
+
+message
+// <p>&lt;script&gt;alert("abc")&lt;/script&gt; has sent you a message.</p>
+```
+
 
 标签模板的另一个应用，就是多语言转换（国际化处理）。
 
