@@ -629,9 +629,9 @@ let tarr = Uint8Array.of(1,2,3);
 
 // 方法三
 let tarr = new Uint8Array(3);
-tarr[0] = 0;
-tarr[1] = 1;
-tarr[2] = 2;
+tarr[0] = 1;
+tarr[1] = 2;
+tarr[2] = 3;
 ```
 
 ### TypedArray.from()
