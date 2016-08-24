@@ -33,9 +33,9 @@ Number('0o10')  // 8
 
 ## Number.isFinite(), Number.isNaN()
 
-ES6在Number对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法，用来检查`Infinite`和`NaN`这两个特殊值。
+ES6在Number对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
 
-`Number.isFinite()`用来检查一个数值是否非无穷（infinity）。
+`Number.isFinite()`用来检查一个数值是否为有限的（finite）。
 
 ```javascript
 Number.isFinite(15); // true
