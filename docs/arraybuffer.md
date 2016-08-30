@@ -1,6 +1,6 @@
 # 二进制数组
 
-二进制数组（ArrayBuffer对象、TypedArray视图和DataView视图）是JavaScript操作二进制数据的一个接口。这些对象早就存在，属于独立的规格（2011年2月发布），ES6将它们纳入了ECMAScript规格，并且增加了新的方法。
+二进制数组（`ArrayBuffer`对象、TypedArray视图和`DataView`视图）是JavaScript操作二进制数据的一个接口。这些对象早就存在，属于独立的规格（2011年2月发布），ES6将它们纳入了ECMAScript规格，并且增加了新的方法。
 
 这个接口的原始设计目的，与WebGL项目有关。所谓WebGL，就是指浏览器与显卡之间的通信接口，为了满足JavaScript与显卡之间大量的、实时的数据交换，它们之间的数据通信必须是二进制的，而不能是传统的文本格式。文本格式传递一个32位整数，两端的JavaScript脚本与显卡都要进行格式转化，将非常耗时。这时要是存在一种机制，可以像C语言那样，直接操作字节，将4个字节的32位整数，以二进制形式原封不动地送入显卡，脚本的性能就会大幅提升。
 
@@ -8,15 +8,15 @@
 
 二进制数组由三类对象组成。
 
-**（1）ArrayBuffer对象**：代表内存之中的一段二进制数据，可以通过“视图”进行操作。“视图”部署了数组接口，这意味着，可以用数组的方法操作内存。
+**（1）`ArrayBuffer`对象**：代表内存之中的一段二进制数据，可以通过“视图”进行操作。“视图”部署了数组接口，这意味着，可以用数组的方法操作内存。
 
-**（2）TypedArray视图**：共包括9种类型的视图，比如Uint8Array（无符号8位整数）数组视图, Int16Array（16位整数）数组视图, Float32Array（32位浮点数）数组视图等等。
+**（2）TypedArray视图**：共包括9种类型的视图，比如`Uint8Array`（无符号8位整数）数组视图, `Int16Array`（16位整数）数组视图, `Float32Array`（32位浮点数）数组视图等等。
 
-**（3）DataView视图**：可以自定义复合格式的视图，比如第一个字节是Uint8（无符号8位整数）、第二、三个字节是Int16（16位整数）、第四个字节开始是Float32（32位浮点数）等等，此外还可以自定义字节序。
+**（3）`DataView`视图**：可以自定义复合格式的视图，比如第一个字节是Uint8（无符号8位整数）、第二、三个字节是Int16（16位整数）、第四个字节开始是Float32（32位浮点数）等等，此外还可以自定义字节序。
 
-简单说，ArrayBuffer对象代表原始的二进制数据，TypedArray视图用来读写简单类型的二进制数据，DataView视图用来读写复杂类型的二进制数据。
+简单说，`ArrayBuffer`对象代表原始的二进制数据，TypedArray视图用来读写简单类型的二进制数据，`DataView`视图用来读写复杂类型的二进制数据。
 
-TypedArray视图支持的数据类型一共有9种（DataView视图支持除Uint8C以外的其他8种）。
+TypedArray视图支持的数据类型一共有9种（`DataView`视图支持除Uint8C以外的其他8种）。
 
 数据类型 | 字节长度 | 含义 | 对应的C语言类型
 --------|--------|----|---------------
@@ -44,7 +44,7 @@ Float64|8|64位浮点数|double
 
 ### 概述
 
-`ArrayBuffer`对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（`TypedArray`视图和`DataView`视图)来读写，视图的作用是以指定格式解读二进制数据。
+`ArrayBuffer`对象代表储存二进制数据的一段内存，它不能直接读写，只能通过视图（TypedArray视图和`DataView`视图)来读写，视图的作用是以指定格式解读二进制数据。
 
 `ArrayBuffer`也是一个构造函数，可以分配一段可以存放数据的连续内存区域。
 
@@ -62,9 +62,9 @@ var dataView = new DataView(buf);
 dataView.getUint8(0) // 0
 ```
 
-上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，读取第一个元素，结果得到0，因为原始内存的ArrayBuffer对象，默认所有位都是0。
+上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，读取第一个元素，结果得到0，因为原始内存的`ArrayBuffer`对象，默认所有位都是0。
 
-另一种`TypedArray`视图，与`DataView`视图的一个区别是，它不是一个构造函数，而是一组构造函数，代表不同的数据格式。
+另一种TypedArray视图，与`DataView`视图的一个区别是，它不是一个构造函数，而是一组构造函数，代表不同的数据格式。
 
 ```javascript
 var buffer = new ArrayBuffer(12);
@@ -77,9 +77,9 @@ x2[0]  = 2;
 x1[0] // 2
 ```
 
-上面代码对同一段内存，分别建立两种视图：32位带符号整数（Int32Array构造函数）和8位不带符号整数（Uint8Array构造函数）。由于两个视图对应的是同一段内存，一个视图修改底层内存，会影响到另一个视图。
+上面代码对同一段内存，分别建立两种视图：32位带符号整数（`Int32Array`构造函数）和8位不带符号整数（`Uint8Array`构造函数）。由于两个视图对应的是同一段内存，一个视图修改底层内存，会影响到另一个视图。
 
-TypedArray视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受普通数组作为参数，直接分配内存生成底层的ArrayBuffer实例，并同时完成对这段内存的赋值。
+TypedArray视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受普通数组作为参数，直接分配内存生成底层的`ArrayBuffer`实例，并同时完成对这段内存的赋值。
 
 ```javascript
 var typedArray = new Uint8Array([0,1,2]);
@@ -89,7 +89,7 @@ typedArray[0] = 5;
 typedArray // [5, 1, 2]
 ```
 
-上面代码使用`TypedArray`视图的`Uint8Array`构造函数，新建一个不带符号的8位整数视图。可以看到，`Uint8Array`直接使用普通数组作为参数，对底层内存的赋值同时完成。
+上面代码使用TypedArray视图的`Uint8Array`构造函数，新建一个不带符号的8位整数视图。可以看到，`Uint8Array`直接使用普通数组作为参数，对底层内存的赋值同时完成。
 
 ### ArrayBuffer.prototype.byteLength
 
@@ -128,7 +128,7 @@ var newBuffer = buffer.slice(0, 3);
 
 ### ArrayBuffer.isView()
 
-`ArrayBuffer`有一个静态方法`isView`，返回一个布尔值，表示参数是否为`ArrayBuffer`的视图实例。这个方法大致相当于判断参数，是否为TypedArray实例或DataView实例。
+`ArrayBuffer`有一个静态方法`isView`，返回一个布尔值，表示参数是否为`ArrayBuffer`的视图实例。这个方法大致相当于判断参数，是否为TypedArray实例或`DataView`实例。
 
 ```javascript
 var buffer = new ArrayBuffer(8);
@@ -142,26 +142,26 @@ ArrayBuffer.isView(v) // true
 
 ### 概述
 
-`ArrayBuffer`对象作为内存区域，可以存放多种类型的数据。同一段内存，不同数据有不同的解读方式，这就叫做“视图”（view）。`ArrayBuffer`有两种视图，一种是TypedArray视图，另一种是DataView视图。前者的数组成员都是同一个数据类型，后者的数组成员可以是不同的数据类型。
+`ArrayBuffer`对象作为内存区域，可以存放多种类型的数据。同一段内存，不同数据有不同的解读方式，这就叫做“视图”（view）。`ArrayBuffer`有两种视图，一种是TypedArray视图，另一种是`DataView`视图。前者的数组成员都是同一个数据类型，后者的数组成员可以是不同的数据类型。
 
 目前，TypedArray视图一共包括9种类型，每一种视图都是一种构造函数。
 
-- **Int8Array**：8位有符号整数，长度1个字节。
-- **Uint8Array**：8位无符号整数，长度1个字节。
-- **Uint8ClampedArray**：8位无符号整数，长度1个字节，溢出处理不同。
-- **Int16Array**：16位有符号整数，长度2个字节。
-- **Uint16Array**：16位无符号整数，长度2个字节。
-- **Int32Array**：32位有符号整数，长度4个字节。
-- **Uint32Array**：32位无符号整数，长度4个字节。
-- **Float32Array**：32位浮点数，长度4个字节。
-- **Float64Array**：64位浮点数，长度8个字节。
+- **`Int8Array`**：8位有符号整数，长度1个字节。
+- **`Uint8Array`**：8位无符号整数，长度1个字节。
+- **`Uint8ClampedArray`**：8位无符号整数，长度1个字节，溢出处理不同。
+- **`Int16Array`**：16位有符号整数，长度2个字节。
+- **`Uint16Array`**：16位无符号整数，长度2个字节。
+- **`Int32Array`**：32位有符号整数，长度4个字节。
+- **`Uint32Array`**：32位无符号整数，长度4个字节。
+- **`Float32Array`**：32位浮点数，长度4个字节。
+- **`Float64Array`**：64位浮点数，长度8个字节。
 
 这9个构造函数生成的数组，统称为TypedArray视图。它们很像普通数组，都有`length`属性，都能用方括号运算符（`[]`）获取单个元素，所有数组的方法，在它们上面都能使用。普通数组与TypedArray数组的差异主要在以下方面。
 
-- `TypedArray`数组的所有成员，都是同一种类型。
-- `TypedArray`数组的成员是连续的，不会有空位。
-- `TypedArray`数组成员的默认值为0。比如，`new Array(10)`返回一个普通数组，里面没有任何成员，只是10个空位；`new Uint8Array(10)`返回一个TypedArray数组，里面10个成员都是0。
-- `TypedArray`数组只是一层视图，本身不储存数据，它的数据都储存在底层的`ArrayBuffer`对象之中，要获取底层对象必须使用`buffer`属性。
+- TypedArray数组的所有成员，都是同一种类型。
+- TypedArray数组的成员是连续的，不会有空位。
+- TypedArray数组成员的默认值为0。比如，`new Array(10)`返回一个普通数组，里面没有任何成员，只是10个空位；`new Uint8Array(10)`返回一个TypedArray数组，里面10个成员都是0。
+- TypedArray数组只是一层视图，本身不储存数据，它的数据都储存在底层的`ArrayBuffer`对象之中，要获取底层对象必须使用`buffer`属性。
 
 ### 构造函数
 
@@ -207,7 +207,7 @@ var i16 = new Int16Array(buffer, 1);
 
 上面代码中，新生成一个8个字节的`ArrayBuffer`对象，然后在这个对象的第一个字节，建立带符号的16位整数视图，结果报错。因为，带符号的16位整数需要两个字节，所以`byteOffset`参数必须能够被2整除。
 
-如果想从任意字节开始解读`ArrayBuffer`对象，必须使用`DataView`视图，因为`TypedArray`视图只提供9种固定的解读格式。
+如果想从任意字节开始解读`ArrayBuffer`对象，必须使用`DataView`视图，因为TypedArray视图只提供9种固定的解读格式。
 
 **（2）TypedArray(length)**
 
@@ -268,9 +268,9 @@ var typedArray = new Uint8Array([1, 2, 3, 4]);
 
 注意，这时TypedArray视图会重新开辟内存，不会在原数组的内存上建立视图。
 
-上面代码从一个普通的数组，生成一个8位无符号整数的`TypedArray`实例。
+上面代码从一个普通的数组，生成一个8位无符号整数的TypedArray实例。
 
-`TypedArray`数组也可以转换回普通数组。
+TypedArray数组也可以转换回普通数组。
 
 ```javascript
 var normalArray = Array.prototype.slice.call(typedArray);
@@ -326,7 +326,7 @@ concatenate(Uint8Array, Uint8Array.of(1, 2), Uint8Array.of(3, 4))
 // Uint8Array [1, 2, 3, 4]
 ```
 
-另外，`TypedArray`数组与普通数组一样，部署了Iterator接口，所以可以被遍历。
+另外，TypedArray数组与普通数组一样，部署了Iterator接口，所以可以被遍历。
 
 ```javascript
 let ui8 = Uint8Array.of(0, 1, 2);
@@ -371,7 +371,7 @@ for (var i = 0; i < int16View.length; i++) {
 // Entry 7: 0
 ```
 
-由于每个16位整数占据2个字节，所以整个ArrayBuffer对象现在分成8段。然后，由于x86体系的计算机都采用小端字节序（little endian），相对重要的字节排在后面的内存地址，相对不重要字节排在前面的内存地址，所以就得到了上面的结果。
+由于每个16位整数占据2个字节，所以整个`ArrayBuffer`对象现在分成8段。然后，由于x86体系的计算机都采用小端字节序（little endian），相对重要的字节排在后面的内存地址，相对不重要字节排在前面的内存地址，所以就得到了上面的结果。
 
 比如，一个占据四个字节的16进制数`0x12345678`，决定其大小的最重要的字节是“12”，最不重要的是“78”。小端字节序将最不重要的字节排在前面，储存顺序就是`78563412`；大端字节序则完全相反，将最重要的字节排在前面，储存顺序就是`12345678`。目前，所有个人电脑几乎都是小端字节序，所以TypedArray数组内部也采用小端字节序读写数据，或者更准确的说，按照本机操作系统设定的字节序读写数据。
 
@@ -439,7 +439,7 @@ Float32Array.BYTES_PER_ELEMENT // 4
 Float64Array.BYTES_PER_ELEMENT // 8
 ```
 
-这个属性在`TypedArray`实例上也能获取，即有`TypedArray.prototype.BYTES_PER_ELEMENT`。
+这个属性在TypedArray实例上也能获取，即有`TypedArray.prototype.BYTES_PER_ELEMENT`。
 
 ### ArrayBuffer与字符串的互相转换
 
@@ -517,7 +517,7 @@ uint8c[0] // 0
 
 ### TypedArray.prototype.buffer
 
-TypedArray实例的buffer属性，返回整段内存区域对应的`ArrayBuffer`对象。该属性为只读属性。
+TypedArray实例的`buffer`属性，返回整段内存区域对应的`ArrayBuffer`对象。该属性为只读属性。
 
 ```javascript
 var a = new Float32Array(64);
@@ -674,7 +674,7 @@ var usernameView = new Uint8Array(buffer, 4, 16);
 var amountDueView = new Float32Array(buffer, 20, 1);
 ```
 
-上面代码将一个24字节长度的ArrayBuffer对象，分成三个部分：
+上面代码将一个24字节长度的`ArrayBuffer`对象，分成三个部分：
 
 - 字节0到字节3：1个32位无符号整数
 - 字节4到字节19：16个8位整数
@@ -709,24 +709,24 @@ var buffer = new ArrayBuffer(24);
 var dv = new DataView(buffer);
 ```
 
-`DataView`实例有以下属性，含义与`TypedArray`实例的同名方法相同。
+`DataView`实例有以下属性，含义与TypedArray实例的同名方法相同。
 
-- DataView.prototype.buffer：返回对应的ArrayBuffer对象
-- DataView.prototype.byteLength：返回占据的内存字节长度
-- DataView.prototype.byteOffset：返回当前视图从对应的ArrayBuffer对象的哪个字节开始
+- `DataView.prototype.buffer`：返回对应的ArrayBuffer对象
+- `DataView.prototype.byteLength`：返回占据的内存字节长度
+- `DataView.prototype.byteOffset`：返回当前视图从对应的ArrayBuffer对象的哪个字节开始
 
 `DataView`实例提供8个方法读取内存。
 
-- **getInt8**：读取1个字节，返回一个8位整数。
-- **getUint8**：读取1个字节，返回一个无符号的8位整数。
-- **getInt16**：读取2个字节，返回一个16位整数。
-- **getUint16**：读取2个字节，返回一个无符号的16位整数。
-- **getInt32**：读取4个字节，返回一个32位整数。
-- **getUint32**：读取4个字节，返回一个无符号的32位整数。
-- **getFloat32**：读取4个字节，返回一个32位浮点数。
-- **getFloat64**：读取8个字节，返回一个64位浮点数。
+- **`getInt8`**：读取1个字节，返回一个8位整数。
+- **`getUint8`**：读取1个字节，返回一个无符号的8位整数。
+- **`getInt16`**：读取2个字节，返回一个16位整数。
+- **`getUint16`**：读取2个字节，返回一个无符号的16位整数。
+- **`getInt32`**：读取4个字节，返回一个32位整数。
+- **`getUint32`**：读取4个字节，返回一个无符号的32位整数。
+- **`getFloat32`**：读取4个字节，返回一个32位浮点数。
+- **`getFloat64`**：读取8个字节，返回一个64位浮点数。
 
-这一系列get方法的参数都是一个字节序号（不能是负数，否则会报错），表示从哪个字节开始读取。
+这一系列`get`方法的参数都是一个字节序号（不能是负数，否则会报错），表示从哪个字节开始读取。
 
 ```javascript
 var buffer = new ArrayBuffer(24);
@@ -759,16 +759,16 @@ var v3 = dv.getUint16(3);
 
 DataView视图提供8个方法写入内存。
 
-- **setInt8**：写入1个字节的8位整数。
-- **setUint8**：写入1个字节的8位无符号整数。
-- **setInt16**：写入2个字节的16位整数。
-- **setUint16**：写入2个字节的16位无符号整数。
-- **setInt32**：写入4个字节的32位整数。
-- **setUint32**：写入4个字节的32位无符号整数。
-- **setFloat32**：写入4个字节的32位浮点数。
-- **setFloat64**：写入8个字节的64位浮点数。
+- **`setInt8`**：写入1个字节的8位整数。
+- **`setUint8`**：写入1个字节的8位无符号整数。
+- **`setInt16`**：写入2个字节的16位整数。
+- **`setUint16`**：写入2个字节的16位无符号整数。
+- **`setInt32`**：写入4个字节的32位整数。
+- **`setUint32`**：写入4个字节的32位无符号整数。
+- **`setFloat32`**：写入4个字节的32位浮点数。
+- **`setFloat64`**：写入8个字节的64位浮点数。
 
-这一系列set方法，接受两个参数，第一个参数是字节序号，表示从哪个字节开始写入，第二个参数为写入的数据。对于那些写入两个或两个以上字节的方法，需要指定第三个参数，false或者undefined表示使用大端字节序写入，true表示使用小端字节序写入。
+这一系列`set`方法，接受两个参数，第一个参数是字节序号，表示从哪个字节开始写入，第二个参数为写入的数据。对于那些写入两个或两个以上字节的方法，需要指定第三个参数，`false`或者`undefined`表示使用大端字节序写入，`true`表示使用小端字节序写入。
 
 ```javascript
 // 在第1个字节，以大端字节序写入值为25的32位整数
@@ -841,7 +841,7 @@ var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 var uint8ClampedArray = imageData.data;
 ```
 
-需要注意的是，上面代码的`typedArray`虽然是一个TypedArray数组，但是它的视图类型是一种针对`Canvas`元素的专有类型`Uint8ClampedArray`。这个视图类型的特点，就是专门针对颜色，把每个字节解读为无符号的8位整数，即只能取值0～255，而且发生运算的时候自动过滤高位溢出。这为图像处理带来了巨大的方便。
+需要注意的是，上面代码的`uint8ClampedArray`虽然是一个TypedArray数组，但是它的视图类型是一种针对`Canvas`元素的专有类型`Uint8ClampedArray`。这个视图类型的特点，就是专门针对颜色，把每个字节解读为无符号的8位整数，即只能取值0～255，而且发生运算的时候自动过滤高位溢出。这为图像处理带来了巨大的方便。
 
 举例来说，如果把像素的颜色值设为`Uint8Array`类型，那么乘以一个gamma值的时候，就必须这样计算：
 
@@ -849,7 +849,7 @@ var uint8ClampedArray = imageData.data;
 u8[i] = Math.min(255, Math.max(0, u8[i] * gamma));
 ```
 
-因为`Uint8Array`类型对于大于255的运算结果（比如0xFF+1），会自动变为0x00，所以图像处理必须要像上面这样算。这样做很麻烦，而且影响性能。如果将颜色值设为`Uint8ClampedArray`类型，计算就简化许多。
+因为`Uint8Array`类型对于大于255的运算结果（比如`0xFF+1`），会自动变为`0x00`，所以图像处理必须要像上面这样算。这样做很麻烦，而且影响性能。如果将颜色值设为`Uint8ClampedArray`类型，计算就简化许多。
 
 ```javascript
 pixels[i] *= gamma;
@@ -895,7 +895,7 @@ fetch(url)
 
 ### File API
 
-如果知道一个文件的二进制数据类型，也可以将这个文件读取为ArrayBuffer对象。
+如果知道一个文件的二进制数据类型，也可以将这个文件读取为`ArrayBuffer`对象。
 
 ```javascript
 var fileInput = document.getElementById('fileInput');
@@ -916,7 +916,7 @@ reader.addEventListener("load", processimage, false);
 reader.readAsArrayBuffer(file);
 ```
 
-然后，定义处理图像的回调函数：先在二进制数据之上建立一个DataView视图，再建立一个bitmap对象，用于存放处理后的数据，最后将图像展示在canvas元素之中。
+然后，定义处理图像的回调函数：先在二进制数据之上建立一个`DataView`视图，再建立一个`bitmap`对象，用于存放处理后的数据，最后将图像展示在Canvas元素之中。
 
 ```javascript
 function processimage(e) {
