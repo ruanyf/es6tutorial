@@ -16,7 +16,7 @@
 
 简单说，`ArrayBuffer`对象代表原始的二进制数据，TypedArray视图用来读写简单类型的二进制数据，`DataView`视图用来读写复杂类型的二进制数据。
 
-TypedArray视图支持的数据类型一共有9种（`DataView`视图支持除Uint8C以外的其他8种）。
+TypedArray视图支持的数据类型一共有9种（`DataView`视图支持除`Uint8C`以外的其他8种）。
 
 数据类型 | 字节长度 | 含义 | 对应的C语言类型
 --------|--------|----|---------------
@@ -916,7 +916,7 @@ reader.addEventListener("load", processimage, false);
 reader.readAsArrayBuffer(file);
 ```
 
-然后，定义处理图像的回调函数：先在二进制数据之上建立一个`DataView`视图，再建立一个`bitmap`对象，用于存放处理后的数据，最后将图像展示在Canvas元素之中。
+然后，定义处理图像的回调函数：先在二进制数据之上建立一个`DataView`视图，再建立一个`bitmap`对象，用于存放处理后的数据，最后将图像展示在`Canvas`元素之中。
 
 ```javascript
 function processimage(e) {
@@ -962,4 +962,4 @@ var start = bitmap.fileheader.bfOffBits;
 bitmap.pixels = new Uint8Array(buffer, start);
 ```
 
-至此，图像文件的数据全部处理完成。下一步，可以根据需要，进行图像变形，或者转换格式，或者展示在Canvas网页元素之中。
+至此，图像文件的数据全部处理完成。下一步，可以根据需要，进行图像变形，或者转换格式，或者展示在`Canvas`网页元素之中。
