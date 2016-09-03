@@ -66,7 +66,7 @@ class Bar {
 var b = new Bar();
 b.doStuff() // "stuff"
 ```
-
+.ant-menu-horizontal > li.ant-menu-item
 构造函数的`prototype`属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
 
 ```javascript
@@ -294,7 +294,7 @@ new Foo(); // ReferenceError
 class Foo {}
 ```
 
-上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把类的声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
 
 ```javascript
 {
@@ -304,11 +304,11 @@ class Foo {}
 }
 ```
 
-上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在Class的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
+上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
 
 ### Class表达式
 
-与函数一样，Class也可以使用表达式的形式定义。
+与函数一样，类也可以使用表达式的形式定义。
 
 ```javascript
 const MyClass = class Me {
@@ -328,7 +328,7 @@ Me.name // ReferenceError: Me is not defined
 
 上面代码表示，`Me`只在Class内部有定义。
 
-如果Class内部没用到的话，可以省略`Me`，也就是可以写成下面的形式。
+如果类的内部没用到的话，可以省略`Me`，也就是可以写成下面的形式。
 
 ```javascript
 const MyClass = class { /* ... */ };
@@ -350,7 +350,7 @@ let person = new class {
 person.sayName(); // "张三"
 ```
 
-上面代码中，person是一个立即执行的Class的实例。
+上面代码中，`person`是一个立即执行的类的实例。
 
 ### 私有方法
 
@@ -395,16 +395,16 @@ function bar(baz) {
 
 上面代码中，`foo`是公有方法，内部调用了`bar.call(this, baz)`。这使得`bar`实际上成为了当前模块的私有方法。
 
-还有一种方法是利用`Symbol`值的唯一性，将私有方法的名字命名为一个Symbol值。
+还有一种方法是利用`Symbol`值的唯一性，将私有方法的名字命名为一个`Symbol`值。
 
 ```javascript
 const bar = Symbol('bar');
 const snaf = Symbol('snaf');
 
-export default subclassFactory({
+export default class myClass{
 
-  // 共有方法
-  foo (baz) {
+  // 公有方法
+  foo(baz) {
     this[bar](baz);
   }
 
@@ -414,10 +414,82 @@ export default subclassFactory({
   }
 
   // ...
-});
+};
 ```
 
-上面代码中，`bar`和`snaf`都是Symbol值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
+上面代码中，`bar`和`snaf`都是`Symbol`值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
+
+### this的指向
+
+类的方法内部如果含有`this`，它默认指向类的实例。但是，必须非常小心，一旦单独使用该方法，很可能报错。
+
+```javascript
+class Logger {
+  printName(name = 'there') {
+    this.print(`Hello ${name}`);
+  }
+
+  print(text) {
+    console.log(text);
+  }
+}
+
+const logger = new Logger();
+const { printName } = logger;
+printName(); // TypeError: Cannot read property 'print' of undefined
+```
+
+上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境，因为找不到`print`方法而导致报错。
+
+一个比较简单的解决方法是，在构造方法中绑定`this`，这样就不会找不到`print`方法了。
+
+```javascript
+class Logger {
+  constructor() {
+    this.printName = this.printName.bind(this);
+  }
+
+  // ...
+}
+```
+
+另一种解决方法是使用箭头函数。
+
+```javascript
+class Logger {
+  constructor() {
+    this.printName = (name = 'there') => {
+      this.print(`Hello ${name}`);
+    };
+  }
+
+  // ...
+}
+```
+
+还有一种解决方法是使用`Proxy`，获取方法的时候，自动绑定`this`。
+
+```javascript
+function selfish (target) {
+  const cache = new WeakMap();
+  const handler = {
+    get (target, key) {
+      const value = Reflect.get(target, key);
+      if (typeof value !== 'function') {
+        return value;
+      }
+      if (!cache.has(value)) {
+        cache.set(value, value.bind(target));
+      }
+      return cache.get(value);
+    }
+  };
+  const proxy = new Proxy(target, handler);
+  return proxy;
+}
+
+const logger = selfish(new Logger());
+```
 
 ### 严格模式
 
@@ -427,7 +499,7 @@ export default subclassFactory({
 
 ### name属性
 
-由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括`name`属性。
+由于本质上，ES6的类只是ES5的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
 
 ```javascript
 class Point {}
