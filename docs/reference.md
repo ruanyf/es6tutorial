@@ -151,7 +151,7 @@
 - Mahdi Dibaiee, [ES7 Array and Generator comprehensions](http://dibaiee.ir/es7-array-generator-comprehensions/)：ES7的Generator推导
 - Nicolas Bevacqua, [ES6 Generators in Depth](http://ponyfoo.com/articles/es6-generators-in-depth)
 - Axel Rauschmayer, [ES6 generators in depth](http://www.2ality.com/2015/03/es6-generators.html): Generator规格的详尽讲解
-- Derick Bailey, [Using ES6 Generators To Short-Circuit Hierarchical Data Iteration](https://derickbailey.com/2015/10/05/using-es6-generators-to-short-circuit-hierarchical-data-iteration/)
+- Derick Bailey, [Using ES6 Generators To Short-Circuit Hierarchical Data Iteration](https://derickbailey.com/2015/10/05/using-es6-generators-to-short-circuit-hierarchical-data-iteration/)：使用 for...of 循环完成预定的操作步骤
 
 ## Promise对象
 
