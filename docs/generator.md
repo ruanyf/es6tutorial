@@ -309,7 +309,7 @@ genObj.next('b')
 
 ## for...of循环
 
-`for...of`循环可以自动遍历调用Generator函数时生成的Iterator对象，且此时不再需要调用`next`方法。
+`for...of`循环可以自动遍历Generator函数时生成的`Iterator`对象，且此时不再需要调用`next`方法。
 
 ```javascript
 function *foo() {
@@ -346,34 +346,49 @@ for (let n of fibonacci()) {
 }
 ```
 
-从上面代码可见，使用`for...of`语句时不需要使用next方法。
+从上面代码可见，使用`for...of`语句时不需要使用`next`方法。
 
-前面章节曾经介绍过，`for...of`循环、扩展运算符（`...`）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们可以将Generator函数返回的Iterator对象，作为参数。
+由于`for...of`循环会自动依次执行`yield`命令，这启发我们可以将一些按步骤操作的任务，写在Generator函数里面。
 
 ```javascript
-function* numbers () {
-  yield 1
-  yield 2
-  return 3
-  yield 4
+let steps = [step1Func, step2Func, step3Func];
+
+function *iterateSteps(steps){
+  for (var i=0; i< steps.length; i++){
+    var step = steps[i];
+    yield step();
+  }
 }
-
-[...numbers()] // [1, 2]
-
-Array.from(numbers()) // [1, 2]
-
-let [x, y] = numbers();
-x // 1
-y // 2
-
-for (let n of numbers()) {
-  console.log(n)
-}
-// 1
-// 2
 ```
 
-利用`for...of`循环，可以写出遍历任意对象的方法。原生的JavaScript对象没有遍历接口，无法使用`for...of`循环，通过Generator函数为它加上这个接口，就可以用了。
+上面代码中，数组`steps`封装了一个任务的多个步骤，Generator函数`iterateSteps`则是依次为这些步骤加上`yield`命令。
+
+将任务分解成步骤之后，还可以将项目分解成多个依次执行的任务。
+
+```javascript
+let jobs = [job1, job2, job3];
+
+function *iterateJobs(jobs){
+  for (var i=0; i< jobs.length; i++){
+    var job = jobs[i];
+    yield *iterateSteps(job.steps);
+  }
+}
+```
+
+上面代码中，数组`jobs`封装了一个项目的多个任务，Generator函数`iterateJobs`则是依次为这些任务加上`yield *`命令（`yield *`命令的介绍详见后文）。
+
+最后，就可以用`for...of`循环一次性依次执行所有任务的所有步骤。
+
+```javascript
+for (var step of iterateJobs(jobs)){
+  console.log(step.id);
+}
+```
+
+注意，上面的做法只能用于所有步骤都是同步操作的情况，不能有异步操作的步骤。如果想要依次执行异步的步骤，必须使用下一章介绍的方法。
+
+利用`for...of`循环，可以写出遍历任意对象（object）的方法。原生的JavaScript对象没有遍历接口，无法使用`for...of`循环，通过Generator函数为它加上这个接口，就可以用了。
 
 ```javascript
 function* objectEntries(obj) {
@@ -413,6 +428,35 @@ for (let [key, value] of jane) {
 }
 // first: Jane
 // last: Doe
+```
+
+除了`for...of`循环以外，扩展运算符（`...`）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们都可以将Generator函数返回的Iterator对象，作为参数。
+
+```javascript
+function* numbers () {
+  yield 1
+  yield 2
+  return 3
+  yield 4
+}
+
+// 扩展运算符
+[...numbers()] // [1, 2]
+
+// Array.form 方法
+Array.from(numbers()) // [1, 2]
+
+// 解构赋值
+let [x, y] = numbers();
+x // 1
+y // 2
+
+// for...of 循环
+for (let n of numbers()) {
+  console.log(n)
+}
+// 1
+// 2
 ```
 
 ## Generator.prototype.throw()
