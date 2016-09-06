@@ -242,8 +242,7 @@ p.then((val) => console.log("fulfilled:", val))
   .catch((err) => console.log("rejected:", err));
 
 // 等同于
-
-p.then((val) => console.log(fulfilled:", val))
+p.then((val) => console.log("fulfilled:", val))
   .then(null, (err) => console.log("rejected:", err));
 ```
 
