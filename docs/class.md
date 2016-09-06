@@ -66,7 +66,7 @@ class Bar {
 var b = new Bar();
 b.doStuff() // "stuff"
 ```
-.ant-menu-horizontal > li.ant-menu-item
+
 构造函数的`prototype`属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
 
 ```javascript
