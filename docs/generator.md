@@ -403,7 +403,7 @@ function* numbers () {
 // 扩展运算符
 [...numbers()] // [1, 2]
 
-// Array.form 方法
+// Array.from 方法
 Array.from(numbers()) // [1, 2]
 
 // 解构赋值
