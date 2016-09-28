@@ -529,7 +529,7 @@ const DEFAULTS = {
 };
 
 function processContent(options) {
-  let options = Object.assign({}, DEFAULTS, options);
+  options = Object.assign({}, DEFAULTS, options);
 }
 ```
 
