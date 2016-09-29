@@ -381,7 +381,7 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 Singleton模式指的是调用一个类，任何时候返回的都是同一个实例。
 
-对于 Node 来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
+对于Node来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
 
 很容易想到，可以把实例放到顶层对象`global`。
 
@@ -433,7 +433,24 @@ if (!global[FOO_KEY]) {
 module.exports = global[FOO_KEY];
 ```
 
-上面代码中，可以保证`global[FOO_KEY]`不会被其他脚本改写。
+上面代码中，可以保证`global[FOO_KEY]`不会被无意间覆盖，但还是可以被改写。
+
+```javascript
+var a = require('./mod.js');
+global[Symbol.for('foo')] = 123;
+```
+
+如果键名使用`Symbol`方法生成，那么外部将无法引用这个值，当然也就无法改写。
+
+```javascript
+```javascript
+// mod.js
+const FOO_KEY = Symbol('foo');
+
+// 后面代码相同 ……
+```
+
+上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然Node会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
 
 ## 内置的Symbol值
 
