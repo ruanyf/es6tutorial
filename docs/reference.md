@@ -2,9 +2,12 @@
 
 ## 官方文件
 
-- [ECMAScript® 2015 Language Specification](http://www.ecma-international.org/ecma-262/6.0/index.html): ES6语言规格
-- [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript当前的各种提案
-- [ECMAScript® 2016 Language Specification](http://tc39.github.io/ecma262/): ECMAScript 2016草案
+- [ECMAScript® 2015 Language Specification](http://www.ecma-international.org/ecma-262/6.0/index.html): ECMAScript 2015规格
+- [ECMAScript® 2016 Language Specification](http://www.ecma-international.org/ecma-262/7.0/): ECMAScript 2016规格
+- [ECMAScript® 2017 Language Specification](https://tc39.github.io/ecma262/)：ECMAScript 2017规格（草案）
+- [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript当前的所有提案
+- [ECMAScript Active Proposals](https://github.com/tc39/proposals): 已经进入正式流程的提案
+- [ECMAScript Daily](https://ecmascript-daily.github.io/): TC39委员会的动态
 
 ## 综合介绍
 

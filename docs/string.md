@@ -846,7 +846,7 @@ function tag(strings) {
 }
 ```
 
-上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
+上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
 
 ## String.raw()
 
@@ -893,4 +893,46 @@ String.raw({ raw: 'test' }, 0, 1, 2);
 
 // 等同于
 String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
+```
+
+## 模板字符串的限制
+
+前面提到标签模板里面，可以内嵌其他语言。但是，模板字符串默认会将字符串转义，因此导致了无法嵌入其他语言。
+
+举例来说，在标签模板里面可以潜入Latex语言。
+
+```javascript
+function latex(strings) {
+  // ...
+}
+
+let document = latex`
+\newcommand{\fun}{\textbf{Fun!}}  // 正常工作
+\newcommand{\unicode}{\textbf{Unicode!}} // 报错
+\newcommand{\xerxes}{\textbf{King!}} // 报错
+
+Breve over the h goes \u{h}ere // 报错
+`
+```
+
+上面代码中，变量`document`内嵌的模板字符串，对于Latex语言来说完全是合法的，但是JavaScript引擎会报错。原因就在于字符串的转义。
+
+模板字符串会将`\u00FF`和`\u{42}`当作Unicode字符进行转义，所以`\unicode`解析时报错；而`\x56`会被当作十六进制字符串转义，所以`\xerxes`会报错。
+
+为了解决这个问题，现在有一个[提案](https://tc39.github.io/proposal-template-literal-revision/)，放松对标签模板里面的字符串转义的限制。如果遇到不合法的字符串转义，就返回`undefined`，而不是报错，并且从`raw`属性上面可以得到原始字符串。
+
+```javascript
+function tag(strs) {
+  strs[0] === undefined
+  strs.raw[0] === "\\unicode and \\u{55}";
+}
+tag`\unicode and \u{55}`
+```
+
+上面代码中，模板字符串原本是应该报错的，但是由于放松了对字符串转义的限制，所以不报错了，JavaScript引擎将第一个字符设置为`undefined`，但是`raw`属性依然可以得到原始字符串，因此`tag`函数还是可以对原字符串进行处理。
+
+注意，这种对字符串转义的放松，只在标签模板解析字符串时生效，不是标签模板的场合，依然会报错。
+
+```javascript
+let bad = `bad escape sequence: \unicode`; // 报错
 ```
