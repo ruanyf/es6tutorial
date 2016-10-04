@@ -714,9 +714,3 @@ function average(list) {
 
 上面代码先是每隔四位，将所有的值读入一个SIMD，然后立刻累加。然后，得到累加值四个通道的总和，再除以`n`就可以了。
 
-## 参考链接
-
-- TC39, [SIMD.js Stage 2](https://docs.google.com/presentation/d/1MY9NHrHmL7ma7C8dyNXvmYNNGgVmmxXk8ZIiQtPlfH4/edit#slide=id.p19)
-- MDN, [SIMD](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SIMD)
-- TC39, [ECMAScript SIMD](https://github.com/tc39/ecmascript_simd)
-- Axel Rauschmayer, [JavaScript gains support for SIMD](http://www.2ality.com/2013/12/simd-js.html)
