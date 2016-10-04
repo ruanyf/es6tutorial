@@ -1446,9 +1446,9 @@ sum(1, 100000)
 
 ## 函数参数的尾逗号
 
-ES7有一个[提案](https://github.com/jeffmo/es-trailing-function-commas)，允许函数的最后一个参数有尾逗号（trailing comma）。
+ECMAScript 2017将[允许](https://github.com/jeffmo/es-trailing-function-commas)函数的最后一个参数有尾逗号（trailing comma）。
 
-目前，函数定义和调用时，都不允许有参数的尾逗号。
+此前，函数定义和调用时，都不允许最后一个参数后面出现逗号。
 
 ```javascript
 function clownsEverywhere(
@@ -1462,7 +1462,9 @@ clownsEverywhere(
 );
 ```
 
-如果以后要在函数的定义之中添加参数，就势必还要添加一个逗号。这对版本管理系统来说，就会显示，添加逗号的那一行也发生了变动。这看上去有点冗余，因此新提案允许定义和调用时，尾部直接有一个逗号。
+上面代码中，如果在`param2`或`bar`后面加一个逗号，就会报错。
+
+这样的话，如果以后修改代码，想为函数`clownsEverywhere`添加第三个参数，就势必要在第二个参数后面添加一个逗号。这对版本管理系统来说，就会显示，添加逗号的那一行也发生了变动。这看上去有点冗余，因此新的语法允许定义和调用时，尾部直接有一个逗号。
 
 ```javascript
 function clownsEverywhere(

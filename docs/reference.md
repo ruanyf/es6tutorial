@@ -7,6 +7,7 @@
 - [ECMAScript® 2017 Language Specification](https://tc39.github.io/ecma262/)：ECMAScript 2017规格（草案）
 - [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript当前的所有提案
 - [ECMAScript Active Proposals](https://github.com/tc39/proposals): 已经进入正式流程的提案
+- [ECMAscript proposals](https://github.com/hemanth/es-next)：从阶段0到阶段4的所有提案列表
 - [ECMAScript Daily](https://ecmascript-daily.github.io/): TC39委员会的动态
 
 ## 综合介绍

@@ -1252,3 +1252,62 @@ async function chainAnimationsAsync(elem, animations) {
 
 可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将Generator写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用Generator写法，自动执行器需要用户自己提供。
 
+## 异步遍历器
+
+《遍历器》一章说过，Iterator接口是一种数据遍历的协议，只要调用遍历器的`next`方法，就会得到一个对象值`{value, done}`。其中，`value`表示当前的数据的值，`done`是一个布尔值，表示遍历是否结束。
+
+这意味着，`next`方法是同步的，只要调用就必须立刻返回值。也就是说，一旦执行`next`方法，就必须同步地得到`value`和`done`这两方面的信息。这对于同步操作，当然没有问题，但对于异步操作，就不太合适了。目前的解决方法是，Generator函数里面的异步操作，返回一个Thunk函数或者Promise对象，即`value`属性是一个Thunk函数或者Promise对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
+
+目前，有一个[提案](https://github.com/tc39/proposal-async-iteration)，为异步操作提供原生的遍历器接口，即`value`和`done`这两个属性都是异步产生，这称为”异步遍历器“（Async Iterator）。
+
+### 异步遍历的接口
+
+异步遍历器的最大的语法特点，就是调用遍历器的`next`方法，返回的是一个Promise对象。
+
+```javascript
+asyncIterator
+  .next()
+  .then(
+    ({ value, done }) => /* ... */
+  );
+```
+
+上面代码中，`asyncIterator`是一个异步遍历器，调用`next`方法以后，返回一个Promise对象。因此，可以使用`then`方法指定，这个Promise对象的状态变为`resolve`以后的回调函数。回调函数的参数，则是一个具有`value`和`done`两个属性的对象，这个跟同步遍历器是一样的。
+
+我们知道，一个对象的同步遍历器的接口，部署在`Symbol.iterator`属性上面。同样地，对象的异步遍历器接口，部署在`Symbol.asyncIterator`属性上面。不管是什么样的对象，只要它的`Symbol.asyncIterator`属性有值，就表示应该对它进行异步遍历。
+
+### for await...of
+
+前面介绍过，`for...of`循环用于遍历同步的Iterator接口。新引入的`for await...of`循环，则是用于遍历异步的Iterator接口。
+
+```javascript
+for await (const line of readLines(filePath)) {
+  console.log(line);
+}
+```
+
+上面代码中，`readLines`函数返回一个异步遍历器，每次调用它的`next`方法，就会返回一个Promise对象。`await`表示等待这个Promise对象`resolve`，一旦完成，变量`line`就是Promise对象返回的`value`值。
+
+### 异步Generator函数
+
+就像Generator函数返回一个同步遍历器对象一样，异步Generator函数的作用，是返回一个异步遍历器对象。
+
+在语法上，异步Generator函数就是`async`函数与Generator函数的结合。
+
+```javascript
+async function* readLines(path) {
+  let file = await fileOpen(path);
+
+  try {
+    while (!file.EOF) {
+      yield await file.readLine();
+    }
+  } finally {
+    await file.close();
+  }
+}
+```
+
+上面代码中，异步操作前面使用`await`关键字标明，`next`方法所在的中断之处使用`yield`关键字标明。
+
+注意，普通的`async`函数返回的是一个Promise对象，而异步Generator函数返回的是一个异步Iterator对象。
