@@ -533,9 +533,9 @@ var constantize = (obj) => {
 
 ES5只有两种声明变量的方法：`var`命令和`function`命令。ES6除了添加`let`和`const`命令，后面章节还会提到，另外两种声明变量的方法：`import`命令和`class`命令。所以，ES6一共有6种声明变量的方法。
 
-## 全局对象的属性
+## 顶层对象的属性
 
-全局对象是最顶层的对象，在浏览器环境指的是`window`对象，在Node.js指的是`global`对象。ES5之中，全局对象的属性与全局变量是等价的。
+顶层对象，在浏览器环境指的是`window`对象，在Node指的是`global`对象。ES5之中，顶层对象的属性与全局变量是等价的。
 
 ```javascript
 window.a = 1;
@@ -545,11 +545,11 @@ a = 2;
 window.a // 2
 ```
 
-上面代码中，全局对象的属性赋值与全局变量的赋值，是同一件事。（对于Node来说，这一条只对REPL环境适用，模块环境之中，全局变量必须显式声明成`global`对象的属性。）
+上面代码中，顶层对象的属性赋值与全局变量的赋值，是同一件事。
 
-未声明的全局变量，自动成为全局对象`window`的属性，这被认为是JavaScript语言最大的设计败笔之一。这样的设计带来了两个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道，其次程序员很容易不知不觉地就创建了全局变量（比如打字出错）。另一方面，从语义上讲，语言的顶层对象是一个有实体含义的对象，也是不合适的。
+顶层对象的属性与全局变量挂钩，被认为是JavaScript语言最大的设计败笔之一。这样的设计带来了两个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道（因为全局变量可能是顶层对象的属性创造的，而属性的创造是动态的）；其次，程序员很容易不知不觉地就创建了全局变量（比如打字出错）。另一方面，`window`对象有实体含义，指的是浏览器的窗口对象，顶层对象是一个有实体含义的对象，也是不合适的。
 
-ES6为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是全局对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于全局对象的属性。也就是说，从ES6开始，全局变量将逐步与全局对象的属性脱钩。
+ES6为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是顶层对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全局变量将逐步与顶层对象的属性脱钩。
 
 ```javascript
 var a = 1;
@@ -561,4 +561,65 @@ let b = 1;
 window.b // undefined
 ```
 
-上面代码中，全局变量`a`由`var`命令声明，所以它是全局对象的属性；全局变量`b`由`let`命令声明，所以它不是全局对象的属性，返回`undefined`。
+上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
+
+## 顶层对象
+
+ES5的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
+
+- 浏览器里面，顶层对象是`window`，但Node和Web Worker没有`window`。
+- 浏览器和Web Worker里面，`self`也指向顶层对象，但是Node没有`self`。
+- Node里面，顶层对象是`global`，但其他环境都不支持。
+
+为了能够在各种环境，都能取到顶层对象，现在一般是使用`this`变量。
+
+- 全局环境中，`this`会返回顶层对象。但是，Node模块和ES6模块中，`this`返回的是当前模块。
+- 函数里面的`this`，如果函数不是作为对象的方法运行，而是单纯作为函数运行，`this`会指向顶层对象。但是，严格模式下，这时`this`会返回`undefined`。
+- 不管是严格模式，还是普通模式，`new Function('return this')()`，总是会返回全局对象。但是，如果浏览器用了CSP（Content Security Policy，内容安全政策），那么`eval`、`new Function`这些方法都可能无法使用。
+
+综上所述，很难找到一种方法，可以在所有情况下，都取到顶层对象。下面是两种勉强可以使用的方法。
+
+```javascript
+// 方法一
+(typeof window !== 'undefined'
+   ? window
+   : (typeof process === 'object' &&
+      typeof require === 'function' &&
+      typeof global === 'object')
+     ? global
+     : this);
+
+// 方法二
+var getGlobal = function () {
+  if (typeof self !== 'undefined') { return self; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  throw new Error('unable to locate global object');
+};
+```
+
+现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`global`作为顶层对象。也就是说，在所有环境下，`global`都是存在的，都可以从它拿到顶层对象。
+
+垫片库[`system.global`](https://github.com/ljharb/System.global)模拟了这个提案，可以在所有环境拿到`global`。
+
+```javascript
+// CommonJS的写法
+require('system.global/shim')();
+
+// ES6模块的写法
+import shim from 'system.global/shim'; shim();
+```
+
+上面代码可以保证`global`对象存在。
+
+```javascript
+// CommonJS的写法
+var global = require('system.global')();
+
+// ES6模块的写法
+import getGlobal from 'system.global';
+const global = getGlobal();
+```
+
+上面代码将顶层对象放入一个变量。
+

@@ -40,6 +40,7 @@
 - Axel Rauschmayer, [Variables and scoping in ECMAScript 6](http://www.2ality.com/2015/02/es6-scoping.html): 讨论块级作用域与let和const的行为
 - Nicolas Bevacqua, [ES6 Let, Const and the “Temporal Dead Zone” (TDZ) in Depth](http://ponyfoo.com/articles/es6-let-const-and-temporal-dead-zone-in-depth)
 - acorn, [Function statements in strict mode](https://github.com/ternjs/acorn/issues/118): 块级作用域对严格模式的函数声明的影响
+- Axel Rauschmayer, [ES proposal: global](http://www.2ality.com/2016/09/global.html): 顶层对象`global`
 
 ## 解构赋值
 
