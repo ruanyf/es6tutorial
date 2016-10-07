@@ -26,9 +26,21 @@ ECMAScript 6.0（以下简称ES6）是JavaScript语言的下一代标准，已�
 
 ES6的第一个版本，就这样在2015年6月发布了，正式名称就是《ECMAScript 2015标准》（简称ES2015）。2016年6月，小幅修订的《ECMAScript 2016标准》（简称ES2016）如期发布，这个版本可以看作是ES6.1版，因为两者的差异非常小（只新增了数组实例的`includes`方法和指数运算符），基本上是同一个标准。根据计划，2017年6月将发布ES2017标准。
 
-因此，ES6既是一个历史名词，也是一个泛指，含义是5.1版以后的JavaScript的下一代标准，涵盖了ES2015、ES2016、ES2017等等。ES2015则是正式名称，特指该年发布的正式版本的语言标准。
+因此，ES6既是一个历史名词，也是一个泛指，含义是5.1版以后的JavaScript的下一代标准，涵盖了ES2015、ES2016、ES2017等等，而ES2015则是正式名称，特指该年发布的正式版本的语言标准。本书中提到“ES6”的地方，一般是指ES2015标准，但有时也是泛指“下一代JavaScript语言”。
 
-本书的目标是介绍5.1版本以后所有的新语法，不仅包括已经写入标准的语法，还包括正在讨论的、已经纳入标准的提案。书中提到“ES6”的地方，都是这个泛指的含义。
+## 语法提案的批准流程
+
+任何人都可以向TC39标准委员会提案。一种新的语法从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由TC39委员会批准。
+
+- Stage 0 - Strawman（展示阶段）
+- Stage 1 - Proposal（征求意见阶段）
+- Stage 2 - Draft（草案阶段）
+- Stage 3 - Candidate（候选人阶段）
+- Stage 4 - Finished（定案阶段）
+
+一个提案只要能进入Stage 2，就差不多等于肯定会包括在以后的正式标准里面。ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
+
+本书的写作目标之一，是跟踪ECMAScript语言的最新进展，介绍5.1版本以后所有的新语法。对于那些明确将要列入标准的新语法，尤其是那些Babel转码器（详见后文）已经支持的功能，也将予以介绍。
 
 ## ECMAScript的历史
 
@@ -635,54 +647,3 @@ fs.writeFileSync('out.js', result.js);
 fs.writeFileSync('out.js.map', result.sourceMap);
 ```
 
-## ECMAScript 7
-
-2013年3月，ES6的草案封闭，不再接受新功能了。新的功能将被加入ES7。
-
-任何人都可以向TC39提案，从提案到变成正式标准，需要经历五个阶段。每个阶段的变动都需要由TC39委员会批准。
-
-- Stage 0 - Strawman（展示阶段）
-- Stage 1 - Proposal（征求意见阶段）
-- Stage 2 - Draft（草案阶段）
-- Stage 3 - Candidate（候选人阶段）
-- Stage 4 - Finished（定案阶段）
-
-一个提案只要能进入Stage 2，就差不多等于肯定会包括在ES7里面。
-
-本书的写作目标之一，是跟踪ECMAScript语言的最新进展。对于那些明确的、或者很有希望列入ES7的功能，尤其是那些Babel已经支持的功能，都将予以介绍。
-
-本书介绍的ES7功能清单如下。
-
-**Stage 0**：
-
-- Function Bind Syntax：函数的绑定运算符
-- String.prototype.at：字符串的静态方法at
-
-**Stage 1**：
-
-- Class and Property Decorators：Class的修饰器
-- Class Property Declarations：Class的属性声明
-- Additional export-from Statements：export的写法改进
-- String.prototype.{trimLeft,trimRight}：字符串删除头尾空格的方法
-
-**Stage 2**：
-
-- Rest/Spread Properties：对象的Rest参数和扩展运算符
-
-**Stage 3**
-
-- SIMD API：“单指令，多数据”命令集
-- Async Functions：async函数
-- Object.values/Object.entries：Object的静态方法values()和entries()
-- String padding：字符串长度补全
-- Trailing commas in function parameter lists and calls：函数参数的尾逗号
-- Object.getOwnPropertyDescriptors：Object的静态方法getOwnPropertyDescriptors
-
-**Stage 4**：
-
-- Array.prototype.includes：数组实例的includes方法
-- Exponentiation Operator：指数运算符
-
-ECMAScript当前的所有提案，可以在TC39的官方网站[Github.com/tc39/ecma262](https://github.com/tc39/ecma262)查看。
-
-Babel转码器可以通过安装和使用插件来使用各个stage的语法。
