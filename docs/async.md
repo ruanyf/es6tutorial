@@ -1254,9 +1254,9 @@ async function chainAnimationsAsync(elem, animations) {
 
 ## 异步遍历器
 
-《遍历器》一章说过，Iterator接口是一种数据遍历的协议，只要调用遍历器的`next`方法，就会得到一个对象值`{value, done}`。其中，`value`表示当前的数据的值，`done`是一个布尔值，表示遍历是否结束。
+《遍历器》一章说过，Iterator接口是一种数据遍历的协议，只要调用遍历器对象的`next`方法，就会得到一个表示当前成员信息的对象`{value, done}`。其中，`value`表示当前的数据的值，`done`是一个布尔值，表示遍历是否结束。
 
-这意味着，`next`方法是同步的，只要调用就必须立刻返回值。也就是说，一旦执行`next`方法，就必须同步地得到`value`和`done`这两方面的信息。这对于同步操作，当然没有问题，但对于异步操作，就不太合适了。目前的解决方法是，Generator函数里面的异步操作，返回一个Thunk函数或者Promise对象，即`value`属性是一个Thunk函数或者Promise对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
+这隐含着规定，`next`方法是同步的，只要调用就必须立刻返回值。也就是说，一旦执行`next`方法，就必须同步地得到`value`和`done`这两方面的信息。这对于同步操作，当然没有问题，但对于异步操作，就不太合适了。目前的解决方法是，Generator函数里面的异步操作，返回一个Thunk函数或者Promise对象，即`value`属性是一个Thunk函数或者Promise对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
 
 目前，有一个[提案](https://github.com/tc39/proposal-async-iteration)，为异步操作提供原生的遍历器接口，即`value`和`done`这两个属性都是异步产生，这称为”异步遍历器“（Async Iterator）。
 
@@ -1276,17 +1276,104 @@ asyncIterator
 
 我们知道，一个对象的同步遍历器的接口，部署在`Symbol.iterator`属性上面。同样地，对象的异步遍历器接口，部署在`Symbol.asyncIterator`属性上面。不管是什么样的对象，只要它的`Symbol.asyncIterator`属性有值，就表示应该对它进行异步遍历。
 
+下面是一个异步遍历器的例子。
+
+```javascript
+const asyncIterable = createAsyncIterable(['a', 'b']);
+const asyncIterator = someCollection[Symbol.asyncIterator]();
+
+asyncIterator.next()
+.then(iterResult1 => {
+  console.log(iterResult1); // { value: 'a', done: false }
+  return asyncIterator.next();
+}).then(iterResult2 => {
+  console.log(iterResult2); // { value: 'b', done: false }
+  return asyncIterator.next();
+}).then(iterResult3 => {
+  console.log(iterResult3); // { value: undefined, done: true }
+});
+```
+
+上面代码中，异步遍历器其实返回了两次值。第一次调用的时候，返回一个Promise对象；等到Promise对象`resolve`了，再返回一个表示当前数据成员信息的对象。这就是说，异步遍历器与同步遍历器最终行为是一致的，只是会先返回Promise对象，作为中介。
+
+由于异步遍历器的`next`方法，返回的是一个Promise对象。因此，可以把它放在`await`命令后面。
+
+```javascript
+async function f() {
+  const asyncIterable = createAsyncIterable(['a', 'b']);
+  const asyncIterator = asyncIterable[Symbol.asyncIterator]();
+  console.log(await asyncIterator.next());
+  // { value: 'a', done: false }
+  console.log(await asyncIterator.next());
+  // { value: 'b', done: false }
+  console.log(await asyncIterator.next());
+  // { value: undefined, done: true }
+}
+```
+
+上面代码中，`next`方法用`await`处理以后，就不必使用`then`方法了。整个流程已经很接近同步处理了。
+
+注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的Promise对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
+
+```javascript
+const asyncGenObj = createAsyncIterable(['a', 'b']);
+const [{value: v1}, {value: v2}] = await Promise.all([
+  asyncGenObj.next(), asyncGenObj.next()
+]);
+
+console.log(v1, v2); // a b
+```
+
+另一种用法是一次性调用所有的`next`方法，然后`await`最后一步操作。
+
+```javascript
+const writer = openFile('someFile.txt');
+writer.next('hello');
+writer.next('world');
+await writer.return();
+```
+
 ### for await...of
 
 前面介绍过，`for...of`循环用于遍历同步的Iterator接口。新引入的`for await...of`循环，则是用于遍历异步的Iterator接口。
 
 ```javascript
-for await (const line of readLines(filePath)) {
-  console.log(line);
+async function f() {
+  for await (const x of createAsyncIterable(['a', 'b'])) {
+    console.log(x);
+  }
+}
+// a
+// b
+```
+
+上面代码中，`createAsyncIterable()`返回一个异步遍历器，`for...of`循环自动调用这个遍历器的`next`方法，会得到一个Promise对象。`await`用来处理这个Promise对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
+
+如果`next`方法返回的Promise对象被`reject`，那么就要用`try...catch`捕捉。
+
+```javascript
+async function () {
+  try {
+    for await (const x of createRejectingIterable()) {
+      console.log(x);
+    }
+  } catch (e) {
+    console.error(e);
+  }
 }
 ```
 
-上面代码中，`readLines`函数返回一个异步遍历器，每次调用它的`next`方法，就会返回一个Promise对象。`await`表示等待这个Promise对象`resolve`，一旦完成，变量`line`就是Promise对象返回的`value`值。
+注意，`for await...of`循环也可以用于同步遍历器。
+
+```javascript
+(async function () {
+  for await (const x of ['a', 'b']) {
+    console.log(x);
+  }
+})();
+// a
+// b
+```
 
 ### 异步Generator函数
 
@@ -1308,6 +1395,126 @@ async function* readLines(path) {
 }
 ```
 
-上面代码中，异步操作前面使用`await`关键字标明，`next`方法所在的中断之处使用`yield`关键字标明。
+上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回Promise对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是于同步Generator函数一致的。
 
-注意，普通的`async`函数返回的是一个Promise对象，而异步Generator函数返回的是一个异步Iterator对象。
+可以像下面这样，使用上面代码定义的异步Generator函数。
+
+```javascript
+for await (const line of readLines(filePath)) {
+  console.log(line);
+}
+```
+
+异步Generator函数可以与`for await...of`循环结合起来使用。
+
+```javascript
+async function* prefixLines(asyncIterable) {
+  for await (const line of asyncIterable) {
+    yield '> ' + line;
+  }
+}
+```
+
+`yield`命令依然是立刻返回的，但是返回的是一个Promise对象。
+
+```javascript
+async function* asyncGenerator() {
+  console.log('Start');
+  const result = await doSomethingAsync(); // (A)
+  yield 'Result: '+ result; // (B)
+  console.log('Done');
+}
+```
+
+上面代码中，调用`next`方法以后，会在`B`处暂停执行，`yield`命令立刻返回一个Promise对象。这个Promise对象不同于`A`处`await`命令后面的那个Promise对象。主要有两点不同，一是`A`处的Promise对象`resolve`以后产生的值，会放入`result`变量；二是`B`处的Promise对象`resolve`以后产生的值，是表达式`'Result： ' + result`的值；二是`A`处的Promise对象一定先于`B`处的Promise对象`resolve`。
+
+如果异步Generator函数抛出错误，会被Promise对象`reject`，然后抛出的错误被`catch`方法捕获。
+
+```javascript
+async function* asyncGenerator() {
+  throw new Error('Problem!');
+}
+
+asyncGenerator()
+.next()
+.catch(err => console.log(err)); // Error: Problem!
+```
+
+注意，普通的`async`函数返回的是一个Promise对象，而异步Generator函数返回的是一个异步Iterator对象。基本上，可以这样理解，`async`函数和异步Generator函数，是封装异步操作的两种方法，都用来达到同一种目的。区别在于，前者自带执行器，后者通过`for await...of`执行，或者自己编写执行器。下面就是一个异步Generator函数的执行器。
+
+```javascript
+async function takeAsync(asyncIterable, count=Infinity) {
+  const result = [];
+  const iterator = asyncIterable[Symbol.asyncIterator]();
+  while (result.length < count) {
+    const {value,done} = await iterator.next();
+    if (done) break;
+    result.push(value);
+  }
+  return result;
+}
+```
+
+上面代码中，异步Generator函数产生的异步遍历器，会通过`while`循环自动执行，每当`await iterator.next()`完成，就会进入下一轮循环。
+
+下面是这个自动执行器的一个使用实例。
+
+```javascript
+async function f() {
+  async function* gen() {
+    yield 'a';
+    yield 'b';
+    yield 'c';
+  }
+
+  return await takeAsync(gen());
+}
+
+f().then(function (result) {
+  console.log(result); // ['a', 'b', 'c']
+})
+```
+
+异步Generator函数出现以后，JavaScript就有了四种函数形式：普通函数、`async`函数、Generator函数和异步Generator函数。请注意区分每种函数的不同之处。
+
+最后，同步的数据结构，也可以使用异步Generator函数。
+
+```javascript
+async function* createAsyncIterable(syncIterable) {
+  for (const elem of syncIterable) {
+    yield elem;
+  }
+}
+```
+
+上面代码中，由于没有异步操作，所以也就没有使用`await`关键字。
+
+### yield* 语句
+
+`yield*`语句也可以跟一个异步遍历器。
+
+```javascript
+async function* gen1() {
+  yield 'a';
+  yield 'b';
+  return 2;
+}
+
+async function* gen2() {
+  const result = yield* gen1();
+}
+```
+
+上面代码中，`gen2`函数里面的`result`变量，最后的值是`2`。
+
+与同步Generator函数一样，`for await...of`循环会展开`yield*`。
+
+```javascript
+(async function () {
+  for await (const x of gen2()) {
+    console.log(x);
+  }
+})();
+// a
+// b
+```
