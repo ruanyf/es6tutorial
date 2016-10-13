@@ -74,7 +74,7 @@ function foo() {
 
 ```javascript
 Array.from({ length: 3 });
-// [ undefined, undefined, undefinded ]
+// [ undefined, undefined, undefined ]
 ```
 
 上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。扩展运算符转换不了这个对象。
@@ -414,7 +414,7 @@ ES5对空位的处理，已经很不一致了，大多数情况下会忽略空�
 
 ```javascript
 // forEach方法
-[,'a'].forEach((x,i) => log(i)); // 1
+[,'a'].forEach((x,i) => console.log(i)); // 1
 
 // filter方法
 ['a',,'b'].filter(x => true) // ['a','b']

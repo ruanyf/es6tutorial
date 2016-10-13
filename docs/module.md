@@ -36,6 +36,16 @@ import { stat, exists, readFile } from 'fs';
 - 将来浏览器的新API就能用模块格式提供，不再必要做成全局变量或者`navigator`对象的属性。
 - 不再需要对象作为命名空间（比如`Math`对象），未来这些功能可以通过模块提供。
 
+浏览器使用ES6模块的语法如下。
+
+```html
+<script type="module" src="foo.js"></script>
+```
+
+上面代码在网页中插入一个模块`foo.js`，由于`type`属性设为`module`，所以浏览器知道这是一个ES6模块。
+
+Node的默认模块格式是CommonJS，目前还没决定怎么支持ES6模块。所以，只能通过Babel这样的转码器，在Node里面使用ES6模块。
+
 ## 严格模式
 
 ES6的模块自动采用严格模式，不管你有没有在模块头部加上`"use strict";`。
@@ -957,7 +967,7 @@ $ compile-modules convert -o out.js file1.js
 
 ```html
 <script>
-  System.import('./app');
+  System.import('./app.js');
 </script>
 ```
 

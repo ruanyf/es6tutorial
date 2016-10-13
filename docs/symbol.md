@@ -246,7 +246,7 @@ Symbol作为属性名，该属性不会出现在`for...in`、`for...of`循环中
 ```javascript
 var obj = {};
 var a = Symbol('a');
-var b = Symbol.for('b');
+var b = Symbol('b');
 
 obj[a] = 'Hello';
 obj[b] = 'World';
@@ -377,6 +377,81 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 上面代码中，iframe窗口生成的Symbol值，可以在主页面得到。
 
+## 实例：模块的 Singleton 模式
+
+Singleton模式指的是调用一个类，任何时候返回的都是同一个实例。
+
+对于Node来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
+
+很容易想到，可以把实例放到顶层对象`global`。
+
+```javascript
+// mod.js
+function A() {
+  this.foo = 'hello';
+}
+
+if (!global._foo) {
+  global._foo = new A();
+}
+
+module.exports = global._foo;
+```
+
+然后，加载上面的`mod.js`。
+
+```javascript
+var a = require('./mod.js');
+console.log(a.foo);
+```
+
+上面代码中，变量`a`任何时候加载的都是`A`的同一个实例。
+
+但是，这里有一个问题，全局变量`global._foo`是可写的，任何文件都可以修改。
+
+```javascript
+var a = require('./mod.js');
+global._foo = 123;
+```
+
+上面的代码，会使得别的脚本加载`mod.js`都失真。
+
+为了防止这种情况出现，我们就可以使用Symbol。
+
+```javascript
+// mod.js
+const FOO_KEY = Symbol.for('foo');
+
+function A() {
+  this.foo = 'hello';
+}
+
+if (!global[FOO_KEY]) {
+  global[FOO_KEY] = new A();
+}
+
+module.exports = global[FOO_KEY];
+```
+
+上面代码中，可以保证`global[FOO_KEY]`不会被无意间覆盖，但还是可以被改写。
+
+```javascript
+var a = require('./mod.js');
+global[Symbol.for('foo')] = 123;
+```
+
+如果键名使用`Symbol`方法生成，那么外部将无法引用这个值，当然也就无法改写。
+
+```javascript
+```javascript
+// mod.js
+const FOO_KEY = Symbol('foo');
+
+// 后面代码相同 ……
+```
+
+上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然Node会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
+
 ## 内置的Symbol值
 
 除了定义自己使用的Symbol值以外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法。
@@ -392,7 +467,23 @@ class MyClass {
   }
 }
 
-[1, 2, 3] instanceof MyClass() // true
+[1, 2, 3] instanceof new MyClass() // true
+```
+
+上面代码中，`MyClass`是一个类，`new MyClass()`会返回一个实例。该实例的`Symbol.hasInstance`方法，会在进行`instanceof`运算时自动调用，判断左侧的运算子是否为`Array`的实例。
+
+下面是另一个例子。
+
+```javascript
+class Even {
+  static [Symbol.hasInstance](obj) {
+    return Number(obj) % 2 === 0;
+  }
+}
+
+1 instanceof Even // false
+2 instanceof Even // true
+12345 instanceof Even // false
 ```
 
 ### Symbol.isConcatSpreadable
@@ -402,13 +493,14 @@ class MyClass {
 ```javascript
 let arr1 = ['c', 'd'];
 ['a', 'b'].concat(arr1, 'e') // ['a', 'b', 'c', 'd', 'e']
+arr1[Symbol.isConcatSpreadable] // undefined
 
 let arr2 = ['c', 'd'];
 arr2[Symbol.isConcatSpreadable] = false;
 ['a', 'b'].concat(arr2, 'e') // ['a', 'b', ['c','d'], 'e']
 ```
 
-上面代码说明，数组的`Symbol.isConcatSpreadable`属性默认为`true`，表示可以展开。
+上面代码说明，数组的默认行为是可以展开。`Symbol.isConcatSpreadable`属性等于`true`或`undefined`，都有这个效果。
 
 类似数组的对象也可以展开，但它的`Symbol.isConcatSpreadable`属性默认为`false`，必须手动打开。
 
@@ -420,17 +512,19 @@ obj[Symbol.isConcatSpreadable] = true;
 ['a', 'b'].concat(obj, 'e') // ['a', 'b', 'c', 'd', 'e']
 ```
 
-对于一个类来说，`Symbol.isConcatSpreadable`属性必须写成一个返回布尔值的方法。
+对于一个类来说，`Symbol.isConcatSpreadable`属性必须写成实例的属性。
 
 ```javascript
 class A1 extends Array {
-  [Symbol.isConcatSpreadable]() {
-    return true;
+  constructor(args) {
+    super(args);
+    this[Symbol.isConcatSpreadable] = true;
   }
 }
 class A2 extends Array {
-  [Symbol.isConcatSpreadable]() {
-    return false;
+  constructor(args) {
+    super(args);
+    this[Symbol.isConcatSpreadable] = false;
   }
 }
 let a1 = new A1();
@@ -443,7 +537,7 @@ a2[1] = 6;
 // [1, 2, 3, 4, [5, 6]]
 ```
 
-上面代码中，类`A1`是可扩展的，类`A2`是不可扩展的，所以使用`concat`时有不一样的结果。
+上面代码中，类`A1`是可展开的，类`A2`是不可展开的，所以使用`concat`时有不一样的结果。
 
 ### Symbol.species
 
@@ -582,7 +676,7 @@ let obj = {
 
 2 * obj // 246
 3 + obj // '3default'
-obj === 'default' // true
+obj == 'default' // true
 String(obj) // 'str'
 ```
 

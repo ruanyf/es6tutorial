@@ -89,7 +89,7 @@ ES6新增了使用大括号表示Unicode字符，这种表示法在正则表达�
 
 **（3）量词**
 
-使用`u`修饰符后，所有量词都会正确识别大于码点大于`0xFFFF`的Unicode字符。
+使用`u`修饰符后，所有量词都会正确识别码点大于`0xFFFF`的Unicode字符。
 
 ```javascript
 /a{2}/.test('aa') // true
@@ -409,3 +409,64 @@ JavaScript语言的正则表达式，只支持先行断言（lookahead）和先�
 ```
 
 上面代码中，如果后行断言的反斜杠引用（`\1`）放在括号的后面，就不会得到匹配结果，必须放在前面才可以。
+
+## Unicode属性类
+
+目前，有一个[提案](https://github.com/mathiasbynens/es-regexp-unicode-property-escapes)，引入了一种新的类的写法`\p{...}`和`\P{...}`，允许正则表达式匹配符合Unicode某种属性的所有字符。
+
+```javascript
+const regexGreekSymbol = /\p{Script=Greek}/u;
+regexGreekSymbol.test('π') // u
+```
+
+上面代码中，`\p{Script=Greek}`指定匹配一个希腊文字母，所以匹配`π`成功。
+
+Unicode属性类要指定属性名和属性值。
+
+```javascript
+\p{UnicodePropertyName=UnicodePropertyValue}
+```
+
+对于某些属性，可以只写属性名。
+
+```javascript
+\p{UnicodePropertyName}
+```
+
+`\P{…}`是`\p{…}`的反向匹配，即匹配不满足条件的字符。
+
+注意，这两种类只对Unicode有效，所以使用的时候一定要加上`u`修饰符。如果不加`u`修饰符，正则表达式使用`\p`和`\P`会报错，ECMAScript预留了这两个类。
+
+由于Unicode的各种属性非常多，所以这种新的类的表达能力非常强。
+
+```javascript
+const regex = /^\p{Decimal_Number}+$/u;
+regex.test('𝟏𝟐𝟑𝟜𝟝𝟞𝟩𝟪𝟫𝟬𝟭𝟮𝟯𝟺𝟻𝟼') // true
+```
+
+上面代码中，属性类指定匹配所有十进制字符，可以看到各种字型的十进制字符都会匹配成功。
+
+`\p{Number}`甚至能匹配罗马数字。
+
+```javascript
+// 匹配所有数字
+const regex = /^\p{Number}+$/u;
+regex.test('²³¹¼½¾') // true
+regex.test('㉛㉜㉝') // true
+regex.test('ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ') // true
+```
+
+下面是其他一些例子。
+
+```javascript
+// 匹配各种文字的所有字母，等同于Unicode版的\w
+[\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
+
+// 匹配各种文字的所有非字母的字符，等同于Unicode版的\W
+[\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
+
+// 匹配所有的箭头字符
+const regexArrows = /^\p{Block=Arrows}+$/u;
+regexArrows.test('←↑→↓↔↕↖↗↘↙⇏⇐⇑⇒⇓⇔⇕⇖⇗⇘⇙⇧⇩') // true
+```
+

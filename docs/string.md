@@ -191,7 +191,7 @@ ES5对字符串对象提供`charAt`方法，返回字符串给定位置的字符
 
 ## normalize()
 
-为了表示语调和重音符号，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如`Ǒ`（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如`O`（\u004F）和`ˇ`（\u030C）合成`Ǒ`（\u004F\u030C）。
+许多欧洲语言有语调符号和重音符号。为了表示它们，Unicode提供了两种方法。一种是直接提供带重音符号的字符，比如`Ǒ`（\u01D1）。另一种是提供合成符号（combining character），即原字符与重音符号的合成，两个字符合成一个字符，比如`O`（\u004F）和`ˇ`（\u030C）合成`Ǒ`（\u004F\u030C）。
 
 这两种表示方法，在视觉和语义上都等价，但是JavaScript不能识别。
 
@@ -211,7 +211,7 @@ ES6提供字符串实例的`normalize()`方法，用来将字符的不同表示�
 // true
 ```
 
-`normalize`方法可以接受四个参数。
+`normalize`方法可以接受一个参数来指定`normalize`的方式，参数的四个可选值如下。
 
 - `NFC`，默认参数，表示“标准等价合成”（Normalization Form Canonical Composition），返回多个简单字符的合成字符。所谓“标准等价”指的是视觉和语义上的等价。
 - `NFD`，表示“标准等价分解”（Normalization Form Canonical Decomposition），即在标准等价的前提下，返回合成字符分解的多个简单字符。
@@ -354,18 +354,18 @@ ES7推出了字符串补全长度的功能。如果某个字符串不够指定�
 传统的JavaScript语言，输出模板通常是这样写的。
 
 ```javascript
-$("#result").append(
-  "There are <b>" + basket.count + "</b> " +
-  "items in your basket, " +
-  "<em>" + basket.onSale +
-  "</em> are on sale!"
+$('#result').append(
+  'There are <b>' + basket.count + '</b> ' +
+  'items in your basket, ' +
+  '<em>' + basket.onSale +
+  '</em> are on sale!'
 );
 ```
 
 上面这种写法相当繁琐不方便，ES6引入了模板字符串解决这个问题。
 
 ```javascript
-$("#result").append(`
+$('#result').append(`
   There are <b>${basket.count}</b> items
    in your basket, <em>${basket.onSale}</em>
   are on sale!
@@ -390,7 +390,7 @@ var name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
 ```
 
-上面代码中的字符串，都是用反引号表示。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
+上面代码中的模板字符串，都是用反引号表示。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
 
 ```javascript
 var greeting = `\`Yo\` World!`;
@@ -399,11 +399,24 @@ var greeting = `\`Yo\` World!`;
 如果使用模板字符串表示多行字符串，所有的空格和缩进都会被保留在输出之中。
 
 ```javascript
-$("#warning").html(`
-  <h1>Watch out!</h1>
-  <p>Unauthorized hockeying can result in penalties
-  of up to ${maxPenalty} minutes.</p>
+$('#list').html(`
+<ul>
+  <li>first</li>
+  <li>second</li>
+</ul>
 `);
+```
+
+上面代码中，所有模板字符串的空格和换行，都是被保留的，比如`<ul>`标签前面会有一个换行。如果你不想要这个换行，可以使用`trim`方法消除它。
+
+
+```javascript
+$('#list').html(`
+<ul>
+  <li>first</li>
+  <li>second</li>
+</ul>
+`.trim());
 ```
 
 模板字符串中嵌入变量，需要将变量名写在`${}`之中。
@@ -631,11 +644,15 @@ alert(123)
 
 标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的就是函数，紧跟在后面的模板字符串就是它的参数。
 
+但是，如果模板字符里面有变量，就不是简单的调用了，而是会将模板字符串先处理成多个参数，再调用函数。
+
 ```javascript
 var a = 5;
 var b = 10;
 
 tag`Hello ${ a + b } world ${ a * b }`;
+// 等同于
+tag(['Hello ', ' world ', ''], 15, 50);
 ```
 
 上面代码中，模板字符串前面有一个标识名`tag`，它是一个函数。整个表达式的返回值，就是`tag`函数处理模板字符串后的返回值。
@@ -757,7 +774,16 @@ function SaferHTML(templateData) {
 }
 ```
 
-上面代码中，经过`SaferHTML`函数处理，HTML字符串的特殊字符都会被转义。
+上面代码中，`sender`变量往往是用户提供的，经过`SaferHTML`函数处理，里面的特殊字符都会被转义。
+
+```javascript
+var sender = '<script>alert("abc")</script>'; // 恶意代码
+var message = SaferHTML`<p>${sender} has sent you a message.</p>`;
+
+message
+// <p>&lt;script&gt;alert("abc")&lt;/script&gt; has sent you a message.</p>
+```
+
 
 标签模板的另一个应用，就是多语言转换（国际化处理）。
 
@@ -820,7 +846,7 @@ function tag(strings) {
 }
 ```
 
-上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
+上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw数组会将`\n`视为`\\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
 
 ## String.raw()
 
@@ -867,4 +893,46 @@ String.raw({ raw: 'test' }, 0, 1, 2);
 
 // 等同于
 String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
+```
+
+## 模板字符串的限制
+
+前面提到标签模板里面，可以内嵌其他语言。但是，模板字符串默认会将字符串转义，因此导致了无法嵌入其他语言。
+
+举例来说，在标签模板里面可以嵌入Latex语言。
+
+```javascript
+function latex(strings) {
+  // ...
+}
+
+let document = latex`
+\newcommand{\fun}{\textbf{Fun!}}  // 正常工作
+\newcommand{\unicode}{\textbf{Unicode!}} // 报错
+\newcommand{\xerxes}{\textbf{King!}} // 报错
+
+Breve over the h goes \u{h}ere // 报错
+`
+```
+
+上面代码中，变量`document`内嵌的模板字符串，对于Latex语言来说完全是合法的，但是JavaScript引擎会报错。原因就在于字符串的转义。
+
+模板字符串会将`\u00FF`和`\u{42}`当作Unicode字符进行转义，所以`\unicode`解析时报错；而`\x56`会被当作十六进制字符串转义，所以`\xerxes`会报错。
+
+为了解决这个问题，现在有一个[提案](https://tc39.github.io/proposal-template-literal-revision/)，放松对标签模板里面的字符串转义的限制。如果遇到不合法的字符串转义，就返回`undefined`，而不是报错，并且从`raw`属性上面可以得到原始字符串。
+
+```javascript
+function tag(strs) {
+  strs[0] === undefined
+  strs.raw[0] === "\\unicode and \\u{55}";
+}
+tag`\unicode and \u{55}`
+```
+
+上面代码中，模板字符串原本是应该报错的，但是由于放松了对字符串转义的限制，所以不报错了，JavaScript引擎将第一个字符设置为`undefined`，但是`raw`属性依然可以得到原始字符串，因此`tag`函数还是可以对原字符串进行处理。
+
+注意，这种对字符串转义的放松，只在标签模板解析字符串时生效，不是标签模板的场合，依然会报错。
+
+```javascript
+let bad = `bad escape sequence: \unicode`; // 报错
 ```

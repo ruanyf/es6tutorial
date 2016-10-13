@@ -18,16 +18,16 @@ b // 1
 
 上面代码在代码块之中，分别用`let`和`var`声明了两个变量。然后在代码块之外调用这两个变量，结果`let`声明的变量报错，`var`声明的变量返回了正确的值。这表明，`let`声明的变量只在它所在的代码块有效。
 
-`for`循环的计数器，就很合适使用let命令。
+`for`循环的计数器，就很合适使用`let`命令。
 
 ```javascript
-for (let i = 0; i < arr.length; i++) {}
+for (let i = 0; i < 10; i++) {}
 
 console.log(i);
 //ReferenceError: i is not defined
 ```
 
-上面代码的计数器`i`，只在`for`循环体内有效。
+上面代码中，计数器`i`只在`for`循环体内有效，在循环体外引用就会报错。
 
 下面的代码如果使用`var`，最后输出的是10。
 
@@ -142,7 +142,7 @@ function bar(x = 2, y = x) {
 bar(); // [2, 2]
 ```
 
-ES6规定暂时性死区和不存在变量提升，主要是为了减少运行时错误，防止在变量声明前就使用这个变量，从而导致意料之外的行为。这样的错误在ES5是很常见的，现在有了这种规定，避免此类错误就很容易了。
+ES6规定暂时性死区和`let`、`const`语句不出现变量提升，主要是为了减少运行时错误，防止在变量声明前就使用这个变量，从而导致意料之外的行为。这样的错误在ES5是很常见的，现在有了这种规定，避免此类错误就很容易了。
 
 总之，暂时性死区的本质就是，只要一进入当前作用域，所要使用的变量就已经存在了，但是不可获取，只有等到声明变量的那一行代码出现，才可以获取和使用该变量。
 
@@ -271,12 +271,55 @@ ES6允许块级作用域的任意嵌套。
 }
 ```
 
-另外，ES6也规定，函数本身的作用域，在其所在的块级作用域之内。
+### 块级作用域与函数声明
+
+函数能不能在块级作用域之中声明，是一个相当令人混淆的问题。
+
+ES5规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
+
+```javascript
+// 情况一
+if (true) {
+  function f() {}
+}
+
+// 情况二
+try {
+  function f() {}
+} catch(e) {
+}
+```
+
+上面代码的两种函数声明，根据ES5的规定都是非法的。
+
+但是，浏览器没有遵守这个规定，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。不过，“严格模式”下还是会报错。
+
+```javascript
+// ES5严格模式
+'use strict';
+if (true) {
+  function f() {}
+}
+// 报错
+```
+
+ES6引入了块级作用域，明确允许在块级作用域之中声明函数。
+
+```javascript
+// ES6严格模式
+'use strict';
+if (true) {
+  function f() {}
+}
+// 不报错
+```
+
+并且ES6规定，块级作用域之中，函数声明语句的行为类似于`let`，在块级作用域之外不可引用。
 
 ```javascript
 function f() { console.log('I am outside!'); }
 (function () {
-  if(false) {
+  if (false) {
     // 重复声明一次函数f
     function f() { console.log('I am inside!'); }
   }
@@ -285,42 +328,90 @@ function f() { console.log('I am outside!'); }
 }());
 ```
 
-上面代码在ES5中运行，会得到“I am inside!”，但是在ES6中运行，会得到“I am outside!”。这是因为ES5存在函数提升，不管会不会进入 `if`代码块，函数声明都会提升到当前作用域的顶部，得到执行；而ES6支持块级作用域，不管会不会进入if代码块，其内部声明的函数皆不会影响到作用域的外部。
+上面代码在ES5中运行，会得到“I am inside!”，因为在`if`内声明的函数`f`会被提升到函数头部，实际运行的代码如下。
 
 ```javascript
+// ES5版本
+function f() { console.log('I am outside!'); }
+(function () {
+  function f() { console.log('I am inside!'); }
+  if (false) {
+  }
+  f();
+}());
+```
+
+ES6的运行结果就完全不一样了，会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响，实际运行的代码如下。
+
+```javascript
+// ES6版本
+function f() { console.log('I am outside!'); }
+(function () {
+  f();
+}());
+```
+
+很显然，这种行为差异会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6在[附录B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
+
+- 允许在块级作用域内声明函数。
+- 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
+- 同时，函数声明还会提升到所在的块级作用域的头部。
+
+注意，上面三条规则只对ES6的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
+
+前面那段代码，在Chrome环境下运行会报错。
+
+```javascript
+// ES6的浏览器环境
+function f() { console.log('I am outside!'); }
+(function () {
+  if (false) {
+    // 重复声明一次函数f
+    function f() { console.log('I am inside!'); }
+  }
+
+  f();
+}());
+// Uncaught TypeError: f is not a function
+```
+
+上面的代码报错，是因为实际运行的是下面的代码。
+
+```javascript
+// ES6的浏览器环境
+function f() { console.log('I am outside!'); }
+(function () {
+  var f = undefined;
+  if (false) {
+    function f() { console.log('I am inside!'); }
+  }
+
+  f();
+}());
+// Uncaught TypeError: f is not a function
+```
+
+考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
+
+```javascript
+// 函数声明语句
 {
   let a = 'secret';
   function f() {
     return a;
   }
 }
-f(); // 报错
-```
 
-上面代码中，块级作用域外部，无法调用块级作用域内部定义的函数。如果确实需要调用，就要像下面这样处理。
-
-```javascript
-let f;
+// 函数表达式
 {
   let a = 'secret';
-  f = function () {
+  let f = function () {
     return a;
   };
 }
-f(); // "secret"
 ```
 
-ES5的严格模式规定，函数只能在顶层作用域和函数内声明，其他情况（比如`if`代码块、循环代码块）的声明都会报错。
-
-```javascript
-// ES5
-'use strict';
-if (true) {
-  function f() {} // 报错
-}
-```
-
-ES6由于引入了块级作用域，这种情况可以理解成函数在块级作用域内声明，因此不报错，但是构成区块的大括号不能少，否则还是会报错。
+另外，还有一个需要注意的地方。ES6的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。
 
 ```javascript
 // 不报错
@@ -335,56 +426,30 @@ if (true)
   function f() {}
 ```
 
-另外，这样声明的函数，在区块外是不可用的。
-
-```javascript
-'use strict';
-if (true) {
-  function f() {}
-}
-f(); // ReferenceError: f is not defined
-```
-
-上面代码中，函数`f`是在块级作用域内部声明的，外部是不可用的。
-
 ## const命令
 
-const 声明一个只读的常量。一旦声明，常量的值就不能改变。
+`const`声明一个只读的常量。一旦声明，常量的值就不能改变。
 
 ```javascript
-'use strict';
 const PI = 3.1415;
 PI // 3.1415
 
 PI = 3;
-// TypeError: "PI" is read-only
+// TypeError: Assignment to constant variable.
 ```
 
-上面代码表明改变常量的值会报错。注意，如果是常规模式，对常量赋值不会报错，但也是无效的。
+上面代码表明改变常量的值会报错。
 
-```javascript
-const PI = 3.1415;
-PI = 3; // 常规模式时，重新赋值无效，但不报错
-PI // 3.1415
-```
-
-const声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。
-
-```javascript
-'use strict';
-const foo;
-// SyntaxError: missing = in const declaration
-```
-
-上面代码表示，对于const来说，只声明不赋值，就会报错。同样的，这行命令在常规模式下不报错，但`foo`以后也没法重新赋值了。
+`const`声明的变量不得改变值，这意味着，const一旦声明变量，就必须立即初始化，不能留到以后赋值。
 
 ```javascript
 const foo;
-foo = 1; // 常规模式，重新赋值无效
-foo // undefined
+// SyntaxError: Missing initializer in const declaration
 ```
 
-const的作用域与let命令相同：只在声明所在的块级作用域内有效。
+上面代码表示，对于`const`来说，只声明不赋值，就会报错。
+
+`const`的作用域与`let`命令相同：只在声明所在的块级作用域内有效。
 
 ```javascript
 if (true) {
@@ -394,7 +459,7 @@ if (true) {
 MAX // Uncaught ReferenceError: MAX is not defined
 ```
 
-const命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
+`const`命令声明的常量也是不提升，同样存在暂时性死区，只能在声明的位置后面使用。
 
 ```javascript
 if (true) {
@@ -405,7 +470,7 @@ if (true) {
 
 上面代码在常量`MAX`声明之前就调用，结果报错。
 
-const声明的常量，也与`let`一样不可重复声明。
+`const`声明的常量，也与`let`一样不可重复声明。
 
 ```javascript
 var message = "Hello!";
@@ -416,7 +481,7 @@ const message = "Goodbye!";
 const age = 30;
 ```
 
-对于复合类型的变量，变量名不指向数据，而是指向数据所在的地址。const命令只是保证变量名指向的地址不变，并不保证该地址的数据不变，所以将一个对象声明为常量必须非常小心。
+对于复合类型的变量，变量名不指向数据，而是指向数据所在的地址。`const`命令只是保证变量名指向的地址不变，并不保证该地址的数据不变，所以将一个对象声明为常量必须非常小心。
 
 ```javascript
 const foo = {};
@@ -434,9 +499,9 @@ foo = {}; // TypeError: "foo" is read-only
 
 ```js
 const a = [];
-a.push("Hello"); // 可执行
+a.push('Hello'); // 可执行
 a.length = 0;    // 可执行
-a = ["Dave"];    // 报错
+a = ['Dave'];    // 报错
 ```
 
 上面代码中，常量`a`是一个数组，这个数组本身是可写的，但是如果将另一个数组赋值给`a`，就会报错。
@@ -468,9 +533,9 @@ var constantize = (obj) => {
 
 ES5只有两种声明变量的方法：`var`命令和`function`命令。ES6除了添加`let`和`const`命令，后面章节还会提到，另外两种声明变量的方法：`import`命令和`class`命令。所以，ES6一共有6种声明变量的方法。
 
-## 全局对象的属性
+## 顶层对象的属性
 
-全局对象是最顶层的对象，在浏览器环境指的是`window`对象，在Node.js指的是`global`对象。ES5之中，全局对象的属性与全局变量是等价的。
+顶层对象，在浏览器环境指的是`window`对象，在Node指的是`global`对象。ES5之中，顶层对象的属性与全局变量是等价的。
 
 ```javascript
 window.a = 1;
@@ -480,11 +545,11 @@ a = 2;
 window.a // 2
 ```
 
-上面代码中，全局对象的属性赋值与全局变量的赋值，是同一件事。（对于Node来说，这一条只对REPL环境适用，模块环境之中，全局变量必须显式声明成`global`对象的属性。）
+上面代码中，顶层对象的属性赋值与全局变量的赋值，是同一件事。
 
-未声明的全局变量，自动成为全局对象`window`的属性，这被认为是JavaScript语言最大的设计败笔之一。这样的设计带来了两个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道，其次程序员很容易不知不觉地就创建了全局变量（比如打字出错）。另一方面，从语义上讲，语言的顶层对象是一个有实体含义的对象，也是不合适的。
+顶层对象的属性与全局变量挂钩，被认为是JavaScript语言最大的设计败笔之一。这样的设计带来了几个很大的问题，首先是没法在编译时就报出变量未声明的错误，只有运行时才能知道（因为全局变量可能是顶层对象的属性创造的，而属性的创造是动态的）；其次，程序员很容易不知不觉地就创建了全局变量（比如打字出错）；最后，顶层对象的属性是到处可以读写的，这非常不利于模块化编程。另一方面，`window`对象有实体含义，指的是浏览器的窗口对象，顶层对象是一个有实体含义的对象，也是不合适的。
 
-ES6为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是全局对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于全局对象的属性。也就是说，从ES6开始，全局变量将逐步与全局对象的属性脱钩。
+ES6为了改变这一点，一方面规定，为了保持兼容性，`var`命令和`function`命令声明的全局变量，依旧是顶层对象的属性；另一方面规定，`let`命令、`const`命令、`class`命令声明的全局变量，不属于顶层对象的属性。也就是说，从ES6开始，全局变量将逐步与顶层对象的属性脱钩。
 
 ```javascript
 var a = 1;
@@ -496,4 +561,65 @@ let b = 1;
 window.b // undefined
 ```
 
-上面代码中，全局变量`a`由`var`命令声明，所以它是全局对象的属性；全局变量`b`由`let`命令声明，所以它不是全局对象的属性，返回`undefined`。
+上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
+
+## 顶层对象
+
+ES5的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
+
+- 浏览器里面，顶层对象是`window`，但Node和Web Worker没有`window`。
+- 浏览器和Web Worker里面，`self`也指向顶层对象，但是Node没有`self`。
+- Node里面，顶层对象是`global`，但其他环境都不支持。
+
+同一段代码为了能够在各种环境，都能取到顶层对象，现在一般是使用`this`变量，但是有局限性。
+
+- 全局环境中，`this`会返回顶层对象。但是，Node模块和ES6模块中，`this`返回的是当前模块。
+- 函数里面的`this`，如果函数不是作为对象的方法运行，而是单纯作为函数运行，`this`会指向顶层对象。但是，严格模式下，这时`this`会返回`undefined`。
+- 不管是严格模式，还是普通模式，`new Function('return this')()`，总是会返回全局对象。但是，如果浏览器用了CSP（Content Security Policy，内容安全政策），那么`eval`、`new Function`这些方法都可能无法使用。
+
+综上所述，很难找到一种方法，可以在所有情况下，都取到顶层对象。下面是两种勉强可以使用的方法。
+
+```javascript
+// 方法一
+(typeof window !== 'undefined'
+   ? window
+   : (typeof process === 'object' &&
+      typeof require === 'function' &&
+      typeof global === 'object')
+     ? global
+     : this);
+
+// 方法二
+var getGlobal = function () {
+  if (typeof self !== 'undefined') { return self; }
+  if (typeof window !== 'undefined') { return window; }
+  if (typeof global !== 'undefined') { return global; }
+  throw new Error('unable to locate global object');
+};
+```
+
+现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`global`作为顶层对象。也就是说，在所有环境下，`global`都是存在的，都可以从它拿到顶层对象。
+
+垫片库[`system.global`](https://github.com/ljharb/System.global)模拟了这个提案，可以在所有环境拿到`global`。
+
+```javascript
+// CommonJS的写法
+require('system.global/shim')();
+
+// ES6模块的写法
+import shim from 'system.global/shim'; shim();
+```
+
+上面代码可以保证各种环境里面，`global`对象都是存在的。
+
+```javascript
+// CommonJS的写法
+var global = require('system.global')();
+
+// ES6模块的写法
+import getGlobal from 'system.global';
+const global = getGlobal();
+```
+
+上面代码将顶层对象放入变量`global`。
+

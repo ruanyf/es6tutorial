@@ -17,7 +17,6 @@
 1. [对象的扩展](#docs/object)
 1. [Symbol](#docs/symbol)
 1. [Proxy和Reflect](#docs/proxy)
-1. [二进制数组](#docs/arraybuffer)
 1. [Set和Map数据结构](#docs/set-map)
 1. [Iterator和for...of循环](#docs/iterator)
 1. [Generator函数](#docs/generator)
@@ -28,6 +27,8 @@
 1. [Module](#docs/module)
 1. [编程风格](#docs/style)
 1. [读懂规格](#docs/spec)
+1. [二进制数组](#docs/arraybuffer)
+1. [SIMD](#docs/simd)
 1. [参考链接](#docs/reference)
 
 ## 其他

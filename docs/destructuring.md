@@ -200,7 +200,7 @@ baz // undefined
 如果变量名与属性名不一致，必须写成下面这样。
 
 ```javascript
-var { foo: baz } = { foo: "aaa", bar: "bbb" };
+var { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 
 let obj = { first: 'hello', last: 'world' };
@@ -225,7 +225,7 @@ foo // error: foo is not defined
 
 上面代码中，真正被赋值的是变量`baz`，而不是模式`foo`。
 
-注意，采用这种写法时，变量的声明和赋值是一体的。对于let和const来说，变量不能重新声明，所以一旦赋值的变量以前声明过，就会报错。
+注意，采用这种写法时，变量的声明和赋值是一体的。对于`let`和`const`来说，变量不能重新声明，所以一旦赋值的变量以前声明过，就会报错。
 
 ```javascript
 let foo;
@@ -235,7 +235,7 @@ let baz;
 let {bar: baz} = {bar: 1}; // SyntaxError: Duplicate declaration "baz"
 ```
 
-上面代码中，解构赋值的变量都会重新声明，所以报错了。不过，因为`var`命令允许重新声明，所以这个错误只会在使用`let`和`const`命令时出现。如果没有第二个let命令，上面的代码就不会报错。
+上面代码中，解构赋值的变量都会重新声明，所以报错了。不过，因为`var`命令允许重新声明，所以这个错误只会在使用`let`和`const`命令时出现。如果没有第二个`let`命令，上面的代码就不会报错。
 
 ```javascript
 let foo;
@@ -245,13 +245,15 @@ let baz;
 ({bar: baz} = {bar: 1}); // 成功
 ```
 
+上面代码中，`let`命令下面一行的圆括号是必须的，否则会报错。因为解析器会将起首的大括号，理解成一个代码块，而不是赋值语句。
+
 和数组一样，解构也可以用于嵌套结构的对象。
 
 ```javascript
 var obj = {
   p: [
-    "Hello",
-    { y: "World" }
+    'Hello',
+    { y: 'World' }
   ]
 };
 
@@ -302,7 +304,13 @@ var {x, y = 5} = {x: 1};
 x // 1
 y // 5
 
-var { message: msg = "Something went wrong" } = {};
+var {x:y = 3} = {};
+y // 3
+
+var {x:y = 3} = {x: 5};
+y // 5
+
+var { message: msg = 'Something went wrong' } = {};
 msg // "Something went wrong"
 ```
 
@@ -343,7 +351,6 @@ _tmp.foo.bar // 报错
 
 ```javascript
 // 错误的写法
-
 var x;
 {x} = {x: 1};
 // SyntaxError: syntax error
@@ -375,6 +382,17 @@ let { log, sin, cos } = Math;
 ```
 
 上面代码将`Math`对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
+
+由于数组本质是特殊的对象，因此可以对数组进行对象属性的解构。
+
+```javascript
+var arr = [1, 2, 3];
+var {0 : first, [arr.length - 1] : last} = arr;
+first // 1
+last // 3
+```
+
+上面代码对数组进行对象解构。数组`arr`的`0`键对应的值是`1`，`[arr.length - 1]`就是`2`键，对应的值是`3`。方括号这种写法，属于“属性名表达式”，参见《对象的扩展》一章。
 
 ## 字符串的解构赋值
 
@@ -496,7 +514,7 @@ var [(a)] = [1];
 var {x: (c)} = {};
 var ({x: c}) = {};
 var {(x: c)} = {};
-var {(x): c} = {};}
+var {(x): c} = {};
 
 var { o: ({ p: p }) } = { o: { p: 2 } };
 ```
@@ -551,7 +569,7 @@ function f([(z)]) { return z; }
 [x, y] = [y, x];
 ```
 
-上面代码交换变量x和y的值，这样的写法不仅简洁，而且易读，语义非常清晰。
+上面代码交换变量`x`和`y`的值，这样的写法不仅简洁，而且易读，语义非常清晰。
 
 **（2）从函数返回多个值**
 
@@ -612,7 +630,6 @@ console.log(id, status, number);
 **（5）函数参数的默认值**
 
 ```javascript
-
 jQuery.ajax = function (url, {
   async = true,
   beforeSend = function () {},
@@ -624,7 +641,6 @@ jQuery.ajax = function (url, {
 }) {
   // ... do stuff
 };
-
 ```
 
 指定参数的默认值，就避免了在函数体内部再写`var foo = config.foo || 'default foo';`这样的语句。
@@ -664,7 +680,5 @@ for (let [,value] of map) {
 加载模块时，往往需要指定输入那些方法。解构赋值使得输入语句非常清晰。
 
 ```javascript
-
 const { SourceMapConsumer, SourceNode } = require("source-map");
-
 ```

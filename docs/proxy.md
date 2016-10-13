@@ -127,7 +127,9 @@ fproxy.foo // "Hello, foo"
 
 **（1）get(target, propKey, receiver)**
 
-拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`，返回类型不限。最后一个参数`receiver`可选，当`target`对象设置了`propKey`属性的`get`函数时，`receiver`对象会绑定`get`函数的`this`对象。
+拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
+
+最后一个参数`receiver`是一个对象，可选，参见下面`Reflect.get`的部分。
 
 **（2）set(target, propKey, value, receiver)**
 
@@ -472,11 +474,13 @@ var p = new Proxy(obj, {
 
 上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
 
-值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，而是继承的属性。由于`for...in`操作内部也会用到`HasProperty`操作，所以`has`方法在`for...in`循环时也会生效。
+值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，还是继承的属性。
+
+另外，虽然`for...in`循环也用到了`in`运算符，但是`has`拦截对`for...in`循环不生效。
 
 ```javascript
-let stu1 = {name: 'Owen', score: 59};
-let stu2 = {name: 'Mark', score: 99};
+let stu1 = {name: '张三', score: 59};
+let stu2 = {name: '李四', score: 99};
 
 let handler = {
   has(target, prop) {
@@ -491,20 +495,27 @@ let handler = {
 let oproxy1 = new Proxy(stu1, handler);
 let oproxy2 = new Proxy(stu2, handler);
 
+'score' in oproxy1
+// 张三 不及格
+// false
+
+'score' in oproxy2
+// true
+
 for (let a in oproxy1) {
   console.log(oproxy1[a]);
 }
-// Owen
-// Owen 不及格
+// 张三
+// 59
 
 for (let b in oproxy2) {
   console.log(oproxy2[b]);
 }
-// Mark
-// Mark 99
+// 李四
+// 99
 ```
 
-上面代码中，`for...in`循环时，`has`拦截会生效，导致不符合要求的属性被排除在`for...in`循环之外。
+上面代码中，`has`拦截只对`in`循环生效，对`for...in`循环不生效，导致不符合要求的属性没有被排除在`for...in`循环之外。
 
 ### construct()
 
@@ -538,7 +549,7 @@ new p(1).value
 // 10
 ```
 
-如果`construct`方法返回的必须是一个对象，否则会报错。
+`construct`方法返回的必须是一个对象，否则会报错。
 
 ```javascript
 var p = new Proxy(function() {}, {

@@ -7,7 +7,7 @@
 JavaScript语言的传统方法是通过构造函数，定义并生成新对象。下面是一个例子。
 
 ```javascript
-function Point(x,y){
+function Point(x, y) {
   this.x = x;
   this.y = y;
 }
@@ -15,11 +15,13 @@ function Point(x,y){
 Point.prototype.toString = function () {
   return '(' + this.x + ', ' + this.y + ')';
 };
+
+var p = new Point(1, 2);
 ```
 
 上面这种写法跟传统的面向对象语言（比如C++和Java）差异很大，很容易让新学习这门语言的程序员感到困惑。
 
-ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过`class`关键字，可以定义类。基本上，ES6的class可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
+ES6提供了更接近传统语言的写法，引入了Class（类）这个概念，作为对象的模板。通过`class`关键字，可以定义类。基本上，ES6的`class`可以看作只是一个语法糖，它的绝大部分功能，ES5都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用ES6的“类”改写，就是下面这样。
 
 ```javascript
 //定义类
@@ -37,12 +39,12 @@ class Point {
 
 上面代码定义了一个“类”，可以看到里面有一个`constructor`方法，这就是构造方法，而`this`关键字则代表实例对象。也就是说，ES5的构造函数`Point`，对应ES6的`Point`类的构造方法。
 
-Point类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个关键字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
+`Point`类除了构造方法，还定义了一个`toString`方法。注意，定义“类”的方法的时候，前面不需要加上`function`这个关键字，直接把函数定义放进去了就可以了。另外，方法之间不需要逗号分隔，加了会报错。
 
 ES6的类，完全可以看作构造函数的另一种写法。
 
 ```javascript
-class Point{
+class Point {
   // ...
 }
 
@@ -51,6 +53,19 @@ Point === Point.prototype.constructor // true
 ```
 
 上面代码表明，类的数据类型就是函数，类本身就指向构造函数。
+
+使用的时候，也是直接对类使用`new`命令，跟构造函数的用法完全一致。
+
+```javascript
+class Bar {
+  doStuff() {
+    console.log('stuff');
+  }
+}
+
+var b = new Bar();
+b.doStuff() // "stuff"
+```
 
 构造函数的`prototype`属性，在ES6的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
 
@@ -131,7 +146,7 @@ Object.getOwnPropertyNames(Point.prototype)
 上面代码中，`toString`方法是`Point`类内部定义的方法，它是不可枚举的。这一点与ES5的行为不一致。
 
 ```javascript
-var Point = function (x, y){
+var Point = function (x, y) {
   // ...
 };
 
@@ -162,7 +177,7 @@ class Square{
 }
 ```
 
-上面代码中，Square类的方法名getArea，是从表达式得到的。
+上面代码中，`Square`类的方法名`getArea`，是从表达式得到的。
 
 ### constructor方法
 
@@ -186,6 +201,19 @@ new Foo() instanceof Foo
 ```
 
 上面代码中，`constructor`函数返回一个全新的对象，结果导致实例对象不是`Foo`类的实例。
+
+类的构造函数，不使用`new`是没法调用的，会报错。这是它跟普通构造函数的一个主要区别，后者不用`new`也可以执行。
+
+```javascript
+class Foo {
+  constructor() {
+    return Object.create(null);
+  }
+}
+
+Foo()
+// TypeError: Class constructor Foo cannot be invoked without 'new'
+```
 
 ### 类的实例对象
 
@@ -257,20 +285,30 @@ p3.printName() // "Oops"
 
 上面代码在`p1`的原型上添加了一个`printName`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变Class的原始定义，影响到所有实例。
 
-### name属性
+### 不存在变量提升
 
-由于本质上，ES6的Class只是ES5的构造函数的一层包装，所以函数的许多特性都被Class继承，包括`name`属性。
+Class不存在变量提升（hoist），这一点与ES5完全不同。
 
 ```javascript
-class Point {}
-Point.name // "Point"
+new Foo(); // ReferenceError
+class Foo {}
 ```
 
-`name`属性总是返回紧跟在`class`关键字后面的类名。
+上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把类的声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+
+```javascript
+{
+  let Foo = class {};
+  class Bar extends Foo {
+  }
+}
+```
+
+上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
 
 ### Class表达式
 
-与函数一样，Class也可以使用表达式的形式定义。
+与函数一样，类也可以使用表达式的形式定义。
 
 ```javascript
 const MyClass = class Me {
@@ -290,7 +328,7 @@ Me.name // ReferenceError: Me is not defined
 
 上面代码表示，`Me`只在Class内部有定义。
 
-如果Class内部没用到的话，可以省略`Me`，也就是可以写成下面的形式。
+如果类的内部没用到的话，可以省略`Me`，也就是可以写成下面的形式。
 
 ```javascript
 const MyClass = class { /* ... */ };
@@ -312,34 +350,163 @@ let person = new class {
 person.sayName(); // "张三"
 ```
 
-上面代码中，person是一个立即执行的Class的实例。
+上面代码中，`person`是一个立即执行的类的实例。
 
-### 不存在变量提升
+### 私有方法
 
-Class不存在变量提升（hoist），这一点与ES5完全不同。
+私有方法是常见需求，但ES6不提供，只能通过变通方法模拟实现。
 
-```javascript
-new Foo(); // ReferenceError
-class Foo {}
-```
-
-上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为ES6不会把变量声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+一种做法是在命名上加以区别。
 
 ```javascript
-{
-  let Foo = class {};
-  class Bar extends Foo {
+class Widget {
+
+  // 公有方法
+  foo (baz) {
+    this._bar(baz);
   }
+
+  // 私有方法
+  _bar(baz) {
+    return this.snaf = baz;
+  }
+
+  // ...
 }
 ```
 
-上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在Class的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
+上面代码中，`_bar`方法前面的下划线，表示这是一个只限于内部使用的私有方法。但是，这种命名是不保险的，在类的外部，还是可以调用到这个方法。
+
+另一种方法就是索性将私有方法移出模块，因为模块内部的所有方法都是对外可见的。
+
+```javascript
+class Widget {
+  foo (baz) {
+    bar.call(this, baz);
+  }
+
+  // ...
+}
+
+function bar(baz) {
+  return this.snaf = baz;
+}
+```
+
+上面代码中，`foo`是公有方法，内部调用了`bar.call(this, baz)`。这使得`bar`实际上成为了当前模块的私有方法。
+
+还有一种方法是利用`Symbol`值的唯一性，将私有方法的名字命名为一个`Symbol`值。
+
+```javascript
+const bar = Symbol('bar');
+const snaf = Symbol('snaf');
+
+export default class myClass{
+
+  // 公有方法
+  foo(baz) {
+    this[bar](baz);
+  }
+
+  // 私有方法
+  [bar](baz) {
+    return this[snaf] = baz;
+  }
+
+  // ...
+};
+```
+
+上面代码中，`bar`和`snaf`都是`Symbol`值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
+
+### this的指向
+
+类的方法内部如果含有`this`，它默认指向类的实例。但是，必须非常小心，一旦单独使用该方法，很可能报错。
+
+```javascript
+class Logger {
+  printName(name = 'there') {
+    this.print(`Hello ${name}`);
+  }
+
+  print(text) {
+    console.log(text);
+  }
+}
+
+const logger = new Logger();
+const { printName } = logger;
+printName(); // TypeError: Cannot read property 'print' of undefined
+```
+
+上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境，因为找不到`print`方法而导致报错。
+
+一个比较简单的解决方法是，在构造方法中绑定`this`，这样就不会找不到`print`方法了。
+
+```javascript
+class Logger {
+  constructor() {
+    this.printName = this.printName.bind(this);
+  }
+
+  // ...
+}
+```
+
+另一种解决方法是使用箭头函数。
+
+```javascript
+class Logger {
+  constructor() {
+    this.printName = (name = 'there') => {
+      this.print(`Hello ${name}`);
+    };
+  }
+
+  // ...
+}
+```
+
+还有一种解决方法是使用`Proxy`，获取方法的时候，自动绑定`this`。
+
+```javascript
+function selfish (target) {
+  const cache = new WeakMap();
+  const handler = {
+    get (target, key) {
+      const value = Reflect.get(target, key);
+      if (typeof value !== 'function') {
+        return value;
+      }
+      if (!cache.has(value)) {
+        cache.set(value, value.bind(target));
+      }
+      return cache.get(value);
+    }
+  };
+  const proxy = new Proxy(target, handler);
+  return proxy;
+}
+
+const logger = selfish(new Logger());
+```
 
 ### 严格模式
 
 类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
 
 考虑到未来所有的代码，其实都是运行在模块之中，所以ES6实际上把整个语言升级到了严格模式。
+
+### name属性
+
+由于本质上，ES6的类只是ES5的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
+
+```javascript
+class Point {}
+Point.name // "Point"
+```
+
+`name`属性总是返回紧跟在`class`关键字后面的类名。
 
 ## Class的继承
 
@@ -464,7 +631,7 @@ Object.setPrototypeOf(B, A);
 
 《对象的扩展》一章给出过`Object.setPrototypeOf`方法的实现。
 
-```
+```javascript
 Object.setPrototypeOf = function (obj, proto) {
   obj.__proto__ = proto;
   return obj;
@@ -486,7 +653,7 @@ B.__proto__ = A;
 这两条继承链，可以这样理解：作为一个对象，子类（`B`）的原型（`__proto__`属性）是父类（`A`）；作为一个构造函数，子类（`B`）的原型（`prototype`属性）是父类的实例。
 
 ```javascript
-B.prototype = new A();
+Object.create(A.prototype);
 // 等同于
 B.prototype.__proto__ = A.prototype;
 ```
@@ -500,7 +667,7 @@ class B extends A {
 }
 ```
 
-上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性，因此`A`可以是任意函数。
+上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性（除了`Function.prototype`函数），因此`A`可以是任意函数。
 
 下面，讨论三种特殊情况。
 
@@ -658,7 +825,23 @@ colors.length = 0;
 colors[0]  // "red"
 ```
 
-之所以会发生这种情况，是因为子类无法获得原生构造函数的内部属性，通过`Array.apply()`或者分配给原型对象都不行。ES5是先新建子类的实例对象`this`，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数。比如，Array构造函数有一个内部属性`[[DefineOwnProperty]]`，用来定义新属性时，更新`length`属性，这个内部属性无法在子类获取，导致子类的`length`属性行为不正常。
+之所以会发生这种情况，是因为子类无法获得原生构造函数的内部属性，通过`Array.apply()`或者分配给原型对象都不行。原生构造函数会忽略`apply`方法传入的`this`，也就是说，原生构造函数的`this`无法绑定，导致拿不到内部属性。
+
+ES5是先新建子类的实例对象`this`，再将父类的属性添加到子类上，由于父类的内部属性无法获取，导致无法继承原生的构造函数。比如，Array构造函数有一个内部属性`[[DefineOwnProperty]]`，用来定义新属性时，更新`length`属性，这个内部属性无法在子类获取，导致子类的`length`属性行为不正常。
+
+下面的例子中，我们想让一个普通对象继承`Error`对象。
+
+```javascript
+var e = {};
+
+Object.getOwnPropertyNames(Error.call(e))
+// [ 'stack' ]
+
+Object.getOwnPropertyNames(e)
+// []
+```
+
+上面代码中，我们想通过`Error.call(e)`这种写法，让普通对象`e`具有`Error`对象的实例属性。但是，`Error.call()`完全忽略传入的第一个参数，而是返回一个新对象，`e`本身没有任何变化。这证明了`Error.call(e)`这种写法，无法继承原生构造函数。
 
 ES6允许继承原生构造函数定义子类，因为ES6是先新建父类的实例对象`this`，然后再用子类的构造函数修饰`this`，使得父类的所有行为都可以继承。下面是一个继承`Array`的例子。
 
@@ -848,7 +1031,7 @@ Foo.classMethod() // 'hello'
 
 var foo = new Foo();
 foo.classMethod()
-// TypeError: undefined is not a function
+// TypeError: foo.classMethod is not a function
 ```
 
 上面代码中，`Foo`类的`classMethod`方法前有`static`关键字，表明该方法是一个静态方法，可以直接在`Foo`类上调用（`Foo.classMethod()`），而不是在`Foo`类的实例上调用。如果在实例上调用静态方法，会抛出一个错误，表示不存在该方法。
@@ -905,8 +1088,7 @@ Foo.prop // 1
 目前，只有这种写法可行，因为ES6明确规定，Class内部只有静态方法，没有静态属性。
 
 ```javascript
-// 以下两种写法都无效，
-// 但不会报错
+// 以下两种写法都无效
 class Foo {
   // 写法一
   prop: 2

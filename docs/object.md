@@ -529,7 +529,7 @@ const DEFAULTS = {
 };
 
 function processContent(options) {
-  let options = Object.assign({}, DEFAULTS, options);
+  options = Object.assign({}, DEFAULTS, options);
 }
 ```
 
@@ -543,27 +543,26 @@ function processContent(options) {
 
 ```javascript
 let obj = { foo: 123 };
- Object.getOwnPropertyDescriptor(obj, 'foo')
- //   { value: 123,
- //     writable: true,
- //     enumerable: true,
- //     configurable: true }
+Object.getOwnPropertyDescriptor(obj, 'foo')
+//  {
+//    value: 123,
+//    writable: true,
+//    enumerable: true,
+//    configurable: true
+//  }
 ```
 
 描述对象的`enumerable`属性，称为”可枚举性“，如果该属性为`false`，就表示某些操作会忽略当前属性。
 
 ES5有三个操作会忽略`enumerable`为`false`的属性。
 
-- for...in 循环：只遍历对象自身的和继承的可枚举的属性
-- Object.keys()：返回对象自身的所有可枚举的属性的键名
-- JSON.stringify()：只串行化对象自身的可枚举的属性
+- `for...in`循环：只遍历对象自身的和继承的可枚举的属性
+- `Object.keys()`：返回对象自身的所有可枚举的属性的键名
+- `JSON.stringify()`：只串行化对象自身的可枚举的属性
 
-ES6新增了两个操作，会忽略`enumerable`为`false`的属性。
+ES6新增了一个操作`Object.assign()`，会忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
 
-- Object.assign()：只拷贝对象自身的可枚举的属性
-- Reflect.enumerate()：返回所有`for...in`循环会遍历的属性
-
-这五个操作之中，只有`for...in`和`Reflect.enumerate()`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
+这四个操作之中，只有`for...in`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
 
 ```javascript
 Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
@@ -572,6 +571,8 @@ Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
 Object.getOwnPropertyDescriptor([], 'length').enumerable
 // false
 ```
+
+上面代码中，`toString`和`length`属性的`enumerable`都是`false`，因此`for...in`不会遍历到这两个继承自原型的属性。
 
 另外，ES6规定，所有Class的原型的方法都是不可枚举的。
 
@@ -584,7 +585,7 @@ Object.getOwnPropertyDescriptor(class {foo() {}}.prototype, 'foo').enumerable
 
 ## 属性的遍历
 
-ES6一共有6种方法可以遍历对象的属性。
+ES6一共有5种方法可以遍历对象的属性。
 
 **（1）for...in**
 
@@ -606,11 +607,7 @@ ES6一共有6种方法可以遍历对象的属性。
 
 `Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管是属性名是Symbol或字符串，也不管是否可枚举。
 
-**（6）Reflect.enumerate(obj)**
-
-`Reflect.enumerate`返回一个Iterator对象，遍历对象自身的和继承的所有可枚举属性（不含Symbol属性），与`for...in`循环相同。
-
-以上的6种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
+以上的5种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
 
 - 首先遍历所有属性名为数值的属性，按照数字排序。
 - 其次遍历所有属性名为字符串的属性，按照生成时间排序。
@@ -876,17 +873,21 @@ function* entries(obj) {
 
 // 非Generator函数的版本
 function entries(obj) {
-  return (for (key of Object.keys(obj)) [key, obj[key]]);
+  let arr = [];
+  for (let key of Object.keys(obj)) {
+    arr.push([key, obj[key]]);
+  }
+  return arr;
 }
 ```
 
 ## 对象的扩展运算符
 
-目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将Rest解构赋值/扩展运算符（...）引入对象。Babel转码器已经支持这项功能。
+目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将Rest运算符（解构赋值）/扩展运算符（`...`）引入对象。Babel转码器已经支持这项功能。
 
-**（1）Rest解构赋值**
+**（1）解构赋值**
 
-对象的Rest解构赋值用于从一个对象取值，相当于将所有可遍历的、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
+对象的解构赋值用于从一个对象取值，相当于将所有可遍历的、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
 
 ```javascript
 let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
@@ -895,25 +896,25 @@ y // 2
 z // { a: 3, b: 4 }
 ```
 
-上面代码中，变量`z`是Rest解构赋值所在的对象。它获取等号右边的所有尚未读取的键（`a`和`b`），将它们和它们的值拷贝过来。
+上面代码中，变量`z`是解构赋值所在的对象。它获取等号右边的所有尚未读取的键（`a`和`b`），将它们连同值一起拷贝过来。
 
-由于Rest解构赋值要求等号右边是一个对象，所以如果等号右边是`undefined`或`null`，就会报错，因为它们无法转为对象。
+由于解构赋值要求等号右边是一个对象，所以如果等号右边是`undefined`或`null`，就会报错，因为它们无法转为对象。
 
 ```javascript
 let { x, y, ...z } = null; // 运行时错误
 let { x, y, ...z } = undefined; // 运行时错误
 ```
 
-Rest解构赋值必须是最后一个参数，否则会报错。
+解构赋值必须是最后一个参数，否则会报错。
 
 ```javascript
 let { ...x, y, z } = obj; // 句法错误
 let { x, ...y, ...z } = obj; // 句法错误
 ```
 
-上面代码中，Rest解构赋值不是最后一个参数，所以会报错。
+上面代码中，解构赋值不是最后一个参数，所以会报错。
 
-注意，Rest解构赋值的拷贝是浅拷贝，即如果一个键的值是复合类型的值（数组、对象、函数）、那么Rest解构赋值拷贝的是这个值的引用，而不是这个值的副本。
+注意，解构赋值的拷贝是浅拷贝，即如果一个键的值是复合类型的值（数组、对象、函数）、那么解构赋值拷贝的是这个值的引用，而不是这个值的副本。
 
 ```javascript
 let obj = { a: { b: 1 } };
@@ -922,9 +923,9 @@ obj.a.b = 2;
 x.a.b // 2
 ```
 
-上面代码中，`x`是Rest解构赋值所在的对象，拷贝了对象`obj`的`a`属性。`a`属性引用了一个对象，修改这个对象的值，会影响到Rest解构赋值对它的引用。
+上面代码中，`x`是解构赋值所在的对象，拷贝了对象`obj`的`a`属性。`a`属性引用了一个对象，修改这个对象的值，会影响到解构赋值对它的引用。
 
-另外，Rest解构赋不会拷贝继承自原型对象的属性。
+另外，解构赋值不会拷贝继承自原型对象的属性。
 
 ```javascript
 let o1 = { a: 1 };
@@ -948,9 +949,9 @@ y // undefined
 z // 3
 ```
 
-上面代码中，变量`x`是单纯的解构赋值，所以可以读取继承的属性；Rest解构赋值产生的变量`y`和`z`，只能读取对象自身的属性，所以只有变量`z`可以赋值成功。
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取继承的属性；解构赋值产生的变量`y`和`z`，只能读取对象自身的属性，所以只有变量`z`可以赋值成功。
 
-Rest解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
+解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
 
 ```javascript
 function baseFunction({ a, b }) {

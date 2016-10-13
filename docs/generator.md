@@ -309,7 +309,7 @@ genObj.next('b')
 
 ## for...of循环
 
-`for...of`循环可以自动遍历Generator函数，且此时不再需要调用`next`方法。
+`for...of`循环可以自动遍历Generator函数时生成的`Iterator`对象，且此时不再需要调用`next`方法。
 
 ```javascript
 function *foo() {
@@ -346,34 +346,9 @@ for (let n of fibonacci()) {
 }
 ```
 
-从上面代码可见，使用`for...of`语句时不需要使用next方法。
+从上面代码可见，使用`for...of`语句时不需要使用`next`方法。
 
-前面章节曾经介绍过，`for...of`循环、扩展运算符（`...`）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们可以将Generator函数返回的Iterator对象，作为参数。
-
-```javascript
-function* numbers () {
-  yield 1
-  yield 2
-  return 3
-  yield 4
-}
-
-[...numbers()] // [1, 2]
-
-Array.from(numbers()) // [1, 2]
-
-let [x, y] = numbers();
-x // 1
-y // 2
-
-for (let n of numbers()) {
-  console.log(n)
-}
-// 1
-// 2
-```
-
-利用`for...of`循环，可以写出遍历任意对象的方法。原生的JavaScript对象没有遍历接口，无法使用`for...of`循环，通过Generator函数为它加上这个接口，就可以用了。
+利用`for...of`循环，可以写出遍历任意对象（object）的方法。原生的JavaScript对象没有遍历接口，无法使用`for...of`循环，通过Generator函数为它加上这个接口，就可以用了。
 
 ```javascript
 function* objectEntries(obj) {
@@ -415,6 +390,35 @@ for (let [key, value] of jane) {
 // last: Doe
 ```
 
+除了`for...of`循环以外，扩展运算符（`...`）、解构赋值和`Array.from`方法内部调用的，都是遍历器接口。这意味着，它们都可以将Generator函数返回的Iterator对象，作为参数。
+
+```javascript
+function* numbers () {
+  yield 1
+  yield 2
+  return 3
+  yield 4
+}
+
+// 扩展运算符
+[...numbers()] // [1, 2]
+
+// Array.from 方法
+Array.from(numbers()) // [1, 2]
+
+// 解构赋值
+let [x, y] = numbers();
+x // 1
+y // 2
+
+// for...of 循环
+for (let n of numbers()) {
+  console.log(n)
+}
+// 1
+// 2
+```
+
 ## Generator.prototype.throw()
 
 Generator函数返回的遍历器对象，都有一个`throw`方法，可以在函数体外抛出错误，然后在Generator函数体内捕获。
@@ -442,6 +446,23 @@ try {
 ```
 
 上面代码中，遍历器对象`i`连续抛出两个错误。第一个错误被Generator函数体内的`catch`语句捕获。`i`第二次抛出错误，由于Generator函数内部的`catch`语句已经执行过了，不会再捕捉到这个错误了，所以这个错误就被抛出了Generator函数体，被函数体外的`catch`语句捕获。
+
+`throw`方法可以接受一个参数，该参数会被`catch`语句接收，建议抛出`Error`对象的实例。
+
+```javascript
+var g = function* () {
+  try {
+    yield;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+var i = g();
+i.next();
+i.throw(new Error('出错了！'));
+// Error: 出错了！(…)
+```
 
 注意，不要混淆遍历器对象的`throw`方法和全局的`throw`命令。上面代码的错误，是用遍历器对象的`throw`方法抛出的，而不是用`throw`命令抛出的。后者只能被函数体外的`catch`语句捕获。
 
@@ -493,29 +514,47 @@ try {
 // 外部捕获 a
 ```
 
-上面代码中，遍历器函数`g`内部没有部署`try...catch`代码块，所以抛出的错误直接被外部`catch`代码块捕获。
+上面代码中，Generator函数`g`内部没有部署`try...catch`代码块，所以抛出的错误直接被外部`catch`代码块捕获。
 
-如果Generator函数内部部署了`try...catch`代码块，那么遍历器的`throw`方法抛出的错误，不影响下一次遍历，否则遍历直接终止。
+如果Generator函数内部和外部，都没有部署`try...catch`代码块，那么程序将报错，直接中断执行。
 
 ```javascript
 var gen = function* gen(){
-  try {
-    yield console.log('hello');
-  } catch (e) {
-    // ...
-  }
+  yield console.log('hello');
   yield console.log('world');
 }
 
 var g = gen();
 g.next();
 g.throw();
-g.next();
 // hello
-// world
+// Uncaught undefined
 ```
 
-上面代码在两次`next`方法之间，使用`throw`方法抛出了一个错误。由于这个错误在Generator函数内部被捕获了，所以不影响第二次`next`方法的执行。
+上面代码中，`g.throw`抛出错误以后，没有任何`try...catch`代码块可以捕获这个错误，导致程序报错，中断执行。
+
+`throw`方法被捕获以后，会附带执行下一条`yield`语句。也就是说，会附带执行一次`next`方法。
+
+```javascript
+var gen = function* gen(){
+  try {
+    yield console.log('a');
+  } catch (e) {
+    // ...
+  }
+  yield console.log('b');
+  yield console.log('c');
+}
+
+var g = gen();
+g.next() // a
+g.throw() // b
+g.next() // c
+```
+
+上面代码中，`g.throw`方法被捕获以后，自动执行了一次`next`方法，所以会打印`b`。另外，也可以看到，只要Generator函数内部部署了`try...catch`代码块，那么遍历器的`throw`方法抛出的错误，不影响下一次遍历。
+
+另外，`throw`命令与`g.throw`方法是无关的，两者互不影响。
 
 ```javascript
 var gen = function* gen(){
@@ -535,49 +574,11 @@ try {
 // world
 ```
 
-上面代码中，`throw`命令抛出的错误不会影响到遍历器的状态，所以两次执行`next`方法，都取到了正确的操作。
+上面代码中，`throw`命令抛出的错误不会影响到遍历器的状态，所以两次执行`next`方法，都进行了正确的操作。
 
-这种函数体内捕获错误的机制，大大方便了对错误的处理。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数写一个错误处理语句。
+这种函数体内捕获错误的机制，大大方便了对错误的处理。多个`yield`语句，可以只用一个`try...catch`代码块来捕获错误。如果使用回调函数的写法，想要捕获多个错误，就不得不为每个函数内部写一个错误处理语句，现在只在Generator函数内部写一次`catch`语句就可以了。
 
-```javascript
-foo('a', function (a) {
-  if (a.error) {
-    throw new Error(a.error);
-  }
-
-  foo('b', function (b) {
-    if (b.error) {
-      throw new Error(b.error);
-    }
-
-    foo('c', function (c) {
-      if (c.error) {
-        throw new Error(c.error);
-      }
-
-      console.log(a, b, c);
-    });
-  });
-});
-```
-
-使用Generator函数可以大大简化上面的代码。
-
-```javascript
-function* g(){
-  try {
-    var a = yield foo('a');
-    var b = yield foo('b');
-    var c = yield foo('c');
-  } catch (e) {
-    console.log(e);
-  }
-
-  console.log(a, b, c);
-}
-```
-
-反过来，Generator函数内抛出的错误，也可以被函数体外的`catch`捕获。
+Generator函数体外抛出的错误，可以在函数体内捕获；反过来，Generator函数体内抛出的错误，也可以被函数体外的`catch`捕获。
 
 ```javascript
 function *foo() {
@@ -599,7 +600,7 @@ try {
 
 上面代码中，第二个`next`方法向函数体内传入一个参数42，数值是没有`toUpperCase`方法的，所以会抛出一个TypeError错误，被函数体外的`catch`捕获。
 
-一旦Generator执行过程中抛出错误，就不会再执行下去了。如果此后还调用next方法，将返回一个`value`属性等于`undefined`、`done`属性等于`true`的对象，即JavaScript引擎认为这个Generator已经运行结束了。
+一旦Generator执行过程中抛出错误，且没有被内部捕获，就不会再执行下去了。如果此后还调用`next`方法，将返回一个`value`属性等于`undefined`、`done`属性等于`true`的对象，即JavaScript引擎认为这个Generator已经运行结束了。
 
 ```javascript
 function* g() {
@@ -821,7 +822,7 @@ for(let value of delegatingIterator) {
 
 上面代码中，`delegatingIterator`是代理者，`delegatedIterator`是被代理者。由于`yield* delegatedIterator`语句得到的值，是一个遍历器，所以要用星号表示。运行结果就是使用一个遍历器，遍历了多个Generator函数，有递归的效果。
 
-`yield*`语句等同于在Generator函数内部，部署一个`for...of`循环。
+`yield*`后面的Generator函数（没有`return`语句时），等同于在Generator函数内部，部署一个`for...of`循环。
 
 ```javascript
 function* concat(iter1, iter2) {
@@ -841,7 +842,7 @@ function* concat(iter1, iter2) {
 }
 ```
 
-上面代码说明，`yield*`不过是`for...of`的一种简写形式，完全可以用后者替代前者。
+上面代码说明，`yield*`后面的Generator函数（没有`return`语句时），不过是`for...of`的一种简写形式，完全可以用后者替代前者。反之，则需要用`var value = yield* iterator`的形式获取`return`语句的值。
 
 如果`yield*`后面跟着一个数组，由于数组原生支持遍历器，因此就会遍历数组成员。
 
@@ -1257,7 +1258,7 @@ step1(function (value1) {
 采用Promise改写上面的代码。
 
 ```javascript
-Q.fcall(step1)
+Promise.resolve(step1)
   .then(step2)
   .then(step3)
   .then(step4)
@@ -1272,12 +1273,12 @@ Q.fcall(step1)
 上面代码已经把回调函数，改成了直线执行的形式，但是加入了大量Promise的语法。Generator函数可以进一步改善代码运行流程。
 
 ```javascript
-function* longRunningTask() {
+function* longRunningTask(value1) {
   try {
-    var value1 = yield step1();
-    var value2 = yield step2(value1);
-    var value3 = yield step3(value2);
-    var value4 = yield step4(value3);
+    var value2 = yield step1(value1);
+    var value3 = yield step2(value2);
+    var value4 = yield step3(value3);
+    var value5 = yield step4(value4);
     // Do something with value4
   } catch (e) {
     // Handle any error from step1 through step4
@@ -1288,55 +1289,76 @@ function* longRunningTask() {
 然后，使用一个函数，按次序自动执行所有步骤。
 
 ```javascript
-scheduler(longRunningTask());
+scheduler(longRunningTask(initialValue));
 
 function scheduler(task) {
-  setTimeout(function() {
-    var taskObj = task.next(task.value);
-    // 如果Generator函数未结束，就继续调用
-    if (!taskObj.done) {
-      task.value = taskObj.value
-      scheduler(task);
-    }
-  }, 0);
+  var taskObj = task.next(task.value);
+  // 如果Generator函数未结束，就继续调用
+  if (!taskObj.done) {
+    task.value = taskObj.value
+    scheduler(task);
+  }
 }
 ```
 
-注意，yield语句是同步运行，不是异步运行（否则就失去了取代回调函数的设计目的了）。实际操作中，一般让yield语句返回Promise对象。
+注意，上面这种做法，只适合同步操作，即所有的`task`都必须是同步的，不能有异步操作。因为这里的代码一得到返回值，就继续往下执行，没有判断异步操作何时完成。如果要控制异步的操作流程，详见后面的《异步操作》一章。
+
+下面，利用`for...of`循环会自动依次执行`yield`命令的特性，提供一种更一般的控制流管理的方法。
 
 ```javascript
-var Q = require('q');
+let steps = [step1Func, step2Func, step3Func];
 
-function delay(milliseconds) {
-  var deferred = Q.defer();
-  setTimeout(deferred.resolve, milliseconds);
-  return deferred.promise;
+function *iterateSteps(steps){
+  for (var i=0; i< steps.length; i++){
+    var step = steps[i];
+    yield step();
+  }
 }
-
-function* f(){
-  yield delay(100);
-};
 ```
 
-上面代码使用Promise的函数库Q，yield语句返回的就是一个Promise对象。
+上面代码中，数组`steps`封装了一个任务的多个步骤，Generator函数`iterateSteps`则是依次为这些步骤加上`yield`命令。
 
-多个任务按顺序一个接一个执行时，yield语句可以按顺序排列。多个任务需要并列执行时（比如只有A任务和B任务都执行完，才能执行C任务），可以采用数组的写法。
+将任务分解成步骤之后，还可以将项目分解成多个依次执行的任务。
 
 ```javascript
-function* parallelDownloads() {
-  let [text1,text2] = yield [
-    taskA(),
-    taskB()
-  ];
-  console.log(text1, text2);
+let jobs = [job1, job2, job3];
+
+function *iterateJobs(jobs){
+  for (var i=0; i< jobs.length; i++){
+    var job = jobs[i];
+    yield *iterateSteps(job.steps);
+  }
 }
 ```
 
-上面代码中，yield语句的参数是一个数组，成员就是两个任务taskA和taskB，只有等这两个任务都完成了，才会接着执行下面的语句。
+上面代码中，数组`jobs`封装了一个项目的多个任务，Generator函数`iterateJobs`则是依次为这些任务加上`yield *`命令。
 
-### （3）部署iterator接口
+最后，就可以用`for...of`循环一次性依次执行所有任务的所有步骤。
 
-利用Generator函数，可以在任意对象上部署iterator接口。
+```javascript
+for (var step of iterateJobs(jobs)){
+  console.log(step.id);
+}
+```
+
+再次提醒，上面的做法只能用于所有步骤都是同步操作的情况，不能有异步操作的步骤。如果想要依次执行异步的步骤，必须使用后面的《异步操作》一章介绍的方法。
+
+`for...of`的本质是一个`while`循环，所以上面的代码实质上执行的是下面的逻辑。
+
+```javascript
+var it = iterateJobs(jobs);
+var res = it.next();
+
+while (!res.done){
+  var result = res.value;
+  // ...
+  res = it.next();
+}
+```
+
+### （3）部署Iterator接口
+
+利用Generator函数，可以在任意对象上部署Iterator接口。
 
 ```javascript
 function* iterEntries(obj) {
@@ -1357,7 +1379,7 @@ for (let [key, value] of iterEntries(myObj)) {
 // bar 7
 ```
 
-上述代码中，myObj是一个普通对象，通过iterEntries函数，就有了iterator接口。也就是说，可以在任意对象上部署next方法。
+上述代码中，`myObj`是一个普通对象，通过`iterEntries`函数，就有了Iterator接口。也就是说，可以在任意对象上部署`next`方法。
 
 下面是一个对数组部署Iterator接口的例子，尽管数组原生具有这个接口。
 
