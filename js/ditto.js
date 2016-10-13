@@ -42,7 +42,6 @@ var getHash = function (hash) {
   }
 };
 
-var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>';
 var menu = new Array();
 
 function initialize() {
@@ -104,37 +103,23 @@ function init_searchbar() {
   var search = '<form class="searchBox" onSubmit="return searchbar_listener()">' +
     '<input name="search" type="search">' +
     '<input type="image" class="searchButton" src="images/magnifier.jpg" alt="Search" />' +
-//    '<a class="searchLink" href="#" target="_blank"><img src="images/magnifier.jpg"></a>' +
     '</form>';
   $(ditto.sidebar_id).find('h2').first().before($(search));
-  // $('input.searchButton').click(searchbar_listener);
-  // $('input[name=search]').keydown(searchbar_listener);
 }
 
 function searchbar_listener(event) {
     // event.preventDefault();
     var q = $('input[name=search]').val();
     if (q !== '') {
-      var url = 'https://github.com/ruanyf/es6tutorial/search?utf8=✓&q=' + encodeURIComponent(q);
-      window.open(url, '_blank');
+      window.open(ditto.git_url + '/search?utf8=✓&q=' + encodeURIComponent(q), '_blank');
       win.focus();
     }
     return false;
-  /*
-  if (event.which === 13) {
-    var q = $('input[name=search]').val();
-    if (q !== '') {
-      var url = 'https://github.com/ruanyf/es6tutorial/search?utf8=✓&q=' + encodeURIComponent(q);
-      location.href = url;
-    }
-  }
-  */
 }
 
 
 function init_back_to_top_button() {
-  $(ditto.back_to_top_id).show();
-  $(ditto.back_to_top_id).on('click', goTop);
+  $(ditto.back_to_top_id).show().on('click', goTop);
 }
 
 function goTop(e) {
@@ -276,15 +261,12 @@ function show_error() {
 }
 
 function show_loading() {
-  $(ditto.loading_id).show();
-  $(ditto.content_id).html('');  // clear content
+  var loading = $(ditto.loading_id).show().html('');  // clear content
 
   // infinite loop until clearInterval() is called on loading
-  var loading = setInterval(function() {
-    $(ditto.loading_id).fadeIn(1000).fadeOut(1000);
+  return setInterval(function() {
+    loading.fadeIn(1000).fadeOut(1000);
   }, 2000);
-
-  return loading;
 }
 
 function router() { 
@@ -320,7 +302,7 @@ function router() {
   var loading = show_loading();
   $.get(path, function(data) {
     $(ditto.error_id).hide();
-    $(ditto.content_id).html(marked(data) + disqusCode);
+    $(ditto.content_id).html(marked(data));
     if ($(ditto.content_id + " h1").text() === ditto.document_title) {
       document.title = ditto.document_title;
     } else {
@@ -334,24 +316,6 @@ function router() {
       Prism.highlightElement(this);
     });
 
-    // 加载disqus
-    (function() {
-      // http://docs.disqus.com/help/2/
-      window.disqus_shortname = 'es6';
-      window.disqus_identifier = (location.hash ? location.hash.replace("#", "") : 'READEME');
-      window.disqus_title = $(ditto.content_id + " h1").text();
-      window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
-
-      // http://docs.disqus.com/developers/universal/
-      (function() {
-        var dsq = document.createElement('script');
-        dsq.type = 'text/javascript';
-        dsq.async = true;
-        dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-      })();
-    })();
-
     var perc = ditto.save_progress ? store.get('page-progress') || 0 : 0;
 
     if (sectionId) {
@@ -362,9 +326,6 @@ function router() {
       if (location.hash !== '' || Boolean(perc)) {
         if (!Boolean(perc)) {
           $('html, body').animate({
-            scrollTop: ($('#content').offset().top + 10)
-          }, 300);
-          $('html, body').animate({
             scrollTop: ($('#content').offset().top)
           }, 300);
         } else {
@@ -374,28 +335,16 @@ function router() {
         }
       }
     }
-    if (location.hash === '' || '#' + getHash().nav === menu[0]) {
-      $('#pageup').css('display', 'none');
-    } else {
-      $('#pageup').css('display', 'inline-block');
-    }
-
-    if ('#' + getHash().nav === menu[(menu.length - 1)]) {
-      $('#pagedown').css('display', 'none');
-    } else {
-      $('#pagedown').css('display', 'inline-block');
-    }
+    $('#pageup').css('display', location.hash === '' || '#' + getHash().nav === menu[0] ? 'none' : 'inline-block');
+    $('#pagedown').css('display', '#' + getHash().nav === menu[(menu.length - 1)] ? 'none' : 'inline-block');
 
     (function() {
       var $w = $(window);
       var $prog2 = $('.progress-indicator-2');
-      var wh = $w.height();
-      var h = $('body').height();
-      var sHeight = h - wh;
+      var sHeight = $('body').height() - $w.height();
       $w.on('scroll', function() {
         window.requestAnimationFrame(function(){
-          var perc = Math.max(0, Math.min(1, $w.scrollTop() / sHeight));
-          updateProgress(perc);
+          updateProgress(Math.max(0, Math.min(1, $w.scrollTop() / sHeight)));
         });
       });
 
@@ -406,9 +355,7 @@ function router() {
 
     }());
 
-  }).fail(function() {
-    show_error();
-  }).always(function() {
+  }).fail(show_error).always(function() {
     clearInterval(loading);
     $(ditto.loading_id).hide();
   });
