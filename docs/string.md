@@ -838,6 +838,15 @@ HelloWorldApp.main();
 模板处理函数的第一个参数（模板字符串数组），还有一个`raw`属性。
 
 ```javascript
+console.log`123`
+// ["123", raw: Array[1]]
+```
+
+上面代码中，`console.log`接受的参数，实际上是一个数组。该数组有一个`raw`属性，保存的是转义后的原字符串。
+
+请看下面的例子。
+
+```javascript
 tag`First line\nSecond line`
 
 function tag(strings) {
