@@ -694,6 +694,82 @@ var obj = {a: 1, b: 2};
 let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 ```
 
+## 严格模式
+
+从ES5开始，函数内部可以设定为严格模式。
+
+```javascript
+function doSomething(a, b) {
+  'use strict';
+  // code
+}
+```
+
+《ECMAScript 2016标准》做了一点修改，规定只要函数参数使用了默认值、解构赋值、或者扩展运算符，那么函数内部就不能显式设定为严格模式，否则会报错。
+
+```javascript
+// 报错
+function doSomething(a, b = a) {
+  'use strict';
+  // code
+}
+
+// 报错
+const doSomething = function ({a, b}) {
+  'use strict';
+  // code
+};
+
+// 报错
+const doSomething = (...a) => {
+  'use strict';
+  // code
+};
+
+const obj = {
+  // 报错
+  doSomething({a, b}) {
+    'use strict';
+    // code
+  }
+};
+```
+
+这样规定的原因是，函数内部的严格模式，同时适用于函数体代码和函数参数代码。但是，函数执行的时候，先执行函数参数代码，然后再执行函数体代码。这样就有一个不合理的地方，只有从函数体代码之中，才能知道参数代码是否应该以严格模式执行，但是参数代码却应该先于函数体代码执行。
+
+```javascript
+// 报错
+function doSomething(value = 070) {
+  'use strict';
+  return value;
+}
+```
+
+上面代码中，参数`value`的默认值是八进制数`070`，但是严格模式下不能用前缀`0`表示八进制，所以应该报错。但是实际上，JavaScript引擎会先成功执行`value = 070`，然后进入函数体内部，发现需要用严格模式执行，这时才会报错。
+
+虽然可以先解析函数体代码，再执行参数代码，但是这样无疑就增加了复杂性。因此，标准索性禁止了这种用法，只要参数使用了默认值、解构赋值、或者扩展运算符，就不能显式指定严格模式。
+
+两种方法可以规避这种限制。第一种是设定全局性的严格模式，这是合法的。
+
+```javascript
+'use strict';
+
+function doSomething(a, b = a) {
+  // code
+}
+```
+
+第二种是把函数包在一个无参数的立即执行函数里面。
+
+```javascript
+const doSomething = (function () {
+  'use strict';
+  return function(value = 42) {
+    return value;
+  };
+}());
+```
+
 ## name属性
 
 函数的`name`属性，返回该函数的函数名。
@@ -1061,7 +1137,7 @@ var fix = f => (x => f(v => x(x)(v)))
 
 上面两种写法，几乎是一一对应的。由于λ演算对于计算机科学非常重要，这使得我们可以用ES6作为替代工具，探索计算机科学。
 
-## 函数绑定
+## 绑定 this
 
 箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call`、`apply`、`bind`）。但是，箭头函数并不适用于所有场合，所以ES7提出了“函数绑定”（function bind）运算符，用来取代`call`、`apply`、`bind`调用。虽然该语法还是ES7的一个[提案](https://github.com/zenparsing/es-function-bind)，但是Babel转码器已经支持。
 
