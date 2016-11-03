@@ -497,7 +497,7 @@ function readLinesSync(file) {
 
 ```javascript
 for (let line of readLinesSync(fileName)) {
-  console.log(x);
+  console.log(line);
   break;
 }
 ```
