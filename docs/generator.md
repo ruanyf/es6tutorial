@@ -1058,7 +1058,7 @@ new F()
 
 那么，有没有办法让Generator函数返回一个正常的对象实例，既可以用`next`方法，又可以获得正常的`this`？
 
-下面是一个变通方法。首先，生成一个空对象，使用`bind`方法绑定Generator函数内部的`this`。这样，构造函数调用以后，这个空对象就是Generator函数的实例对象了。
+下面是一个变通方法。首先，生成一个空对象，使用`call`方法绑定Generator函数内部的`this`。这样，构造函数调用以后，这个空对象就是Generator函数的实例对象了。
 
 ```javascript
 function* F() {
