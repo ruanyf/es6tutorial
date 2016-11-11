@@ -724,26 +724,62 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 因此，可以使用这个方法判断，一个类是否继承了另一个类。
 
-### super关键字
+### super 关键字
 
 `super`这个关键字，有两种用法，含义不同。
 
 （1）作为函数调用时（即`super(...args)`），`super`代表父类的构造函数。
 
-（2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`既可以引用父类实例的属性和方法，也可以引用父类的静态方法。
+（2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`只能引用父类实例的方法（包括静态方法），不能引用父类的属性。
 
 ```javascript
-class B extends A {
-  get m() {
-    return this._p * super._p;
-  }
-  set m() {
-    throw new Error('该属性只读');
+class A {
+  p() {
+    return 2;
   }
 }
+
+class B extends A {
+  constructor() {
+    super();
+    this.p = 3;
+  }
+
+  get m() {
+     return this.p * super.p();
+  }
+
+  set m(value) {
+    throw new Error('read only');
+  }
+}
+
+let b = new B();
+b.m // 6
 ```
 
-上面代码中，子类通过`super`关键字，调用父类实例的`_p`属性。
+上面代码中，子类通过`super`关键字，调用父类实例的`p`方法。
+
+如果`p`是父类实例的属性，那么`super`无法引用到它。
+
+```javascript
+class A {
+  constructor() {
+    this.p = 2;
+  }
+}
+
+class B extends A {
+  get m() {
+    return super.p;
+  }
+}
+
+let b = new B();
+b.m // undefined
+```
+
+上面代码中，`p`是父类`A`实例的属性，`super.p`就引用不到它。
 
 由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
