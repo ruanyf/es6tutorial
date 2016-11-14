@@ -887,7 +887,7 @@ class A {}
 class B extends A {
   constructor() {
     super();
-    console.log(super.valueOf()); // B{}
+    console.log(super.valueOf() instanceof B); // true
   }
 }
 
