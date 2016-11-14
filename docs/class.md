@@ -726,11 +726,35 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 ### super 关键字
 
-`super`这个关键字，有两种用法，含义不同。
+`super`这个关键字，既可以当作函数使用，也可以当作对象使用。在这两种情况下，它的用法完全不同。
 
-（1）作为函数调用时（即`super(...args)`），`super`代表父类的构造函数。
+第一种情况，`super`作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次`super`函数。
 
-（2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`只能引用父类实例的方法（包括静态方法），不能引用父类的属性。
+```javascript
+class A {}
+
+class B extends A {
+  constructor() {
+    super();
+  }
+}
+```
+
+上面代码中，子类`B`的构造函数之中的`super()`，代表调用父类的构造函数。这是必须的，否则 JavaScript 引擎会报错。
+
+注意，作为函数时，`super()`只能用在子类的构造函数之中，用在其他地方就会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  m() {
+    super(); // 报错
+  }
+}
+```
+
+第二种情况，`super`作为对象时，指向父类的原型对象。
 
 ```javascript
 class A {
@@ -742,25 +766,16 @@ class A {
 class B extends A {
   constructor() {
     super();
-    this.p = 3;
-  }
-
-  get m() {
-     return this.p * super.p();
-  }
-
-  set m(value) {
-    throw new Error('read only');
+    console.log(super.p()); // 2
   }
 }
 
 let b = new B();
-b.m // 6
 ```
 
-上面代码中，子类通过`super`关键字，调用父类实例的`p`方法。
+上面代码中，子类`B`当中的`super.p()`，就是将`super`当作一个对象使用。这时，`super`指向`A.prototype`，所以`super.p()`就相当于`A.prototype.p()`。
 
-如果`p`是父类实例的属性，那么`super`无法引用到它。
+这里需要注意，由于`super`指向父类的原型对象，所以定义在父类实例上的方法或属性，是无法通过`super`调用的。
 
 ```javascript
 class A {
@@ -781,7 +796,107 @@ b.m // undefined
 
 上面代码中，`p`是父类`A`实例的属性，`super.p`就引用不到它。
 
-由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
+如果属性定义在父类的原型对象上，`super`就可以取到。
+
+```javascript
+class A {}
+A.prototype.x = 2;
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.x) // 2
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
+
+ES6 有一个特别规定，就是通过`super`调用父类的方法时，`super`会绑定子类的`this`。
+
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  print() {
+    console.log(this.x);
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+  }
+  m() {
+    super.print();
+  }
+}
+
+let b = new B();
+b.m() // 2
+```
+
+上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`会绑定子类`B`的`this`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+
+由于绑定子类的`this`，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
+
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+    super.x = 3;
+    console.log(super.x); // undefined
+    console.log(this.x); // 3
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，`super.x`赋值为`3`，这时等同于对`this.x`赋值为`3`。而当读取`super.x`的时候，读的是`A.prototype.x`，所以返回`undefined`。
+
+注意，使用`super`的时候，必须显式指定是作为函数、还是作为对象使用，否则会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super); // 报错
+  }
+}
+```
+
+上面代码中，`console.log(super)`当中的`super`，无法看出是作为函数使用，还是作为对象使用，所以 JavaScript 引擎解析代码的时候就会报错。这时，如果能清晰地表明`super`的数据类型，就不会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.valueOf()); // B{}
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`绑定`B`的`this`，所以`super.valueOf()`返回的是一个`B`的实例。
+
+最后，由于对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
 ```javascript
 var obj = {
