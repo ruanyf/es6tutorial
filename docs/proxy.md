@@ -68,7 +68,7 @@ proxy.a = 'b';
 target.a // "b"
 ```
 
-上面代码中，`handler`是一个空对象，没有任何拦截效果，访问`handeler`就等同于访问`target`。
+上面代码中，`handler`是一个空对象，没有任何拦截效果，访问`handler`就等同于访问`target`。
 
 一个技巧是将Proxy对象，设置到`object.proxy`属性，从而可以在`object`对象上调用。
 
