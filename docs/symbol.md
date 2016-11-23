@@ -443,7 +443,6 @@ global[Symbol.for('foo')] = 123;
 如果键名使用`Symbol`方法生成，那么外部将无法引用这个值，当然也就无法改写。
 
 ```javascript
-```javascript
 // mod.js
 const FOO_KEY = Symbol('foo');
 
