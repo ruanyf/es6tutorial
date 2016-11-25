@@ -115,6 +115,7 @@
 - Keith Cirkel, [Metaprogramming in ES6: Symbols and why they're awesome](http://blog.keithcirkel.co.uk/metaprogramming-in-es6-symbols/): Symbol的深入介绍
 - Axel Rauschmayer, [Customizing ES6 via well-known symbols](http://www.2ality.com/2015/09/well-known-symbols-es6.html)
 - Derick Bailey, [Creating A True Singleton In Node.js, With ES6 Symbols](https://derickbailey.com/2016/03/09/creating-a-true-singleton-in-node-js-with-es6-symbols/)
+- Das Surma, [How to read web specs Part IIa – Or: ECMAScript Symbols](https://dassur.ma/things/reading-specs-2/): 介绍 Symbol 的规格
 
 ## Set和Map
 

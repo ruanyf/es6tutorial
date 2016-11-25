@@ -163,7 +163,7 @@ obj['a' + 'bc'] = 123;
 
 上面代码的方法一是直接用标识符作为属性名，方法二是用表达式作为属性名，这时要将表达式放在方括号之内。
 
-但是，如果使用字面量方式定义对象（使用大括号），在ES5中只能使用方法一（标识符）定义属性。
+但是，如果使用字面量方式定义对象（使用大括号），在 ES5 中只能使用方法一（标识符）定义属性。
 
 ```javascript
 var obj = {
@@ -172,7 +172,7 @@ var obj = {
 };
 ```
 
-ES6允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
+ES6 允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
 
 ```javascript
 let propKey = 'foo';
@@ -202,7 +202,7 @@ a['last word'] // "world"
 
 ```javascript
 let obj = {
-  ['h'+'ello']() {
+  ['h' + 'ello']() {
     return 'hi';
   }
 };
@@ -223,7 +223,23 @@ var foo = 'bar';
 var baz = { [foo]: 'abc'};
 ```
 
-## 方法的name属性
+注意，属性名表达式如果是一个对象，默认情况下会自动将对象转为字符串`[object Object]`，这一点要特别小心。
+
+```javascript
+const keyA = {a: 1};
+const keyB = {b: 2};
+
+const myObject = {
+  [keyA]: 'valueA',
+  [keyB]: 'valueB'
+};
+
+myObject // Object {[object Object]: "valueB"}
+```
+
+上面代码中，`[keyA]`和`[keyB]`得到的都是`[object Object]`，所以`[keyB]`会把`[keyA]`覆盖掉，而`myObject`最后只有一个`[object Object]`属性。
+
+## 方法的 name 属性
 
 函数的`name`属性，返回函数名。对象方法也是函数，因此也有`name`属性。
 

@@ -34,7 +34,19 @@ s2.toString() // "Symbol(bar)"
 
 上面代码中，`s1`和`s2`是两个Symbol值。如果不加参数，它们在控制台的输出都是`Symbol()`，不利于区分。有了参数以后，就等于为它们加上了描述，输出的时候就能够分清，到底是哪一个值。
 
-注意，`Symbol`函数的参数只是表示对当前Symbol值的描述，因此相同参数的`Symbol`函数的返回值是不相等的。
+如果 Symbol 的参数是一个对象，就会调用该对象的`toString`方法，将其转为字符串，然后才生成一个 Symbol 值。
+
+```javascript
+const obj = {
+  toString() {
+    return 'abc';
+  }
+};
+const sym = Symbol(obj);
+sym // Symbol(abc)
+```
+
+注意，`Symbol`函数的参数只是表示对当前 Symbol 值的描述，因此相同参数的`Symbol`函数的返回值是不相等的。
 
 ```javascript
 // 没有参数的情况
@@ -44,8 +56,8 @@ var s2 = Symbol();
 s1 === s2 // false
 
 // 有参数的情况
-var s1 = Symbol("foo");
-var s2 = Symbol("foo");
+var s1 = Symbol('foo');
+var s2 = Symbol('foo');
 
 s1 === s2 // false
 ```
@@ -239,9 +251,9 @@ const shapeType = {
 
 ## 属性名的遍历
 
-Symbol作为属性名，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`返回。但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols`方法，可以获取指定对象的所有Symbol属性名。
+Symbol 作为属性名，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols`方法，可以获取指定对象的所有 Symbol 属性名。
 
-`Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的Symbol值。
+`Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
 
 ```javascript
 var obj = {};
@@ -281,7 +293,7 @@ Object.getOwnPropertySymbols(obj)
 
 上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
 
-另一个新的API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和Symbol键名。
+另一个新的API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
 
 ```javascript
 let obj = {
@@ -294,7 +306,7 @@ Reflect.ownKeys(obj)
 // [Symbol(my_key), 'enum', 'nonEnum']
 ```
 
-由于以Symbol值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
+由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
 
 ```javascript
 var size = Symbol('size');
@@ -325,7 +337,7 @@ Object.getOwnPropertyNames(x) // ['0']
 Object.getOwnPropertySymbols(x) // [Symbol(size)]
 ```
 
-上面代码中，对象x的size属性是一个Symbol值，所以`Object.keys(x)`、`Object.getOwnPropertyNames(x)`都无法获取它。这就造成了一种非私有的内部方法的效果。
+上面代码中，对象`x`的`size`属性是一个 Symbol 值，所以`Object.keys(x)`、`Object.getOwnPropertyNames(x)`都无法获取它。这就造成了一种非私有的内部方法的效果。
 
 ## Symbol.for()，Symbol.keyFor()
 
@@ -338,9 +350,9 @@ var s2 = Symbol.for('foo');
 s1 === s2 // true
 ```
 
-上面代码中，s1和s2都是Symbol值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
+上面代码中，`s1`和`s2`都是 Symbol 值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
 
-`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的Symbol类型的值，而是会先检查给定的key是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个Symbol值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
+`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
 
 ```javascript
 Symbol.for("bar") === Symbol.for("bar")
@@ -352,7 +364,7 @@ Symbol("bar") === Symbol("bar")
 
 上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
 
-Symbol.keyFor方法返回一个已登记的Symbol类型值的key。
+`Symbol.keyFor`方法返回一个已登记的 Symbol 类型值的`key`。
 
 ```javascript
 var s1 = Symbol.for("foo");
@@ -364,7 +376,7 @@ Symbol.keyFor(s2) // undefined
 
 上面代码中，变量`s2`属于未登记的Symbol值，所以返回`undefined`。
 
-需要注意的是，`Symbol.for`为Symbol值登记的名字，是全局环境的，可以在不同的iframe或service worker中取到同一个值。
+需要注意的是，`Symbol.for`为Symbol值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。
 
 ```javascript
 iframe = document.createElement('iframe');
@@ -375,7 +387,7 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 // true
 ```
 
-上面代码中，iframe窗口生成的Symbol值，可以在主页面得到。
+上面代码中，iframe 窗口生成的 Symbol 值，可以在主页面得到。
 
 ## 实例：模块的 Singleton 模式
 
@@ -578,6 +590,17 @@ String.prototype.replace(searchValue, replaceValue)
 searchValue[Symbol.replace](this, replaceValue)
 ```
 
+下面是一个例子。
+
+```javascript
+const x = {};
+x[Symbol.replace] = (...s) => console.log(s);
+
+'Hello'.replace(x, 'World') // ["Hello", "World"]
+```
+
+`Symbol.replace`方法会收到两个参数，第一个参数是`replace`方法正在作用的对象，上面例子是`Hello`，第二个参数是替换后的值，上面例子是`World`。
+
 ### Symbol.search
 
 对象的`Symbol.search`属性，指向一个方法，当该对象被`String.prototype.search`方法调用时，会返回该方法的返回值。
@@ -681,12 +704,14 @@ String(obj) // 'str'
 
 ### Symbol.toStringTag
 
-对象的`Symbol.toStringTag`属性，指向一个方法。在该对象上面调用`Object.prototype.toString`方法时，如果这个属性存在，它的返回值会出现在`toString`方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中object后面的那个字符串。
+对象的`Symbol.toStringTag`属性，指向一个方法。在该对象上面调用`Object.prototype.toString`方法时，如果这个属性存在，它的返回值会出现在`toString`方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中`object`后面的那个字符串。
 
 ```javascript
+// 例一
 ({[Symbol.toStringTag]: 'Foo'}.toString())
 // "[object Foo]"
 
+// 例二
 class Collection {
   get [Symbol.toStringTag]() {
     return 'xxx';
