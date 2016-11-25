@@ -361,6 +361,7 @@ var handler = {
   },
   set (target, key, value) {
     invariant(key, 'set');
+    target[key] = value;
     return true;
   }
 };
