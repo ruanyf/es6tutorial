@@ -266,7 +266,7 @@ p1.__proto__ === p2.__proto__
 //true
 ```
 
-上面代码中，`p1`和`p2`都是Point的实例，它们的原型都是Point，所以`__proto__`属性是相等的。
+上面代码中，`p1`和`p2`都是Point的实例，它们的原型都是Point.prototype，所以`__proto__`属性是相等的。
 
 这也意味着，可以通过实例的`__proto__`属性为Class添加方法。
 
