@@ -900,13 +900,12 @@ myWeakmap.set(myElement, {timesClicked: 0});
 myElement.addEventListener('click', function() {
   let logoData = myWeakmap.get(myElement);
   logoData.timesClicked++;
-  myWeakmap.set(myElement, logoData);
 }, false);
 ```
 
-上面代码中，`myElement`是一个DOM节点，每当发生click事件，就更新一下状态。我们将这个状态作为键值放在WeakMap里，对应的键名就是`myElement`。一旦这个DOM节点删除，该状态就会自动消失，不存在内存泄漏风险。
+上面代码中，`myElement`是一个 DOM 节点，每当发生`click`事件，就更新一下状态。我们将这个状态作为键值放在 WeakMap 里，对应的键名就是`myElement`。一旦这个 DOM 节点删除，该状态就会自动消失，不存在内存泄漏风险。
 
-WeakMap的另一个用处是部署私有属性。
+WeakMap 的另一个用处是部署私有属性。
 
 ```javascript
 let _counter = new WeakMap();
