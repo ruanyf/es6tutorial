@@ -127,6 +127,18 @@
 - Axel Rauschmayer, [Pitfall: not all objects can be wrapped transparently by proxies](http://www.2ality.com/2016/11/proxying-builtins.html)
 - Bertalan Miklos, [Writing a JavaScript Framework - Data Binding with ES6 Proxies](https://blog.risingstack.com/writing-a-javascript-framework-data-binding-es6-proxy/): 使用 Proxy 实现观察者模式
 
+## Promise对象
+
+- Jake Archibald, [JavaScript Promises: There and back again](http://www.html5rocks.com/en/tutorials/es6/promises/)
+- Tilde, [rsvp.js](https://github.com/tildeio/rsvp.js)
+- Sandeep Panda, [An Overview of JavaScript Promises](http://www.sitepoint.com/overview-javascript-promises/): ES6 Promise入门介绍
+- Dave Atchley, [ES6 Promises](http://www.datchley.name/es6-promises/): Promise的语法介绍
+- Axel Rauschmayer, [ECMAScript 6 promises (2/2): the API](http://www.2ality.com/2014/10/es6-promises-api.html): 对ES6 Promise规格和用法的详细介绍
+- Jack Franklin, [Embracing Promises in JavaScript](http://javascriptplayground.com/blog/2015/02/promises/): catch 方法的例子
+- Ronald Chen, [How to escape Promise Hell](https://medium.com/@pyrolistical/how-to-get-out-of-promise-hell-8c20e0ab0513#.2an1he6vf): 如何使用`Promise.all`方法的一些很好的例子
+- Jordan Harband, [proposal-promise-try](https://github.com/ljharb/proposal-promise-try): Promise.try() 方法的提案
+- Sven Slootweg, [What is Promise.try, and why does it matter?](http://cryto.net/~joepie91/blog/2016/05/11/what-is-promise-try-and-why-does-it-matter/): Promise.try() 方法的优点
+
 ## Iterator
 
 - Mozilla Developer Network, [Iterators and generators](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Iterators_and_Generators)
@@ -153,16 +165,6 @@
 - Nicolas Bevacqua, [ES6 Generators in Depth](http://ponyfoo.com/articles/es6-generators-in-depth)
 - Axel Rauschmayer, [ES6 generators in depth](http://www.2ality.com/2015/03/es6-generators.html): Generator规格的详尽讲解
 - Derick Bailey, [Using ES6 Generators To Short-Circuit Hierarchical Data Iteration](https://derickbailey.com/2015/10/05/using-es6-generators-to-short-circuit-hierarchical-data-iteration/)：使用 for...of 循环完成预定的操作步骤
-
-## Promise对象
-
-- Jake Archibald, [JavaScript Promises: There and back again](http://www.html5rocks.com/en/tutorials/es6/promises/)
-- Tilde, [rsvp.js](https://github.com/tildeio/rsvp.js)
-- Sandeep Panda, [An Overview of JavaScript Promises](http://www.sitepoint.com/overview-javascript-promises/): ES6 Promise入门介绍
-- Dave Atchley, [ES6 Promises](http://www.datchley.name/es6-promises/): Promise的语法介绍
-- Axel Rauschmayer, [ECMAScript 6 promises (2/2): the API](http://www.2ality.com/2014/10/es6-promises-api.html): 对ES6 Promise规格和用法的详细介绍
-- Jack Franklin, [Embracing Promises in JavaScript](http://javascriptplayground.com/blog/2015/02/promises/): catch方法的例子
-- Ronald Chen, [How to escape Promise Hell](https://medium.com/@pyrolistical/how-to-get-out-of-promise-hell-8c20e0ab0513#.2an1he6vf): 如何使用`Promise.all`方法的一些很好的例子
 
 ## 异步操作和Async函数
 
