@@ -770,7 +770,7 @@ run(g);
 
 ## Promise.try()
 
-实际开发中，经常遇到一种情况：不知道函数`f`是同步函数，还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。一般就会采用下面的写法。
+实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。一般就会采用下面的写法。
 
 ```javascript
 Promise.resolve().then(f)
@@ -879,4 +879,6 @@ Promise.try(database.users.get({id: userId}))
   .then(...)
   .catch(...)
 ```
+
+事实上，`Promise.try`就是模拟`try`代码块，就像`promise.catch`模拟的是`catch`代码块。
 

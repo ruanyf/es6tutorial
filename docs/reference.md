@@ -138,6 +138,7 @@
 - Ronald Chen, [How to escape Promise Hell](https://medium.com/@pyrolistical/how-to-get-out-of-promise-hell-8c20e0ab0513#.2an1he6vf): 如何使用`Promise.all`方法的一些很好的例子
 - Jordan Harband, [proposal-promise-try](https://github.com/ljharb/proposal-promise-try): Promise.try() 方法的提案
 - Sven Slootweg, [What is Promise.try, and why does it matter?](http://cryto.net/~joepie91/blog/2016/05/11/what-is-promise-try-and-why-does-it-matter/): Promise.try() 方法的优点
+- Yehuda Katz, [TC39: Promises, Promises](https://thefeedbackloop.xyz/tc39-promises-promises/): Promise.try() 的用处
 
 ## Iterator
 
@@ -232,3 +233,4 @@
 - SystemJS, [SystemJS](https://github.com/systemjs/systemjs): 在浏览器中加载AMD、CJS、ES6模块的一个垫片库
 - Modernizr, [HTML5 Cross Browser Polyfills](https://github.com/Modernizr/Modernizr/wiki/HTML5-Cross-Browser-Polyfills#ecmascript-6-harmony): ES6垫片库清单
 - Facebook, [regenerator](https://github.com/facebook/regenerator): 将Generator函数转为ES5的转码器
+
