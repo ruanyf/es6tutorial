@@ -847,7 +847,7 @@ console.log('next');
 function getUsername(userId) {
   return database.users.get({id: userId})
   .then(function(user) {
-    return uesr.name;
+    return user.name;
   });
 }
 ```
