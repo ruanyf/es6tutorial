@@ -75,7 +75,7 @@ var s = '𠮷a';
 s.codePointAt(0) // 134071
 s.codePointAt(1) // 57271
 
-s.charCodeAt(2) // 97
+s.codePointAt(2) // 97
 ```
 
 `codePointAt`方法的参数，是字符在字符串中的位置（从0开始）。上面代码中，JavaScript将“𠮷a”视为三个字符，codePointAt方法在第一个字符上，正确地识别了“𠮷”，返回了它的十进制码点134071（即十六进制的`20BB7`）。在第二个字符（即“𠮷”的后两个字节）和第三个字符“a”上，`codePointAt`方法的结果与`charCodeAt`方法相同。
@@ -88,10 +88,10 @@ s.charCodeAt(2) // 97
 var s = '𠮷a';
 
 s.codePointAt(0).toString(16) // "20bb7"
-s.charCodeAt(2).toString(16) // "61"
+s.codePointAt(2).toString(16) // "61"
 ```
 
-你可能注意到了，`codePointAt`方法的参数，仍然是不正确的。比如，上面代码中，字符`a`在字符串`s`的正确位置序号应该是1，但是必须向`charCodeAt`方法传入2。解决这个问题的一个办法是使用`for...of`循环，因为它会正确识别32位的UTF-16字符。
+你可能注意到了，`codePointAt`方法的参数，仍然是不正确的。比如，上面代码中，字符`a`在字符串`s`的正确位置序号应该是1，但是必须向`codePointAt`方法传入2。解决这个问题的一个办法是使用`for...of`循环，因为它会正确识别32位的UTF-16字符。
 
 ```javascript
 var s = '𠮷a';
