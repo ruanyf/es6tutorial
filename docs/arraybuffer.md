@@ -963,3 +963,88 @@ bitmap.pixels = new Uint8Array(buffer, start);
 ```
 
 至此，图像文件的数据全部处理完成。下一步，可以根据需要，进行图像变形，或者转换格式，或者展示在`Canvas`网页元素之中。
+
+## SharedArrayBuffer
+
+目前有一种场景，需要多个进程共享数据：浏览器启动多个WebWorker。
+
+```javascript
+var w = new Worker('myworker.js');
+```
+
+上面代码中，主窗口新建了一个 Worker 进程。该进程与主窗口之间会有一个通信渠道，主窗口通过`w.postMessage`向 Worker 进程发消息，同时通过`message`事件监听 Worker 进程的回应。
+
+```javascript
+w.postMessage('hi');
+w.onmessage = function (ev) {
+  console.log(ev.data);
+}
+```
+
+上面代码中，主窗口先发一个消息`hi`，然后在监听到 Worker 进程的回应后，就将其打印出来。
+
+Worker 进程也是通过监听`message`事件，来获取主窗口发来的消息，并作出反应。
+
+```javascript
+onmessage = function (ev) {
+  console.log(ev.data);
+  postMessage('ho');
+}
+```
+
+主窗口与 Worker 进程之间，可以传送各种数据，不仅仅是字符串，还可以传送二进制数据。很容易想到，如果有大量数据要传送，留出一块内存区域，主窗口与 Worker 进程共享，两方都可以读写，那么就会大大提高效率。
+
+现在，有一个[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)提案，允许多个 Worker 进程与主窗口共享内存。这个对象的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
+
+```javascript
+// 新建 1KB 共享内存
+var sab = new SharedArrayBuffer(1024);
+
+// 主窗口发送数据
+w.postMessage(sab, [sab])
+```
+
+上面代码中，`postMessage`方法的第一个参数是`SharedArrayBuffer`对象，第二个参数是要写入共享内存的数据。
+
+Worker 进程从事件的`data`属性上面取到数据。
+
+```javascript
+var sab;
+onmessage = function (ev) {
+   sab = ev.data;  // 1KB 的共享内存，就是主窗口共享出来的那块内存
+};
+```
+
+共享内存也可以在 Worker 进程创建，发给主窗口。
+
+`SharedArrayBuffer`与`SharedArray`一样，本身是无法读写，必须在上面建立视图，然后通过视图读写。
+
+```javascript
+// 分配 10 万个 32 位整数占据的内存空间
+var sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT * 100000);
+
+// 建立 32 位整数视图
+var ia = new Int32Array(sab);  // ia.length == 100000
+
+// 新建一个质数生成器
+var primes = new PrimeGenerator();
+
+// 将 10 万个质数，写入这段内存空间
+for ( let i=0 ; i < ia.length ; i++ )
+  ia[i] = primes.next();
+
+// 向 Worker 进程发送这段共享内存
+w.postMessage(ia, [ia.buffer]);
+```
+
+Worker 收到数据后的处理如下。
+
+```javascript
+var ia;
+onmessage = function (ev) {
+  ia = ev.data;
+  console.log(ia.length); // 100000
+  console.log(ia[37]); // 输出 163，因为这是第138个质数
+};
+```
+

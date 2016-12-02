@@ -133,7 +133,7 @@ codePointLength(s) // 2
 
 **（5）i修饰符**
 
-有些Unicode字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的K。
+有些Unicode字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的`K`。
 
 ```javascript
 /[a-z]/i.test('\u212A') // false
@@ -142,7 +142,7 @@ codePointLength(s) // 2
 
 上面代码中，不加`u`修饰符，就无法识别非规范的K字符。
 
-## y修饰符
+## y 修饰符
 
 除了`u`修饰符，ES6还为正则表达式添加了`y`修饰符，叫做“粘连”（sticky）修饰符。
 
@@ -365,6 +365,51 @@ var escape = require('regexp.escape');
 escape('hi. how are you?');
 // "hi\\. how are you\\?"
 ```
+
+## s 修饰符：dotAll 模式
+
+正则表达式中，点（`.`）是一个特殊字符，代表任意的单个字符，但是行终止符（line terminator character）除外。
+
+以下四个字符属于”行终止符“。
+
+- U+000A 换行符（`\n`）
+- U+000D 回车符（`\r`）
+- U+2028 行分隔符（line separator）
+- U+2029 段分隔符（paragraph separator）
+
+```javascript
+/foo.bar/.test('foo\nbar')
+// false
+```
+
+上面代码中，因为`.`不匹配`\n`，所以正则表达式返回`false`。
+
+但是，很多时候我们希望匹配的是任意单个字符，这时有一种变通的写法。
+
+```javascript
+/foo[^]bar/.test('foo\nbar')
+// true
+```
+
+这种解决方案毕竟不太符合直觉，所以现在有一个[提案](https://github.com/mathiasbynens/es-regexp-dotall-flag)，引入`/s`修饰符，使得`.`可以匹配任意单个字符。
+
+```javascript
+/foo.bar/s.test('foo\nbar') // true
+```
+
+这被称为`dotAll`模式，即点（dot）代表一切字符。所以，正则表达式还引入了一个`dotAll`属性，返回一个布尔值，表示该正则表达式是否处在`dotAll`模式。
+
+```javascript
+const re = /foo.bar/s;
+// 另一种写法
+// const re = new RegExp('foo.bar', 's');
+
+re.test('foo\nbar') // true
+re.dotAll // true
+re.flags // 's'
+```
+
+`/s`修饰符和多行修饰符`/m`不冲突，两者一起使用的情况下，`.`匹配所有字符，而`^`和`$`匹配每一行的行首和行尾。
 
 ## 后行断言
 

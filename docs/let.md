@@ -587,13 +587,13 @@ window.b // undefined
 
 上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
 
-## 顶层对象
+## global 对象
 
 ES5的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
 
-- 浏览器里面，顶层对象是`window`，但Node和Web Worker没有`window`。
-- 浏览器和Web Worker里面，`self`也指向顶层对象，但是Node没有`self`。
-- Node里面，顶层对象是`global`，但其他环境都不支持。
+- 浏览器里面，顶层对象是`window`，但 Node 和 Web Worker 没有`window`。
+- 浏览器和 Web Worker 里面，`self`也指向顶层对象，但是Node没有`self`。
+- Node 里面，顶层对象是`global`，但其他环境都不支持。
 
 同一段代码为了能够在各种环境，都能取到顶层对象，现在一般是使用`this`变量，但是有局限性。
 
