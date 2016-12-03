@@ -708,14 +708,14 @@ var es6 = {
   standard: "ECMA-262"
 };
 
-for (e in es6) {
+for (let e in es6) {
   console.log(e);
 }
 // edition
 // committee
 // standard
 
-for (e of es6) {
+for (let e of es6) {
   console.log(e);
 }
 // TypeError: es6 is not iterable
