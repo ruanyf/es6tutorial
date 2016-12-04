@@ -8,7 +8,10 @@
 - [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript当前的所有提案
 - [ECMAScript Active Proposals](https://github.com/tc39/proposals): 已经进入正式流程的提案
 - [ECMAscript proposals](https://github.com/hemanth/es-next)：从阶段0到阶段4的所有提案列表
+- [TC39 meeting agendas](https://github.com/tc39/agendas): TC39 委员会历年的会议记录
 - [ECMAScript Daily](https://ecmascript-daily.github.io/): TC39委员会的动态
+- [The TC39 Process](https://tc39.github.io/process-document/): 提案进入正式规格的流程
+- [TC39: A Process Sketch, Stages 0 and 1](https://thefeedbackloop.xyz/tc39-a-process-sketch-stages-0-and-1/): Stage 0 和 Stage 1 的含义
 
 ## 综合介绍
 

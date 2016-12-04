@@ -927,6 +927,54 @@ console.log(A); // 1
 console.log(B); // 3
 ```
 
+## import()
+
+上面说过了，`import`语句会被JavaScript引擎静态分析，先于模块内的其他模块执行（叫做”连接“更合适）。所以，下面的代码会报错。
+
+```javascript
+// 报错
+if (x === 2) {
+  import MyModual from './myModual';
+}
+```
+
+上面代码中，引擎处理`import`语句是在执行之前，所以`import`语句放在`if`代码块之中毫无意义，因此会报句法错误，而不是执行时错误。
+
+这样的设计，固然有利于编译器提高效率，但也导致无法在运行时加载模块。从长远来看，`import`语句会取代 Node 的`require`方法，但是`require`是运行时加载模块，`import`语句显然无法取代这种动态加载功能。
+
+```javascript
+const path = './' + fileName;
+const myModual = require(path);
+```
+
+上面的语句就是动态加载，`require`到底加载哪一个模块，只有运行时才知道。`import`语句做不到这一点。
+
+因此，有一个[提案](https://github.com/tc39/proposal-dynamic-import)，建议引入`import()`函数，完成动态加载。
+
+```javascript
+import(specifier)
+```
+
+上面代码中，`import`函数的参数`specifier`，指定所要加载的模块的位置。`import`语句能够接受什么参数，`import()`函数就能接受什么参数，两者区别主要是后者为动态加载。
+
+`import()`返回一个 Promise 对象。下面是一个例子。
+
+```javascript
+const main = document.querySelector('main');
+
+import(`./section-modules/${someVariable}.js`)
+  .then(module => {
+    module.loadPageInto(main);
+  })
+  .catch(err => {
+    main.textContent = err.message;
+  });
+```
+
+`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，也会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。
+
+`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。
+
 ## ES6模块的转码
 
 浏览器目前还不支持ES6模块，为了现在就能使用，可以将转为ES5的写法。除了Babel可以用来转码之外，还有以下两个方法，也可以用来转码。
@@ -997,4 +1045,5 @@ System.import('app/es6-file').then(function(m) {
 </script>
 ```
 
-上面代码中，`System.import`方法返回的是一个Promise对象，所以可以用then方法指定回调函数。
+上面代码中，`System.import`方法返回的是一个 Promise 对象，所以可以用`then`方法指定回调函数。
+
