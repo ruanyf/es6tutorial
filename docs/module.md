@@ -262,30 +262,6 @@ import { foo, bar } from 'my_module';
 
 上面代码中，虽然`foo`和`bar`在两个语句中加载，但是它们对应的是同一个`my_module`实例。也就是说，`import`语句是 Singleton 模式。
 
-## export 与 import 复合的写法
-
-如果在一个模块之中，先输入后输出同一个模块，`import`语句可以与`export`语句写在一起。
-
-```javascript
-export { es6 as default } from './someModule';
-
-// 等同于
-import { es6 } from './someModule';
-export default es6;
-```
-
-上面代码中，`export`和`import`语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，而应该采用标准写法。
-
-另外，ES7有一个[提案](https://github.com/leebyron/ecmascript-more-export-from)，简化先输入后输出的写法，拿掉输出时的大括号。
-
-```javascript
-// 现行的写法
-export {v} from 'mod';
-
-// 提案的写法
-export v from 'mod';
-```
-
 ## 模块的整体加载
 
 除了指定加载某个输出值，还可以使用整体加载，即用星号（`*`）指定一个对象，所有输出值都加载在这个对象上面。
@@ -324,7 +300,7 @@ console.log('圆面积：' + circle.area(4));
 console.log('圆周长：' + circle.circumference(14));
 ```
 
-## export default命令
+## export default 命令
 
 从前面的例子可以看出，使用`import`命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。
 
@@ -450,6 +426,30 @@ export default class { ... }
 // main.js
 import MyClass from 'MyClass';
 let o = new MyClass();
+```
+
+## export 与 import 的复合写法
+
+如果在一个模块之中，先输入后输出同一个模块，`import`语句可以与`export`语句写在一起。
+
+```javascript
+export { es6 as default } from './someModule';
+
+// 等同于
+import { es6 } from './someModule';
+export default es6;
+```
+
+上面代码中，`export`和`import`语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，而应该采用标准写法。
+
+另外，ES7有一个[提案](https://github.com/leebyron/ecmascript-more-export-from)，简化先输入后输出的写法，拿掉输出时的大括号。
+
+```javascript
+// 现行的写法
+export {v} from 'mod';
+
+// 提案的写法
+export v from 'mod';
 ```
 
 ## 模块的继承
