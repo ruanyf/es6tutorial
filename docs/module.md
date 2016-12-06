@@ -347,19 +347,19 @@ export default foo;
 下面比较一下默认输出和正常输出。
 
 ```javascript
-// 输出
-export default function crc32() {
+// 第一组
+export default function crc32() { // 输出
   // ...
 }
-// 输入
-import crc32 from 'crc32';
 
-// 输出
-export function crc32() {
+import crc32 from 'crc32'; // 输入
+
+// 第二组
+export function crc32() { // 输出
   // ...
 };
-// 输入
-import {crc32} from 'crc32';
+
+import {crc32} from 'crc32'; // 输入
 ```
 
 上面代码的两组写法，第一组是使用`export default`时，对应的`import`语句不需要使用大括号；第二组是不使用`export default`时，对应的`import`语句需要使用大括号。
@@ -399,17 +399,31 @@ export default var a = 1;
 
 上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
 
-有了`export default`命令，输入模块时就非常直观了，以输入jQuery模块为例。
+有了`export default`命令，输入模块时就非常直观了，以输入 lodash 模块为例。
 
 ```javascript
-import $ from 'jquery';
+import _ from 'lodash';
 ```
 
-如果想在一条import语句中，同时输入默认方法和其他变量，可以写成下面这样。
+如果想在一条`import`语句中，同时输入默认方法和其他变量，可以写成下面这样。
 
 ```javascript
-import customName, { otherMethod } from './export-default';
+import _, { each } from 'lodash';
 ```
+
+对应上面代码的`export`语句如下。
+
+```javascript
+export default function (obj) {
+  // ···
+}
+export function each(obj, iterator, context) {
+  // ···
+}
+export { each as forEach };
+```
+
+上面代码的最后一行的意思是，暴露出`forEach`接口，默认指向`each`接口，即`forEach`和`each`指向同一个方法。
 
 如果要输出默认的值，只需将值跟在`export default`之后即可。
 
@@ -433,6 +447,34 @@ let o = new MyClass();
 如果在一个模块之中，先输入后输出同一个模块，`import`语句可以与`export`语句写在一起。
 
 ```javascript
+export { foo, bar } from 'my_module';
+
+// 等同于
+import { foo, bar } from 'my_module';
+export { foo, boo};
+```
+
+上面代码中，`export`和`import`语句可以结合在一起，写成一行。
+
+模块的改名输出和整体输出，也可以采用这种写法。
+
+```javascript
+// 改名输出
+export { foo as myFoo } from 'my_module';
+
+// 整体输出
+export * from 'my_module';
+```
+
+默认输出的写法如下。
+
+```javascript
+export { default } from 'foo';
+```
+
+将某个接口改为默认输出的写法如下。
+
+```javascript
 export { es6 as default } from './someModule';
 
 // 等同于
@@ -440,7 +482,11 @@ import { es6 } from './someModule';
 export default es6;
 ```
 
-上面代码中，`export`和`import`语句可以结合在一起，写成一行。但是从可读性考虑，不建议采用这种写法，而应该采用标准写法。
+同样地，默认输出也可以改名为具名接口。
+
+```javascript
+export { default as es6 } from './someModule';
+```
 
 另外，ES7有一个[提案](https://github.com/leebyron/ecmascript-more-export-from)，简化先输入后输出的写法，拿掉输出时的大括号。
 
@@ -1064,7 +1110,7 @@ import(`./section-modules/${someVariable}.js`)
 
 ### ES6 module transpiler
 
-[ES6 module transpiler](https://github.com/esnext/es6-module-transpiler)是square公司开源的一个转码器，可以将ES6模块转为CommonJS模块或AMD模块的写法，从而在浏览器中使用。
+[ES6 module transpiler](https://github.com/esnext/es6-module-transpiler)是 square 公司开源的一个转码器，可以将 ES6 模块转为 CommonJS 模块或 AMD 模块的写法，从而在浏览器中使用。
 
 首先，安装这个转玛器。
 
@@ -1072,7 +1118,7 @@ import(`./section-modules/${someVariable}.js`)
 $ npm install -g es6-module-transpiler
 ```
 
-然后，使用`compile-modules convert`命令，将ES6模块文件转码。
+然后，使用`compile-modules convert`命令，将 ES6 模块文件转码。
 
 ```bash
 $ compile-modules convert file1.js file2.js
@@ -1086,9 +1132,9 @@ $ compile-modules convert -o out.js file1.js
 
 ### SystemJS
 
-另一种解决方法是使用[SystemJS](https://github.com/systemjs/systemjs)。它是一个垫片库（polyfill），可以在浏览器内加载ES6模块、AMD模块和CommonJS模块，将其转为ES5格式。它在后台调用的是Google的Traceur转码器。
+另一种解决方法是使用 [SystemJS](https://github.com/systemjs/systemjs)。它是一个垫片库（polyfill），可以在浏览器内加载 ES6 模块、AMD 模块和 CommonJS 模块，将其转为 ES5 格式。它在后台调用的是 Google 的 Traceur 转码器。
 
-使用时，先在网页内载入system.js文件。
+使用时，先在网页内载入`system.js`文件。
 
 ```html
 <script src="system.js"></script>
@@ -1104,7 +1150,7 @@ $ compile-modules convert -o out.js file1.js
 
 上面代码中的`./app`，指的是当前目录下的app.js文件。它可以是ES6模块文件，`System.import`会自动将其转码。
 
-需要注意的是，`System.import`使用异步加载，返回一个Promise对象，可以针对这个对象编程。下面是一个模块文件。
+需要注意的是，`System.import`使用异步加载，返回一个 Promise 对象，可以针对这个对象编程。下面是一个模块文件。
 
 ```javascript
 // app/es6-file.js:
