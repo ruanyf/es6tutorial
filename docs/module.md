@@ -456,23 +456,23 @@ export { foo, boo};
 
 上面代码中，`export`和`import`语句可以结合在一起，写成一行。
 
-模块的改名输出和整体输出，也可以采用这种写法。
+模块的接口改名和整体输出，也可以采用这种写法。
 
 ```javascript
-// 改名输出
+// 接口改名
 export { foo as myFoo } from 'my_module';
 
 // 整体输出
 export * from 'my_module';
 ```
 
-默认输出的写法如下。
+默认接口的写法如下。
 
 ```javascript
 export { default } from 'foo';
 ```
 
-将某个接口改为默认输出的写法如下。
+具名接口改为默认接口的写法如下。
 
 ```javascript
 export { es6 as default } from './someModule';
@@ -482,7 +482,7 @@ import { es6 } from './someModule';
 export default es6;
 ```
 
-同样地，默认输出也可以改名为具名接口。
+同样地，默认接口也可以改名为具名接口。
 
 ```javascript
 export { default as es6 } from './someModule';
