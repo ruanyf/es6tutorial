@@ -754,19 +754,19 @@ Object.getPrototypeOf(rec) === Rectangle.prototype
 // false
 ```
 
-## Object.values()，Object.entries()
+## Object.keys()，Object.values()，Object.entries()
 
 ### Object.keys()
 
-ES5引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
+ES5 引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
 
 ```javascript
-var obj = { foo: "bar", baz: 42 };
+var obj = { foo: 'bar', baz: 42 };
 Object.keys(obj)
 // ["foo", "baz"]
 ```
 
-目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
+ES2017 [引入](https://github.com/tc39/proposal-object-values-entries)了跟`Object.keys`配套的`Object.values`和`Object.entries`，作为遍历一个对象的补充手段。
 
 ```javascript
 let {keys, values, entries} = Object;
@@ -790,7 +790,7 @@ for (let [key, value] of entries(obj)) {
 `Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 
 ```javascript
-var obj = { foo: "bar", baz: 42 };
+var obj = { foo: 'bar', baz: 42 };
 Object.values(obj)
 // ["bar", 42]
 ```
@@ -812,9 +812,9 @@ var obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 
-上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的。`Object.values`不会返回这个属性。
+上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的，因为`p`是继承的属性，而不是对象自身的属性。`Object.values`不会返回这个属性。
 
-`Object.values`会过滤属性名为Symbol值的属性。
+`Object.values`会过滤属性名为 Symbol 值的属性。
 
 ```javascript
 Object.values({ [Symbol()]: 123, foo: 'abc' });

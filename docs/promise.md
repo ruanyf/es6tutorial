@@ -355,7 +355,7 @@ someAsyncThing().then(function() {
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
-  resolve("ok");
+  resolve('ok');
   setTimeout(function() { throw new Error('test') }, 0)
 });
 promise.then(function(value) { console.log(value) });
@@ -363,9 +363,9 @@ promise.then(function(value) { console.log(value) });
 // Uncaught Error: test
 ```
 
-上面代码中，Promise指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用`try...catch`语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
+上面代码中，Promise 指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用`try...catch`语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
 
-Node.js有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误。
+Node 有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误。
 
 ```javascript
 process.on('unhandledRejection', function (err, p) {
@@ -375,7 +375,7 @@ process.on('unhandledRejection', function (err, p) {
 
 上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的Promise实例，它可以用来了解发生错误的环境信息。。
 
-需要注意的是，`catch`方法返回的还是一个Promise对象，因此后面还可以接着调用`then`方法。
+需要注意的是，`catch`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then`方法。
 
 ```javascript
 var someAsyncThing = function() {
@@ -776,7 +776,7 @@ run(g);
 Promise.resolve().then(f)
 ```
 
-上面的写法有一个缺点，就是如果`f`是同步函数，那么它会在下一轮事件循环执行。
+上面的写法有一个缺点，就是如果`f`是同步函数，那么它会在本轮事件循环的末尾执行。
 
 ```javascript
 const f = () => console.log('now');

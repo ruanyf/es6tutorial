@@ -624,9 +624,11 @@ class B {
 
 // B的实例继承A的实例
 Object.setPrototypeOf(B.prototype, A.prototype);
+const b = new B();
 
-// B继承A的静态属性
+// B的实例继承A的静态属性
 Object.setPrototypeOf(B, A);
+const b = new B();
 ```
 
 《对象的扩展》一章给出过`Object.setPrototypeOf`方法的实现。

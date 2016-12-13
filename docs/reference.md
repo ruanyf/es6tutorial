@@ -12,6 +12,7 @@
 - [ECMAScript Daily](https://ecmascript-daily.github.io/): TC39委员会的动态
 - [The TC39 Process](https://tc39.github.io/process-document/): 提案进入正式规格的流程
 - [TC39: A Process Sketch, Stages 0 and 1](https://thefeedbackloop.xyz/tc39-a-process-sketch-stages-0-and-1/): Stage 0 和 Stage 1 的含义
+- [TC39 Process Sketch, Stage 2](https://thefeedbackloop.xyz/tc39-process-sketch-stage-2/): Stage 2 的含义
 
 ## 综合介绍
 
