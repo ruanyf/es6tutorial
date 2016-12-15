@@ -303,7 +303,7 @@ let obj = {
 };
 
 Reflect.ownKeys(obj)
-// [Symbol(my_key), 'enum', 'nonEnum']
+//  ["enum", "nonEnum", Symbol(my_key)]
 ```
 
 由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
