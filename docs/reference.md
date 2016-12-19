@@ -130,6 +130,7 @@
 - Nicolas Bevacqua, [More ES6 Proxy Traps in Depth](http://ponyfoo.com/articles/more-es6-proxy-traps-in-depth)
 - Axel Rauschmayer, [Pitfall: not all objects can be wrapped transparently by proxies](http://www.2ality.com/2016/11/proxying-builtins.html)
 - Bertalan Miklos, [Writing a JavaScript Framework - Data Binding with ES6 Proxies](https://blog.risingstack.com/writing-a-javascript-framework-data-binding-es6-proxy/): 使用 Proxy 实现观察者模式
+- Keith Cirkel, [Metaprogramming in ES6: Part 2 - Reflect](https://www.keithcirkel.co.uk/metaprogramming-in-es6-part-2-reflect/): Reflect API 的详细介绍
 
 ## Promise对象
 
