@@ -552,15 +552,39 @@ a2[1] = 6;
 
 ### Symbol.species
 
-对象的`Symbol.species`属性，指向一个方法。该对象作为构造函数创造实例时，会调用这个方法。即如果`this.constructor[Symbol.species]`存在，就会使用这个属性作为构造函数，来创造新的实例对象。
+对象的`Symbol.species`属性，指向当前对象的构造函数。创造实例时，默认会调用这个方法，即使用这个属性返回的函数当作构造函数，来创造新的实例对象。
 
-`Symbol.species`属性默认的读取器如下。
+```javascript
+class MyArray extends Array {
+  // 覆盖父类 Array 的构造函数
+  static get [Symbol.species]() { return Array; }
+}
+```
+
+上面代码中，子类`MyArray`继承了父类`Array`。创建`MyArray`的实例对象时，本来会调用它自己的构造函数（本例中被省略了），但是由于定义了`Symbol.species`属性，所以会使用这个属性返回的的函数，创建`MyArray`的实例。
+
+这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
 
 ```javascript
 static get [Symbol.species]() {
   return this;
 }
 ```
+
+下面是一个例子。
+
+```javascript
+class MyArray extends Array {
+  static get [Symbol.species]() { return Array; }
+}
+var a = new MyArray(1,2,3);
+var mapped = a.map(x => x * x);
+
+mapped instanceof MyArray // false
+mapped instanceof Array // true
+```
+
+上面代码中，由于构造函数被替换成了`Array`。所以，`mapped`对象不是`MyArray`的实例，而是`Array`的实例。
 
 ### Symbol.match
 
@@ -630,6 +654,37 @@ String.prototype.split(separator, limit)
 // 等同于
 separator[Symbol.split](this, limit)
 ```
+
+下面是一个例子。
+
+```javascript
+class MySplitter {
+  constructor(value) {
+    this.value = value;
+  }
+  [Symbol.split](string) {
+    var index = string.indexOf(this.value);
+    if (index === -1) {
+      return string;
+    }
+    return [
+      string.substr(0, index),
+      string.substr(index + this.value.length)
+    ];
+  }
+}
+
+'foobar'.split(new MySplitter('foo'))
+// ['', 'bar']
+
+'foobar'.split(new MySplitter('bar'))
+// ['foo', '']
+
+'foobar'.split(new MySplitter('baz'))
+// 'foobar'
+```
+
+上面方法使用`Symbol.split`方法，重新定义了字符串对象的`split`方法的行为，
 
 ### Symbol.iterator
 
