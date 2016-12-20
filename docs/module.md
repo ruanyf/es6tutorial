@@ -451,7 +451,7 @@ export { foo, bar } from 'my_module';
 
 // 等同于
 import { foo, bar } from 'my_module';
-export { foo, boo};
+export { foo, bar };
 ```
 
 上面代码中，`export`和`import`语句可以结合在一起，写成一行。
