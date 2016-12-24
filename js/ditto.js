@@ -139,7 +139,7 @@ function init_back_to_top_button() {
 
 function goTop(e) {
   if(e) e.preventDefault();
-  $('html body').animate({
+  $('html, body').animate({
     scrollTop: 0
   }, 200);
   history.pushState(null, null, '#' + location.hash.split('#')[1]);

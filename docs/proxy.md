@@ -317,6 +317,29 @@ const el = dom.div({},
 document.body.appendChild(el);
 ```
 
+如果一个属性不可配置（configurable）和不可写（writable），则该属性不能被代理，通过 Proxy 对象访问该属性会报错。
+
+```javascript
+const target = Object.defineProperties({}, {
+  foo: {
+    value: 123,
+    writable: false,
+    configurable: false
+  },
+});
+
+const handler = {
+  get(target, propKey) {
+    return 'abc';
+  }
+};
+
+const proxy = new Proxy(target, handler);
+
+proxy.foo
+// TypeError: Invariant check failed
+```
+
 ### set()
 
 `set`方法用来拦截某个属性的赋值操作。
@@ -379,6 +402,8 @@ proxy._prop = 'c'
 ```
 
 上面代码中，只要读写的属性名的第一个字符是下划线，一律抛错，从而达到禁止读写内部属性的目的。
+
+注意，如果目标对象自身的某个属性，不可写也不可配置，那么`set`不得改变这个属性的值，只能返回同样的值，否则报错。
 
 ### apply()
 
@@ -474,7 +499,7 @@ var p = new Proxy(obj, {
 'a' in p // TypeError is thrown
 ```
 
-上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。
+上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。也就是说，如果某个属性不可配置（或者目标对象不可扩展），则`has`方法就不得“隐藏”（即返回`false`）目标对象的该属性。
 
 值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，还是继承的属性。
 
@@ -588,6 +613,8 @@ delete proxy._prop
 
 上面代码中，`deleteProperty`方法拦截了`delete`操作符，删除第一个字符为下划线的属性会报错。
 
+注意，目标对象自身的不可配置（configurable）的属性，不能被`deleteProperty`方法删除，否则报错。
+
 ### defineProperty()
 
 `defineProperty`方法拦截了`Object.defineProperty`操作。
@@ -605,6 +632,8 @@ proxy.foo = 'bar'
 ```
 
 上面代码中，`defineProperty`方法返回`false`，导致添加新属性会抛出错误。
+
+注意，如果目标对象不可扩展（extensible），则`defineProperty`不能增加目标对象上不存在的属性，否则会报错。另外，如果目标对象的某个属性不可写（writable）或不可配置（configurable），则`defineProperty`方法不得改变这两个设置。
 
 ### getOwnPropertyDescriptor()
 
@@ -655,6 +684,8 @@ Object.getPrototypeOf(p) === proto // true
 
 上面代码中，`getPrototypeOf`方法拦截`Object.getPrototypeOf()`，返回`proto`对象。
 
+注意，`getPrototypeOf`方法的返回值必须是对象或者`null`，否则报错。另外，如果目标对象不可扩展（extensible）， `getPrototypeOf`方法必须返回目标对象的原型对象。
+
 ### isExtensible()
 
 `isExtensible`方法拦截`Object.isExtensible`操作。
@@ -674,7 +705,9 @@ Object.isExtensible(p)
 
 上面代码设置了`isExtensible`方法，在调用`Object.isExtensible`时会输出`called`。
 
-这个方法有一个强限制，如果不能满足下面的条件，就会抛出错误。
+注意，该方法只能返回布尔值，否则返回值会被自动转为布尔值。
+
+这个方法有一个强限制，它的返回值必须与目标对象的`isExtensible`属性保持一致，否则就会抛出错误。
 
 ```javascript
 Object.isExtensible(proxy) === Object.isExtensible(target)
@@ -855,9 +888,9 @@ Object.getOwnPropertyNames(p)
 
 ### preventExtensions()
 
-`preventExtensions`方法拦截`Object.preventExtensions()`。该方法必须返回一个布尔值。
+`preventExtensions`方法拦截`Object.preventExtensions()`。该方法必须返回一个布尔值，否则会被自动转为布尔值。
 
-这个方法有一个限制，只有当`Object.isExtensible(proxy)`为`false`（即不可扩展）时，`proxy.preventExtensions`才能返回`true`，否则会报错。
+这个方法有一个限制，只有目标对象不可扩展时（即`Object.isExtensible(proxy)`为`false`），`proxy.preventExtensions`才能返回`true`，否则会报错。
 
 ```javascript
 var p = new Proxy({}, {
@@ -876,7 +909,7 @@ Object.preventExtensions(p) // 报错
 ```javascript
 var p = new Proxy({}, {
   preventExtensions: function(target) {
-    console.log("called");
+    console.log('called');
     Object.preventExtensions(target);
     return true;
   }
@@ -908,6 +941,8 @@ proxy.setPrototypeOf(proxy, proto);
 
 上面代码中，只要修改`target`的原型对象，就会报错。
 
+注意，该方法只能返回布尔值，否则会被自动转为布尔值。另外，如果目标对象不可扩展（extensible），`setPrototypeOf`方法不得改变目标对象的原型。
+
 ## Proxy.revocable()
 
 `Proxy.revocable`方法返回一个可取消的 Proxy 实例。
@@ -926,6 +961,8 @@ proxy.foo // TypeError: Revoked
 ```
 
 `Proxy.revocable`方法返回一个对象，该对象的`proxy`属性是`Proxy`实例，`revoke`属性是一个函数，可以取消`Proxy`实例。上面代码中，当执行`revoke`函数之后，再访问`Proxy`实例，就会抛出一个错误。
+
+`Proxy.revocable`的一个使用场景是，目标对象不允许直接访问，必须通过代理访问，一旦访问结束，就收回代理权，不允许再次访问。
 
 ## this 问题
 
@@ -997,4 +1034,33 @@ const proxy = new Proxy(target, handler);
 
 proxy.getDate() // 1
 ```
+
+## 应用实例
+
+### Web 服务器的客户端
+
+Proxy 对象可以拦截目标对象的任意属性，这使得它很合适用来写 Web 服务的客户端。
+
+```javascript
+const service = createWebService('http://example.com/data');
+
+service.employees().then(json => {
+  const employees = JSON.parse(json);
+  // ···
+});
+```
+
+上面代码新建了一个 Web 服务的接口，这个接口返回各种数据。Proxy 可以拦截这个对象的任意属性，所以不用为每一种数据写一个适配方法，只要写一个 Proxy 拦截就可以了。
+
+```javascript
+function createWebService(baseUrl) {
+  return new Proxy({}, {
+    get(target, propKey, receiver) {
+      return () => httpGet(baseUrl+'/' + propKey);
+    }
+  });
+}
+```
+
+同理，Proxy 也可以用来实现数据库的 ORM 层。
 

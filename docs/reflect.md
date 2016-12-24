@@ -225,6 +225,8 @@ delete myObj.foo;
 Reflect.deleteProperty(myObj, 'foo');
 ```
 
+该方法返回一个布尔值。如果删除成功，或者被删除的属性不存在，返回`true`；删除失败，被删除的属性依然存在，返回`false`。
+
 ### Reflect.construct(target, args)
 
 `Reflect.construct`方法等同于`new target(...args)`，这提供了一种不使用`new`，来调用构造函数的方法。
