@@ -137,7 +137,7 @@ fproxy.foo // "Hello, foo"
 
 **（3）has(target, propKey)**
 
-拦截`propKey in proxy`的操作，以及对象的`hasOwnProperty`方法，返回一个布尔值。
+拦截`propKey in proxy`的操作，返回一个布尔值。
 
 **（4）deleteProperty(target, propKey)**
 
@@ -778,7 +778,7 @@ for (let key of Object.keys(proxy)) {
 // "baz"
 ```
 
-注意，有三类属性会被`ownKeys`方法自动过滤，不会返回。
+注意，使用`Object.keys`方法时，有三类属性会被`ownKeys`方法自动过滤，不会返回。
 
 - 目标对象上不存在的属性
 - 属性名为 Symbol 值
@@ -813,7 +813,7 @@ Object.keys(proxy)
 
 上面代码中，`ownKeys`方法之中，显式返回不存在的属性（`d`）、Symbol 值（`Symbol.for('secret')`）、不可遍历的属性（`key`），结果都被自动过滤掉。
 
-下面是拦截`Object.getOwnPropertyNames()`的例子。
+`ownKeys`方法还可以拦截`Object.getOwnPropertyNames()`。
 
 ```javascript
 var p = new Proxy({}, {
@@ -826,7 +826,7 @@ Object.getOwnPropertyNames(p)
 // [ 'a', 'b', 'c' ]
 ```
 
-注意，`ownKeys`方法返回的数组成员，只能是字符串或 Symbol 值。如果有其他类型的值，或者返回的根本不是数组，就会报错。
+`ownKeys`方法返回的数组成员，只能是字符串或 Symbol 值。如果有其他类型的值，或者返回的根本不是数组，就会报错。
 
 ```javascript
 var obj = {};
@@ -1035,9 +1035,7 @@ const proxy = new Proxy(target, handler);
 proxy.getDate() // 1
 ```
 
-## 应用实例
-
-### Web 服务器的客户端
+## 实例：Web 服务的客户端
 
 Proxy 对象可以拦截目标对象的任意属性，这使得它很合适用来写 Web 服务的客户端。
 
