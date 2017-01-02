@@ -901,7 +901,7 @@ f()
 // hello world
 ```
 
-另一种方法是`await`后面的Promise对象再跟一个`catch`方面，处理前面可能出现的错误。
+另一种方法是`await`后面的Promise对象再跟一个`catch`方法，处理前面可能出现的错误。
 
 ```javascript
 async function f() {
