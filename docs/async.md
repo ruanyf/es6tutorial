@@ -1357,7 +1357,7 @@ asyncIterator
 
 ```javascript
 const asyncIterable = createAsyncIterable(['a', 'b']);
-const asyncIterator = someCollection[Symbol.asyncIterator]();
+const asyncIterator = asyncIterable[Symbol.asyncIterator]();
 
 asyncIterator
 .next()
