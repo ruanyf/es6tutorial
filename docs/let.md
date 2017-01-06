@@ -321,7 +321,8 @@ ES6 规定，块级作用域之中，函数声明语句的行为类似于`let`�
 ```javascript
 function f() { console.log('I am outside!'); }
 (function () {
-  if (false) {
+  if (true) {//如果
+    是false的话，下面调用f()会提示f is not defined
     // 重复声明一次函数f
     function f() { console.log('I am inside!'); }
   }
