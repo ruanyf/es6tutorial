@@ -1433,9 +1433,9 @@ async function f() {
 
 ```javascript
 let body = '';
-for await(const data on req) body += data;
+for await(const data of req) body += data;
 const parsed = JSON.parse(body);
-console.log("got", parsed);
+console.log('got', parsed);
 ```
 
 上面代码中，`req`是一个 asyncIterable 对象，用来异步读取数据。可以看到，使用`for await...of`循环以后，代码会非常简洁。
