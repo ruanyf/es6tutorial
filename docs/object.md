@@ -246,7 +246,7 @@ myObject // Object {[object Object]: "valueB"}
 ```javascript
 const person = {
   sayName() {
-    console.log(this.name);
+    console.log('hello!');
   },
 };
 
