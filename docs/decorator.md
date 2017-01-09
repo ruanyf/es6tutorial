@@ -251,12 +251,12 @@ function foo() {
 上面的代码，意图是执行后`counter`等于1，但是实际上结果是`counter`等于0。因为函数提升，使得实际执行的代码是下面这样。
 
 ```javascript
-var counter;
-var add;
-
 @add
 function foo() {
 }
+
+var counter;
+var add;
 
 counter = 0;
 
