@@ -266,7 +266,7 @@ const obj = {
 obj.foo.name
 // TypeError: Cannot read property 'name' of undefined
 
-const descriptor = Object.getOwnPropertyDescriptor(o, 'foo');
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
 
 descriptor.get.name // "get foo"
 descriptor.set.name // "set foo"
