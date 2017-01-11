@@ -705,9 +705,9 @@ g.next() // { done: true, value: 7 }
 
 上面代码中，调用`return`方法后，就开始执行`finally`代码块，然后等到`finally`代码块执行完，再执行`return`方法。
 
-## yield*语句
+## yield* 语句
 
-如果在Generater函数内部，调用另一个Generator函数，默认情况下是没有效果的。
+如果在 Generator 函数内部，调用另一个 Generator 函数，默认情况下是没有效果的。
 
 ```javascript
 function* foo() {
@@ -728,9 +728,9 @@ for (let v of bar()){
 // "y"
 ```
 
-上面代码中，`foo`和`bar`都是Generator函数，在`bar`里面调用`foo`，是不会有效果的。
+上面代码中，`foo`和`bar`都是 Generator 函数，在`bar`里面调用`foo`，是不会有效果的。
 
-这个就需要用到`yield*`语句，用来在一个Generator函数里面执行另一个Generator函数。
+这个就需要用到`yield*`语句，用来在一个 Generator 函数里面执行另一个 Generator 函数。
 
 ```javascript
 function* bar() {

@@ -13,7 +13,7 @@ baz // {foo: "bar"}
 var baz = {foo: foo};
 ```
 
-上面代码表明，ES6允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
+上面代码表明，ES6 允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
 
 ```javascript
 function f(x, y) {
@@ -244,22 +244,35 @@ myObject // Object {[object Object]: "valueB"}
 函数的`name`属性，返回函数名。对象方法也是函数，因此也有`name`属性。
 
 ```javascript
-var person = {
+const person = {
   sayName() {
-    console.log(this.name);
+    console.log('hello!');
   },
-  get firstName() {
-    return "Nicholas";
-  }
 };
 
 person.sayName.name   // "sayName"
-person.firstName.name // "get firstName"
 ```
 
-上面代码中，方法的`name`属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上`get`。如果是存值函数，方法名的前面会加上`set`。
+上面代码中，方法的`name`属性返回函数名（即方法名）。
 
-有两种特殊情况：`bind`方法创造的函数，`name`属性返回“bound”加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回“anonymous”。
+如果对象的方法使用了取值函数（`getter`）和存值函数（`setter`），则`name`属性不是在该方法上面，而是该方法的属性的描述对象的`get`和`set`属性上面，返回值是方法名前加上`get`和`set`。
+
+```javascript
+const obj = {
+  get foo() {},
+  set foo(x) {}
+};
+
+obj.foo.name
+// TypeError: Cannot read property 'name' of undefined
+
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
+
+descriptor.get.name // "get foo"
+descriptor.set.name // "set foo"
+```
+
+有两种特殊情况：`bind`方法创造的函数，`name`属性返回`bound`加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回`anonymous`。
 
 ```javascript
 (new Function()).name // "anonymous"
@@ -270,7 +283,7 @@ var doSomething = function() {
 doSomething.bind().name // "bound doSomething"
 ```
 
-如果对象的方法是一个Symbol值，那么`name`属性返回的是这个Symbol值的描述。
+如果对象的方法是一个 Symbol 值，那么`name`属性返回的是这个 Symbol 值的描述。
 
 ```javascript
 const key1 = Symbol('description');
@@ -283,7 +296,7 @@ obj[key1].name // "[description]"
 obj[key2].name // ""
 ```
 
-上面代码中，`key1`对应的Symbol值有描述，`key2`没有。
+上面代码中，`key1`对应的 Symbol 值有描述，`key2`没有。
 
 ## Object.is()
 
