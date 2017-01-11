@@ -1110,7 +1110,7 @@ var o = new NewObj({attr: true});
 console.log(o.attr === true);  // false
 ```
 
-上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为ES6改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，ES6规定`Object`构造函数会忽略参数。
+上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为ES6的规定改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，`Object`构造函数会忽略参数。
 
 ## Class的取值函数（getter）和存值函数（setter）
 
