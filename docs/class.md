@@ -354,7 +354,7 @@ person.sayName(); // "张三"
 
 ### 私有方法
 
-私有方法是常见需求，但ES6不提供，只能通过变通方法模拟实现。
+私有方法是常见需求，但 ES6 不提供，只能通过变通方法模拟实现。
 
 一种做法是在命名上加以区别。
 
@@ -418,6 +418,50 @@ export default class myClass{
 ```
 
 上面代码中，`bar`和`snaf`都是`Symbol`值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
+
+### 私有属性
+
+目前，有一个[提案](https://github.com/tc39/proposal-private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+
+```javascript
+class Point {
+  #x;
+
+  constructor(x = 0) {
+    #x = +x;
+  }
+
+  get x() { return #x }
+  set x(value) { #x = +value }
+}
+```
+
+上面代码中，`#x`就表示私有属性`x`，在`Point`类之外是读取不到这个属性的。还可以看到，私有属性与实例的属性是可以同名的（比如，`#x`与`get x()`）。
+
+私有属性可以指定初始值，在构造函数执行时进行初始化。
+
+```javascript
+class Point {
+  #x = 0;
+  constructor() {
+    #x; // 0
+  }
+}
+```
+
+之所以要引入一个新的前缀`#`表示私有属性，而没有采用`private`关键字，是因为 JavaScript 是一门动态语言，使用独立的符号似乎是唯一的可靠方法，能够准确地区分一种属性是私有属性。另外，Ruby 语言使用`@`表示私有属性，ES6 没有用这个符号而使用`#`，是因为`@`已经被留给了 Decorator。
+
+该提案只规定了私有属性的写法。但是，很自然地，它也可以用来写私有方法。
+
+```javascript
+class Foo {
+  #a;
+  #b;
+  #sum() { return #a + #b; }
+  printSum() { console.log(#sum()); }
+  constructor(a, b) { #a = a; #b = b; }
+}
+```
 
 ### this的指向
 
