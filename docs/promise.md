@@ -489,7 +489,7 @@ Promise.all(promises).then(function (posts) {
 ```javascript
 const databasePromise = connectDatabase();
 
-const booksPromise = databaseProimse
+const booksPromise = databasePromise
   .then(findAllBooks);
 
 const userPromise = databasePromise
