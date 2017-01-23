@@ -439,12 +439,12 @@ while(!res.done){
 ```javascript
 var fs = require('fs');
 var thunkify = require('thunkify');
-var readFile = thunkify(fs.readFile);
+var readFileThunk = thunkify(fs.readFile);
 
 var gen = function* (){
-  var r1 = yield readFile('/etc/fstab');
+  var r1 = yield readFileThunk('/etc/fstab');
   console.log(r1.toString());
-  var r2 = yield readFile('/etc/shells');
+  var r2 = yield readFileThunk('/etc/shells');
   console.log(r2.toString());
 };
 ```
