@@ -935,7 +935,7 @@ var handler = {
 var proto = {};
 var target = function () {};
 var proxy = new Proxy(target, handler);
-proxy.setPrototypeOf(proxy, proto);
+Object.setPrototypeOf(proxy, proto);
 // Error: Changing the prototype is forbidden
 ```
 
