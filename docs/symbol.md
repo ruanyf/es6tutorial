@@ -807,18 +807,19 @@ Array.prototype[Symbol.unscopables]
 //   entries: true,
 //   fill: true,
 //   find: true,
-//   findIndex: true,
+//   findIndex: true,
+//   includes: true,
 //   keys: true
 // }
 
 Object.keys(Array.prototype[Symbol.unscopables])
-// ['copyWithin', 'entries', 'fill', 'find', 'findIndex', 'keys']
+// ['copyWithin', 'entries', 'fill', 'find', 'findIndex', 'includes', 'keys']
 ```
 
-上面代码说明，数组有6个属性，会被with命令排除。
+上面代码说明，数组有7个属性，会被`with`命令排除。
 
 ```javascript
-// 没有unscopables时
+// 没有 unscopables 时
 class MyClass {
   foo() { return 1; }
 }
@@ -829,7 +830,7 @@ with (MyClass.prototype) {
   foo(); // 1
 }
 
-// 有unscopables时
+// 有 unscopables 时
 class MyClass {
   foo() { return 1; }
   get [Symbol.unscopables]() {
@@ -844,3 +845,4 @@ with (MyClass.prototype) {
 }
 ```
 
+上面代码通过指定`Symbol.unscopables`属性，使得`with`语法块不会在当前作用域寻找`foo`属性，即`foo`将指向外层作用域的变量。
