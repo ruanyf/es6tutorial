@@ -1,10 +1,10 @@
-# Generator 函数：语法
+# Generator 函数的语法
 
 ## 简介
 
 ### 基本概念
 
-Generator 函数是 ES6 提供的一种异步编程解决方案，语法行为与传统函数完全不同。本章详细介绍Generator 函数的语法和 API，它的异步编程应用请看《Generator 函数：异步操作》一章。
+Generator 函数是 ES6 提供的一种异步编程解决方案，语法行为与传统函数完全不同。本章详细介绍Generator 函数的语法和 API，它的异步编程应用请看《Generator 函数的异步应用》一章。
 
 Generator 函数有多种理解角度。从语法上，首先可以把它理解成，Generator 函数是一个状态机，封装了多个内部状态。
 

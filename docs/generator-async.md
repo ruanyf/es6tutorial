@@ -1,4 +1,4 @@
-# Generator 函数：异步操作
+# Generator 函数的异步应用
 
 异步编程对 JavaScript 语言太重要。Javascript 语言的执行环境是“单线程”的，如果没有异步编程，根本没法用，非卡死不可。本章主要介绍 Generator 函数如何完成异步操作。
 
