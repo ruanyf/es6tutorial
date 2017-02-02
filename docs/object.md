@@ -779,7 +779,7 @@ Object.keys(obj)
 // ["foo", "baz"]
 ```
 
-ES2017 [引入](https://github.com/tc39/proposal-object-values-entries)了跟`Object.keys`配套的`Object.values`和`Object.entries`，作为遍历一个对象的补充手段。
+ES2017 [引入](https://github.com/tc39/proposal-object-values-entries)了跟`Object.keys`配套的`Object.values`和`Object.entries`，作为遍历一个对象的补充手段，供`for...of`循环使用。
 
 ```javascript
 let {keys, values, entries} = Object;
@@ -1111,7 +1111,7 @@ Object.getOwnPropertyDescriptor(obj, 'p')
 // }
 ```
 
-ES7有一个提案，提出了`Object.getOwnPropertyDescriptors`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
+ES2017 引入了`Object.getOwnPropertyDescriptors`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
 
 ```javascript
 const obj = {
@@ -1132,7 +1132,7 @@ Object.getOwnPropertyDescriptors(obj)
 //      configurable: true } }
 ```
 
-`Object.getOwnPropertyDescriptors`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
+上面代码中，`Object.getOwnPropertyDescriptors`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
 
 该方法的实现非常容易。
 
@@ -1146,7 +1146,7 @@ function getOwnPropertyDescriptors(obj) {
 }
 ```
 
-该方法的提出目的，主要是为了解决`Object.assign()`无法正确拷贝`get`属性和`set`属性的问题。
+该方法的引入目的，主要是为了解决`Object.assign()`无法正确拷贝`get`属性和`set`属性的问题。
 
 ```javascript
 const source = {
@@ -1210,7 +1210,7 @@ const shallowClone = (obj) => Object.create(
 
 上面代码会克隆对象`obj`。
 
-另外，`Object.getOwnPropertyDescriptors`方法可以实现，一个对象继承另一个对象。以前，继承另一个对象，常常写成下面这样。
+另外，`Object.getOwnPropertyDescriptors`方法可以实现一个对象继承另一个对象。以前，继承另一个对象，常常写成下面这样。
 
 ```javascript
 const obj = {
@@ -1219,7 +1219,7 @@ const obj = {
 };
 ```
 
-ES6规定`__proto__`只有浏览器要部署，其他环境不用部署。如果去除`__proto__`，上面代码就要改成下面这样。
+ES6 规定`__proto__`只有浏览器要部署，其他环境不用部署。如果去除`__proto__`，上面代码就要改成下面这样。
 
 ```javascript
 const obj = Object.create(prot);
@@ -1246,7 +1246,7 @@ const obj = Object.create(
 );
 ```
 
-`Object.getOwnPropertyDescriptors`也可以用来实现Mixin（混入）模式。
+`Object.getOwnPropertyDescriptors`也可以用来实现 Mixin（混入）模式。
 
 ```javascript
 let mix = (object) => ({
@@ -1266,3 +1266,4 @@ let d = mix(c).with(a, b);
 上面代码中，对象`a`和`b`被混入了对象`c`。
 
 出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。
+
