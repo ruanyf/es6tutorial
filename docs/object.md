@@ -872,27 +872,29 @@ Object.entries(obj)
 
 除了返回值不一样，该方法的行为与`Object.values`基本一致。
 
-如果原对象的属性名是一个Symbol值，该属性会被省略。
+如果原对象的属性名是一个 Symbol 值，该属性会被忽略。
 
 ```javascript
 Object.entries({ [Symbol()]: 123, foo: 'abc' });
 // [ [ 'foo', 'abc' ] ]
 ```
 
-上面代码中，原对象有两个属性，`Object.entries`只输出属性名非Symbol值的属性。将来可能会有`Reflect.ownEntries()`方法，返回对象自身的所有属性。
+上面代码中，原对象有两个属性，`Object.entries`只输出属性名非 Symbol 值的属性。将来可能会有`Reflect.ownEntries()`方法，返回对象自身的所有属性。
 
 `Object.entries`的基本用途是遍历对象的属性。
 
 ```javascript
 let obj = { one: 1, two: 2 };
 for (let [k, v] of Object.entries(obj)) {
-  console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+  console.log(
+    `${JSON.stringify(k)}: ${JSON.stringify(v)}`
+  );
 }
 // "one": 1
 // "two": 2
 ```
 
-`Object.entries`方法的一个用处是，将对象转为真正的`Map`结构。
+`Object.entries`方法的另一个用处是，将对象转为真正的`Map`结构。
 
 ```javascript
 var obj = { foo: 'bar', baz: 42 };

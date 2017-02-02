@@ -12,7 +12,9 @@ let { stat, exists, readFile } = require('fs');
 
 // 等同于
 let _fs = require('fs');
-let stat = _fs.stat, exists = _fs.exists, readfile = _fs.readfile;
+let stat = _fs.stat;
+let exists = _fs.exists;
+let readfile = _fs.readfile;
 ```
 
 上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），生成一个对象（`_fs`），然后再从这个对象上面读取3个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
@@ -58,6 +60,8 @@ ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`
 
 上面这些限制，模块都必须遵守。由于严格模式是 ES5 引入的，不属于 ES6，所以请参阅相关 ES5 书籍，本书不再详细介绍了。
 
+其中，尤其需要注意`this`的限制。ES6 模块之中，顶层的`this`指向`undefined`，即不应该在顶层代码使用`this`。
+
 ## export 命令
 
 模块功能主要由两个命令构成：`export`和`import`。`export`命令用于规定模块的对外接口，`import`命令用于输入其他模块提供的功能。
@@ -71,7 +75,7 @@ export var lastName = 'Jackson';
 export var year = 1958;
 ```
 
-上面代码是`profile.js`文件，保存了用户信息。ES6将其视为一个模块，里面用`export`命令对外部输出了三个变量。
+上面代码是`profile.js`文件，保存了用户信息。ES6 将其视为一个模块，里面用`export`命令对外部输出了三个变量。
 
 `export`的写法，除了像上面这样，还有另外一种。
 
@@ -86,7 +90,7 @@ export {firstName, lastName, year};
 
 上面代码在`export`命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在`var`语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
 
-export命令除了输出变量，还可以输出函数或类（class）。
+`export`命令除了输出变量，还可以输出函数或类（class）。
 
 ```javascript
 export function multiply(x, y) {
@@ -163,7 +167,7 @@ setTimeout(() => foo = 'baz', 500);
 
 上面代码输出变量`foo`，值为`bar`，500毫秒之后变成`baz`。
 
-这一点与CommonJS规范完全不同。CommonJS模块输出的是值的缓存，不存在动态更新，详见下文《ES6模块加载的实质》一节。
+这一点与 CommonJS 规范完全不同。CommonJS 模块输出的是值的缓存，不存在动态更新，详见下文《ES6模块加载的实质》一节。
 
 最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下一节的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。
 
@@ -399,6 +403,18 @@ export default var a = 1;
 
 上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
 
+同样地，因为`export default`本质是将该命令后面的值，赋给`default`变量以后再默认，所以直接将一个值写在`export default`之后。
+
+```javascript
+// 正确
+export default 42;
+
+// 报错
+export 42;
+```
+
+上面代码中，后一句报错是因为没有指定对外的接口，而前一句指定外对接口为`default`。
+
 有了`export default`命令，输入模块时就非常直观了，以输入 lodash 模块为例。
 
 ```javascript
@@ -417,19 +433,15 @@ import _, { each } from 'lodash';
 export default function (obj) {
   // ···
 }
+
 export function each(obj, iterator, context) {
   // ···
 }
+
 export { each as forEach };
 ```
 
 上面代码的最后一行的意思是，暴露出`forEach`接口，默认指向`each`接口，即`forEach`和`each`指向同一个方法。
-
-如果要输出默认的值，只需将值跟在`export default`之后即可。
-
-```javascript
-export default 42;
-```
 
 `export default`也可以用来输出类。
 
@@ -488,14 +500,20 @@ export default es6;
 export { default as es6 } from './someModule';
 ```
 
-另外，ES7有一个[提案](https://github.com/leebyron/ecmascript-more-export-from)，简化先输入后输出的写法，拿掉输出时的大括号。
+下面三种`import`语句，没有对应的复合写法。
 
 ```javascript
-// 现行的写法
-export {v} from 'mod';
+import * as someIdentifier from "someModule";
+import someIdentifier from "someModule";
+import someIdentifier, { namedIdentifier } from "someModule";
+```
 
-// 提案的写法
-export v from 'mod';
+为了做到形式的对称，现在有[提案](https://github.com/leebyron/ecmascript-export-default-from)，提出补上这三种复合写法。
+
+```javascript
+export * as someIdentifier from "someModule";
+export someIdentifier from "someModule";
+export someIdentifier, { namedIdentifier } from "someModule";
 ```
 
 ## 模块的继承
@@ -540,9 +558,9 @@ console.log(exp(math.e));
 
 ## ES6模块加载的实质
 
-ES6模块加载的机制，与CommonJS模块完全不同。CommonJS模块输出的是一个值的拷贝，而ES6模块输出的是值的引用。
+ES6 模块加载的机制，与 CommonJS 模块完全不同。CommonJS模块输出的是一个值的拷贝，而 ES6 模块输出的是值的引用。
 
-CommonJS模块输出的是被输出值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个模块文件`lib.js`的例子。
+CommonJS 模块输出的是被输出值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个模块文件`lib.js`的例子。
 
 ```javascript
 // lib.js
@@ -591,7 +609,7 @@ $ node main.js
 4
 ```
 
-ES6 模块的运行机制与 CommonJS 不一样。JS引擎对脚本静态分析的时候，遇到模块加载命令`import`，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值。换句话说，ES6 的`import`有点像 Unix 系统的“符号连接”，原始值变了，`import`加载的值也会跟着变。因此，ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
+ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析的时候，遇到模块加载命令`import`，就会生成一个只读引用。等到脚本真正执行时，再根据这个只读引用，到被加载的那个模块里面去取值。换句话说，ES6 的`import`有点像 Unix 系统的“符号连接”，原始值变了，`import`加载的值也会跟着变。因此，ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块。
 
 还是举上面的例子。
 
@@ -635,9 +653,9 @@ bar
 baz
 ```
 
-上面代码表明，ES6模块不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块。
+上面代码表明，ES6 模块不会缓存运行结果，而是动态地去被加载的模块取值，并且变量总是绑定其所在的模块。
 
-由于ES6输入的模块变量，只是一个“符号连接”，所以这个变量是只读的，对它进行重新赋值会报错。
+由于 ES6 输入的模块变量，只是一个“符号连接”，所以这个变量是只读的，对它进行重新赋值会报错。
 
 ```javascript
 // lib.js
@@ -650,7 +668,7 @@ obj.prop = 123; // OK
 obj = {}; // TypeError
 ```
 
-上面代码中，`main.js`从`lib.js`输入变量`obj`，可以对`obj`添加属性，但是重新赋值就会报错。因为变量`obj`指向的地址是只读的，不能重新赋值，这就好比`main.js`创造了一个名为`obj`的const变量。
+上面代码中，`main.js`从`lib.js`输入变量`obj`，可以对`obj`添加属性，但是重新赋值就会报错。因为变量`obj`指向的地址是只读的，不能重新赋值，这就好比`main.js`创造了一个名为`obj`的`const`变量。
 
 最后，`export`通过接口，输出的是同一个值。不同的脚本加载这个接口，得到的都是同样的实例。
 
@@ -685,7 +703,7 @@ import './x';
 import './y';
 ```
 
-现在执行`main.js`，输出的是1。
+现在执行`main.js`，输出的是`1`。
 
 ```bash
 $ babel-node main.js
@@ -711,6 +729,184 @@ $ babel-node main.js
 - 该脚本自动采用严格模块。
 - 该脚本内部的顶层变量，都只在该脚本内部有效，外部不可见。
 - 该脚本内部的顶层的`this`关键字，返回`undefined`，而不是指向`window`。
+
+## Node 的加载处理
+
+### 概述
+
+Node 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块格式，与 ES6 模块格式是不兼容的。目前的解决方案是，将两者分开，ES6 模块和 CommonJS 采用各自的加载方案。
+
+在静态分析阶段，一个模块脚本只要有一行`import`或`export`语句，Node 就会认为该脚本为 ES6 模块，否则就为 CommonJS 模块。如果不输出任何接口，但是希望被 Node 认为是 ES6 模块，可以在脚本中加一行语句。
+
+```javascript
+export {};
+```
+
+上面的命令并不是输出一个空对象，而是不输出任何接口的 ES6 标准写法。
+
+如何不指定绝对路径，Node 加载 ES6 模块会依次寻找以下脚本，与`require()`的规则一致。
+
+```javascript
+import './foo';
+// 依次寻找
+//   ./foo.js
+//   ./foo/package.json
+//   ./foo/index.js
+
+import 'baz';
+// 依次寻找
+//   ./node_modules/baz.js
+//   ./node_modules/baz/package.json
+//   ./node_modules/baz/index.js
+// 寻找上一级目录
+//   ../node_modules/baz.js
+//   ../node_modules/baz/package.json
+//   ../node_modules/baz/index.js
+// 再上一级目录
+```
+
+ES6 模块之中，顶层的`this`指向`undefined`；CommonJS 模块的顶层`this`指向当前模块，这是两者的一个重大差异。
+
+### import 命令加载 CommonJS 模块
+
+Node 采用 CommonJS 模块格式，模块的输出都定义在`module.exports`这个属性上面。在 Node 环境中，使用`import`命令加载 CommonJS 模块，Node 会自动将`module.exports`属性，当作模块的默认输出，即等同于`export default`。
+
+下面是一个 CommonJS 模块。
+
+```javascript
+// a.js
+module.exports = {
+  foo: 'hello',
+  bar: 'world'
+};
+
+// 等同于
+export default {
+  foo: 'hello',
+  bar: 'world'
+};
+```
+
+`import`命令加载上面的模块，`module.exports`会被视为默认输出。
+
+```javascript
+// 写法一
+import baz from './a';
+// baz = {foo: 'hello', bar: 'world'};
+
+// 写法二
+import {default as baz} from './a';
+// baz = {foo: 'hello', bar: 'world'};
+```
+
+如果采用整体输入的写法（`import * as xxx from someModule`），`default`会取代`module.exports`，作为输入的接口。
+
+```javascript
+import * as baz from './a';
+// baz = {
+//   get default() {return module.exports;},
+//   get foo() {return this.default.foo}.bind(baz),
+//   get bar() {return this.default.bar}.bind(baz)
+// }
+```
+
+上面代码中，`this.default`取代了`module.exports`。需要注意的是，Node 会自动为`baz`添加`default`属性，通过`baz.default`拿到`module.exports`。
+
+```javascript
+// b.js
+module.exports = null;
+
+// es.js
+import foo from './b';
+// foo = null;
+
+import * as bar from './b';
+// bar = {default:null};
+```
+
+上面代码中，`es.js`采用第二种写法时，要通过`bar.default`这样的写法，才能拿到`module.exports`。
+
+下面是另一个例子。
+
+```javascript
+// c.js
+module.exports = function two() {
+  return 2;
+};
+
+// es.js
+import foo from './c';
+foo(); // 2
+
+import * as bar from './c';
+bar.default(); // 2
+bar(); // throws, bar is not a function
+```
+
+上面代码中，`bar`本身是一个对象，不能当作函数调用，只能通过`bar.default`调用。
+
+CommonJS 模块的输出缓存机制，在 ES6 加载方式下依然有效。
+
+```javascript
+// foo.js
+module.exports = 123;
+setTimeout(_ => module.exports = null);
+```
+
+上面代码中，对于加载`foo.js`的脚本，`module.exports`将一直是`123`，而不会变成`null`。
+
+由于 ES6 模块是编译时确定输出接口，CommonJS 模块是运行时确定输出接口，所以采用`import`命令加载 CommonJS 模块时，不允许采用下面的写法。
+
+```javascript
+import {readfile} from 'fs';
+```
+
+上面的写法不正确，因为`fs`是 CommonJS 格式，只有在运行时才能确定`readfile`接口，而`import`命令要求编译时就确定这个接口。解决方法就是改为整体输入。
+
+```javascript
+import * as express from 'express';
+const app = express.default();
+
+import express from 'express';
+const app = express();
+```
+
+### require 命令加载 ES6 模块
+
+采用`require`命令加载 ES6 模块时，ES6 模块的所有输出接口，会成为输入对象的属性。
+
+```javascript
+// es.js
+let foo = {bar:'my-default'};
+export default foo;
+foo = null;
+
+// cjs.js
+const es_namespace = require('./es');
+console.log(es_namespace.default);
+// {bar:'my-default'}
+```
+
+上面代码中，`default`接口变成了`es_namespace.default`属性。另外，由于存在缓存机制，`es.js`对`foo`的重新赋值没有在模块外部反映出来。
+
+下面是另一个例子。
+
+```javascript
+// es.js
+export let foo = {bar:'my-default'};
+export {foo as bar};
+export function f() {};
+export class c {};
+
+// cjs.js
+const es_namespace = require('./es');
+// es_namespace = {
+//   get foo() {return foo;}
+//   get bar() {return foo;}
+//   get f() {return f;}
+//   get c() {return c;}
+// }
+```
 
 ## 循环加载
 
