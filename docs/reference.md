@@ -210,6 +210,7 @@
 - Ben Newman, [The Importance of import and export](http://benjamn.github.io/empirenode-2015/#/): ES6模块的设计思想
 - ESDiscuss, [Why is "export default var a = 1;" invalid syntax?](https://esdiscuss.org/topic/why-is-export-default-var-a-1-invalid-syntax)
 - Bradley Meck, [ES6 Module Interoperability](https://github.com/nodejs/node-eps/blob/master/002-es6-modules.md): 介绍 Node 如何处理 ES6 语法加载 CommonJS 模块
+- Axel Rauschmayer, [Making transpiled ES modules more spec-compliant](http://www.2ality.com/2017/01/babel-esm-spec-mode.html): ES6 模块编译成 CommonJS 模块的详细介绍
 
 ## 二进制数组
 

@@ -304,6 +304,16 @@ console.log('圆面积：' + circle.area(4));
 console.log('圆周长：' + circle.circumference(14));
 ```
 
+注意，模块整体加载所在的那个对象（上例是`circle`），应该是可以静态分析的，所以不允许运行时改变。下面的写法都是不允许的。
+
+```javascript
+import * as circle from './circle';
+
+// 下面两行都是不允许的
+circle.foo = 'hello';
+circle.area = function () {};
+```
+
 ## export default 命令
 
 从前面的例子可以看出，使用`import`命令的时候，用户需要知道所要加载的变量名或函数名，否则无法加载。但是，用户肯定希望快速上手，未必愿意阅读文档，去了解模块有哪些属性和方法。

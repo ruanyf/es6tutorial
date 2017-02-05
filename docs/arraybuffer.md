@@ -1,8 +1,8 @@
 # 二进制数组
 
-二进制数组（`ArrayBuffer`对象、TypedArray视图和`DataView`视图）是JavaScript操作二进制数据的一个接口。这些对象早就存在，属于独立的规格（2011年2月发布），ES6将它们纳入了ECMAScript规格，并且增加了新的方法。
+二进制数组（`ArrayBuffer`对象、`TypedArray`视图和`DataView`视图）是 JavaScript 操作二进制数据的一个接口。这些对象早就存在，属于独立的规格（2011年2月发布），ES6 将它们纳入了 ECMAScript 规格，并且增加了新的方法。
 
-这个接口的原始设计目的，与WebGL项目有关。所谓WebGL，就是指浏览器与显卡之间的通信接口，为了满足JavaScript与显卡之间大量的、实时的数据交换，它们之间的数据通信必须是二进制的，而不能是传统的文本格式。文本格式传递一个32位整数，两端的JavaScript脚本与显卡都要进行格式转化，将非常耗时。这时要是存在一种机制，可以像C语言那样，直接操作字节，将4个字节的32位整数，以二进制形式原封不动地送入显卡，脚本的性能就会大幅提升。
+这个接口的原始设计目的，与 WebGL 项目有关。所谓WebGL，就是指浏览器与显卡之间的通信接口，为了满足 JavaScript 与显卡之间大量的、实时的数据交换，它们之间的数据通信必须是二进制的，而不能是传统的文本格式。文本格式传递一个32位整数，两端的 JavaScript 脚本与显卡都要进行格式转化，将非常耗时。这时要是存在一种机制，可以像 C 语言那样，直接操作字节，将4个字节的32位整数，以二进制形式原封不动地送入显卡，脚本的性能就会大幅提升。
 
 二进制数组就是在这种背景下诞生的。它很像C语言的数组，允许开发者以数组下标的形式，直接操作内存，大大增强了JavaScript处理二进制数据的能力，使得开发者有可能通过JavaScript与操作系统的原生接口进行二进制通信。
 
@@ -975,13 +975,13 @@ bitmap.pixels = new Uint8Array(buffer, start);
 
 ## SharedArrayBuffer
 
-目前有一种场景，需要多个进程共享数据：浏览器启动多个WebWorker。
+JavaScript 是单线程的，web worker 引入了多进程，每个进程的数据都是隔离的，通过`postMessage()`通信，即通信的数据是复制的。如果数据量比较大，这种通信的效率显然比较低。
 
 ```javascript
 var w = new Worker('myworker.js');
 ```
 
-上面代码中，主窗口新建了一个 Worker 进程。该进程与主窗口之间会有一个通信渠道，主窗口通过`w.postMessage`向 Worker 进程发消息，同时通过`message`事件监听 Worker 进程的回应。
+上面代码中，主进程新建了一个 Worker 进程。该进程与主进程之间会有一个通信渠道，主进程通过`w.postMessage`向 Worker 进程发消息，同时通过`message`事件监听 Worker 进程的回应。
 
 ```javascript
 w.postMessage('hi');
@@ -990,9 +990,9 @@ w.onmessage = function (ev) {
 }
 ```
 
-上面代码中，主窗口先发一个消息`hi`，然后在监听到 Worker 进程的回应后，就将其打印出来。
+上面代码中，主进程先发一个消息`hi`，然后在监听到 Worker 进程的回应后，就将其打印出来。
 
-Worker 进程也是通过监听`message`事件，来获取主窗口发来的消息，并作出反应。
+Worker 进程也是通过监听`message`事件，来获取主进程发来的消息，并作出反应。
 
 ```javascript
 onmessage = function (ev) {
@@ -1001,30 +1001,33 @@ onmessage = function (ev) {
 }
 ```
 
-主窗口与 Worker 进程之间，可以传送各种数据，不仅仅是字符串，还可以传送二进制数据。很容易想到，如果有大量数据要传送，留出一块内存区域，主窗口与 Worker 进程共享，两方都可以读写，那么就会大大提高效率。
+主进程与 Worker 进程之间，可以传送各种数据，不仅仅是字符串，还可以传送二进制数据。很容易想到，如果有大量数据要传送，留出一块内存区域，主进程与 Worker 进程共享，两方都可以读写，那么就会大大提高效率。
 
-现在，有一个[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)提案，允许多个 Worker 进程与主窗口共享内存。这个对象的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
+ES2017 引入[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)，允许多个 Worker 进程与主进程共享内存数据。`SharedArrayBuffer`的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
 
 ```javascript
 // 新建 1KB 共享内存
-var sab = new SharedArrayBuffer(1024);
+var sharedBuffer = new SharedArrayBuffer(1024);
 
 // 主窗口发送数据
-w.postMessage(sab, [sab])
+w.postMessage(sharedBuffer);
+
+// 本地写入数据
+const sharedArray = new Int32Array(sharedBuffer);
 ```
 
-上面代码中，`postMessage`方法的第一个参数是`SharedArrayBuffer`对象，第二个参数是要写入共享内存的数据。
+上面代码中，`postMessage`方法的参数是`SharedArrayBuffer`对象。
 
 Worker 进程从事件的`data`属性上面取到数据。
 
 ```javascript
-var sab;
+var sharedBuffer;
 onmessage = function (ev) {
-   sab = ev.data;  // 1KB 的共享内存，就是主窗口共享出来的那块内存
+   sharedBuffer = ev.data;  // 1KB 的共享内存，就是主窗口共享出来的那块内存
 };
 ```
 
-共享内存也可以在 Worker 进程创建，发给主窗口。
+共享内存也可以在 Worker 进程创建，发给主进程。
 
 `SharedArrayBuffer`与`SharedArray`一样，本身是无法读写，必须在上面建立视图，然后通过视图读写。
 
@@ -1043,10 +1046,10 @@ for ( let i=0 ; i < ia.length ; i++ )
   ia[i] = primes.next();
 
 // 向 Worker 进程发送这段共享内存
-w.postMessage(ia, [ia.buffer]);
+w.postMessage(ia);
 ```
 
-Worker 收到数据后的处理如下。
+Worker 进程收到数据后的处理如下。
 
 ```javascript
 var ia;
@@ -1056,4 +1059,52 @@ onmessage = function (ev) {
   console.log(ia[37]); // 输出 163，因为这是第138个质数
 };
 ```
+
+多个进程共享内存，最大的问题就是如何防止两个进程同时修改某个地址，或者说，当一个进程修改共享内存以后，必须有一个机制让其他进程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
+
+```javascript
+// 主进程
+var sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT * 100000);
+var ia = new Int32Array(sab);
+
+for (let i = 0; i < ia.length; i++) {
+  ia[i] = primes.next(); // 将质数放入 ia
+}
+
+// worker 进程
+ia[112]++; // 错误
+Atomics.add(ia, 112, 1); // 正确
+```
+
+上面代码中，Worker 进程直接改写共享内存是不正确的。有两个原因，一是可能发生两个进程同时改写该地址，二是改写以后无法同步到其他 Worker 进程。所以，必须使用`Atomics.add()`方法进行改写。
+
+下面是另一个例子。
+
+```javascript
+// 进程一
+console.log(ia[37]);  // 163
+Atomics.store(ia, 37, 123456);
+Atomics.wake(ia, 37, 1);
+
+// 进程二
+Atomics.wait(ia, 37, 163);
+console.log(ia[37]);  // 123456
+```
+
+上面代码中，共享内存`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就处于“等待”状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个进程唤醒。
+
+`Atomics`对象有以下方法。
+
+- `Atomics.load(array, index)`：返回`array[index]`的值。
+- `Atomics.store(array, index, value)`：设置`array[index]`的值，返回这个值。
+- `Atomics.compareExchange(array, index, oldval, newval)`：如果`array[index]`等于`oldval`，就写入`newval`，返回`oldval`。
+- `Atomics.exchange(array, index, value)`：设置`array[index]`的值，返回旧的值。
+- `Atomics.add(array, index, value)`：将`value`加到`array[index]`，返回`array[index]`旧的值。
+- `Atomics.sub(array, index, value)`：将`value`从`array[index]`减去，返回`array[index]`旧的值。
+- `Atomics.and(array, index, value)`：将`value`与`array[index]`进行位运算`and`，放入`array[index]`，并返回旧的值。
+- `Atomics.or(array, index, value)`：将`value`与`array[index]`进行位运算`or`，放入`array[index]`，并返回旧的值。
+- `Atomics.xor(array, index, value)`：将`vaule`与`array[index]`进行位运算`xor`，放入`array[index]`，并返回旧的值。
+- `Atomics.wait(array, index, value, timeout)`：如果`array[index]`等于`value`，进程就进入休眠状态，必须通过`Atomics.wake()`唤醒。`timeout`指定多少毫秒之后，进入休眠。返回值是三个字符串（ok、not-equal、timed-out）中的一个。
+- `Atomics.wake(array, index, count)`：唤醒指定数目在某个位置休眠的进程。
+- `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
 
