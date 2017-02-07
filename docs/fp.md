@@ -4,36 +4,51 @@ JavaScript语言从一诞生，就具有函数式编程的烙印。它将函数�
 
 ES6的种种新增功能，使得函数式编程变得更方便、更强大。本章介绍ES6如何进行函数式编程。
 
+## 柯里化
+
+柯里化（currying）指的是将一个多参数的函数拆分成一系列函数，每个拆分后的函数都只接受一个参数（unary）。
+
+```javascript
+function add (a, b) {
+  return a + b;
+}
+
+add(1, 1) // 2
+```
+
+上面代码中，函数`add`接受两个参数`a`和`b`。
+
+柯里化就是将上面的函数拆分成两个函数，每个函数都只接受一个参数。
+
+```javascript
+function add (a) {
+  return function (b) {
+    return a + b;
+  }
+}
+// 或者采用箭头函数写法
+const add = x => y => x + y;
+
+const f = add(1);
+f(1) // 2
+```
+
+上面代码中，函数`add`只接受一个参数`a`，返回一个函数`f`。函数`f`也只接受一个参数`b`。
+
 ## 函数合成
 
 函数合成（function composition）指的是，将多个函数合成一个函数。
 
 ```javascript
-let add = x => x + x;
-let pow = x => x * x;
-let inv = x => 1 / x;
+const compose = f => g => x => f(g(x));
 
-let comp = f.comp(add, pow, inv);
-
-comp(1) // 0.25
-comp(4) // 0.015625
+const f = compose (x => x * 4) (x => x + 3);
+f(2) // 20
 ```
 
-上面代码中，`f.comp`就是函数合成器，它的参数全部都是函数，然后返回一个新的函数。
+上面代码中，`compose`就是一个函数合成器，用于将两个函数合成一个函数。
 
-函数合成的代码如下。
-
-```javascript
-let f = {};
-f.comp = (...fs) => {
-  return (...args) =>
-    fs.map(
-      f => args = [f.apply(null, args)]
-    ).pop()[0];
-  };
-```
-
-上面代码先依次遍历执行`f.comp`方法的参数（即排队执行的各个函数），每一次都将结果`args`变量存入一个数组。所以，对于`comp(1)`来说，最后结果是`[[1], [0.5], [0.25]]`，然后再用`pop`方法取出最后一个元素。
+可以发现，柯里化与函数合成有着密切的联系。前者用于将一个函数拆成多个函数，后者用于将多个函数合并成一个函数。
 
 ## 参数倒置
 

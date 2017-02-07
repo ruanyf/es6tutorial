@@ -133,7 +133,7 @@ codePointLength(s) // 2
 
 **（5）i修饰符**
 
-有些Unicode字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的K。
+有些Unicode字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的`K`。
 
 ```javascript
 /[a-z]/i.test('\u212A') // false
@@ -142,7 +142,7 @@ codePointLength(s) // 2
 
 上面代码中，不加`u`修饰符，就无法识别非规范的K字符。
 
-## y修饰符
+## y 修饰符
 
 除了`u`修饰符，ES6还为正则表达式添加了`y`修饰符，叫做“粘连”（sticky）修饰符。
 
@@ -366,11 +366,56 @@ escape('hi. how are you?');
 // "hi\\. how are you\\?"
 ```
 
+## s 修饰符：dotAll 模式
+
+正则表达式中，点（`.`）是一个特殊字符，代表任意的单个字符，但是行终止符（line terminator character）除外。
+
+以下四个字符属于”行终止符“。
+
+- U+000A 换行符（`\n`）
+- U+000D 回车符（`\r`）
+- U+2028 行分隔符（line separator）
+- U+2029 段分隔符（paragraph separator）
+
+```javascript
+/foo.bar/.test('foo\nbar')
+// false
+```
+
+上面代码中，因为`.`不匹配`\n`，所以正则表达式返回`false`。
+
+但是，很多时候我们希望匹配的是任意单个字符，这时有一种变通的写法。
+
+```javascript
+/foo[^]bar/.test('foo\nbar')
+// true
+```
+
+这种解决方案毕竟不太符合直觉，所以现在有一个[提案](https://github.com/mathiasbynens/es-regexp-dotall-flag)，引入`/s`修饰符，使得`.`可以匹配任意单个字符。
+
+```javascript
+/foo.bar/s.test('foo\nbar') // true
+```
+
+这被称为`dotAll`模式，即点（dot）代表一切字符。所以，正则表达式还引入了一个`dotAll`属性，返回一个布尔值，表示该正则表达式是否处在`dotAll`模式。
+
+```javascript
+const re = /foo.bar/s;
+// 另一种写法
+// const re = new RegExp('foo.bar', 's');
+
+re.test('foo\nbar') // true
+re.dotAll // true
+re.flags // 's'
+```
+
+`/s`修饰符和多行修饰符`/m`不冲突，两者一起使用的情况下，`.`匹配所有字符，而`^`和`$`匹配每一行的行首和行尾。
+
 ## 后行断言
 
-JavaScript语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。
+JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。
 
-目前，有一个[提案](https://github.com/goyakin/es-regexp-lookbehind)，在ES7加入后行断言。V8引擎4.9版已经支持，Chrome浏览器49版打开”experimental JavaScript features“开关（地址栏键入`about:flags`），就可以使用这项功能。
+目前，有一个[提案](https://github.com/goyakin/es-regexp-lookbehind)，引入后行断言。V8 引擎4.9版已经支持，Chrome 浏览器49版打开”experimental JavaScript features“开关（地址栏键入`about:flags`），就可以使用这项功能。
 
 ”先行断言“指的是，`x`只有在`y`前面才匹配，必须写成`/x(?=y)/`。比如，只匹配百分号之前的数字，要写成`/\d+(?=%)/`。”先行否定断言“指的是，`x`只有不在`y`前面才匹配，必须写成`/x(?!y)/`。比如，只匹配不在百分号之前的数字，要写成`/\d+(?!%)/`。
 
@@ -381,16 +426,16 @@ JavaScript语言的正则表达式，只支持先行断言（lookahead）和先�
 
 上面两个字符串，如果互换正则表达式，就会匹配失败。另外，还可以看到，”先行断言“括号之中的部分（`(?=%)`），是不计入返回结果的。
 
-"后行断言"正好与"先行断言"相反，`x`只有在`y`后面才匹配，必须写成`/(?<=y)x/`。比如，只匹配美元符号之后的数字，要写成`/(?<=\$)\d+/`。”后行否定断言“则与”先行否定断言“相反，`x`只有不在`y`后面才匹配，必须写成`/(?<!y)x/`。比如，只匹配不在美元符号后面的数字，要写成`/(?<!\$)\d+/`。
+“后行断言”正好与“先行断言”相反，`x`只有在`y`后面才匹配，必须写成`/(?<=y)x/`。比如，只匹配美元符号之后的数字，要写成`/(?<=\$)\d+/`。”后行否定断言“则与”先行否定断言“相反，`x`只有不在`y`后面才匹配，必须写成`/(?<!y)x/`。比如，只匹配不在美元符号后面的数字，要写成`/(?<!\$)\d+/`。
 
 ```javascript
 /(?<=\$)\d+/.exec('Benjamin Franklin is on the $100 bill')  // ["100"]
 /(?<!\$)\d+/.exec('it’s is worth about €90')                // ["90"]
 ```
 
-上面的例子中，"后行断言"的括号之中的部分（`(?<=\$)`），也是不计入返回结果。
+上面的例子中，“后行断言”的括号之中的部分（`(?<=\$)`），也是不计入返回结果。
 
-"后行断言"的实现，需要先匹配`/(?<=y)x/`的`x`，然后再回到左边，匹配`y`的部分。这种"先右后左"的执行顺序，与所有其他正则操作相反，导致了一些不符合预期的行为。
+“后行断言”的实现，需要先匹配`/(?<=y)x/`的`x`，然后再回到左边，匹配`y`的部分。这种“先右后左”的执行顺序，与所有其他正则操作相反，导致了一些不符合预期的行为。
 
 首先，”后行断言“的组匹配，与正常情况下结果是不一样的。
 
@@ -463,7 +508,7 @@ regex.test('ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ') // true
 [\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
 
 // 匹配各种文字的所有非字母的字符，等同于Unicode版的\W
-[\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
+[^\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
 
 // 匹配所有的箭头字符
 const regexArrows = /^\p{Block=Arrows}+$/u;

@@ -4,20 +4,20 @@
 
 ### 基本用法
 
-ES6允许按照一定模式，从数组和对象中提取值，对变量进行赋值，这被称为解构（Destructuring）。
+ES6 允许按照一定模式，从数组和对象中提取值，对变量进行赋值，这被称为解构（Destructuring）。
 
 以前，为变量赋值，只能直接指定值。
 
 ```javascript
-var a = 1;
-var b = 2;
-var c = 3;
+let a = 1;
+let b = 2;
+let c = 3;
 ```
 
 ES6允许写成下面这样。
 
 ```javascript
-var [a, b, c] = [1, 2, 3];
+let [a, b, c] = [1, 2, 3];
 ```
 
 上面代码表示，可以从数组中提取值，按照对应位置，对变量赋值。
@@ -50,8 +50,8 @@ z // []
 如果解构不成功，变量的值就等于`undefined`。
 
 ```javascript
-var [foo] = [];
-var [bar, foo] = [1];
+let [foo] = [];
+let [bar, foo] = [1];
 ```
 
 以上两种情况都属于解构不成功，`foo`的值都会等于`undefined`。
@@ -83,60 +83,52 @@ let [foo] = null;
 let [foo] = {};
 ```
 
-上面的表达式都会报错，因为等号右边的值，要么转为对象以后不具备Iterator接口（前五个表达式），要么本身就不具备Iterator接口（最后一个表达式）。
+上面的语句都会报错，因为等号右边的值，要么转为对象以后不具备 Iterator 接口（前五个表达式），要么本身就不具备 Iterator 接口（最后一个表达式）。
 
-解构赋值不仅适用于var命令，也适用于let和const命令。
-
-```javascript
-var [v1, v2, ..., vN ] = array;
-let [v1, v2, ..., vN ] = array;
-const [v1, v2, ..., vN ] = array;
-```
-
-对于Set结构，也可以使用数组的解构赋值。
+对于 Set 结构，也可以使用数组的解构赋值。
 
 ```javascript
-let [x, y, z] = new Set(["a", "b", "c"]);
+let [x, y, z] = new Set(['a', 'b', 'c']);
 x // "a"
 ```
 
-事实上，只要某种数据结构具有Iterator接口，都可以采用数组形式的解构赋值。
+事实上，只要某种数据结构具有 Iterator 接口，都可以采用数组形式的解构赋值。
 
 ```javascript
 function* fibs() {
-  var a = 0;
-  var b = 1;
+  let a = 0;
+  let b = 1;
   while (true) {
     yield a;
     [a, b] = [b, a + b];
   }
 }
 
-var [first, second, third, fourth, fifth, sixth] = fibs();
+let [first, second, third, fourth, fifth, sixth] = fibs();
 sixth // 5
 ```
 
-上面代码中，`fibs`是一个Generator函数，原生具有Iterator接口。解构赋值会依次从这个接口获取值。
+上面代码中，`fibs`是一个 Generator 函数（参见《Generator 函数》一章），原生具有 Iterator 接口。解构赋值会依次从这个接口获取值。
 
 ### 默认值
 
 解构赋值允许指定默认值。
 
 ```javascript
-var [foo = true] = [];
+let [foo = true] = [];
 foo // true
 
-[x, y = 'b'] = ['a']; // x='a', y='b'
-[x, y = 'b'] = ['a', undefined]; // x='a', y='b'
+let [x, y = 'b'] = ['a']; // x='a', y='b'
+let [x, y = 'b'] = ['a', undefined]; // x='a', y='b'
 ```
 
-注意，ES6内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，如果一个数组成员不严格等于`undefined`，默认值是不会生效的。
+注意，ES6 内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，如果一个数组成员不严格等于`undefined`，默认值是不会生效的。
 
 ```javascript
-var [x = 1] = [undefined];
+let [x = 1] = [undefined];
 x // 1
 
-var [x = 1] = [null];
+let [x = 1] = [null];
 x // null
 ```
 
@@ -179,7 +171,7 @@ let [x = y, y = 1] = [];     // ReferenceError
 解构不仅可以用于数组，还可以用于对象。
 
 ```javascript
-var { foo, bar } = { foo: "aaa", bar: "bbb" };
+let { foo, bar } = { foo: "aaa", bar: "bbb" };
 foo // "aaa"
 bar // "bbb"
 ```
@@ -187,11 +179,11 @@ bar // "bbb"
 对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。
 
 ```javascript
-var { bar, foo } = { foo: "aaa", bar: "bbb" };
+let { bar, foo } = { foo: "aaa", bar: "bbb" };
 foo // "aaa"
 bar // "bbb"
 
-var { baz } = { foo: "aaa", bar: "bbb" };
+let { baz } = { foo: "aaa", bar: "bbb" };
 baz // undefined
 ```
 
@@ -212,18 +204,18 @@ l // 'world'
 这实际上说明，对象的解构赋值是下面形式的简写（参见《对象的扩展》一章）。
 
 ```javascript
-var { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
+let { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
 ```
 
 也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。真正被赋值的是后者，而不是前者。
 
 ```javascript
-var { foo: baz } = { foo: "aaa", bar: "bbb" };
+let { foo: baz } = { foo: "aaa", bar: "bbb" };
 baz // "aaa"
 foo // error: foo is not defined
 ```
 
-上面代码中，真正被赋值的是变量`baz`，而不是模式`foo`。
+上面代码中，`foo`是匹配的模式，`baz`才是变量。真正被赋值的是变量`baz`，而不是模式`foo`。
 
 注意，采用这种写法时，变量的声明和赋值是一体的。对于`let`和`const`来说，变量不能重新声明，所以一旦赋值的变量以前声明过，就会报错。
 
@@ -250,14 +242,14 @@ let baz;
 和数组一样，解构也可以用于嵌套结构的对象。
 
 ```javascript
-var obj = {
+let obj = {
   p: [
     'Hello',
     { y: 'World' }
   ]
 };
 
-var { p: [x, { y }] } = obj;
+let { p: [x, { y }] } = obj;
 x // "Hello"
 y // "World"
 ```
@@ -329,7 +321,7 @@ x // null
 如果解构失败，变量的值等于`undefined`。
 
 ```javascript
-var {foo} = {bar: 'baz'};
+let {foo} = {bar: 'baz'};
 foo // undefined
 ```
 
@@ -337,13 +329,13 @@ foo // undefined
 
 ```javascript
 // 报错
-var {foo: {bar}} = {baz: 'baz'};
+let {foo: {bar}} = {baz: 'baz'};
 ```
 
 上面代码中，等号左边对象的`foo`属性，对应一个子对象。该子对象的`bar`属性，解构时会报错。原因很简单，因为`foo`这时等于`undefined`，再取子属性就会报错，请看下面的代码。
 
 ```javascript
-var _tmp = {baz: 'baz'};
+let _tmp = {baz: 'baz'};
 _tmp.foo.bar // 报错
 ```
 
@@ -351,7 +343,7 @@ _tmp.foo.bar // 报错
 
 ```javascript
 // 错误的写法
-var x;
+let x;
 {x} = {x: 1};
 // SyntaxError: syntax error
 ```
@@ -386,8 +378,8 @@ let { log, sin, cos } = Math;
 由于数组本质是特殊的对象，因此可以对数组进行对象属性的解构。
 
 ```javascript
-var arr = [1, 2, 3];
-var {0 : first, [arr.length - 1] : last} = arr;
+let arr = [1, 2, 3];
+let {0 : first, [arr.length - 1] : last} = arr;
 first // 1
 last // 3
 ```
@@ -509,14 +501,14 @@ move(); // [0, 0]
 
 ```javascript
 // 全部报错
-var [(a)] = [1];
+let [(a)] = [1];
 
-var {x: (c)} = {};
-var ({x: c}) = {};
-var {(x: c)} = {};
-var {(x): c} = {};
+let {x: (c)} = {};
+let ({x: c}) = {};
+let {(x: c)} = {};
+let {(x): c} = {};
 
-var { o: ({ p: p }) } = { o: { p: 2 } };
+let { o: ({ p: p }) } = { o: { p: 2 } };
 ```
 
 上面三个语句都会报错，因为它们都是变量声明语句，模式不能使用圆括号。
@@ -566,6 +558,9 @@ function f([(z)]) { return z; }
 **（1）交换变量的值**
 
 ```javascript
+let x = 1;
+let y = 2;
+
 [x, y] = [y, x];
 ```
 
@@ -581,7 +576,7 @@ function f([(z)]) { return z; }
 function example() {
   return [1, 2, 3];
 }
-var [a, b, c] = example();
+let [a, b, c] = example();
 
 // 返回一个对象
 
@@ -591,7 +586,7 @@ function example() {
     bar: 2
   };
 }
-var { foo, bar } = example();
+let { foo, bar } = example();
 ```
 
 **（3）函数参数的定义**
@@ -613,7 +608,7 @@ f({z: 3, y: 2, x: 1});
 解构赋值对提取JSON对象中的数据，尤其有用。
 
 ```javascript
-var jsonData = {
+let jsonData = {
   id: 42,
   status: "OK",
   data: [867, 5309]
@@ -625,7 +620,7 @@ console.log(id, status, number);
 // 42, "OK", [867, 5309]
 ```
 
-上面代码可以快速提取JSON数据的值。
+上面代码可以快速提取 JSON 数据的值。
 
 **（5）函数参数的默认值**
 

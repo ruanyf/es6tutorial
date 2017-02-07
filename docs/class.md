@@ -266,7 +266,7 @@ p1.__proto__ === p2.__proto__
 //true
 ```
 
-上面代码中，`p1`和`p2`都是Point的实例，它们的原型都是Point，所以`__proto__`属性是相等的。
+上面代码中，`p1`和`p2`都是Point的实例，它们的原型都是Point.prototype，所以`__proto__`属性是相等的。
 
 这也意味着，可以通过实例的`__proto__`属性为Class添加方法。
 
@@ -304,7 +304,7 @@ class Foo {}
 }
 ```
 
-上面的代码不会报错，因为`class`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`class`继承`Foo`的时候，`Foo`还没有定义。
+上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
 
 ### Class表达式
 
@@ -354,7 +354,7 @@ person.sayName(); // "张三"
 
 ### 私有方法
 
-私有方法是常见需求，但ES6不提供，只能通过变通方法模拟实现。
+私有方法是常见需求，但 ES6 不提供，只能通过变通方法模拟实现。
 
 一种做法是在命名上加以区别。
 
@@ -624,9 +624,11 @@ class B {
 
 // B的实例继承A的实例
 Object.setPrototypeOf(B.prototype, A.prototype);
+const b = new B();
 
-// B继承A的静态属性
+// B的实例继承A的静态属性
 Object.setPrototypeOf(B, A);
+const b = new B();
 ```
 
 《对象的扩展》一章给出过`Object.setPrototypeOf`方法的实现。
@@ -724,28 +726,200 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 因此，可以使用这个方法判断，一个类是否继承了另一个类。
 
-### super关键字
+### super 关键字
 
-`super`这个关键字，有两种用法，含义不同。
+`super`这个关键字，既可以当作函数使用，也可以当作对象使用。在这两种情况下，它的用法完全不同。
 
-（1）作为函数调用时（即`super(...args)`），`super`代表父类的构造函数。
-
-（2）作为对象调用时（即`super.prop`或`super.method()`），`super`代表父类。注意，此时`super`即可以引用父类实例的属性和方法，也可以引用父类的静态方法。
+第一种情况，`super`作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次`super`函数。
 
 ```javascript
+class A {}
+
 class B extends A {
-  get m() {
-    return this._p * super._p;
-  }
-  set m() {
-    throw new Error('该属性只读');
+  constructor() {
+    super();
   }
 }
 ```
 
-上面代码中，子类通过`super`关键字，调用父类实例的`_p`属性。
+上面代码中，子类`B`的构造函数之中的`super()`，代表调用父类的构造函数。这是必须的，否则 JavaScript 引擎会报错。
 
-由于，对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
+注意，`super`虽然代表了父类`A`的构造函数，但是返回的是子类`B`的实例，即`super`内部的`this`指的是`B`，因此`super()`在这里相当于`A.prototype.constructor.call(this)`。
+
+```javascript
+class A {
+  constructor() {
+    console.log(new.target.name);
+  }
+}
+class B extends A {
+  constructor() {
+    super();
+  }
+}
+new A() // A
+new B() // B
+```
+
+上面代码中，`new.target`指向当前正在执行的函数。可以看到，在`super()`执行时，它指向的是子类`B`的构造函数，而不是父类`A`的构造函数。也就是说，`super()`内部的`this`指向的是`B`。
+
+作为函数时，`super()`只能用在子类的构造函数之中，用在其他地方就会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  m() {
+    super(); // 报错
+  }
+}
+```
+
+上面代码中，`super()`用在`B`类的`m`方法之中，就会造成句法错误。
+
+第二种情况，`super`作为对象时，指向父类的原型对象。
+
+```javascript
+class A {
+  p() {
+    return 2;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.p()); // 2
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，子类`B`当中的`super.p()`，就是将`super`当作一个对象使用。这时，`super`指向`A.prototype`，所以`super.p()`就相当于`A.prototype.p()`。
+
+这里需要注意，由于`super`指向父类的原型对象，所以定义在父类实例上的方法或属性，是无法通过`super`调用的。
+
+```javascript
+class A {
+  constructor() {
+    this.p = 2;
+  }
+}
+
+class B extends A {
+  get m() {
+    return super.p;
+  }
+}
+
+let b = new B();
+b.m // undefined
+```
+
+上面代码中，`p`是父类`A`实例的属性，`super.p`就引用不到它。
+
+如果属性定义在父类的原型对象上，`super`就可以取到。
+
+```javascript
+class A {}
+A.prototype.x = 2;
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.x) // 2
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
+
+ES6 规定，通过`super`调用父类的方法时，`super`会绑定子类的`this`。
+
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  print() {
+    console.log(this.x);
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+  }
+  m() {
+    super.print();
+  }
+}
+
+let b = new B();
+b.m() // 2
+```
+
+上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`会绑定子类`B`的`this`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+
+由于绑定子类的`this`，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
+
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+    super.x = 3;
+    console.log(super.x); // undefined
+    console.log(this.x); // 3
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，`super.x`赋值为`3`，这时等同于对`this.x`赋值为`3`。而当读取`super.x`的时候，读的是`A.prototype.x`，所以返回`undefined`。
+
+注意，使用`super`的时候，必须显式指定是作为函数、还是作为对象使用，否则会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super); // 报错
+  }
+}
+```
+
+上面代码中，`console.log(super)`当中的`super`，无法看出是作为函数使用，还是作为对象使用，所以 JavaScript 引擎解析代码的时候就会报错。这时，如果能清晰地表明`super`的数据类型，就不会报错。
+
+```javascript
+class A {}
+
+class B extends A {
+  constructor() {
+    super();
+    console.log(super.valueOf() instanceof B); // true
+  }
+}
+
+let b = new B();
+```
+
+上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`绑定`B`的`this`，所以`super.valueOf()`返回的是一个`B`的实例。
+
+最后，由于对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
 ```javascript
 var obj = {
@@ -991,9 +1165,9 @@ var descriptor = Object.getOwnPropertyDescriptor(
 
 上面代码中，存值函数和取值函数是定义在`html`属性的描述对象上面，这与ES5完全一致。
 
-## Class的Generator方法
+## Class 的 Generator 方法
 
-如果某个方法之前加上星号（`*`），就表示该方法是一个Generator函数。
+如果某个方法之前加上星号（`*`），就表示该方法是一个 Generator 函数。
 
 ```javascript
 class Foo {
@@ -1014,9 +1188,9 @@ for (let x of new Foo('hello', 'world')) {
 // world
 ```
 
-上面代码中，Foo类的Symbol.iterator方法前有一个星号，表示该方法是一个Generator函数。Symbol.iterator方法返回一个Foo类的默认遍历器，for...of循环会自动调用这个遍历器。
+上面代码中，`Foo`类的`Symbol.iterator`方法前有一个星号，表示该方法是一个 Generator 函数。`Symbol.iterator`方法返回一个`Foo`类的默认遍历器，`for...of`循环会自动调用这个遍历器。
 
-## Class的静态方法
+## Class 的静态方法
 
 类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上`static`关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
@@ -1190,6 +1364,50 @@ class Foo {
 ```
 
 上面代码中，老写法的静态属性定义在类的外部。整个类生成以后，再生成静态属性。这样让人很容易忽略这个静态属性，也不符合相关代码应该放在一起的代码组织原则。另外，新写法是显式声明（declarative），而不是赋值处理，语义更好。
+
+## 类的私有属性
+
+目前，有一个[提案](https://github.com/tc39/proposal-private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+
+```javascript
+class Point {
+  #x;
+
+  constructor(x = 0) {
+    #x = +x;
+  }
+
+  get x() { return #x }
+  set x(value) { #x = +value }
+}
+```
+
+上面代码中，`#x`就表示私有属性`x`，在`Point`类之外是读取不到这个属性的。还可以看到，私有属性与实例的属性是可以同名的（比如，`#x`与`get x()`）。
+
+私有属性可以指定初始值，在构造函数执行时进行初始化。
+
+```javascript
+class Point {
+  #x = 0;
+  constructor() {
+    #x; // 0
+  }
+}
+```
+
+之所以要引入一个新的前缀`#`表示私有属性，而没有采用`private`关键字，是因为 JavaScript 是一门动态语言，使用独立的符号似乎是唯一的可靠方法，能够准确地区分一种属性是私有属性。另外，Ruby 语言使用`@`表示私有属性，ES6 没有用这个符号而使用`#`，是因为`@`已经被留给了 Decorator。
+
+该提案只规定了私有属性的写法。但是，很自然地，它也可以用来写私有方法。
+
+```javascript
+class Foo {
+  #a;
+  #b;
+  #sum() { return #a + #b; }
+  printSum() { console.log(#sum()); }
+  constructor(a, b) { #a = a; #b = b; }
+}
+```
 
 ## new.target属性
 

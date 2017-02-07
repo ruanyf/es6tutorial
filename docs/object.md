@@ -13,7 +13,7 @@ baz // {foo: "bar"}
 var baz = {foo: foo};
 ```
 
-上面代码表明，ES6允许在对象之中，只写属性名，不写属性值。这时，属性值等于属性名所代表的变量。下面是另一个例子。
+上面代码表明，ES6 允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
 
 ```javascript
 function f(x, y) {
@@ -163,7 +163,7 @@ obj['a' + 'bc'] = 123;
 
 上面代码的方法一是直接用标识符作为属性名，方法二是用表达式作为属性名，这时要将表达式放在方括号之内。
 
-但是，如果使用字面量方式定义对象（使用大括号），在ES5中只能使用方法一（标识符）定义属性。
+但是，如果使用字面量方式定义对象（使用大括号），在 ES5 中只能使用方法一（标识符）定义属性。
 
 ```javascript
 var obj = {
@@ -172,7 +172,7 @@ var obj = {
 };
 ```
 
-ES6允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
+ES6 允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
 
 ```javascript
 let propKey = 'foo';
@@ -202,7 +202,7 @@ a['last word'] // "world"
 
 ```javascript
 let obj = {
-  ['h'+'ello']() {
+  ['h' + 'ello']() {
     return 'hi';
   }
 };
@@ -223,27 +223,56 @@ var foo = 'bar';
 var baz = { [foo]: 'abc'};
 ```
 
-## 方法的name属性
+注意，属性名表达式如果是一个对象，默认情况下会自动将对象转为字符串`[object Object]`，这一点要特别小心。
+
+```javascript
+const keyA = {a: 1};
+const keyB = {b: 2};
+
+const myObject = {
+  [keyA]: 'valueA',
+  [keyB]: 'valueB'
+};
+
+myObject // Object {[object Object]: "valueB"}
+```
+
+上面代码中，`[keyA]`和`[keyB]`得到的都是`[object Object]`，所以`[keyB]`会把`[keyA]`覆盖掉，而`myObject`最后只有一个`[object Object]`属性。
+
+## 方法的 name 属性
 
 函数的`name`属性，返回函数名。对象方法也是函数，因此也有`name`属性。
 
 ```javascript
-var person = {
+const person = {
   sayName() {
-    console.log(this.name);
+    console.log('hello!');
   },
-  get firstName() {
-    return "Nicholas";
-  }
 };
 
 person.sayName.name   // "sayName"
-person.firstName.name // "get firstName"
 ```
 
-上面代码中，方法的`name`属性返回函数名（即方法名）。如果使用了取值函数，则会在方法名前加上`get`。如果是存值函数，方法名的前面会加上`set`。
+上面代码中，方法的`name`属性返回函数名（即方法名）。
 
-有两种特殊情况：`bind`方法创造的函数，`name`属性返回“bound”加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回“anonymous”。
+如果对象的方法使用了取值函数（`getter`）和存值函数（`setter`），则`name`属性不是在该方法上面，而是该方法的属性的描述对象的`get`和`set`属性上面，返回值是方法名前加上`get`和`set`。
+
+```javascript
+const obj = {
+  get foo() {},
+  set foo(x) {}
+};
+
+obj.foo.name
+// TypeError: Cannot read property 'name' of undefined
+
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
+
+descriptor.get.name // "get foo"
+descriptor.set.name // "set foo"
+```
+
+有两种特殊情况：`bind`方法创造的函数，`name`属性返回`bound`加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回`anonymous`。
 
 ```javascript
 (new Function()).name // "anonymous"
@@ -254,7 +283,7 @@ var doSomething = function() {
 doSomething.bind().name // "bound doSomething"
 ```
 
-如果对象的方法是一个Symbol值，那么`name`属性返回的是这个Symbol值的描述。
+如果对象的方法是一个 Symbol 值，那么`name`属性返回的是这个 Symbol 值的描述。
 
 ```javascript
 const key1 = Symbol('description');
@@ -267,7 +296,7 @@ obj[key1].name // "[description]"
 obj[key2].name // ""
 ```
 
-上面代码中，`key1`对应的Symbol值有描述，`key2`没有。
+上面代码中，`key1`对应的 Symbol 值有描述，`key2`没有。
 
 ## Object.is()
 
@@ -444,7 +473,7 @@ Object.assign([1, 2, 3], [4, 5])
 // [4, 5, 3]
 ```
 
-上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此目标数组的0号属性`4`覆盖了原数组的0号属性`1`。
+上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此源数组的0号属性`4`覆盖了目标数组的0号属性`1`。
 
 ### 常见用途
 
@@ -624,7 +653,7 @@ Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
 
 **（1）`__proto__`属性**
 
-`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括IE11）都部署了这个属性。
+`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
 // es6的写法
@@ -638,7 +667,7 @@ var obj = Object.create(someOtherObj);
 obj.method = function() { ... };
 ```
 
-该属性没有写入ES6的正文，而是写入了附录，原因是`__proto__`前后的双下划线，说明它本质上是一个内部属性，而不是一个正式的对外的API，只是由于浏览器广泛支持，才被加入了ES6。标准明确规定，只有浏览器必须部署这个属性，其他运行环境不一定需要部署，而且新的代码最好认为这个属性是不存在的。因此，无论从语义的角度，还是从兼容性的角度，都不要使用这个属性，而是使用下面的`Object.setPrototypeOf()`（写操作）、`Object.getPrototypeOf()`（读操作）、`Object.create()`（生成操作）代替。
+该属性没有写入 ES6 的正文，而是写入了附录，原因是`__proto__`前后的双下划线，说明它本质上是一个内部属性，而不是一个正式的对外的 API，只是由于浏览器广泛支持，才被加入了 ES6。标准明确规定，只有浏览器必须部署这个属性，其他运行环境不一定需要部署，而且新的代码最好认为这个属性是不存在的。因此，无论从语义的角度，还是从兼容性的角度，都不要使用这个属性，而是使用下面的`Object.setPrototypeOf()`（写操作）、`Object.getPrototypeOf()`（读操作）、`Object.create()`（生成操作）代替。
 
 在实现上，`__proto__`调用的是`Object.prototype.__proto__`，具体实现如下。
 
@@ -738,19 +767,19 @@ Object.getPrototypeOf(rec) === Rectangle.prototype
 // false
 ```
 
-## Object.values()，Object.entries()
+## Object.keys()，Object.values()，Object.entries()
 
 ### Object.keys()
 
-ES5引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
+ES5 引入了`Object.keys`方法，返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键名。
 
 ```javascript
-var obj = { foo: "bar", baz: 42 };
+var obj = { foo: 'bar', baz: 42 };
 Object.keys(obj)
 // ["foo", "baz"]
 ```
 
-目前，ES7有一个[提案](https://github.com/tc39/proposal-object-values-entries)，引入了跟`Object.keys`配套的`Object.values`和`Object.entries`。
+ES2017 [引入](https://github.com/tc39/proposal-object-values-entries)了跟`Object.keys`配套的`Object.values`和`Object.entries`，作为遍历一个对象的补充手段，供`for...of`循环使用。
 
 ```javascript
 let {keys, values, entries} = Object;
@@ -774,7 +803,7 @@ for (let [key, value] of entries(obj)) {
 `Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 
 ```javascript
-var obj = { foo: "bar", baz: 42 };
+var obj = { foo: 'bar', baz: 42 };
 Object.values(obj)
 // ["bar", 42]
 ```
@@ -796,9 +825,19 @@ var obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 
-上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的。`Object.values`不会返回这个属性。
+上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的，因为`p`的属性描述对象的`enumerable`默认是`false`，`Object.values`不会返回这个属性。只要把`enumerable`改成`true`，`Object.values`就会返回属性`p`的值。
 
-`Object.values`会过滤属性名为Symbol值的属性。
+```javascript
+var obj = Object.create({}, {p:
+  {
+    value: 42,
+    enumerable: true
+  }
+});
+Object.values(obj) // [42]
+```
+
+`Object.values`会过滤属性名为 Symbol 值的属性。
 
 ```javascript
 Object.values({ [Symbol()]: 123, foo: 'abc' });
@@ -833,27 +872,29 @@ Object.entries(obj)
 
 除了返回值不一样，该方法的行为与`Object.values`基本一致。
 
-如果原对象的属性名是一个Symbol值，该属性会被省略。
+如果原对象的属性名是一个 Symbol 值，该属性会被忽略。
 
 ```javascript
 Object.entries({ [Symbol()]: 123, foo: 'abc' });
 // [ [ 'foo', 'abc' ] ]
 ```
 
-上面代码中，原对象有两个属性，`Object.entries`只输出属性名非Symbol值的属性。将来可能会有`Reflect.ownEntries()`方法，返回对象自身的所有属性。
+上面代码中，原对象有两个属性，`Object.entries`只输出属性名非 Symbol 值的属性。将来可能会有`Reflect.ownEntries()`方法，返回对象自身的所有属性。
 
 `Object.entries`的基本用途是遍历对象的属性。
 
 ```javascript
 let obj = { one: 1, two: 2 };
 for (let [k, v] of Object.entries(obj)) {
-  console.log(`${JSON.stringify(k)}: ${JSON.stringify(v)}`);
+  console.log(
+    `${JSON.stringify(k)}: ${JSON.stringify(v)}`
+  );
 }
 // "one": 1
 // "two": 2
 ```
 
-`Object.entries`方法的一个用处是，将对象转为真正的`Map`结构。
+`Object.entries`方法的另一个用处是，将对象转为真正的`Map`结构。
 
 ```javascript
 var obj = { foo: 'bar', baz: 42 };
@@ -1070,7 +1111,7 @@ Object.getOwnPropertyDescriptor(obj, 'p')
 // }
 ```
 
-ES7有一个提案，提出了`Object.getOwnPropertyDescriptors`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
+ES2017 引入了`Object.getOwnPropertyDescriptors`方法，返回指定对象所有自身属性（非继承属性）的描述对象。
 
 ```javascript
 const obj = {
@@ -1091,7 +1132,7 @@ Object.getOwnPropertyDescriptors(obj)
 //      configurable: true } }
 ```
 
-`Object.getOwnPropertyDescriptors`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
+上面代码中，`Object.getOwnPropertyDescriptors`方法返回一个对象，所有原对象的属性名都是该对象的属性名，对应的属性值就是该属性的描述对象。
 
 该方法的实现非常容易。
 
@@ -1105,7 +1146,7 @@ function getOwnPropertyDescriptors(obj) {
 }
 ```
 
-该方法的提出目的，主要是为了解决`Object.assign()`无法正确拷贝`get`属性和`set`属性的问题。
+该方法的引入目的，主要是为了解决`Object.assign()`无法正确拷贝`get`属性和`set`属性的问题。
 
 ```javascript
 const source = {
@@ -1169,7 +1210,7 @@ const shallowClone = (obj) => Object.create(
 
 上面代码会克隆对象`obj`。
 
-另外，`Object.getOwnPropertyDescriptors`方法可以实现，一个对象继承另一个对象。以前，继承另一个对象，常常写成下面这样。
+另外，`Object.getOwnPropertyDescriptors`方法可以实现一个对象继承另一个对象。以前，继承另一个对象，常常写成下面这样。
 
 ```javascript
 const obj = {
@@ -1178,7 +1219,7 @@ const obj = {
 };
 ```
 
-ES6规定`__proto__`只有浏览器要部署，其他环境不用部署。如果去除`__proto__`，上面代码就要改成下面这样。
+ES6 规定`__proto__`只有浏览器要部署，其他环境不用部署。如果去除`__proto__`，上面代码就要改成下面这样。
 
 ```javascript
 const obj = Object.create(prot);
@@ -1205,7 +1246,7 @@ const obj = Object.create(
 );
 ```
 
-`Object.getOwnPropertyDescriptors`也可以用来实现Mixin（混入）模式。
+`Object.getOwnPropertyDescriptors`也可以用来实现 Mixin（混入）模式。
 
 ```javascript
 let mix = (object) => ({
@@ -1225,3 +1266,47 @@ let d = mix(c).with(a, b);
 上面代码中，对象`a`和`b`被混入了对象`c`。
 
 出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。
+
+## Null 传导运算符
+
+编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
+
+```javascript
+const firstName = (message
+  && message.body
+  && message.body.user
+  && message.body.user.firstName) || 'default';
+```
+
+这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
+
+```javascript
+const firstName = message?.body?.user?.firstName || 'default';
+```
+
+上面代码有三个`?.`运算符，只要其中一个返回`null`或`undefined`，就不再往下运算，而是返回`undefined`。
+
+“Null 传导运算符”有四种用法。
+
+- `obj?.prop`  // 读取对象属性
+- `obj?.[expr]`  // 同上
+- `func?.(...args)` // 函数或对象方法的调用
+- `new C?.(...args)`  // 构造函数的调用
+
+传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
+
+下面是更多的例子。
+
+```javascript
+// 如果 a 是 null 或 undefined, 返回 undefined
+// 否则返回 a?.b.c().d
+a?.b.c().d
+
+// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
+// 否则执行 a.b = 42
+a?.b = 42
+
+// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
+delete a?.b
+```
+

@@ -497,7 +497,7 @@ function readLinesSync(file) {
 
 ```javascript
 for (let line of readLinesSync(fileName)) {
-  console.log(x);
+  console.log(line);
   break;
 }
 ```
@@ -508,28 +508,32 @@ for (let line of readLinesSync(fileName)) {
 
 ## for...of循环
 
-ES6借鉴C++、Java、C#和Python语言，引入了`for...of`循环，作为遍历所有数据结构的统一的方法。一个数据结构只要部署了`Symbol.iterator`属性，就被视为具有iterator接口，就可以用`for...of`循环遍历它的成员。也就是说，`for...of`循环内部调用的是数据结构的`Symbol.iterator`方法。
+ES6 借鉴 C++、Java、C# 和 Python 语言，引入了`for...of`循环，作为遍历所有数据结构的统一的方法。
 
-for...of循环可以使用的范围包括数组、Set和Map结构、某些类似数组的对象（比如arguments对象、DOM NodeList对象）、后文的Generator对象，以及字符串。
+一个数据结构只要部署了`Symbol.iterator`属性，就被视为具有iterator接口，就可以用`for...of`循环遍历它的成员。也就是说，`for...of`循环内部调用的是数据结构的`Symbol.iterator`方法。
+
+`for...of`循环可以使用的范围包括数组、Set 和 Map 结构、某些类似数组的对象（比如`arguments`对象、DOM NodeList 对象）、后文的 Generator 对象，以及字符串。
 
 ### 数组
 
-数组原生具备iterator接口，`for...of`循环本质上就是调用这个接口产生的遍历器，可以用下面的代码证明。
+数组原生具备`iterator`接口（即默认部署了`Symbol.iterator`属性），`for...of`循环本质上就是调用这个接口产生的遍历器，可以用下面的代码证明。
 
 ```javascript
 const arr = ['red', 'green', 'blue'];
-let iterator  = arr[Symbol.iterator]();
 
 for(let v of arr) {
   console.log(v); // red green blue
 }
 
-for(let v of iterator) {
+const obj = {};
+obj[Symbol.iterator] = arr[Symbol.iterator].bind(arr);
+
+for(let v of obj) {
   console.log(v); // red green blue
 }
 ```
 
-上面代码的`for...of`循环的两种写法是等价的。
+上面代码中，空对象`obj`部署了数组`arr`的`Symbol.iterator`属性，结果`obj`的`for...of`循环，产生了与`arr`完全一样的结果。
 
 `for...of`循环可以代替数组实例的`forEach`方法。
 
@@ -704,14 +708,14 @@ var es6 = {
   standard: "ECMA-262"
 };
 
-for (e in es6) {
+for (let e in es6) {
   console.log(e);
 }
 // edition
 // committee
 // standard
 
-for (e of es6) {
+for (let e of es6) {
   console.log(e);
 }
 // TypeError: es6 is not iterable

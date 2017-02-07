@@ -124,7 +124,7 @@ function init_back_to_top_button() {
 
 function goTop(e) {
   if(e) e.preventDefault();
-  $('html body').animate({
+  $('html, body').animate({
     scrollTop: 0
   }, 200);
   history.pushState(null, null, '#' + location.hash.split('#')[1]);
@@ -241,7 +241,7 @@ function normalize_paths() {
   // images
   $(ditto.content_id + " img").map(function() {
     var src = $(this).attr("src").replace("./", "");
-    if ($(this).attr("src").slice(0, 5) !== "http") {
+    if ($(this).attr("src").slice(0, 4) !== "http") {
       var pathname = location.pathname.substr(0, location.pathname.length - 1);
       var url = location.hash.replace("#", "");
 

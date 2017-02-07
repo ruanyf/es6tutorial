@@ -4,14 +4,14 @@
 
 ### 基本用法
 
-ES6提供了新的数据结构Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
+ES6 提供了新的数据结构 Set。它类似于数组，但是成员的值都是唯一的，没有重复的值。
 
-Set本身是一个构造函数，用来生成Set数据结构。
+Set 本身是一个构造函数，用来生成 Set 数据结构。
 
 ```javascript
-var s = new Set();
+const s = new Set();
 
-[2, 3, 5, 4, 5, 2, 2].map(x => s.add(x));
+[2, 3, 5, 4, 5, 2, 2].forEach(x => s.add(x));
 
 for (let i of s) {
   console.log(i);
@@ -19,9 +19,9 @@ for (let i of s) {
 // 2 3 5 4
 ```
 
-上面代码通过`add`方法向Set结构加入成员，结果表明Set结构不会添加重复的值。
+上面代码通过`add`方法向 Set 结构加入成员，结果表明 Set 结构不会添加重复的值。
 
-Set函数可以接受一个数组（或类似数组的对象）作为参数，用来初始化。
+Set 函数可以接受一个数组（或类似数组的对象）作为参数，用来初始化。
 
 ```javascript
 // 例一
@@ -166,7 +166,7 @@ Set结构的实例有四个遍历方法，可以用于遍历成员。
 
 **（1）`keys()`，`values()`，`entries()`**
 
-`key`方法、`value`方法、`entries`方法返回的都是遍历器对象（详见《Iterator对象》一章）。由于Set结构没有键名，只有键值（或者说键名和键值是同一个值），所以`key`方法和`value`方法的行为完全一致。
+`keys`方法、`values`方法、`entries`方法返回的都是遍历器对象（详见《Iterator 对象》一章）。由于 Set 结构没有键名，只有键值（或者说键名和键值是同一个值），所以`keys`方法和`values`方法的行为完全一致。
 
 ```javascript
 let set = new Set(['red', 'green', 'blue']);
@@ -900,13 +900,12 @@ myWeakmap.set(myElement, {timesClicked: 0});
 myElement.addEventListener('click', function() {
   let logoData = myWeakmap.get(myElement);
   logoData.timesClicked++;
-  myWeakmap.set(myElement, logoData);
 }, false);
 ```
 
-上面代码中，`myElement`是一个DOM节点，每当发生click事件，就更新一下状态。我们将这个状态作为键值放在WeakMap里，对应的键名就是`myElement`。一旦这个DOM节点删除，该状态就会自动消失，不存在内存泄漏风险。
+上面代码中，`myElement`是一个 DOM 节点，每当发生`click`事件，就更新一下状态。我们将这个状态作为键值放在 WeakMap 里，对应的键名就是`myElement`。一旦这个 DOM 节点删除，该状态就会自动消失，不存在内存泄漏风险。
 
-WeakMap的另一个用处是部署私有属性。
+WeakMap 的另一个用处是部署私有属性。
 
 ```javascript
 let _counter = new WeakMap();
