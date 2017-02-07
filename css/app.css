@@ -45,6 +45,11 @@ body {
 	}
 }
 
+h1 {
+    margin: 0;
+    padding: 0.67em 0;
+}
+
 #sidebar h1 {
     font-size: 25px;
     margin-bottom: 0px;
@@ -134,7 +139,7 @@ input.searchButton {
 
 @media (min-width: 40rem) {
 	#content {
-		padding:0 20px 0 330px;
+		padding:0 20px 0 340px;
 		margin: 0;
 	}
 }
