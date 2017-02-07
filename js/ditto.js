@@ -261,7 +261,7 @@ function show_error() {
 }
 
 function show_loading() {
-  var loading = $(ditto.loading_id).show().html('Loading...');  // clear content
+  var loading = $(ditto.loading_id).show();  // clear content
   $(ditto.content_id).html('');
 
   // infinite loop until clearInterval() is called on loading
