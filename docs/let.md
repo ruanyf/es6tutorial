@@ -306,7 +306,7 @@ ES6允许块级作用域的任意嵌套。
 
 函数能不能在块级作用域之中声明，是一个相当令人混淆的问题。
 
-ES5规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
+ES5 规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
 
 ```javascript
 // 情况一
@@ -318,10 +318,11 @@ if (true) {
 try {
   function f() {}
 } catch(e) {
+  // ...
 }
 ```
 
-上面代码的两种函数声明，根据ES5的规定都是非法的。
+上面两种函数声明，根据 ES5 的规定都是非法的。
 
 但是，浏览器没有遵守这个规定，为了兼容以前的旧代码，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。不过，“严格模式”下还是会报错。
 
@@ -337,12 +338,10 @@ if (true) {
 ES6 引入了块级作用域，明确允许在块级作用域之中声明函数。
 
 ```javascript
-// ES6严格模式
-'use strict';
+// ES6
 if (true) {
-  function f() {}
+  function f() {} // 不报错
 }
-// 不报错
 ```
 
 ES6 规定，块级作用域之中，函数声明语句的行为类似于`let`，在块级作用域之外不可引用。
@@ -362,7 +361,7 @@ function f() { console.log('I am outside!'); }
 上面代码在 ES5 中运行，会得到“I am inside!”，因为在`if`内声明的函数`f`会被提升到函数头部，实际运行的代码如下。
 
 ```javascript
-// ES5版本
+// ES5 版本
 function f() { console.log('I am outside!'); }
 (function () {
   function f() { console.log('I am inside!'); }
@@ -375,7 +374,7 @@ function f() { console.log('I am outside!'); }
 ES6 的运行结果就完全不一样了，会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响，实际运行的代码如下。
 
 ```javascript
-// ES6版本
+// ES6 版本
 function f() { console.log('I am outside!'); }
 (function () {
   f();
@@ -388,12 +387,12 @@ function f() { console.log('I am outside!'); }
 - 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
 - 同时，函数声明还会提升到所在的块级作用域的头部。
 
-注意，上面三条规则只对ES6的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
+注意，上面三条规则只对 ES6 的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
 
-前面那段代码，在 Chrome 环境下运行会报错。
+根据这三条规则，在浏览器的 ES6 环境中，块级作用域内声明的函数，行为类似于`var`声明的变量。
 
 ```javascript
-// ES6的浏览器环境
+// 浏览器的 ES6 环境
 function f() { console.log('I am outside!'); }
 (function () {
   if (false) {
@@ -406,10 +405,10 @@ function f() { console.log('I am outside!'); }
 // Uncaught TypeError: f is not a function
 ```
 
-上面的代码报错，是因为实际运行的是下面的代码。
+上面的代码在符合 ES6 的浏览器中，都会报错，因为实际运行的是下面的代码。
 
 ```javascript
-// ES6的浏览器环境
+// 浏览器的 ES6 环境
 function f() { console.log('I am outside!'); }
 (function () {
   var f = undefined;
@@ -442,7 +441,7 @@ function f() { console.log('I am outside!'); }
 }
 ```
 
-另外，还有一个需要注意的地方。ES6的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。
+另外，还有一个需要注意的地方。ES6 的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。
 
 ```javascript
 // 不报错
