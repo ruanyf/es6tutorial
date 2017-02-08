@@ -2,6 +2,7 @@ var ditto = {
     // page element ids
     content_id: "#content",
     sidebar_id: "#sidebar",
+    toggleSidebar_id: "#toggleSide",
     edit_id: "#edit",
     back_to_top_id: "#back_to_top",
     loading_id: "#loading",
@@ -57,6 +58,10 @@ function initialize() {
   if (ditto.edit_button) {
     init_edit_button();
   }
+  
+  $(ditto.toggleSidebar_id).click(function(){
+      $(ditto.sidebar_id).toggle();
+  });
 
   // page router
   router();
@@ -263,6 +268,8 @@ function show_error() {
 function show_loading() {
   var loading = $(ditto.loading_id).show();  // clear content
   $(ditto.content_id).html('');
+  
+  $(ditto.sidebar_id).css('display', '');
 
   // infinite loop until clearInterval() is called on loading
   return setInterval(function() {

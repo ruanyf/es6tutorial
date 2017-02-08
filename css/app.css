@@ -27,22 +27,30 @@ body {
 }
 
 #sidebar {
+    position: fixed;
     margin: 0;
     padding: 25px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow: -moz-scrollbars-vertical;
     box-shadow: 0 0 40px #CCC;
     border-right: 1px solid #BBB;
+    background-color: #FFF;
+    z-index: 10;
 }
 
 @media (min-width: 40rem) {
 	#sidebar {
-	width: 280px;
-    position: fixed;
-    padding: 20px;
-	top:0;
-	bottom:0;
-    overflow-y: scroll;
-    overflow: -moz-scrollbars-vertical;
+        width: 280px;
+        padding: 20px 20px 40px;
 	}
+
+    #flip #pagedown {
+        margin-left: 180px;
+    }
 }
 
 h1 {
@@ -93,8 +101,7 @@ h1 {
     left: -5px;
 }
 
-#sidebar ul li,
-#sidebar ol li {
+#sidebar li {
     margin-top: 0;
     margin-bottom: 0.2rem;
     margin-left: 10px;
@@ -105,26 +112,26 @@ h1 {
 }
 
 form.searchBox {
-  width: 180px;
+  width: 100%;
   border: 1px solid #4682BE;
-  height:20px;
+  height: 30px;
   position: relative;
+  overflow: hidden;
 }
 
 input[type=search] {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 160px;
-  height: 18px;
-  text-align: left;
+  width: calc(100% - 30px);
+  height: 30px;
+  line-height: 30px;
+  padding: 0 20px 0 10px;
   border: none;
 }
 
 input.searchButton {
   position: absolute;
-  top: 0;
-  left: 160px;
+  top: 5px;
+  right: 5px;
   height: 18px;
 }
 
@@ -139,7 +146,7 @@ input.searchButton {
 
 @media (min-width: 40rem) {
 	#content {
-		padding:0 20px 0 340px;
+		padding:0 20px 40px 340px;
 		margin: 0;
 	}
 }
@@ -163,7 +170,7 @@ input.searchButton {
     font-size: 0.7rem;
     font-weight: normal;
     font-family: Consolas,"Courier New",Courier,FreeMono,monospace;
-
+    word-break: break-word;
     background: #111;
     border-radius: 2px;
 }
@@ -296,8 +303,10 @@ input.searchButton {
 	left:0;
 	right:0;
 	bottom:10px;
+	z-index:15;
 }
 #flip div{
+    display: inline-block;
     color: #FFF;
     line-height: 20px;
     text-align: center;
@@ -436,4 +445,23 @@ color: #66d9ef;
 
 .token.entity {
 	cursor: help;
+}
+
+#flip #toggleSide {
+    display: none;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+}
+
+@media (max-width: 40rem) {
+    #sidebar {
+        display: none;
+    }
+    #flip #toggleSide {
+        display: block;
+    }
+    #sidebar li, #sidebar h2 {
+        font-size: 0.8rem;
+    }
 }
