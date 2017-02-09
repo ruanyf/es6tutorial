@@ -924,7 +924,15 @@ function entries(obj) {
 
 ## 对象的扩展运算符
 
-目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将Rest运算符（解构赋值）/扩展运算符（`...`）引入对象。Babel转码器已经支持这项功能。
+《数组的扩展》一章中，已经介绍过扩展预算符（`...`）。
+
+```javascript
+const [a, ...b] = [1, 2, 3];
+a // 1
+b // [2, 3]
+```
+
+ES2017 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
 
 **（1）解构赋值**
 
