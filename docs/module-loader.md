@@ -34,7 +34,7 @@
 
 `defer`与`async`的区别是：前者要等到整个页面正常渲染结束，才会执行；后者一旦下载完，渲染引擎就会中断渲染，执行这个脚本以后，再继续渲染。一句话，`defer`是“渲染完再执行”，`async`是“下载完就执行”。另外，如果有多个`defer`脚本，会按照它们在页面出现的顺序加载，而多个`async`脚本是不能保证加载顺序的。
 
-## 加载规则
+### 加载规则
 
 浏览器加载 ES6 模块，也使用`<script>`标签，但是要加入`type="module"`属性。
 
@@ -256,7 +256,7 @@ $ babel-node main.js
 
 这就证明了`x.js`和`y.js`加载的都是`C`的同一个实例。
 
-## Node 的加载处理
+## Node 加载
 
 ### 概述
 
@@ -726,56 +726,6 @@ $ node
 > var m = require('./even');
 > m.even(10)
 TypeError: even is not a function
-```
-
-## 跨模块常量
-
-本书介绍`const`命令的时候说过，`const`声明的常量只在当前代码块有效。如果想设置跨模块的常量（即跨多个文件），可以采用下面的写法。
-
-```javascript
-// constants.js 模块
-export const A = 1;
-export const B = 3;
-export const C = 4;
-
-// test1.js 模块
-import * as constants from './constants';
-console.log(constants.A); // 1
-console.log(constants.B); // 3
-
-// test2.js 模块
-import {A, B} from './constants';
-console.log(A); // 1
-console.log(B); // 3
-```
-
-如果要使用的常量非常多，可以建一个专门的`constants`目录，将各种常量写在不同的文件里面，保存在该目录下。
-
-```javascript
-// constants/db.js
-export const db = {
-  url: 'http://my.couchdbserver.local:5984',
-  admin_username: 'admin',
-  admin_password: 'admin password'
-};
-
-// constants/user.js
-export const users = ['root', 'admin', 'staff', 'ceo', 'chief', 'moderator'];
-```
-
-然后，将这些文件输出的常量，合并在`index.js`里面。
-
-```javascript
-// constants/index.js
-export {db} from './db';
-export {users} from './users';
-```
-
-使用的时候，直接加载`index.js`就可以了。
-
-```javascript
-// script.js
-import {db, users} from './constants';
 ```
 
 ## ES6模块的转码

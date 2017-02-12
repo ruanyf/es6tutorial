@@ -570,6 +570,56 @@ console.log(exp(math.e));
 
 上面代码中的`import exp`表示，将`circleplus`模块的默认方法加载为`exp`方法。
 
+## 跨模块常量
+
+本书介绍`const`命令的时候说过，`const`声明的常量只在当前代码块有效。如果想设置跨模块的常量（即跨多个文件），或者说一个值要被多个模块共享，可以采用下面的写法。
+
+```javascript
+// constants.js 模块
+export const A = 1;
+export const B = 3;
+export const C = 4;
+
+// test1.js 模块
+import * as constants from './constants';
+console.log(constants.A); // 1
+console.log(constants.B); // 3
+
+// test2.js 模块
+import {A, B} from './constants';
+console.log(A); // 1
+console.log(B); // 3
+```
+
+如果要使用的常量非常多，可以建一个专门的`constants`目录，将各种常量写在不同的文件里面，保存在该目录下。
+
+```javascript
+// constants/db.js
+export const db = {
+  url: 'http://my.couchdbserver.local:5984',
+  admin_username: 'admin',
+  admin_password: 'admin password'
+};
+
+// constants/user.js
+export const users = ['root', 'admin', 'staff', 'ceo', 'chief', 'moderator'];
+```
+
+然后，将这些文件输出的常量，合并在`index.js`里面。
+
+```javascript
+// constants/index.js
+export {db} from './db';
+export {users} from './users';
+```
+
+使用的时候，直接加载`index.js`就可以了。
+
+```javascript
+// script.js
+import {db, users} from './constants';
+```
+
 ## import()
 
 上面说过了，`import`语句会被JavaScript引擎静态分析，先于模块内的其他模块执行（叫做”连接“更合适）。所以，下面的代码会报错。
