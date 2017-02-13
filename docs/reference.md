@@ -116,7 +116,7 @@
 - Jason Orendorff, [ES6 In Depth: Collections](https://hacks.mozilla.org/2015/06/es6-in-depth-collections/)：Set和Map结构的设计思想
 - Axel Rauschmayer, [Converting ES6 Maps to and from JSON](http://www.2ality.com/2015/08/es6-map-json.html): 如何将Map与其他数据结构互相转换
 
-## Proxy和Reflect
+## Proxy 和 Reflect
 
 - Nicholas C. Zakas, [Creating defensive objects with ES6 proxies](http://www.nczonline.net/blog/2014/04/22/creating-defensive-objects-with-es6-proxies/)
 - Axel Rauschmayer, [Meta programming with ECMAScript 6 proxies](http://www.2ality.com/2014/12/es6-proxies.html): Proxy详解
@@ -211,6 +211,7 @@
 - ESDiscuss, [Why is "export default var a = 1;" invalid syntax?](https://esdiscuss.org/topic/why-is-export-default-var-a-1-invalid-syntax)
 - Bradley Meck, [ES6 Module Interoperability](https://github.com/nodejs/node-eps/blob/master/002-es6-modules.md): 介绍 Node 如何处理 ES6 语法加载 CommonJS 模块
 - Axel Rauschmayer, [Making transpiled ES modules more spec-compliant](http://www.2ality.com/2017/01/babel-esm-spec-mode.html): ES6 模块编译成 CommonJS 模块的详细介绍
+- Axel Rauschmayer, [ES proposal: import() – dynamically importing ES modules](http://www.2ality.com/2017/01/import-operator.html): import() 的用法
 
 ## 二进制数组
 
