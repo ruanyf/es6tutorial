@@ -420,7 +420,7 @@ ft(1, 2)(print);
 
 ### Generator 函数的流程管理
 
-你可能会问， Thunk函数有什么用？回答是以前确实没什么用，但是 ES6 有了 Generator 函数，Thunk 函数现在可以用于 Generator 函数的自动流程管理。
+你可能会问， Thunk 函数有什么用？回答是以前确实没什么用，但是 ES6 有了 Generator 函数，Thunk 函数现在可以用于 Generator 函数的自动流程管理。
 
 Generator 函数可以自动执行。
 
@@ -544,9 +544,9 @@ var co = require('co');
 co(gen);
 ```
 
-上面代码中，Generator函数只要传入co函数，就会自动执行。
+上面代码中，Generator函数只要传入`co`函数，就会自动执行。
 
-co函数返回一个Promise对象，因此可以用then方法添加回调函数。
+`co`函数返回一个Promise对象，因此可以用`then`方法添加回调函数。
 
 ```javascript
 co(gen).then(function (){
@@ -554,9 +554,9 @@ co(gen).then(function (){
 });
 ```
 
-上面代码中，等到Generator函数执行结束，就会输出一行提示。
+上面代码中，等到 Generator 函数执行结束，就会输出一行提示。
 
-### co模块的原理
+### co 模块的原理
 
 为什么 co 可以自动执行 Generator 函数？
 
@@ -568,7 +568,7 @@ co(gen).then(function (){
 
 （2）Promise 对象。将异步操作包装成 Promise 对象，用`then`方法交回执行权。
 
-co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。
+co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也是可以的，详见后文的例子。（4.0 版以后，`yield`命令后面只能是 Promise 对象。）
 
 上一节已经介绍了基于 Thunk 函数的自动执行器。下面来看，基于 Promise 对象的自动执行器。这是理解 co 模块必须的。
 
