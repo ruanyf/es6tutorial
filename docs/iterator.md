@@ -581,7 +581,7 @@ for (let i of arr) {
 
 ### Set和Map结构
 
-Set和Map结构也原生具有Iterator接口，可以直接使用`for...of`循环。
+Set 和 Map 结构也原生具有 Iterator 接口，可以直接使用`for...of`循环。
 
 ```javascript
 var engines = new Set(["Gecko", "Trident", "Webkit", "Webkit"]);
@@ -604,7 +604,7 @@ for (var [name, value] of es6) {
 // standard: ECMA-262
 ```
 
-上面代码演示了如何遍历Set结构和Map结构。值得注意的地方有两个，首先，遍历的顺序是按照各个成员被添加进数据结构的顺序。其次，Set结构遍历时，返回的是一个值，而Map结构遍历时，返回的是一个数组，该数组的两个成员分别为当前Map成员的键名和键值。
+上面代码演示了如何遍历 Set 结构和 Map 结构。值得注意的地方有两个，首先，遍历的顺序是按照各个成员被添加进数据结构的顺序。其次，Set 结构遍历时，返回的是一个值，而 Map 结构遍历时，返回的是一个数组，该数组的两个成员分别为当前 Map 成员的键名和键值。
 
 ```javascript
 let map = new Map().set('a', 1).set('b', 2);
@@ -623,9 +623,9 @@ for (let [key, value] of map) {
 
 ### 计算生成的数据结构
 
-有些数据结构是在现有数据结构的基础上，计算生成的。比如，ES6的数组、Set、Map都部署了以下三个方法，调用后都返回遍历器对象。
+有些数据结构是在现有数据结构的基础上，计算生成的。比如，ES6的数组、Set、Map 都部署了以下三个方法，调用后都返回遍历器对象。
 
-- `entries()` 返回一个遍历器对象，用来遍历`[键名, 键值]`组成的数组。对于数组，键名就是索引值；对于Set，键名与键值相同。Map结构的iterator接口，默认就是调用entries方法。
+- `entries()` 返回一个遍历器对象，用来遍历`[键名, 键值]`组成的数组。对于数组，键名就是索引值；对于 Set，键名与键值相同。Map 结构的 Iterator 接口，默认就是调用`entries`方法。
 - `keys()` 返回一个遍历器对象，用来遍历所有的键名。
 - `values()` 返回一个遍历器对象，用来遍历所有的键值。
 
@@ -643,7 +643,7 @@ for (let pair of arr.entries()) {
 
 ### 类似数组的对象
 
-类似数组的对象包括好几类。下面是`for...of`循环用于字符串、DOM NodeList对象、arguments对象的例子。
+类似数组的对象包括好几类。下面是`for...of`循环用于字符串、DOM NodeList 对象、`arguments`对象的例子。
 
 ```javascript
 // 字符串
@@ -671,7 +671,7 @@ printArgs('a', 'b');
 // 'b'
 ```
 
-对于字符串来说，`for...of`循环还有一个特点，就是会正确识别32位UTF-16字符。
+对于字符串来说，`for...of`循环还有一个特点，就是会正确识别32位 UTF-16 字符。
 
 ```javascript
 for (let x of 'a\uD83D\uDC0A') {
@@ -681,7 +681,7 @@ for (let x of 'a\uD83D\uDC0A') {
 // '\uD83D\uDC0A'
 ```
 
-并不是所有类似数组的对象都具有iterator接口，一个简便的解决方法，就是使用Array.from方法将其转为数组。
+并不是所有类似数组的对象都具有 Iterator 接口，一个简便的解决方法，就是使用`Array.from`方法将其转为数组。
 
 ```javascript
 let arrayLike = { length: 2, 0: 'a', 1: 'b' };
@@ -699,10 +699,10 @@ for (let x of Array.from(arrayLike)) {
 
 ### 对象
 
-对于普通的对象，`for...of`结构不能直接使用，会报错，必须部署了iterator接口后才能使用。但是，这样情况下，`for...in`循环依然可以用来遍历键名。
+对于普通的对象，`for...of`结构不能直接使用，会报错，必须部署了 Iterator 接口后才能使用。但是，这样情况下，`for...in`循环依然可以用来遍历键名。
 
 ```javascript
-var es6 = {
+let es6 = {
   edition: 6,
   committee: "TC39",
   standard: "ECMA-262"
@@ -727,18 +727,11 @@ for (let e of es6) {
 
 ```javascript
 for (var key of Object.keys(someObject)) {
-  console.log(key + ": " + someObject[key]);
+  console.log(key + ': ' + someObject[key]);
 }
 ```
 
-在对象上部署iterator接口的代码，参见本章前面部分。一个方便的方法是将数组的`Symbol.iterator`属性，直接赋值给其他对象的`Symbol.iterator`属性。比如，想要让`for...of`环遍历jQuery对象，只要加上下面这一行就可以了。
-
-```javascript
-jQuery.prototype[Symbol.iterator] =
-  Array.prototype[Symbol.iterator];
-```
-
-另一个方法是使用Generator函数将对象重新包装一下。
+另一个方法是使用 Generator 函数将对象重新包装一下。
 
 ```javascript
 function* entries(obj) {
@@ -748,7 +741,7 @@ function* entries(obj) {
 }
 
 for (let [key, value] of entries(obj)) {
-  console.log(key, "->", value);
+  console.log(key, '->', value);
 }
 // a -> 1
 // b -> 2
@@ -757,7 +750,7 @@ for (let [key, value] of entries(obj)) {
 
 ### 与其他遍历语法的比较
 
-以数组为例，JavaScript提供多种遍历语法。最原始的写法就是for循环。
+以数组为例，JavaScript 提供多种遍历语法。最原始的写法就是`for`循环。
 
 ```javascript
 for (var index = 0; index < myArray.length; index++) {
@@ -765,7 +758,7 @@ for (var index = 0; index < myArray.length; index++) {
 }
 ```
 
-这种写法比较麻烦，因此数组提供内置的forEach方法。
+这种写法比较麻烦，因此数组提供内置的`forEach`方法。
 
 ```javascript
 myArray.forEach(function (value) {
@@ -773,7 +766,7 @@ myArray.forEach(function (value) {
 });
 ```
 
-这种写法的问题在于，无法中途跳出`forEach`循环，break命令或return命令都不能奏效。
+这种写法的问题在于，无法中途跳出`forEach`循环，`break`命令或`return`命令都不能奏效。
 
 `for...in`循环可以遍历数组的键名。
 
@@ -783,11 +776,11 @@ for (var index in myArray) {
 }
 ```
 
-for...in循环有几个缺点。
+`for...in`循环有几个缺点。
 
-- 数组的键名是数字，但是for...in循环是以字符串作为键名“0”、“1”、“2”等等。
-- for...in循环不仅遍历数字键名，还会遍历手动添加的其他键，甚至包括原型链上的键。
-- 某些情况下，for...in循环会以任意顺序遍历键名。
+- 数组的键名是数字，但是`for...in`循环是以字符串作为键名“0”、“1”、“2”等等。
+- `for...in`循环不仅遍历数字键名，还会遍历手动添加的其他键，甚至包括原型链上的键。
+- 某些情况下，`for...in`循环会以任意顺序遍历键名。
 
 总之，`for...in`循环主要是为遍历对象而设计的，不适用于遍历数组。
 
@@ -799,8 +792,8 @@ for (let value of myArray) {
 }
 ```
 
-- 有着同for...in一样的简洁语法，但是没有for...in那些缺点。
-- 不同用于forEach方法，它可以与break、continue和return配合使用。
+- 有着同`for...in`一样的简洁语法，但是没有`for...in`那些缺点。
+- 不同用于`forEach`方法，它可以与`break`、`continue`和`return`配合使用。
 - 提供了遍历所有数据结构的统一操作接口。
 
 下面是一个使用break语句，跳出`for...of`循环的例子。
@@ -813,4 +806,5 @@ for (var n of fibonacci) {
 }
 ```
 
-上面的例子，会输出斐波纳契数列小于等于1000的项。如果当前项大于1000，就会使用break语句跳出`for...of`循环。
+上面的例子，会输出斐波纳契数列小于等于1000的项。如果当前项大于1000，就会使用`break`语句跳出`for...of`循环。
+
