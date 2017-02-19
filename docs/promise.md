@@ -227,7 +227,7 @@ getJSON("/post/1.json").then(
 `Promise.prototype.catch`方法是`.then(null, rejection)`的别名，用于指定发生错误时的回调函数。
 
 ```javascript
-getJSON("/posts.json").then(function(posts) {
+getJSON('/posts.json').then(function(posts) {
   // ...
 }).catch(function(error) {
   // 处理 getJSON 和 前一个回调函数运行时发生的错误
@@ -235,14 +235,14 @@ getJSON("/posts.json").then(function(posts) {
 });
 ```
 
-上面代码中，`getJSON`方法返回一个Promise对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
+上面代码中，`getJSON`方法返回一个 Promise 对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
 
 ```javascript
-p.then((val) => console.log("fulfilled:", val))
-  .catch((err) => console.log("rejected:", err));
+p.then((val) => console.log('fulfilled:', val))
+  .catch((err) => console.log('rejected', err));
 
 // 等同于
-p.then((val) => console.log("fulfilled:", val))
+p.then((val) => console.log('fulfilled:', val))
   .then(null, (err) => console.log("rejected:", err));
 ```
 
@@ -297,12 +297,12 @@ promise
 // ok
 ```
 
-上面代码中，Promise在`resolve`语句后面，再抛出错误，不会被捕获，等于没有抛出。
+上面代码中，Promise 在`resolve`语句后面，再抛出错误，不会被捕获，等于没有抛出。因为 Promise 的状态一旦改变，就永久保持该状态，不会再变了。
 
-Promise对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个`catch`语句捕获。
+Promise 对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个`catch`语句捕获。
 
 ```javascript
-getJSON("/post/1.json").then(function(post) {
+getJSON('/post/1.json').then(function(post) {
   return getJSON(post.commentURL);
 }).then(function(comments) {
   // some code
@@ -519,14 +519,14 @@ var p = Promise.race([p1, p2, p3]);
 下面是一个例子，如果指定时间内没有获得结果，就将Promise的状态变为`reject`，否则变为`resolve`。
 
 ```javascript
-var p = Promise.race([
+const p = Promise.race([
   fetch('/resource-that-may-take-a-while'),
   new Promise(function (resolve, reject) {
     setTimeout(() => reject(new Error('request timeout')), 5000)
   })
-])
-p.then(response => console.log(response))
-p.catch(error => console.log(error))
+]);
+p.then(response => console.log(response));
+p.catch(error => console.log(error));
 ```
 
 上面代码中，如果5秒之内`fetch`方法无法返回结果，变量`p`的状态就会变为`rejected`，从而触发`catch`方法指定的回调函数。
