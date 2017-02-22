@@ -889,6 +889,8 @@ let b = new B();
 
 上面代码中，`super.x`赋值为`3`，这时等同于对`this.x`赋值为`3`。而当读取`super.x`的时候，读的是`A.prototype.x`，所以返回`undefined`。
 
+(p.s 在通过babel来使用ES6的Class特性的情况下，上述代码中的this.x依然为2，没有被super.x修改为3，babel无法在子类中通过super来对父类中的prototype属性进行修改。babel所用版本为浏览器端babel-standalone@6.23.16.23.1，https://unpkg.com/babel-standalone@6.23.1)
+
 注意，使用`super`的时候，必须显式指定是作为函数、还是作为对象使用，否则会报错。
 
 ```javascript
