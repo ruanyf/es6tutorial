@@ -1344,7 +1344,7 @@ class MyClass {
   static myStaticProp = 42;
 
   constructor() {
-    console.log(MyClass.myProp); // 42
+    console.log(MyClass.myStaticProp); // 42
   }
 }
 ```
