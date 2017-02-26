@@ -108,9 +108,9 @@ setTimeout(function () {
 }, 2000);
 ```
 
-上面代码中，函数`f`如果是普通函数，在为变量`generator`赋值时就会执行。但是，函数`f`是一个Generator函数，就变成只有调用`next`方法时，函数`f`才会执行。
+上面代码中，函数`f`如果是普通函数，在为变量`generator`赋值时就会执行。但是，函数`f`是一个 Generator 函数，就变成只有调用`next`方法时，函数`f`才会执行。
 
-另外需要注意，`yield`语句不能用在普通函数中，否则会报错。
+另外需要注意，`yield`语句只能用在 Generator 函数里面，用在其他地方都会报错。
 
 ```javascript
 (function (){
@@ -141,7 +141,7 @@ for (var f of flat(arr)){
 }
 ```
 
-上面代码也会产生句法错误，因为`forEach`方法的参数是一个普通函数，但是在里面使用了`yield`语句（这个函数里面还使用了`yield*`语句，这里可以不用理会，详细说明见后文）。一种修改方法是改用`for`循环。
+上面代码也会产生句法错误，因为`forEach`方法的参数是一个普通函数，但是在里面使用了`yield`语句（这个函数里面还使用了`yield*`语句，详细介绍见后文）。一种修改方法是改用`for`循环。
 
 ```javascript
 var arr = [1, [[2, 3], 4], [5, 6]];
@@ -167,21 +167,25 @@ for (var f of flat(arr)) {
 另外，`yield`语句如果用在一个表达式之中，必须放在圆括号里面。
 
 ```javascript
-console.log('Hello' + yield); // SyntaxError
-console.log('Hello' + yield 123); // SyntaxError
+function* demo() {
+  console.log('Hello' + yield); // SyntaxError
+  console.log('Hello' + yield 123); // SyntaxError
 
-console.log('Hello' + (yield)); // OK
-console.log('Hello' + (yield 123)); // OK
+  console.log('Hello' + (yield)); // OK
+  console.log('Hello' + (yield 123)); // OK
+}
 ```
 
-`yield`语句用作函数参数或赋值表达式的右边，可以不加括号。
+`yield`语句用作函数参数或放在赋值表达式的右边，可以不加括号。
 
 ```javascript
-foo(yield 'a', yield 'b'); // OK
-let input = yield; // OK
+function* demo() {
+  foo(yield 'a', yield 'b'); // OK
+  let input = yield; // OK
+}
 ```
 
-### 与Iterator接口的关系
+### 与 Iterator 接口的关系
 
 上一章说过，任意一个对象的`Symbol.iterator`方法，等于该对象的遍历器生成函数，调用该函数会返回该对象的一个遍历器对象。
 
