@@ -559,6 +559,7 @@ const DEFAULTS = {
 
 function processContent(options) {
   options = Object.assign({}, DEFAULTS, options);
+  console.log(options);
   // ...
 }
 ```
@@ -576,6 +577,9 @@ const DEFAULTS = {
 };
 
 processContent({ url: {port: 8000} })
+// {
+//   url: {port: 8000}
+// }
 ```
 
 上面代码中，原意是将`url.port`改成8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`,`url.host`不存在了。
