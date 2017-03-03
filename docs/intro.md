@@ -381,6 +381,40 @@ import 'babel-polyfill';
 require('babel-polyfill');
 ```
 
+当我们需要使用babel-polyfill的时候应该注意一个细节，即babel 转码的时候 会将函数声明提到import 之前，来看一个例子
+当我们使用es7 的时候，如果这样写会报错
+
+```
+import "babel-polyfill";
+
+async function asyncFunction () {
+  return "hello world";
+}
+
+// Error: ReferenceError: regeneratorRuntime is not defined
+```
+
+原因就是babel 将es7编译成了这个样子:
+
+```
+var asyncFunction = function () {
+  var _ref = _asyncToGenerator(regeneratorRuntime.mark(function _callee() {
+    return regeneratorRuntime.wrap(function _callee$(_context) {
+    ... // babel 转码
+
+require("babel-polyfill");  // 定义函数 被提前到了模块加载前面 模块还未加载所以报错！
+```
+
+所以当我们定义async 等需要用到polyfill 的函数时，应该注意使用函数表达式来声明函数
+
+```
+import "babel-polyfill";
+
+let asyncFunction = async function () {
+  return "hello world";
+} // 正常运行
+```
+
 Babel默认不转码的API非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[definitions.js](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/definitions.js)文件。
 
 ### 浏览器环境
