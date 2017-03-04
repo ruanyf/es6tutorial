@@ -669,7 +669,7 @@ Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
 
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
-**（1）`__proto__`属性**
+### `__proto__`属性
 
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
@@ -723,9 +723,9 @@ Object.getPrototypeOf({ __proto__: null })
 // null
 ```
 
-**（2）Object.setPrototypeOf()**
+### Object.setPrototypeOf()
 
-`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象。它是ES6正式推荐的设置原型对象的方法。
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象，返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
 
 ```javascript
 // 格式
@@ -759,11 +759,29 @@ obj.y // 20
 obj.z // 40
 ```
 
-上面代码将proto对象设为obj对象的原型，所以从obj对象可以读取proto对象的属性。
+上面代码将`proto`对象设为`obj`对象的原型，所以从`obj`对象可以读取`proto`对象的属性。
 
-**（3）Object.getPrototypeOf()**
+如果第一个参数不是对象，会自动转为对象。但是由于返回的还是第一个参数，所以这个操作不会产生任何效果。
 
-该方法与setPrototypeOf方法配套，用于读取一个对象的prototype对象。
+```javascript
+Object.setPrototypeOf(1, {}) === 1 // true
+Object.setPrototypeOf('foo', {}) === 'foo' // true
+Object.setPrototypeOf(true, {}) === true // true
+```
+
+由于`undefined`和`null`无法转为对象，所以如果第一个参数是`undefined`或`null`，就会报错。
+
+```javascript
+Object.setPrototypeOf(undefined, {})
+// TypeError: Object.setPrototypeOf called on null or undefined
+
+Object.setPrototypeOf(null, {})
+// TypeError: Object.setPrototypeOf called on null or undefined
+```
+
+### Object.getPrototypeOf()
+
+该方法与`Object.setPrototypeOf`方法配套，用于读取一个对象的原型对象。
 
 ```javascript
 Object.getPrototypeOf(obj);
@@ -773,6 +791,7 @@ Object.getPrototypeOf(obj);
 
 ```javascript
 function Rectangle() {
+  // ...
 }
 
 var rec = new Rectangle();
@@ -783,6 +802,36 @@ Object.getPrototypeOf(rec) === Rectangle.prototype
 Object.setPrototypeOf(rec, Object.prototype);
 Object.getPrototypeOf(rec) === Rectangle.prototype
 // false
+```
+
+如果参数不是对象，会被自动转为对象。
+
+```javascript
+// 等同于 Object.getPrototypeOf(Number(1))
+Object.getPrototypeOf(1)
+// Number {[[PrimitiveValue]]: 0}
+
+// 等同于 Object.getPrototypeOf(String('foo'))
+Object.getPrototypeOf('foo')
+// String {length: 0, [[PrimitiveValue]]: ""}
+
+// 等同于 Object.getPrototypeOf(Boolean(true))
+Object.getPrototypeOf(true)
+// Boolean {[[PrimitiveValue]]: false}
+
+Object.getPrototypeOf(1) === Number.prototype // true
+Object.getPrototypeOf('foo') === String.prototype // true
+Object.getPrototypeOf(true) === Boolean.prototype // true
+```
+
+如果参数是`undefined`或`null`，它们无法转为对象，所以会报错。
+
+```javascript
+Object.getPrototypeOf(null)
+// TypeError: Cannot convert undefined or null to object
+
+Object.getPrototypeOf(undefined)
+// TypeError: Cannot convert undefined or null to object
 ```
 
 ## Object.keys()，Object.values()，Object.entries()
@@ -1325,7 +1374,7 @@ const firstName = message?.body?.user?.firstName || 'default';
 
 ```javascript
 // 如果 a 是 null 或 undefined, 返回 undefined
-// 否则返回 a?.b.c().d
+// 否则返回 a.b.c().d
 a?.b.c().d
 
 // 如果 a 是 null 或 undefined，下面的语句不产生任何效果
