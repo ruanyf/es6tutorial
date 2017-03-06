@@ -213,7 +213,7 @@ function func(arg) {
 
 ### 为什么需要块级作用域？
 
-ES5只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。
+ES5 只有全局作用域和函数作用域，没有块级作用域，这带来很多不合理的场景。
 
 第一种场景，内层变量可能会覆盖外层变量。
 
@@ -223,14 +223,14 @@ var tmp = new Date();
 function f() {
   console.log(tmp);
   if (false) {
-    var tmp = "hello world";
+    var tmp = 'hello world';
   }
 }
 
 f(); // undefined
 ```
 
-上面代码中，函数`f`执行后，输出结果为`undefined`，原因在于变量提升，导致内层的`tmp`变量覆盖了外层的`tmp`变量。
+上面代码的原意是，`if`代码块的外部使用外层的`tmp`变量，内部使用内层的`tmp`变量。但是，函数`f`执行后，输出结果为`undefined`，原因在于变量提升，导致内层的`tmp`变量覆盖了外层的`tmp`变量。
 
 第二种场景，用来计数的循环变量泄露为全局变量。
 
@@ -246,7 +246,7 @@ console.log(i); // 5
 
 上面代码中，变量`i`只用来控制循环，但是循环结束后，它并没有消失，泄露成了全局变量。
 
-### ES6的块级作用域
+### ES6 的块级作用域
 
 `let`实际上为 JavaScript 新增了块级作用域。
 
@@ -304,7 +304,7 @@ ES6 允许块级作用域的任意嵌套。
 
 ### 块级作用域与函数声明
 
-函数能不能在块级作用域之中声明，是一个相当令人混淆的问题。
+函数能不能在块级作用域之中声明？这是一个相当令人混淆的问题。
 
 ES5 规定，函数只能在顶层作用域和函数作用域之中声明，不能在块级作用域声明。
 
@@ -324,30 +324,13 @@ try {
 
 上面两种函数声明，根据 ES5 的规定都是非法的。
 
-但是，浏览器没有遵守这个规定，为了兼容以前的旧代码，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。不过，“严格模式”下还是会报错。
+但是，浏览器没有遵守这个规定，为了兼容以前的旧代码，还是支持在块级作用域之中声明函数，因此上面两种情况实际都能运行，不会报错。
 
-```javascript
-// ES5严格模式
-'use strict';
-if (true) {
-  function f() {}
-}
-// 报错
-```
-
-ES6 引入了块级作用域，明确允许在块级作用域之中声明函数。
-
-```javascript
-// ES6
-if (true) {
-  function f() {} // 不报错
-}
-```
-
-ES6 规定，块级作用域之中，函数声明语句的行为类似于`let`，在块级作用域之外不可引用。
+ES6 引入了块级作用域，明确允许在块级作用域之中声明函数。ES6 规定，块级作用域之中，函数声明语句的行为类似于`let`，在块级作用域之外不可引用。
 
 ```javascript
 function f() { console.log('I am outside!'); }
+
 (function () {
   if (false) {
     // 重复声明一次函数f
@@ -361,8 +344,9 @@ function f() { console.log('I am outside!'); }
 上面代码在 ES5 中运行，会得到“I am inside!”，因为在`if`内声明的函数`f`会被提升到函数头部，实际运行的代码如下。
 
 ```javascript
-// ES5 版本
+// ES5 环境
 function f() { console.log('I am outside!'); }
+
 (function () {
   function f() { console.log('I am inside!'); }
   if (false) {
@@ -371,19 +355,9 @@ function f() { console.log('I am outside!'); }
 }());
 ```
 
-ES6 的运行结果就完全不一样了，会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响，实际运行的代码如下。
+ES6 就完全不一样了，理论上会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响。但是，如果你真的在 ES6 浏览器中运行一下上面的代码，是会报错的，这是为什么呢？
 
-```javascript
-// ES6 版本
-function f() { console.log('I am outside!'); }
-(function () {
-  f();
-}());
-```
-
-但是，如果你真的在 ES6 浏览器中运行一下上面的代码，是会报错的，这是为什么呢？
-
-原来，ES6 改变了块级作用域内声明的函数的处理规则，显然会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6在[附录B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
+原来，如果改变了块级作用域内声明的函数的处理规则，显然会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6在[附录B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
 
 - 允许在块级作用域内声明函数。
 - 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
@@ -396,6 +370,7 @@ function f() { console.log('I am outside!'); }
 ```javascript
 // 浏览器的 ES6 环境
 function f() { console.log('I am outside!'); }
+
 (function () {
   if (false) {
     // 重复声明一次函数f
