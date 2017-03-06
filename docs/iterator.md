@@ -165,9 +165,8 @@ class RangeIterator {
     if (value < this.stop) {
       this.value++;
       return {done: false, value: value};
-    } else {
-      return {done: true, value: undefined};
     }
+    return {done: true, value: undefined};
   }
 }
 
