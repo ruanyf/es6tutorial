@@ -41,9 +41,9 @@ for (var i = 0; i < 10; i++) {
 a[6](); // 10
 ```
 
-上面代码中，变量`i`是`var`声明的，在全局范围内都有效。所以每一次循环，新的`i`值都会覆盖旧值，导致最后输出的是最后一轮的`i`的值。
+上面代码中，变量`i`是`var`声明的，在全局范围内都有效，所以全局只有一个变量`i`。每一次循环，变量`i`的值都会发生改变，而循环内被赋给数组`a`的`function`在运行时，会通过闭包读到这同一个变量`i`，导致最后输出的是最后一轮的`i`的值，也就是10。
 
-如果使用`let`，声明的变量仅在块级作用域内有效，最后输出的是6。
+而如果使用`let`，声明的变量仅在块级作用域内有效，最后输出的是6。
 
 ```javascript
 var a = [];
@@ -559,7 +559,7 @@ foo.prop = 123;
 ```javascript
 var constantize = (obj) => {
   Object.freeze(obj);
-  Object.keys(obj).forEach( (key, value) => {
+  Object.keys(obj).forEach( (key, i) => {
     if ( typeof obj[key] === 'object' ) {
       constantize( obj[key] );
     }
