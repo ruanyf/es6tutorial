@@ -376,8 +376,8 @@ async function dbFuc(db) {
 上面代码会报错，因为`await`用在普通函数之中了。但是，如果将`forEach`方法的参数改成`async`函数，也有问题。
 
 ```javascript
-async function dbFuc(db) {
-  let docs = [{}, {}, {}];
+function dbFuc(db) { //这里不需要 async
+  let docs = [{}, {}, {}];
 
   // 可能得到错误结果
   docs.forEach(async function (doc) {
