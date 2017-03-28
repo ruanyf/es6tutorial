@@ -331,17 +331,24 @@ Reflect.setPrototypeOf(null, {})
 一般来说，如果要绑定一个函数的`this`对象，可以这样写`fn.apply(obj, args)`，但是如果函数定义了自己的`apply`方法，就只能写成`Function.prototype.apply.call(fn, obj, args)`，采用`Reflect`对象可以简化这种操作。
 
 ```javascript
-const ages = [11, 33, 12, 54, 18, 96];
+var ageArr = [11, 33, 12, 54, 18, 96];
 
 // 旧写法
-const youngest = Math.min.apply(Math, ages);
-const oldest = Math.max.apply(Math, ages);
-const type = Object.prototype.toString.call(youngest);
+var youngest_old = Math.min.apply(Math, ageArr);
+var oldest_old = Math.max.apply(Math, ageArr );
+var type_old = Object.prototype.toString.call(youngest_old);
+
+console.log(youngest_old);//11
+console.log(oldest_old);//96
+console.log(type_old);//[object Number]
 
 // 新写法
-const youngest = Reflect.apply(Math.min, Math, ages);
-const oldest = Reflect.apply(Math.max, Math, ages);
-const type = Reflect.apply(Object.prototype.toString, youngest);
+var youngest_new = Reflect.apply(Math.min, Math, ageArr);
+var oldest_new = Reflect.apply(Math.max, Math, ageArr);
+var type_new = Reflect.apply(Object.prototype.toString, youngest_new,[youngest_new]);
+console.log(youngest_new);//11
+console.log(oldest_new);//96
+console.log(type_new);//[object Number]
 ```
 
 ### Reflect.defineProperty(target, propertyKey, attributes)
