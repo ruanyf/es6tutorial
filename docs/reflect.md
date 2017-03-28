@@ -193,6 +193,32 @@ Reflect.set(1, 'foo', {}) // 报错
 Reflect.set(false, 'foo', {}) // 报错
 ```
 
+注意，`Reflect.set`会触发`Proxy.defineProperty`拦截。
+
+```javascript
+let p = {
+  a: 'a'
+};
+
+let handler = {
+  set(target,key,value,receiver) {
+    console.log('set');
+    Reflect.set(target,key,value,receiver)
+  },
+  defineProperty(target, key, attribute) {
+    console.log('defineProperty');
+    Reflect.defineProperty(target,key,attribute);
+  }
+};
+
+let obj = new Proxy(p, handler);
+obj.a = 'A';
+// set
+// defineProperty
+```
+
+上面代码中，`Proxy.set`拦截中使用了`Reflect.set`，导致触发`Proxy.defineProperty`拦截。
+
 ### Reflect.has(obj, name)
 
 `Reflect.has`方法对应`name in obj`里面的`in`运算符。

@@ -100,13 +100,30 @@ function timeout(ms) {
 
 async function asyncPrint(value, ms) {
   await timeout(ms);
-  console.log(value)
+  console.log(value);
 }
 
 asyncPrint('hello world', 50);
 ```
 
 上面代码指定50毫秒以后，输出`hello world`。
+
+由于`async`函数返回的是 Promise 对象，可以作为`await`命令的参数。所以，上面的例子也可以写成下面的形式。
+
+```javascript
+async function timeout(ms) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function asyncPrint(value, ms) {
+  await timeout(ms);
+  console.log(value);
+}
+
+asyncPrint('hello world', 50);
+```
 
 async 函数有多种使用形式。
 
@@ -314,6 +331,28 @@ async function main() {
   }
 }
 ```
+
+下面的例子使用`try...catch`结构，实现多次重复尝试。
+
+```javascript
+const superagent = require('superagent');
+const NUM_RETRIES = 3;
+
+async function test() {
+  let i;
+  for (i = 0; i < NUM_RETRIES; ++i) {
+    try {
+      await superagent.get('http://google.com/this-throws-an-error');
+      break;
+    } catch(err) {}
+  }
+  console.log(i); // 3
+}
+
+test();
+```
+
+上面代码中，如果`await`操作成功，就会使用`break`语句退出循环；如果失败，会被`catch`语句捕捉，然后进入下一轮循环。
 
 ### 使用注意点
 
