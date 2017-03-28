@@ -94,7 +94,7 @@ ES5通过下面的代码，部署`Number.isNaN()`。
 })(this);
 ```
 
-它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回`false`。
+它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，isFinite对于非数值一律返回`false`, isNaN只有对于NaN才返回`true`,非NaN一律返回`false`。
 
 ```javascript
 isFinite(25) // true
@@ -106,6 +106,7 @@ isNaN(NaN) // true
 isNaN("NaN") // true
 Number.isNaN(NaN) // true
 Number.isNaN("NaN") // false
+Number.isNaN(1) // false
 ```
 
 ## Number.parseInt(), Number.parseFloat()
