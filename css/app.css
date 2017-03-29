@@ -120,6 +120,7 @@ input[type=search] {
   height: 18px;
   text-align: left;
   border: none;
+  outline: none;
 }
 
 input.searchButton {
