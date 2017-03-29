@@ -585,7 +585,7 @@ try {
 Generator函数体外抛出的错误，可以在函数体内捕获；反过来，Generator函数体内抛出的错误，也可以被函数体外的`catch`捕获。
 
 ```javascript
-function *foo() {
+function* foo() {
   var x = yield 3;
   var y = x.toUpperCase();
   yield y;
