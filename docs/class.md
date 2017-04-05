@@ -363,7 +363,7 @@ class Widget {
 
   // 公有方法
   foo (baz) {
-    this._bar(baz);
+    return this._bar(baz);
   }
 
   // 私有方法
@@ -382,7 +382,7 @@ class Widget {
 ```javascript
 class Widget {
   foo (baz) {
-    bar.call(this, baz);
+    return bar.call(this, baz);
   }
 
   // ...
@@ -405,7 +405,7 @@ export default class myClass{
 
   // 公有方法
   foo(baz) {
-    this[bar](baz);
+    return this[bar](baz);
   }
 
   // 私有方法
