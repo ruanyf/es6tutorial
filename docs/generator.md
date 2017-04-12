@@ -699,12 +699,12 @@ function* numbers () {
   }
   yield 6;
 }
-var g = numbers()
-g.next() // { done: false, value: 1 }
-g.next() // { done: false, value: 2 }
-g.return(7) // { done: false, value: 4 }
-g.next() // { done: false, value: 5 }
-g.next() // { done: true, value: 7 }
+var g = numbers();
+g.next() // { value: 1, done: false }
+g.next() // { value: 2, done: false }
+g.return(7) // { value: 4, done: false }
+g.next() // { value: 5, done: false }
+g.next() // { value: 7, done: true }
 ```
 
 上面代码中，调用`return`方法后，就开始执行`finally`代码块，然后等到`finally`代码块执行完，再执行`return`方法。

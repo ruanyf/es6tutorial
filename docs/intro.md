@@ -150,7 +150,7 @@ $ npm install --save-dev babel-preset-stage-3
   }
 ```
 
-注意，以下所有 Babe l工具和模块的使用，都必须先写好`.babelrc`。
+注意，以下所有 Babel工具和模块的使用，都必须先写好`.babelrc`。
 
 ### 命令行转码`babel-cli`
 
