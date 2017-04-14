@@ -301,10 +301,10 @@ let foo = 'outer';
 
 function bar(func = x => foo) {
   let foo = 'inner';
-  console.log(func()); // outer
+  console.log(func()); 
 }
 
-bar();
+bar(); // outer
 ```
 
 上面代码中，函数`bar`的参数`func`的默认值是一个匿名函数，返回值为变量`foo`。函数参数形成的单独作用域里面，并没有定义变量`foo`，所以`foo`指向外层的全局变量`foo`，因此输出`outer`。
