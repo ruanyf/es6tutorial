@@ -355,12 +355,12 @@ function MyDate() {
 
 // 旧写法
 Object.defineProperty(MyDate, 'now', {
-  value: () => new Date.now()
+  value: () => Date.now()
 });
 
 // 新写法
 Reflect.defineProperty(MyDate, 'now', {
-  value: () => new Date.now()
+  value: () => Date.now()
 });
 ```
 
