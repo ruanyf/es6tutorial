@@ -591,7 +591,7 @@ rest  // [2, 3, 4, 5]
 
 const [first, ...rest] = [];
 first // undefined
-rest  // []:
+rest  // []
 
 const [first, ...rest] = ["foo"];
 first  // "foo"
