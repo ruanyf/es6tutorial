@@ -499,7 +499,7 @@ const tmpl = addrs => `
 ```javascript
 const data = [
     { first: '<Jane>', last: 'Bond' },
-    { first: 'Lars', last: '<Croft>' },
+    { last: 'Lars', last: '<Croft>' },
 ];
 
 console.log(tmpl(data));
