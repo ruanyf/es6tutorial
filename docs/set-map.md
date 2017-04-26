@@ -1014,7 +1014,7 @@ undefined
 > let wm = new WeakMap();
 undefined
 
-> const b = new Object();
+> let b = new Object();
 undefined
 
 > global.gc();
@@ -1053,7 +1053,7 @@ undefined
 
 // 解除 b 的引用以后，heapUsed 变回 4M 左右
 // 说明 WeakMap 中的那个长度为 5*1024*1024 的数组被销毁了
-> process.memoryUsage(); 
+> process.memoryUsage();
 { rss: 20639744,
   heapTotal: 8425472,
   heapUsed: 3979792,
