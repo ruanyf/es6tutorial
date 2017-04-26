@@ -1166,7 +1166,7 @@ let runtimeError = {
 };
 ```
 
-如果扩展运算符的参数是`null`或`undefined`，这个两个值会被忽略，不会报错。
+如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
 
 ```javascript
 let emptyObject = { ...null, ...undefined }; // 不报错
