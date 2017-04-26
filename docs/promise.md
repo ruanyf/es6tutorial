@@ -597,7 +597,7 @@ p.then(function (s){
 // Hello
 ```
 
-上面代码生成一个新的Promise对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是它不是具有then方法的对象），返回Promise实例的状态从一生成就是`Resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
+上面代码生成一个新的Promise对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是字符串对象不具有then方法），返回Promise实例的状态从一生成就是`Resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
 
 **（4）不带有任何参数**
 
