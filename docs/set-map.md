@@ -788,7 +788,7 @@ const myMap = new Map()
 
 **（2）数组 转为 Map**
 
-将数组转入 Map 构造函数，就可以转为 Map。
+将数组传入 Map 构造函数，就可以转为 Map。
 
 ```javascript
 new Map([
