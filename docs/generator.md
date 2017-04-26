@@ -221,7 +221,7 @@ g[Symbol.iterator]() === g
 
 ## next方法的参数
 
-`yield`句本身没有返回值，或者说总是返回`undefined`。`next`方法可以带一个参数，该参数就会被当作上一个`yield`语句的返回值。
+`yield`语句本身没有返回值，或者说总是返回`undefined`。`next`方法可以带一个参数，该参数就会被当作上一个`yield`语句的返回值。
 
 ```javascript
 function* f() {
