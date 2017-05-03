@@ -1,17 +1,17 @@
 # 字符串的扩展
 
-ES6加强了对Unicode的支持，并且扩展了字符串对象。
+ES6 加强了对 Unicode 的支持，并且扩展了字符串对象。
 
-## 字符的Unicode表示法
+## 字符的 Unicode 表示法
 
-JavaScript允许采用`\uxxxx`形式表示一个字符，其中“xxxx”表示字符的码点。
+JavaScript 允许采用`\uxxxx`形式表示一个字符，其中`xxxx`表示字符的 Unicode 码点。
 
 ```javascript
 "\u0061"
 // "a"
 ```
 
-但是，这种表示法只限于`\u0000`——`\uFFFF`之间的字符。超出这个范围的字符，必须用两个双字节的形式表达。
+但是，这种表示法只限于码点在`\u0000`~`\uFFFF`之间的字符。超出这个范围的字符，必须用两个双字节的形式表示。
 
 ```javascript
 "\uD842\uDFB7"
@@ -39,9 +39,9 @@ hell\u{6F} // 123
 // true
 ```
 
-上面代码中，最后一个例子表明，大括号表示法与四字节的UTF-16编码是等价的。
+上面代码中，最后一个例子表明，大括号表示法与四字节的 UTF-16 编码是等价的。
 
-有了这种表示法之后，JavaScript共有6种方法可以表示一个字符。
+有了这种表示法之后，JavaScript 共有6种方法可以表示一个字符。
 
 ```javascript
 '\z' === 'z'  // true
@@ -124,7 +124,7 @@ String.fromCharCode(0x20BB7)
 
 上面代码中，`String.fromCharCode`不能识别大于`0xFFFF`的码点，所以`0x20BB7`就发生了溢出，最高位`2`被舍弃了，最后返回码点`U+0BB7`对应的字符，而不是码点`U+20BB7`对应的字符。
 
-ES6提供了`String.fromCodePoint`方法，可以识别`0xFFFF`的字符，弥补了`String.fromCharCode`方法的不足。在作用上，正好与`codePointAt`方法相反。
+ES6提供了`String.fromCodePoint`方法，可以识别大于`0xFFFF`的字符，弥补了`String.fromCharCode`方法的不足。在作用上，正好与`codePointAt`方法相反。
 
 ```javascript
 String.fromCodePoint(0x20BB7)

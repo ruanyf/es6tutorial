@@ -68,7 +68,7 @@ proxy.a = 'b';
 target.a // "b"
 ```
 
-上面代码中，`handler`是一个空对象，没有任何拦截效果，访问`handler`就等同于访问`target`。
+上面代码中，`handler`是一个空对象，没有任何拦截效果，访问`proxy`就等同于访问`target`。
 
 一个技巧是将 Proxy 对象，设置到`object.proxy`属性，从而可以在`object`对象上调用。
 
@@ -637,7 +637,7 @@ proxy.foo = 'bar'
 
 ### getOwnPropertyDescriptor()
 
-`getOwnPropertyDescriptor`方法拦截`Object.getOwnPropertyDescriptor`，返回一个属性描述对象或者`undefined`。
+`getOwnPropertyDescriptor`方法拦截`Object.getOwnPropertyDescriptor()`，返回一个属性描述对象或者`undefined`。
 
 ```javascript
 var handler = {
@@ -662,13 +662,13 @@ Object.getOwnPropertyDescriptor(proxy, 'baz')
 
 ### getPrototypeOf()
 
-`getPrototypeOf`方法主要用来拦截`Object.getPrototypeOf()`运算符，以及其他一些操作。
+`getPrototypeOf`方法主要用来拦截获取对象原型。具体来说，拦截下面这些操作。
 
 - `Object.prototype.__proto__`
 - `Object.prototype.isPrototypeOf()`
 - `Object.getPrototypeOf()`
 - `Reflect.getPrototypeOf()`
-- `instanceof`运算符
+- `instanceof`
 
 下面是一个例子。
 
@@ -727,7 +727,7 @@ Object.isExtensible(p) // 报错
 
 ### ownKeys()
 
-`ownKeys`方法用来拦截以下操作。
+`ownKeys`方法用来拦截对象自身属性的读取操作。具体来说，拦截以下操作。
 
 - `Object.getOwnPropertyNames()`
 - `Object.getOwnPropertySymbols()`

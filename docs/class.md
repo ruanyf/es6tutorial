@@ -777,7 +777,7 @@ class B extends A {
 
 上面代码中，`super()`用在`B`类的`m`方法之中，就会造成句法错误。
 
-第二种情况，`super`作为对象时，指向父类的原型对象。
+第二种情况，`super`作为对象时，在普通方法中，指向父类的原型对象；在静态方法中，指向父类。
 
 ```javascript
 class A {
@@ -796,7 +796,7 @@ class B extends A {
 let b = new B();
 ```
 
-上面代码中，子类`B`当中的`super.p()`，就是将`super`当作一个对象使用。这时，`super`指向`A.prototype`，所以`super.p()`就相当于`A.prototype.p()`。
+上面代码中，子类`B`当中的`super.p()`，就是将`super`当作一个对象使用。这时，`super`在普通方法之中，指向`A.prototype`，所以`super.p()`就相当于`A.prototype.p()`。
 
 这里需要注意，由于`super`指向父类的原型对象，所以定义在父类实例上的方法或属性，是无法通过`super`调用的。
 
@@ -888,6 +888,37 @@ let b = new B();
 ```
 
 上面代码中，`super.x`赋值为`3`，这时等同于对`this.x`赋值为`3`。而当读取`super.x`的时候，读的是`A.prototype.x`，所以返回`undefined`。
+
+如果`super`作为对象，用在静态方法之中，这时`super`将指向父类，而不是父类的原型对象。
+
+```javascript
+class Parent {
+  static myMethod(msg) {
+    console.log('static', msg);
+  }
+
+  myMethod(msg) {
+    console.log('instance', msg);
+  }
+}
+
+class Child extends Parent {
+  static myMethod(msg) {
+    super.myMethod(msg);
+  }
+
+  myMethod(msg) {
+    super.myMethod(msg);
+  }
+}
+
+Child.myMethod(1); // static 1
+
+var child = new Child();
+child.myMethod(2); // instance 2
+```
+
+上面代码中，`super`在静态方法之中指向父类，在普通方法之中指向父类的原型对象。
 
 注意，使用`super`的时候，必须显式指定是作为函数、还是作为对象使用，否则会报错。
 
@@ -1344,7 +1375,7 @@ class MyClass {
   static myStaticProp = 42;
 
   constructor() {
-    console.log(MyClass.myProp); // 42
+    console.log(MyClass.myStaticProp); // 42
   }
 }
 ```
