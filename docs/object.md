@@ -2,7 +2,7 @@
 
 ## 属性的简洁表示法
 
-ES6允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
+ES6 允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
 var foo = 'bar';
@@ -559,12 +559,30 @@ const DEFAULTS = {
 
 function processContent(options) {
   options = Object.assign({}, DEFAULTS, options);
+  console.log(options);
+  // ...
 }
 ```
 
 上面代码中，`DEFAULTS`对象是默认值，`options`对象是用户提供的参数。`Object.assign`方法将`DEFAULTS`和`options`合并成一个新对象，如果两者有同名属性，则`option`的属性值会覆盖`DEFAULTS`的属性值。
 
-注意，由于存在深拷贝的问题，`DEFAULTS`对象和`options`对象的所有属性的值，都只能是简单类型，而不能指向另一个对象。否则，将导致`DEFAULTS`对象的该属性不起作用。
+注意，由于存在浅拷贝的问题，`DEFAULTS`对象和`options`对象的所有属性的值，最好都是简单类型，不要指向另一个对象。否则，`DEFAULTS`对象的该属性很可能不起作用。
+
+```javascript
+const DEFAULTS = {
+  url: {
+    host: 'example.com',
+    port: 7070
+  },
+};
+
+processContent({ url: {port: 8000} })
+// {
+//   url: {port: 8000}
+// }
+```
+
+上面代码的原意是将`url.port`改成8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`，所以`url.host`就不存在了。
 
 ## 属性的可枚举性
 
@@ -634,7 +652,7 @@ ES6一共有5种方法可以遍历对象的属性。
 
 **（5）Reflect.ownKeys(obj)**
 
-`Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管是属性名是Symbol或字符串，也不管是否可枚举。
+`Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管属性名是Symbol或字符串，也不管是否可枚举。
 
 以上的5种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
 
@@ -651,7 +669,7 @@ Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
 
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
 
-**（1）`__proto__`属性**
+### `__proto__`属性
 
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
@@ -705,9 +723,9 @@ Object.getPrototypeOf({ __proto__: null })
 // null
 ```
 
-**（2）Object.setPrototypeOf()**
+### Object.setPrototypeOf()
 
-`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象。它是ES6正式推荐的设置原型对象的方法。
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象，返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
 
 ```javascript
 // 格式
@@ -741,11 +759,29 @@ obj.y // 20
 obj.z // 40
 ```
 
-上面代码将proto对象设为obj对象的原型，所以从obj对象可以读取proto对象的属性。
+上面代码将`proto`对象设为`obj`对象的原型，所以从`obj`对象可以读取`proto`对象的属性。
 
-**（3）Object.getPrototypeOf()**
+如果第一个参数不是对象，会自动转为对象。但是由于返回的还是第一个参数，所以这个操作不会产生任何效果。
 
-该方法与setPrototypeOf方法配套，用于读取一个对象的prototype对象。
+```javascript
+Object.setPrototypeOf(1, {}) === 1 // true
+Object.setPrototypeOf('foo', {}) === 'foo' // true
+Object.setPrototypeOf(true, {}) === true // true
+```
+
+由于`undefined`和`null`无法转为对象，所以如果第一个参数是`undefined`或`null`，就会报错。
+
+```javascript
+Object.setPrototypeOf(undefined, {})
+// TypeError: Object.setPrototypeOf called on null or undefined
+
+Object.setPrototypeOf(null, {})
+// TypeError: Object.setPrototypeOf called on null or undefined
+```
+
+### Object.getPrototypeOf()
+
+该方法与`Object.setPrototypeOf`方法配套，用于读取一个对象的原型对象。
 
 ```javascript
 Object.getPrototypeOf(obj);
@@ -755,6 +791,7 @@ Object.getPrototypeOf(obj);
 
 ```javascript
 function Rectangle() {
+  // ...
 }
 
 var rec = new Rectangle();
@@ -765,6 +802,36 @@ Object.getPrototypeOf(rec) === Rectangle.prototype
 Object.setPrototypeOf(rec, Object.prototype);
 Object.getPrototypeOf(rec) === Rectangle.prototype
 // false
+```
+
+如果参数不是对象，会被自动转为对象。
+
+```javascript
+// 等同于 Object.getPrototypeOf(Number(1))
+Object.getPrototypeOf(1)
+// Number {[[PrimitiveValue]]: 0}
+
+// 等同于 Object.getPrototypeOf(String('foo'))
+Object.getPrototypeOf('foo')
+// String {length: 0, [[PrimitiveValue]]: ""}
+
+// 等同于 Object.getPrototypeOf(Boolean(true))
+Object.getPrototypeOf(true)
+// Boolean {[[PrimitiveValue]]: false}
+
+Object.getPrototypeOf(1) === Number.prototype // true
+Object.getPrototypeOf('foo') === String.prototype // true
+Object.getPrototypeOf(true) === Boolean.prototype // true
+```
+
+如果参数是`undefined`或`null`，它们无法转为对象，所以会报错。
+
+```javascript
+Object.getPrototypeOf(null)
+// TypeError: Cannot convert undefined or null to object
+
+Object.getPrototypeOf(undefined)
+// TypeError: Cannot convert undefined or null to object
 ```
 
 ## Object.keys()，Object.values()，Object.entries()
@@ -924,7 +991,15 @@ function entries(obj) {
 
 ## 对象的扩展运算符
 
-目前，ES7有一个[提案](https://github.com/sebmarkbage/ecmascript-rest-spread)，将Rest运算符（解构赋值）/扩展运算符（`...`）引入对象。Babel转码器已经支持这项功能。
+《数组的扩展》一章中，已经介绍过扩展运算符（`...`）。
+
+```javascript
+const [a, ...b] = [1, 2, 3];
+a // 1
+b // [2, 3]
+```
+
+ES2017 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
 
 **（1）解构赋值**
 
@@ -972,11 +1047,12 @@ x.a.b // 2
 let o1 = { a: 1 };
 let o2 = { b: 2 };
 o2.__proto__ = o1;
-let o3 = { ...o2 };
+let { ...o3 } = o2;
 o3 // { b: 2 }
+o3.a // undefined
 ```
 
-上面代码中，对象`o3`是`o2`的拷贝，但是只复制了`o2`自身的属性，没有复制它的原型对象`o1`的属性。
+上面代码中，对象`o3`复制了`o2`，但是只复制了`o2`自身的属性，没有复制它的原型对象`o1`的属性。
 
 下面是另一个例子。
 
@@ -990,7 +1066,7 @@ y // undefined
 z // 3
 ```
 
-上面代码中，变量`x`是单纯的解构赋值，所以可以读取继承的属性；解构赋值产生的变量`y`和`z`，只能读取对象自身的属性，所以只有变量`z`可以赋值成功。
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是双重解构赋值，只能读取对象`o`自身的属性，所以只有变量`z`可以赋值成功。
 
 解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
 
@@ -1090,7 +1166,7 @@ let runtimeError = {
 };
 ```
 
-如果扩展运算符的参数是`null`或`undefined`，这个两个值会被忽略，不会报错。
+如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
 
 ```javascript
 let emptyObject = { ...null, ...undefined }; // 不报错
@@ -1299,7 +1375,7 @@ const firstName = message?.body?.user?.firstName || 'default';
 
 ```javascript
 // 如果 a 是 null 或 undefined, 返回 undefined
-// 否则返回 a?.b.c().d
+// 否则返回 a.b.c().d
 a?.b.c().d
 
 // 如果 a 是 null 或 undefined，下面的语句不产生任何效果

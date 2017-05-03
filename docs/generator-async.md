@@ -138,7 +138,7 @@ g.next() // { value: undefined, done: true }
 
 Generator 函数可以暂停执行和恢复执行，这是它能封装异步任务的根本原因。除此之外，它还有两个特性，使它可以作为异步编程的完整解决方案：函数体内外的数据交换和错误处理机制。
 
-`next`法返回值的value属性，是 Generator 函数向外输出数据；`next`方法还可以接受参数，向 Generator 函数体内输入数据。
+`next`返回值的value属性，是 Generator 函数向外输出数据；`next`方法还可以接受参数，向 Generator 函数体内输入数据。
 
 ```javascript
 function* gen(x){
@@ -320,7 +320,7 @@ var Thunk = function(fn){
 };
 
 // ES6版本
-var Thunk = function(fn) {
+const Thunk = function(fn) {
   return function (...args) {
     return function (callback) {
       return fn.call(this, ...args, callback);
@@ -342,10 +342,9 @@ readFileThunk(fileA)(callback);
 function f(a, cb) {
   cb(a);
 }
-let ft = Thunk(f);
+const ft = Thunk(f);
 
-let log = console.log.bind(console);
-ft(1)(log) // 1
+ft(1)(console.log) // 1
 ```
 
 ### Thunkify 模块
@@ -420,7 +419,7 @@ ft(1, 2)(print);
 
 ### Generator 函数的流程管理
 
-你可能会问， Thunk函数有什么用？回答是以前确实没什么用，但是 ES6 有了 Generator 函数，Thunk 函数现在可以用于 Generator 函数的自动流程管理。
+你可能会问， Thunk 函数有什么用？回答是以前确实没什么用，但是 ES6 有了 Generator 函数，Thunk 函数现在可以用于 Generator 函数的自动流程管理。
 
 Generator 函数可以自动执行。
 
@@ -544,9 +543,9 @@ var co = require('co');
 co(gen);
 ```
 
-上面代码中，Generator函数只要传入co函数，就会自动执行。
+上面代码中，Generator 函数只要传入`co`函数，就会自动执行。
 
-co函数返回一个Promise对象，因此可以用then方法添加回调函数。
+`co`函数返回一个`Promise`对象，因此可以用`then`方法添加回调函数。
 
 ```javascript
 co(gen).then(function (){
@@ -554,9 +553,9 @@ co(gen).then(function (){
 });
 ```
 
-上面代码中，等到Generator函数执行结束，就会输出一行提示。
+上面代码中，等到 Generator 函数执行结束，就会输出一行提示。
 
-### co模块的原理
+### co 模块的原理
 
 为什么 co 可以自动执行 Generator 函数？
 
@@ -568,7 +567,7 @@ co(gen).then(function (){
 
 （2）Promise 对象。将异步操作包装成 Promise 对象，用`then`方法交回执行权。
 
-co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。
+co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也可以使用 co，详见后文的例子。（co v4.0版以后，`yield`命令后面只能是 Promise 对象，不再支持 Thunk 函数。）
 
 上一节已经介绍了基于 Thunk 函数的自动执行器。下面来看，基于 Promise 对象的自动执行器。这是理解 co 模块必须的。
 
@@ -751,4 +750,42 @@ function* somethingAsync(x) {
 ```
 
 上面的代码允许并发三个`somethingAsync`异步操作，等到它们全部完成，才会进行下一步。
+
+### 实例：处理 Stream
+
+Node 提供 Stream 模式读写数据，特点是一次只处理数据的一部分，数据分成一块块依次处理，就好像“数据流”一样。这对于处理大规模数据非常有利。Stream 模式使用 EventEmitter API，会释放三个事件。
+
+- `data`事件：下一块数据块已经准备好了。
+- `end`事件：整个“数据流”处理“完了。
+- `error`事件：发生错误。
+
+使用`Promise.race()`函数，可以判断这三个事件之中哪一个最先发生，只有当`data`事件最先发生时，才进入下一个数据块的处理。从而，我们可以通过一个`while`循环，完成所有数据的读取。
+
+```javascript
+const co = require('co');
+const fs = require('fs');
+
+const stream = fs.createReadStream('./les_miserables.txt');
+let valjeanCount = 0;
+
+co(function*() {
+  while(true) {
+    const res = yield Promise.race([
+      new Promise(resolve => stream.once('data', resolve)),
+      new Promise(resolve => stream.once('end', resolve)),
+      new Promise((resolve, reject) => stream.once('error', reject))
+    ]);
+    if (!res) {
+      break;
+    }
+    stream.removeAllListeners('data');
+    stream.removeAllListeners('end');
+    stream.removeAllListeners('error');
+    valjeanCount += (res.toString().match(/valjean/ig) || []).length;
+  }
+  console.log('count:', valjeanCount); // count: 1120
+});
+```
+
+上面代码采用 Stream 模式读取《悲惨世界》的文本文件，对于每个数据块都使用`stream.once`方法，在`data`、`end`、`error`三个事件上添加一次性回调函数。变量`res`只有在`data`事件发生时才有值，然后累加每个数据块之中`valjean`这个词出现的次数。
 

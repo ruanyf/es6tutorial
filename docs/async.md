@@ -31,7 +31,7 @@ var gen = function* () {
 写成`async`函数，就是下面这样。
 
 ```javascript
-var asyncReadFile = async function (){
+var asyncReadFile = async function () {
   var f1 = await readFile('/etc/fstab');
   var f2 = await readFile('/etc/shells');
   console.log(f1.toString());
@@ -43,23 +43,33 @@ var asyncReadFile = async function (){
 
 `async`函数对 Generator 函数的改进，体现在以下四点。
 
-（1）内置执行器。Generator 函数的执行必须靠执行器，所以才有了`co`模块，而`async`函数自带执行器。也就是说，`async`函数的执行，与普通函数一模一样，只要一行。
+（1）内置执行器。
+
+Generator 函数的执行必须靠执行器，所以才有了`co`模块，而`async`函数自带执行器。也就是说，`async`函数的执行，与普通函数一模一样，只要一行。
 
 ```javascript
 var result = asyncReadFile();
 ```
 
-上面的代码调用了`asyncReadFile`函数，然后它就会自动执行，输出最后结果。这完全不像 Generator 函数，需要调用`next`方法，或者用`co`模块，才能得到真正执行，得到最后结果。
+上面的代码调用了`asyncReadFile`函数，然后它就会自动执行，输出最后结果。这完全不像 Generator 函数，需要调用`next`方法，或者用`co`模块，才能真正执行，得到最后结果。
 
-（2）更好的语义。`async`和`await`，比起星号和`yield`，语义更清楚了。`async`表示函数里有异步操作，`await`表示紧跟在后面的表达式需要等待结果。
+（2）更好的语义。
 
-（3）更广的适用性。 `co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+`async`和`await`，比起星号和`yield`，语义更清楚了。`async`表示函数里有异步操作，`await`表示紧跟在后面的表达式需要等待结果。
 
-（4）返回值是 Promise。`async`函数的返回值是 Promise 对象，这比 Generator 函数的返回值是 Iterator 对象方便多了。你可以用`then`方法指定下一步的操作。
+（3）更广的适用性。
+
+`co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+
+（4）返回值是 Promise。
+
+`async`函数的返回值是 Promise 对象，这比 Generator 函数的返回值是 Iterator 对象方便多了。你可以用`then`方法指定下一步的操作。
 
 进一步说，`async`函数完全可以看作多个异步操作，包装成的一个 Promise 对象，而`await`命令就是内部`then`命令的语法糖。
 
 ## 用法
+
+### 基本用法
 
 `async`函数返回一个 Promise 对象，可以使用`then`方法添加回调函数。当函数执行的时候，一旦遇到`await`就会先返回，等到异步操作完成，再接着执行函数体内后面的语句。
 
@@ -79,7 +89,7 @@ getStockPriceByName('goog').then(function (result) {
 
 上面代码是一个获取股票报价的函数，函数前面的`async`关键字，表明该函数内部有异步操作。调用该函数时，会立即返回一个`Promise`对象。
 
-下面的例子，指定多少毫秒后输出一个值。
+下面是另一个例子，指定多少毫秒后输出一个值。
 
 ```javascript
 function timeout(ms) {
@@ -90,7 +100,7 @@ function timeout(ms) {
 
 async function asyncPrint(value, ms) {
   await timeout(ms);
-  console.log(value)
+  console.log(value);
 }
 
 asyncPrint('hello world', 50);
@@ -98,7 +108,24 @@ asyncPrint('hello world', 50);
 
 上面代码指定50毫秒以后，输出`hello world`。
 
-Async 函数有多种使用形式。
+由于`async`函数返回的是 Promise 对象，可以作为`await`命令的参数。所以，上面的例子也可以写成下面的形式。
+
+```javascript
+async function timeout(ms) {
+  await new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+async function asyncPrint(value, ms) {
+  await timeout(ms);
+  console.log(value);
+}
+
+asyncPrint('hello world', 50);
+```
+
+async 函数有多种使用形式。
 
 ```javascript
 // 函数声明
@@ -305,6 +332,28 @@ async function main() {
 }
 ```
 
+下面的例子使用`try...catch`结构，实现多次重复尝试。
+
+```javascript
+const superagent = require('superagent');
+const NUM_RETRIES = 3;
+
+async function test() {
+  let i;
+  for (i = 0; i < NUM_RETRIES; ++i) {
+    try {
+      await superagent.get('http://google.com/this-throws-an-error');
+      break;
+    } catch(err) {}
+  }
+  console.log(i); // 3
+}
+
+test();
+```
+
+上面代码中，如果`await`操作成功，就会使用`break`语句退出循环；如果失败，会被`catch`语句捕捉，然后进入下一轮循环。
+
 ### 使用注意点
 
 第一点，前面已经说过，`await`命令后面的`Promise`对象，运行结果可能是`rejected`，所以最好把`await`命令放在`try...catch`代码块中。
@@ -366,8 +415,8 @@ async function dbFuc(db) {
 上面代码会报错，因为`await`用在普通函数之中了。但是，如果将`forEach`方法的参数改成`async`函数，也有问题。
 
 ```javascript
-async function dbFuc(db) {
-  let docs = [{}, {}, {}];
+function dbFuc(db) { //这里不需要 async
+  let docs = [{}, {}, {}];
 
   // 可能得到错误结果
   docs.forEach(async function (doc) {

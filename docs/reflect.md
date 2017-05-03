@@ -193,6 +193,32 @@ Reflect.set(1, 'foo', {}) // 报错
 Reflect.set(false, 'foo', {}) // 报错
 ```
 
+注意，`Reflect.set`会触发`Proxy.defineProperty`拦截。
+
+```javascript
+let p = {
+  a: 'a'
+};
+
+let handler = {
+  set(target,key,value,receiver) {
+    console.log('set');
+    Reflect.set(target,key,value,receiver)
+  },
+  defineProperty(target, key, attribute) {
+    console.log('defineProperty');
+    Reflect.defineProperty(target,key,attribute);
+  }
+};
+
+let obj = new Proxy(p, handler);
+obj.a = 'A';
+// set
+// defineProperty
+```
+
+上面代码中，`Proxy.set`拦截中使用了`Reflect.set`，导致触发`Proxy.defineProperty`拦截。
+
 ### Reflect.has(obj, name)
 
 `Reflect.has`方法对应`name in obj`里面的`in`运算符。
@@ -257,16 +283,16 @@ Object.getPrototypeOf(myObj) === FancyThing.prototype;
 Reflect.getPrototypeOf(myObj) === FancyThing.prototype;
 ```
 
-`Reflect.getPrototypeOf`和`Object.getPrototypeOf`的一个区别是，如果第一个参数不是对象（包括`null`和`undefined`），`Object.getPrototypeOf`会将这个参数转为对象，然后再运行，而`Reflect.getPrototypeOf`会报错。
+`Reflect.getPrototypeOf`和`Object.getPrototypeOf`的一个区别是，如果参数不是对象，`Object.getPrototypeOf`会将这个参数转为对象，然后再运行，而`Reflect.getPrototypeOf`会报错。
 
 ```javascript
-Object.getPrototypeOf(1) // undefined
+Object.getPrototypeOf(1) // Number {[[PrimitiveValue]]: 0}
 Reflect.getPrototypeOf(1) // 报错
 ```
 
 ### Reflect.setPrototypeOf(obj, newProto)
 
-`Reflect.setPrototypeOf`方法用于设置对象的`__proto__`属性，对应`Object.setPrototypeOf(obj, newProto)`。
+`Reflect.setPrototypeOf`方法用于设置对象的`__proto__`属性，返回第一个参数对象，对应`Object.setPrototypeOf(obj, newProto)`。
 
 ```javascript
 const myObj = new FancyThing();
@@ -278,11 +304,24 @@ Object.setPrototypeOf(myObj, OtherThing.prototype);
 Reflect.setPrototypeOf(myObj, OtherThing.prototype);
 ```
 
-如果第一个参数不是对象，`Reflect.setPrototypeOf`和`Object.setPrototypeOf`都会报错。
+如果第一个参数不是对象，`Object.setPrototypeOf`会返回第一个参数本身，而`Reflect.setPrototypeOf`会报错。
 
 ```javascript
-Object.setPrototypeOf(1) // 报错
-Reflect.setPrototypeOf(1) // 报错
+Object.setPrototypeOf(1, {})
+// 1
+
+Reflect.setPrototypeOf(1, {})
+// TypeError: Reflect.setPrototypeOf called on non-object
+```
+
+如果第一个参数是`undefined`或`null`，`Object.setPrototypeOf`和`Reflect.setPrototypeOf`都会报错。
+
+```javascript
+Object.setPrototypeOf(null, {})
+// TypeError: Object.setPrototypeOf called on null or undefined
+
+Reflect.setPrototypeOf(null, {})
+// TypeError: Reflect.setPrototypeOf called on non-object
 ```
 
 ### Reflect.apply(func, thisArg, args)
@@ -302,7 +341,7 @@ const type = Object.prototype.toString.call(youngest);
 // 新写法
 const youngest = Reflect.apply(Math.min, Math, ages);
 const oldest = Reflect.apply(Math.max, Math, ages);
-const type = Reflect.apply(Object.prototype.toString, youngest);
+const type = Reflect.apply(Object.prototype.toString, youngest, []);
 ```
 
 ### Reflect.defineProperty(target, propertyKey, attributes)
@@ -316,12 +355,12 @@ function MyDate() {
 
 // 旧写法
 Object.defineProperty(MyDate, 'now', {
-  value: () => new Date.now()
+  value: () => Date.now()
 });
 
 // 新写法
 Reflect.defineProperty(MyDate, 'now', {
-  value: () => new Date.now()
+  value: () => Date.now()
 });
 ```
 

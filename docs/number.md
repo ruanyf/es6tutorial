@@ -94,7 +94,7 @@ ES5通过下面的代码，部署`Number.isNaN()`。
 })(this);
 ```
 
-它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，非数值一律返回`false`。
+它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，`Number.isFinite()`对于非数值一律返回`false`, `Number.isNaN()`只有对于`NaN`才返回`true`，非`NaN`一律返回`false`。
 
 ```javascript
 isFinite(25) // true
@@ -106,6 +106,7 @@ isNaN(NaN) // true
 isNaN("NaN") // true
 Number.isNaN(NaN) // true
 Number.isNaN("NaN") // false
+Number.isNaN(1) // false
 ```
 
 ## Number.parseInt(), Number.parseFloat()
@@ -657,11 +658,11 @@ ES2016 新增了一个指数运算符（`**`）。
 指数运算符可以与等号结合，形成一个新的赋值运算符（`**=`）。
 
 ```javascript
-let a = 2;
+let a = 1.5;
 a **= 2;
 // 等同于 a = a * a;
 
-let b = 3;
+let b = 4;
 b **= 3;
 // 等同于 b = b * b * b;
 ```
