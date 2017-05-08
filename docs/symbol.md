@@ -798,7 +798,7 @@ ES6新增内置对象的`Symbol.toStringTag`属性值如下。
 
 ### Symbol.unscopables
 
-对象的`Symbol.unscopables`属性，指向一个对象。该对象指定了使用`with`关键字时，哪些属性会被`with`环境排除。
+对象的`Symbol.unscopables`属性，指向一个对象。该对象指定了使用`with`关键字时，那些属性会被`with`环境排除。
 
 ```javascript
 Array.prototype[Symbol.unscopables]
