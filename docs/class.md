@@ -695,7 +695,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === Object.prototype // true
 ```
 
-这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Funciton.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
+这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
 
 第三种特殊情况，子类继承`null`。
 
@@ -707,7 +707,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === undefined // true
 ```
 
-这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Funciton.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
 
 ```javascript
 class C extends null {
