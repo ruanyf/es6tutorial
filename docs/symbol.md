@@ -432,7 +432,7 @@ global._foo = 123;
 
 ```javascript
 // mod.js
-const FOO_KEY = Symbol.for('foo');
+const FOO_KEY = Symbol('foo');
 
 function A() {
   this.foo = 'hello';
