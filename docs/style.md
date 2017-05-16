@@ -436,7 +436,7 @@ const Breadcrumbs = React.createClass({
 export default Breadcrumbs
 ```
 
-如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，不要`export default`与普通的`export`同时使用。
+如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，`export default`与普通的`export`不要同时使用。
 
 不要在模块输入中使用通配符。因为这样可以确保你的模块之中，有一个默认输出（export default）。
 
