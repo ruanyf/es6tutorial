@@ -167,7 +167,7 @@ SIMD.Int16x8.subSaturate(c, d)
 // Int16x8[-32768, 0, 0, 0, 0, 0, 0, 0, 0]
 ```
 
-上面代码中，`Uint16`的最小值是`0`，`subSaturate`的最小值是`-32678`。一旦运算发生溢出，就返回最小值。
+上面代码中，`Uint16`的最小值是`0`，`Int16`的最小值是`-32678`。一旦运算发生溢出，就返回最小值。
 
 ### SIMD.%type%.mul()，SIMD.%type%.div()，SIMD.%type%.sqrt()
 
