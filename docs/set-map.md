@@ -890,7 +890,7 @@ jsonToMap('[[true,7],[{"foo":3},["abc"]]]')
 
 ### 含义
 
-`WeakMap`结构与`Map`结构类似，也是用于生成键值对。
+`WeakMap`结构与`Map`结构类似，也是用于生成键值对的集合。
 
 ```javascript
 // WeakMap 可以使用 set 方法添加成员
