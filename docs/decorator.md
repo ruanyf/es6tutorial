@@ -524,7 +524,7 @@ class MyClass extends MyBaseClass {
 上面代码中，`MyClass`继承了`MyBaseClass`。如果我们想在`MyClass`里面“混入”一个`foo`方法，一个办法是在`MyClass`和`MyBaseClass`之间插入一个混入类，这个类具有`foo`方法，并且继承了`MyBaseClass`的所有方法，然后`MyClass`再继承这个类。
 
 ```javascript
-let MyMixin = (superclass) => class extends superclass {
+let MyMixin = (superclass) => class MixinName extends superclass {
   foo() {
     console.log('foo from MyMixin');
   }
