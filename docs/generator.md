@@ -130,7 +130,7 @@ var flat = function* (a) {
     } else {
       yield item;
     }
-  }
+  });
 };
 
 for (var f of flat(arr)){
