@@ -243,7 +243,7 @@ $ npm install --save-dev babel-cli
 ```javascript
 {
   "scripts": {
-    "script-name": "babel-node script.js"
+    "node": "babel-node script.js"
   }
 }
 ```
