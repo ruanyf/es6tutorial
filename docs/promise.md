@@ -351,19 +351,19 @@ someAsyncThing().then(function() {
 });
 ```
 
-上面代码中，`someAsyncThing`函数产生的Promise对象会报错，但是由于没有指定`catch`方法，这个错误不会被捕获，也不会传递到外层代码，导致运行后没有任何输出。注意，Chrome浏览器不遵守这条规定，它会抛出错误“ReferenceError: x is not defined”。
+上面代码中，`someAsyncThing`函数产生的 Promise 对象会报错，但是由于没有指定`catch`方法，这个错误不会被捕获，也不会传递到外层代码。正常情况下，运行后不会有任何输出，但是浏览器此时会打印出错误“ReferenceError: x is not defined”，不过不会终止脚本执行，如果这个脚本放在服务器执行，退出码就是`0`（即表示执行成功）。
 
 ```javascript
-var promise = new Promise(function(resolve, reject) {
+var promise = new Promise(function (resolve, reject) {
   resolve('ok');
-  setTimeout(function() { throw new Error('test') }, 0)
+  setTimeout(function () { throw new Error('test') }, 0)
 });
-promise.then(function(value) { console.log(value) });
+promise.then(function (value) { console.log(value) });
 // ok
 // Uncaught Error: test
 ```
 
-上面代码中，Promise 指定在下一轮“事件循环”再抛出错误，结果由于没有指定使用`try...catch`语句，就冒泡到最外层，成了未捕获的错误。因为此时，Promise的函数体已经运行结束了，所以这个错误是在Promise函数体外抛出的。
+上面代码中，Promise 指定在下一轮“事件循环”再抛出错误。到了那个时候，Promise 的运行已经结束了，所以这个错误是在 Promise 函数体外抛出的，会冒泡到最外层，成了未捕获的错误。
 
 Node 有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误。
 
@@ -373,7 +373,7 @@ process.on('unhandledRejection', function (err, p) {
 });
 ```
 
-上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的Promise实例，它可以用来了解发生错误的环境信息。。
+上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。。
 
 需要注意的是，`catch`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then`方法。
 
