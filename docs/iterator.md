@@ -792,7 +792,7 @@ for (let value of myArray) {
 ```
 
 - 有着同`for...in`一样的简洁语法，但是没有`for...in`那些缺点。
-- 不同用于`forEach`方法，它可以与`break`、`continue`和`return`配合使用。
+- 不同于`forEach`方法，它可以与`break`、`continue`和`return`配合使用。
 - 提供了遍历所有数据结构的统一操作接口。
 
 下面是一个使用break语句，跳出`for...of`循环的例子。
