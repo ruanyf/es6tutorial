@@ -105,7 +105,7 @@ for (let ch of s) {
 `codePointAt`方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
 ```javascript
-function is32Bit(c) {
+function is32Bit (c) {
   return c.codePointAt(0) > 0xFFFF;
 }
 
