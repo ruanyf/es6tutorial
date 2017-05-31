@@ -1138,7 +1138,19 @@ const mult2 = a => a * 2;
 const addThenMult = pipeline(plus1, mult2);
 
 addThenMult(5)
+
 // 12
+
+// Es5
+function pipeline () {
+	var funcs = Array.from( arguments );
+	return function ( val ) {
+		return funcs.reduce(function ( a , b ) {
+			return b(a);
+		},val);
+	}
+} 
+console.log( pipeline(plus1 , mult2)(5) );
 ```
 
 如果觉得上面的写法可读性比较差，也可以采用下面的写法。
