@@ -40,7 +40,7 @@ Promise构造函数接受一个函数作为参数，该函数的两个参数分�
 
 `resolve`函数的作用是，将Promise对象的状态从“未完成”变为“成功”（即从Pending变为Resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将Promise对象的状态从“未完成”变为“失败”（即从Pending变为Rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
 
-Promise实例生成以后，可以用`then`方法分别指定`Resolved`状态和`Reject`状态的回调函数。
+Promise实例生成以后，可以用`then`方法分别指定`Resolved`状态和`Rejected`状态的回调函数。
 
 ```javascript
 promise.then(function(value) {
@@ -50,7 +50,7 @@ promise.then(function(value) {
 });
 ```
 
-`then`方法可以接受两个回调函数作为参数。第一个回调函数是Promise对象的状态变为Resolved时调用，第二个回调函数是Promise对象的状态变为Reject时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受Promise对象传出的值作为参数。
+`then`方法可以接受两个回调函数作为参数。第一个回调函数是Promise对象的状态变为Resolved时调用，第二个回调函数是Promise对象的状态变为Rejected时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受Promise对象传出的值作为参数。
 
 下面是一个Promise对象的简单例子。
 
@@ -313,7 +313,7 @@ getJSON('/post/1.json').then(function(post) {
 
 上面代码中，一共有三个Promise对象：一个由`getJSON`产生，两个由`then`产生。它们之中任何一个抛出的错误，都会被最后一个`catch`捕获。
 
-一般来说，不要在`then`方法里面定义Reject状态的回调函数（即`then`的第二个参数），总是使用`catch`方法。
+一般来说，不要在`then`方法里面定义Rejected状态的回调函数（即`then`的第二个参数），总是使用`catch`方法。
 
 ```javascript
 // bad
@@ -373,7 +373,7 @@ process.on('unhandledRejection', function (err, p) {
 });
 ```
 
-上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。。
+上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。
 
 需要注意的是，`catch`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then`方法。
 
@@ -516,7 +516,7 @@ var p = Promise.race([p1, p2, p3]);
 
 `Promise.race`方法的参数与`Promise.all`方法一样，如果不是 Promise 实例，就会先调用下面讲到的`Promise.resolve`方法，将参数转为 Promise 实例，再进一步处理。
 
-下面是一个例子，如果指定时间内没有获得结果，就将Promise的状态变为`reject`，否则变为`resolve`。
+下面是一个例子，如果指定时间内没有获得结果，就将Promise的状态变为`rejected`，否则变为`resolved`。
 
 ```javascript
 const p = Promise.race([
