@@ -1343,7 +1343,7 @@ d.b // "b"
 d.a // "a"
 ```
 
-上面代码中，对象`a`和`b`被混入了对象`c`。
+上面代码返回一个新的对象`d`，代表了对象`a`和`b`被混入了对象`c`的操作。
 
 出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。
 
