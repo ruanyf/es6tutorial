@@ -25,7 +25,7 @@ ES6 模块不是对象，而是通过`export`命令显式指定输出的代码�
 
 ```javascript
 // ES6模块
-import { stat, exists, readFile } from 'fs';
+import { stat, exists, readFile } from 'fs';有问题
 ```
 
 上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”或者静态加载，即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。当然，这也导致了没法引用 ES6 模块本身，因为它不是对象。
