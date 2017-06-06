@@ -332,7 +332,8 @@ ES6 引入了块级作用域，明确允许在块级作用域之中声明函数�
 function f() { console.log('I am outside!'); }
 
 (function () {
-  if (false) {
+  if (true) {//如果
+    是false的话，下面调用f()会提示f is not defined
     // 重复声明一次函数f
     function f() { console.log('I am inside!'); }
   }
