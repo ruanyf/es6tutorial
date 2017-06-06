@@ -187,12 +187,6 @@ function () {
   let a = 10;
   var a = 1;
 }
-
-// 报错
-function () {
-  let a = 10;
-  let a = 1;
-}
 ```
 
 因此，不能在函数内部重新声明参数。
