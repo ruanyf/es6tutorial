@@ -316,13 +316,13 @@ var es5Code = require('babel-core')
 // '"use strict";\n\nvar x = function x(n) {\n  return n + 1;\n};'
 ```
 
-上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的ES6代码，第二个参数是转换的配置对象。
+上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的 ES6 代码，第二个参数是转换的配置对象。
 
 ### babel-polyfill
 
 Babel 默认只转换新的 JavaScript 句法（syntax），而不转换新的 API，比如`Iterator`、`Generator`、`Set`、`Maps`、`Proxy`、`Reflect`、`Symbol`、`Promise`等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）都不会转码。
 
-举例来说，ES6在`Array`对象上新增了`Array.from`方法。Babel 就不会转码这个方法。如果想让这个方法运行，必须使用`babel-polyfill`，为当前环境提供一个垫片。
+举例来说，ES6 在`Array`对象上新增了`Array.from`方法。Babel 就不会转码这个方法。如果想让这个方法运行，必须使用`babel-polyfill`，为当前环境提供一个垫片。
 
 安装命令如下。
 
@@ -366,7 +366,7 @@ $  browserify script.js -o bundle.js \
   -t [ babelify --presets [ latest ] ]
 ```
 
-上面代码将ES6脚本`script.js`，转为`bundle.js`，浏览器直接加载后者就可以了。
+上面代码将 ES6 脚本`script.js`，转为`bundle.js`，浏览器直接加载后者就可以了。
 
 在`package.json`设置下面的代码，就不用每次命令行都输入参数了。
 
@@ -430,7 +430,7 @@ Mocha 则是一个测试框架，如果需要执行使用 ES6 语法的测试脚
 
 ## Traceur 转码器
 
-Google公司的[Traceur](https://github.com/google/traceur-compiler)转码器，也可以将 ES6 代码转为 ES5 代码。
+Google 公司的[Traceur](https://github.com/google/traceur-compiler)转码器，也可以将 ES6 代码转为 ES5 代码。
 
 ### 直接插入网页
 
@@ -445,7 +445,7 @@ Traceur 允许将 ES6 代码直接插入网页。首先，必须在网页头部�
 </script>
 ```
 
-上面代码中，一共有4个`script`标签。第一个是加载 Traceur 的库文件，第二个和第三个是将这个库文件用于浏览器环境，第四个则是加载用户脚本，这个脚本里面可以使用ES6代码。
+上面代码中，一共有4个`script`标签。第一个是加载 Traceur 的库文件，第二个和第三个是将这个库文件用于浏览器环境，第四个则是加载用户脚本，这个脚本里面可以使用 ES6 代码。
 
 注意，第四个`script`标签的`type`属性的值是`module`，而不是`text/javascript`。这是 Traceur 编译器识别 ES6 代码的标志，编译器会自动将所有`type=module`的代码编译为 ES5，然后再交给浏览器执行。
 
@@ -499,7 +499,7 @@ Traceur 允许将 ES6 代码直接插入网页。首先，必须在网页头部�
 
 ### 在线转换
 
-Traceur也提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将 ES6 代码转为 ES5 代码。转换后的代码，可以直接作为 ES5 代码插入网页运行。
+Traceur 也提供一个[在线编译器](http://google.github.io/traceur-compiler/demo/repl.html)，可以在线将 ES6 代码转为 ES5 代码。转换后的代码，可以直接作为 ES5 代码插入网页运行。
 
 上面的例子转为 ES5 代码运行，就是下面这个样子。
 
@@ -562,13 +562,13 @@ $ traceur --script calc.es6.js --out calc.es5.js --experimental
 
 ### Node 环境的用法
 
-Traceur 的 Node用法如下（假定已安装`traceur`模块）。
+Traceur 的 Node 用法如下（假定已安装`traceur`模块）。
 
 ```javascript
 var traceur = require('traceur');
 var fs = require('fs');
 
-// 将ES6脚本转为字符串
+// 将 ES6 脚本转为字符串
 var contents = fs.readFileSync('es6-file.js').toString();
 
 var result = traceur.compile(contents, {
@@ -581,9 +581,9 @@ var result = traceur.compile(contents, {
 if (result.error)
   throw result.error;
 
-// result对象的js属性就是转换后的ES5代码
+// result 对象的 js 属性就是转换后的 ES5 代码
 fs.writeFileSync('out.js', result.js);
-// sourceMap属性对应map文件
+// sourceMap 属性对应 map 文件
 fs.writeFileSync('out.js.map', result.sourceMap);
 ```
 
