@@ -427,13 +427,13 @@ module.exports = Breadcrumbs;
 // ES6的写法
 import React from 'react';
 
-const Breadcrumbs = React.createClass({
+class Breadcrumbs extends React.Component {
   render() {
     return <nav />;
   }
-});
+};
 
-export default Breadcrumbs
+export default Breadcrumbs;
 ```
 
 如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，`export default`与普通的`export`不要同时使用。
