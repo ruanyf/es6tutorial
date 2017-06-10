@@ -441,14 +441,14 @@ export default class myClass{
 
 ## 私有属性
 
-与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-class-fields#private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
 
 ```javascript
 class Point {
   #x;
 
   constructor(x = 0) {
-    #x = +x;
+    #x = +x; // 写成 this.#x 亦可
   }
 
   get x() { return #x }
@@ -730,9 +730,7 @@ class Foo {
 Foo.prop // undefined
 ```
 
-ES7 有一个静态属性的[提案](https://github.com/jeffmo/es-class-properties)，目前 Babel 转码器支持。
-
-这个提案对实例属性和静态属性，都规定了新的写法。
+目前有一个静态属性的[提案](https://github.com/tc39/proposal-class-fields)，对实例属性和静态属性都规定了新的写法。
 
 （1）类的实例属性
 
@@ -781,13 +779,13 @@ class ReactCounter extends React.Component {
 
 ```javascript
 class ReactCounter extends React.Component {
+  state;
   constructor(props) {
     super(props);
     this.state = {
       count: 0
     };
   }
-  state;
 }
 ```
 
