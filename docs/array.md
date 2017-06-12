@@ -334,7 +334,7 @@ console.log(entries.next().value); // [2, 'c']
 
 ## 数组实例的includes()
 
-`Array.prototype.includes`方法返回一个布尔值，表示某个数组是否包含给定的值，与字符串的`includes`方法类似。该方法属于ES7，但Babel转码器已经支持。
+`Array.prototype.includes`方法返回一个布尔值，表示某个数组是否包含给定的值，与字符串的`includes`方法类似。该方法属于ES7/ES2016，但Babel转码器已经支持。
 
 ```javascript
 [1, 2, 3].includes(2);     // true
