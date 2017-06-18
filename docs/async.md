@@ -373,7 +373,7 @@ async function myFunction() {
   await somethingThatReturnsAPromise()
   .catch(function (err) {
     console.log(err);
-  };
+  });
 }
 ```
 
