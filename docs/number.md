@@ -33,7 +33,7 @@ Number('0o10')  // 8
 
 ## Number.isFinite(), Number.isNaN()
 
-ES6在Number对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
+ES6 在`Number`对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
 
 `Number.isFinite()`用来检查一个数值是否为有限的（finite）。
 
@@ -48,7 +48,7 @@ Number.isFinite('15'); // false
 Number.isFinite(true); // false
 ```
 
-ES5可以通过下面的代码，部署`Number.isFinite`方法。
+ES5 可以通过下面的代码，部署`Number.isFinite`方法。
 
 ```javascript
 (function (global) {
@@ -77,7 +77,7 @@ Number.isNaN('true'/0) // true
 Number.isNaN('true'/'true') // true
 ```
 
-ES5通过下面的代码，部署`Number.isNaN()`。
+ES5 通过下面的代码，部署`Number.isNaN()`。
 
 ```javascript
 (function (global) {
@@ -111,7 +111,7 @@ Number.isNaN(1) // false
 
 ## Number.parseInt(), Number.parseFloat()
 
-ES6将全局方法`parseInt()`和`parseFloat()`，移植到Number对象上面，行为完全保持不变。
+ES6 将全局方法`parseInt()`和`parseFloat()`，移植到`Number`对象上面，行为完全保持不变。
 
 ```javascript
 // ES5的写法
@@ -132,7 +132,7 @@ Number.parseFloat === parseFloat // true
 
 ## Number.isInteger()
 
-`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在JavaScript内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
+`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在 JavaScript 内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
 
 ```javascript
 Number.isInteger(25) // true
@@ -142,7 +142,7 @@ Number.isInteger("15") // false
 Number.isInteger(true) // false
 ```
 
-ES5可以通过下面的代码，部署`Number.isInteger()`。
+ES5 可以通过下面的代码，部署`Number.isInteger()`。
 
 ```javascript
 (function (global) {
@@ -151,8 +151,8 @@ ES5可以通过下面的代码，部署`Number.isInteger()`。
 
   Object.defineProperty(Number, 'isInteger', {
     value: function isInteger(value) {
-      return typeof value === 'number' && isFinite(value) &&
-        value > -9007199254740992 && value < 9007199254740992 &&
+      return typeof value === 'number' &&
+        isFinite(value) &&
         floor(value) === value;
     },
     configurable: true,
