@@ -353,7 +353,7 @@ Math.trunc = Math.trunc || function(x) {
 
 ### Math.sign()
 
-`Math.sign`方法用来判断一个数到底是正数、负数、还是零。
+`Math.sign`方法用来判断一个数到底是正数、负数、还是零。对于非数值，会先将其转换为数值。
 
 它会返回五种值。
 
@@ -369,6 +369,7 @@ Math.sign(5) // +1
 Math.sign(0) // +0
 Math.sign(-0) // -0
 Math.sign(NaN) // NaN
+Math.sign('9'); // +1
 Math.sign('foo'); // NaN
 Math.sign();      // NaN
 ```
