@@ -4,7 +4,7 @@
 
 ### 基本用法
 
-在ES6之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
+ES6 之前，不能直接为函数的参数指定默认值，只能采用变通的方法。
 
 ```javascript
 function log(x, y) {
@@ -73,7 +73,7 @@ function foo(x, x, y = 1) {
 // SyntaxError: Duplicate parameter name not allowed in this context
 ```
 
-另外，一个容易忽略的地方是，如果参数默认值是变量，那么参数就不是传值的，而是每次都重新计算默认值表达式的值。也就是说，参数默认值是惰性求值的。
+另外，一个容易忽略的地方是，参数默认值不是传值的，而是每次都重新计算默认值表达式的值。也就是说，参数默认值是惰性求值的。
 
 ```javascript
 let x = 99;
@@ -301,7 +301,7 @@ let foo = 'outer';
 
 function bar(func = x => foo) {
   let foo = 'inner';
-  console.log(func()); 
+  console.log(func());
 }
 
 bar(); // outer
@@ -379,9 +379,9 @@ foo()
 function foo(optional = undefined) { ··· }
 ```
 
-## rest参数
+## rest 参数
 
-ES6 引入 rest 参数（形式为“...变量名”），用于获取函数的多余参数，这样就不需要使用`arguments`对象了。rest 参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
+ES6 引入 rest 参数（形式为`...变量名`），用于获取函数的多余参数，这样就不需要使用`arguments`对象了。rest 参数搭配的变量是一个数组，该变量将多余的参数放入数组中。
 
 ```javascript
 function add(...values) {
@@ -853,7 +853,7 @@ foo.bind({}).name // "bound foo"
 
 ### 基本用法
 
-ES6允许使用“箭头”（`=>`）定义函数。
+ES6 允许使用“箭头”（`=>`）定义函数。
 
 ```javascript
 var f = v => v;
