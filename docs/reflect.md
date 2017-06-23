@@ -415,19 +415,19 @@ Reflect.isExtensible(1) // 报错
 var myObject = {};
 
 // 旧写法
-Object.isExtensible(myObject) // true
+Object.preventExtensions(myObject) // Object {}
 
 // 新写法
 Reflect.preventExtensions(myObject) // true
 ```
 
-如果参数不是对象，`Object.isExtensible`在 ES5 环境报错，在 ES6 环境返回这个参数，而`Reflect.preventExtensions`会报错。
+如果参数不是对象，`Object.preventExtensions`在 ES5 环境报错，在 ES6 环境返回传入的参数，而`Reflect.preventExtensions`会报错。
 
 ```javascript
-// ES5
+// ES5 环境
 Object.preventExtensions(1) // 报错
 
-// ES6
+// ES6 环境
 Object.preventExtensions(1) // 1
 
 // 新写法
