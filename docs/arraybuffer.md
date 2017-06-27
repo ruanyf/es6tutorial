@@ -975,59 +975,65 @@ bitmap.pixels = new Uint8Array(buffer, start);
 
 ## SharedArrayBuffer
 
-JavaScript 是单线程的，web worker 引入了多进程，每个进程的数据都是隔离的，通过`postMessage()`通信，即通信的数据是复制的。如果数据量比较大，这种通信的效率显然比较低。
+JavaScript 是单线程的，Web worker 引入了多线程：主线程用来与用户互动，Worker 线程用来承担计算任务。每个线程的数据都是隔离的，通过`postMessage()`通信。下面是一个例子。
 
 ```javascript
+// 主线程
 var w = new Worker('myworker.js');
 ```
 
-上面代码中，主进程新建了一个 Worker 进程。该进程与主进程之间会有一个通信渠道，主进程通过`w.postMessage`向 Worker 进程发消息，同时通过`message`事件监听 Worker 进程的回应。
+上面代码中，主线程新建了一个 Worker 线程。该线程与主线程之间会有一个通信渠道，主线程通过`w.postMessage`向 Worker 线程发消息，同时通过`message`事件监听 Worker 线程的回应。
 
 ```javascript
+// 主线程
 w.postMessage('hi');
 w.onmessage = function (ev) {
   console.log(ev.data);
 }
 ```
 
-上面代码中，主进程先发一个消息`hi`，然后在监听到 Worker 进程的回应后，就将其打印出来。
+上面代码中，主线程先发一个消息`hi`，然后在监听到 Worker 线程的回应后，就将其打印出来。
 
-Worker 进程也是通过监听`message`事件，来获取主进程发来的消息，并作出反应。
+Worker 线程也是通过监听`message`事件，来获取主线程发来的消息，并作出反应。
 
 ```javascript
+// Worker 线程
 onmessage = function (ev) {
   console.log(ev.data);
   postMessage('ho');
 }
 ```
 
-主进程与 Worker 进程之间，可以传送各种数据，不仅仅是字符串，还可以传送二进制数据。很容易想到，如果有大量数据要传送，留出一块内存区域，主进程与 Worker 进程共享，两方都可以读写，那么就会大大提高效率。
+线程之间的数据交换可以是各种格式，不仅仅是字符串，也可以是二进制数据。这种交换采用的是复制机制，即一个进程将需要分享的数据复制一份，通过`postMessage`方法交给另一个进程。如果数据量比较大，这种通信的效率显然比较低。很容易想到，这时可以留出一块内存区域，由主线程与 Worker 线程共享，两方都可以读写，那么就会大大提高效率，协作起来也会比较简单（不像`postMessage`那么麻烦）。
 
-ES2017 引入[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)，允许多个 Worker 进程与主进程共享内存数据。`SharedArrayBuffer`的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
+ES2017 引入[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)，允许 Worker 线程与主线程共享同一块内存。`SharedArrayBuffer`的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
 
 ```javascript
+// 主线程
+
 // 新建 1KB 共享内存
 var sharedBuffer = new SharedArrayBuffer(1024);
 
-// 主窗口发送数据
+// 主线程将共享内存的地址发送出去
 w.postMessage(sharedBuffer);
 
-// 本地写入数据
+// 在共享内存上建立视图，供写入数据
 const sharedArray = new Int32Array(sharedBuffer);
 ```
 
 上面代码中，`postMessage`方法的参数是`SharedArrayBuffer`对象。
 
-Worker 进程从事件的`data`属性上面取到数据。
+Worker 线程从事件的`data`属性上面取到数据。
 
 ```javascript
+// Worker 线程
 var sharedBuffer;
 onmessage = function (ev) {
-   sharedBuffer = ev.data;  // 1KB 的共享内存，就是主窗口共享出来的那块内存
+   sharedBuffer = ev.data;  // 1KB 的共享内存，就是主线程共享出来的那块内存
 };
 ```
 
-共享内存也可以在 Worker 进程创建，发给主进程。
+共享内存也可以在 Worker 线程创建，发给主线程。
 
 `SharedArrayBuffer`与`SharedArray`一样，本身是无法读写，必须在上面建立视图，然后通过视图读写。
 
@@ -1045,13 +1051,14 @@ var primes = new PrimeGenerator();
 for ( let i=0 ; i < ia.length ; i++ )
   ia[i] = primes.next();
 
-// 向 Worker 进程发送这段共享内存
+// 向 Worker 线程发送这段共享内存
 w.postMessage(ia);
 ```
 
-Worker 进程收到数据后的处理如下。
+Worker 线程收到数据后的处理如下。
 
 ```javascript
+// Worker 线程
 var ia;
 onmessage = function (ev) {
   ia = ev.data;
@@ -1060,10 +1067,10 @@ onmessage = function (ev) {
 };
 ```
 
-多个进程共享内存，最大的问题就是如何防止两个进程同时修改某个地址，或者说，当一个进程修改共享内存以后，必须有一个机制让其他进程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
+多线程共享内存，最大的问题就是如何防止两个线程同时修改某个地址，或者说，当一个线程修改共享内存以后，必须有一个机制让其他线程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
 
 ```javascript
-// 主进程
+// 主线程
 var sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT * 100000);
 var ia = new Int32Array(sab);
 
@@ -1071,27 +1078,27 @@ for (let i = 0; i < ia.length; i++) {
   ia[i] = primes.next(); // 将质数放入 ia
 }
 
-// worker 进程
+// worker 线程
 ia[112]++; // 错误
 Atomics.add(ia, 112, 1); // 正确
 ```
 
-上面代码中，Worker 进程直接改写共享内存是不正确的。有两个原因，一是可能发生两个进程同时改写该地址，二是改写以后无法同步到其他 Worker 进程。所以，必须使用`Atomics.add()`方法进行改写。
+上面代码中，Worker 线程直接改写共享内存是不正确的。有两个原因，一是可能发生两个线程同时改写该地址，二是改写以后无法同步到其他 Worker 线程。所以，必须使用`Atomics.add()`方法进行改写。
 
 下面是另一个例子。
 
 ```javascript
-// 进程一
+// 线程一
 console.log(ia[37]);  // 163
 Atomics.store(ia, 37, 123456);
 Atomics.wake(ia, 37, 1);
 
-// 进程二
+// 线程二
 Atomics.wait(ia, 37, 163);
 console.log(ia[37]);  // 123456
 ```
 
-上面代码中，共享内存`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就处于“等待”状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个进程唤醒。
+上面代码中，共享内存`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就处于“等待”状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个线程唤醒。
 
 `Atomics`对象有以下方法。
 
