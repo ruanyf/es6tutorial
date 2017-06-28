@@ -975,6 +975,8 @@ bitmap.pixels = new Uint8Array(buffer, start);
 
 ## SharedArrayBuffer
 
+### 共享内存
+
 JavaScript 是单线程的，Web worker 引入了多线程：主线程用来与用户互动，Worker 线程用来承担计算任务。每个线程的数据都是隔离的，通过`postMessage()`通信。下面是一个例子。
 
 ```javascript
@@ -1029,7 +1031,13 @@ Worker 线程从事件的`data`属性上面取到数据。
 // Worker 线程
 var sharedBuffer;
 onmessage = function (ev) {
-   sharedBuffer = ev.data;  // 1KB 的共享内存，就是主线程共享出来的那块内存
+  // 主线程共享的数据，就是 1KB 的共享内存
+  const sharedBuffer = ev.data;
+
+  // 在共享内存上建立视图，方便读写
+  const sharedArray = new Int32Array(sharedBuffer);
+
+  // ...
 };
 ```
 
@@ -1067,6 +1075,8 @@ onmessage = function (ev) {
 };
 ```
 
+### Atomics 对象
+
 多线程共享内存，最大的问题就是如何防止两个线程同时修改某个地址，或者说，当一个线程修改共享内存以后，必须有一个机制让其他线程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
 
 ```javascript
@@ -1085,7 +1095,90 @@ Atomics.add(ia, 112, 1); // 正确
 
 上面代码中，Worker 线程直接改写共享内存是不正确的。有两个原因，一是可能发生两个线程同时改写该地址，二是改写以后无法同步到其他 Worker 线程。所以，必须使用`Atomics.add()`方法进行改写。
 
-下面是另一个例子。
+`Atomics`提供多种方法。
+
+**（1）Atomics.store()，Atomics.load()**
+
+`store()`方法用来向共享内存写入数据，`load()`方法用来从共享内存读出数据。比起直接的读写操作，它们的好处是保证了读写操作的安全性。比如有时编译器为了优化，会改变某些操作的执行顺序，从而导致其他线程读取时出现问题，`store`和`load`就保证了编辑器不会改变这些操作。
+
+```javascript
+Atomics.load(array, index)
+Atomics.store(array, index, value)
+```
+
+`store`方法接受三个参数：SharedBuffer 的视图、位置索引和值，返回`sharedA[index]`的值。`load`方法只接受两个参数：SharedBuffer 的视图和位置索引，也是返回`sharedArray[index]`的值。
+
+```javascript
+// 主线程 main.js
+console.log('notifying...');
+Atomics.store(sharedArray, 0, 123);
+
+// Worker 线程 worker.js
+while (Atomics.load(sharedArray, 0) !== 123) ;
+console.log('notified');
+```
+
+上面代码中，主线程的`Atomics.store`向 SharedBuffer 视图的0号位置，写入123。Worker 线程的`Atomics.load`从该位置读出数据，只要不等于123就不断循环。
+
+**（2）Atomics.wait()，Atomics.wake()**
+
+使用`while`循环等待主线程的通知，不是很高效，`Atomics`对象提供了`wait()`和`wake()`两个方法用于等待通知。
+
+```javascript
+Atomics.wait(sharedArray, index, value, time)
+```
+
+`Atomics.wait`用于当`sharedArray[index]`不等于`value`，就返回`not-equal`，否则就进入休眠，只有使用`Atomics.wake()`或者`time`毫秒以后才能唤醒。被`Atomics.wake()`唤醒时，返回`ok`，超时唤醒时返回`timed-out`。
+
+```javascript
+Atomics.wake(sharedArray, index, count)
+```
+
+`Atomics.wake`用于唤醒`count`数目在`sharedArray[index]`位置休眠的线程，让它继续往下运行。
+
+**（3）运算方法**
+
+共享内存上面的某些运算是不能被打断的，即不能在运算过程中，让其他线程改写内存上面的值。Atomics 对象提供了一些运算方法，防止数据被改写。
+
+```javascript
+Atomics.add(sharedArray, index, value)
+```
+
+`Atomics.add`用于将`value`加到`sharedArray[index]`，返回`sharedArray[index]`旧的值。
+
+```javascript
+Atomics.sub(sharedArray, index, value)
+```
+
+`Atomics.sub`用于将`value`从`sharedArray[index]`减去，返回`sharedArray[index]`旧的值。
+
+```javascript
+Atomics.and(sharedArray, index, value)
+```
+
+`Atomics.and`用于将`value`与`sharedArray[index]`进行位运算`and`，放入`sharedArray[index]`，并返回旧的值。
+
+```javascript
+Atomics.or(sharedArray, index, value)
+```
+
+`Atomics.or`用于将`value`与`sharedArray[index]`进行位运算`or`，放入`sharedArray[index]`，并返回旧的值。
+
+```javascript
+Atomics.xor(sharedArray, index, value)
+```
+
+`Atomic.xor`用于将`vaule`与`sharedArray[index]`进行位运算`xor`，放入`sharedArray[index]`，并返回旧的值。
+
+**（4）其他方法**
+
+`Atomics`对象还有以下方法。
+
+- `Atomics.compareExchange(sharedArray, index, oldval, newval)`：如果`sharedArray[index]`等于`oldval`，就写入`newval`，返回`oldval`。
+- `Atomics.exchange(sharedArray, index, value)`：设置`sharedArray[index]`的值，返回旧的值。
+- `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
+
+### Atomics 对象的例子
 
 ```javascript
 // 线程一
@@ -1098,20 +1191,5 @@ Atomics.wait(ia, 37, 163);
 console.log(ia[37]);  // 123456
 ```
 
-上面代码中，共享内存`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就处于“等待”状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个线程唤醒。
-
-`Atomics`对象有以下方法。
-
-- `Atomics.load(array, index)`：返回`array[index]`的值。
-- `Atomics.store(array, index, value)`：设置`array[index]`的值，返回这个值。
-- `Atomics.compareExchange(array, index, oldval, newval)`：如果`array[index]`等于`oldval`，就写入`newval`，返回`oldval`。
-- `Atomics.exchange(array, index, value)`：设置`array[index]`的值，返回旧的值。
-- `Atomics.add(array, index, value)`：将`value`加到`array[index]`，返回`array[index]`旧的值。
-- `Atomics.sub(array, index, value)`：将`value`从`array[index]`减去，返回`array[index]`旧的值。
-- `Atomics.and(array, index, value)`：将`value`与`array[index]`进行位运算`and`，放入`array[index]`，并返回旧的值。
-- `Atomics.or(array, index, value)`：将`value`与`array[index]`进行位运算`or`，放入`array[index]`，并返回旧的值。
-- `Atomics.xor(array, index, value)`：将`vaule`与`array[index]`进行位运算`xor`，放入`array[index]`，并返回旧的值。
-- `Atomics.wait(array, index, value, timeout)`：如果`array[index]`等于`value`，进程就进入休眠状态，必须通过`Atomics.wake()`唤醒。`timeout`指定多少毫秒之后，进入休眠。返回值是三个字符串（ok、not-equal、timed-out）中的一个。
-- `Atomics.wake(array, index, count)`：唤醒指定数目在某个位置休眠的进程。
-- `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
+上面代码中，共享内存视图`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个休眠线程唤醒。
 
