@@ -1014,45 +1014,32 @@ undefined
 > let wm = new WeakMap();
 undefined
 
-> let b = new Object();
+> let key = new Array(5*1024*1024);
 undefined
 
-> global.gc();
-undefined
-
-// 此时，heapUsed 仍然为 4M 左右
-> process.memoryUsage();
-{ rss: 20537344,
-  heapTotal: 9474048,
-  heapUsed: 3967272,
-  external: 8993 }
-
-// 在 WeakMap 中添加一个键值对，
-// 键名为对象 b，键值为一个 5*1024*1024 的数组
-> wm.set(b, new Array(5*1024*1024));
+> wm.set(key,1);
 WeakMap {}
 
-// 手动执行一次垃圾回收
 > global.gc();
 undefined
 
-// 此时，heapUsed 为 45M 左右
+// 可以看到，增加数组key之后，heapUsed增加到45M了；
 > process.memoryUsage();
-{ rss: 62652416,
-  heapTotal: 51437568,
-  heapUsed: 45911664,
-  external: 8951 }
+{ rss: 67538944,
+  heapTotal: 7376896,
+  heapUsed: 45782816,
+  external: 8945 }
 
-// 解除对象 b 的引用
-> b = null;
+// 清除外界对key的引用，但没有手动清除WeakMap对key的引用 
+> key = null;
 null
 
 // 再次执行垃圾回收
 > global.gc();
 undefined
 
-// 解除 b 的引用以后，heapUsed 变回 4M 左右
-// 说明 WeakMap 中的那个长度为 5*1024*1024 的数组被销毁了
+// heapUsed 4M左右，
+// 可以看到WeakMap对key的引用没有阻止gc对key所占内存的回收；
 > process.memoryUsage();
 { rss: 20639744,
   heapTotal: 8425472,
