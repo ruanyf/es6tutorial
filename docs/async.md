@@ -437,7 +437,7 @@ async function dbFuc(db) {
 }
 ```
 
-如果确实希望多个请求并发执行，可以使用`Promise.all`方法。
+如果确实希望多个请求并发执行，可以使用`Promise.all`方法。当三个请求都会`resolved`时，下面两种写法效果相同。
 
 ```javascript
 async function dbFuc(db) {
