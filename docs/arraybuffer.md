@@ -1079,6 +1079,8 @@ onmessage = function (ev) {
 
 多线程共享内存，最大的问题就是如何防止两个线程同时修改某个地址，或者说，当一个线程修改共享内存以后，必须有一个机制让其他线程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
 
+什么叫“原子性操作”呢？现代编程语言中，一条普通的命令被编译器处理以后，会变成多条机器指令。如果是单线程运行，这是没有问题的；多线程环境并且共享内存时，就会出问题，因为这一组机器指令的运行期间，可能会插入其他线程的指令，从而导致运行结果出错。请看下面的例子。
+
 ```javascript
 // 主线程
 var sab = new SharedArrayBuffer(Int32Array.BYTES_PER_ELEMENT * 100000);
@@ -1093,13 +1095,17 @@ ia[112]++; // 错误
 Atomics.add(ia, 112, 1); // 正确
 ```
 
-上面代码中，Worker 线程直接改写共享内存是不正确的。有两个原因，一是可能发生两个线程同时改写该地址，二是改写以后无法同步到其他 Worker 线程。所以，必须使用`Atomics.add()`方法进行改写。
+上面代码中，Worker 线程直接改写共享内存`ia[112]++`是不正确的。因为这行语句会被编译成多条机器指令，这些指令之间无法保证不会插入其他进程的指令。
 
-`Atomics`提供多种方法。
+`Atomics`对象就是为了解决这个问题而提出，它可以保证一个操作所对应的多条机器指令，一定是作为一个整体运行的，中间不会被打断。也就是说，它所涉及的操作都可以看作是原子性的单操作，这可以避免线程竞争（），提高多线程共享内存时的操作安全。所以，`ia[112]++`要改写成`Atomics.add(ia, 112, 1)`。
+
+`Atomics`对象提供多种方法。
 
 **（1）Atomics.store()，Atomics.load()**
 
-`store()`方法用来向共享内存写入数据，`load()`方法用来从共享内存读出数据。比起直接的读写操作，它们的好处是保证了读写操作的安全性。比如有时编译器为了优化，会改变某些操作的执行顺序，从而导致其他线程读取时出现问题，`store`和`load`就保证了编辑器不会改变这些操作。
+`store()`方法用来向共享内存写入数据，`load()`方法用来从共享内存读出数据。比起直接的读写操作，它们的好处是保证了读写操作的原子性。
+
+此外，它们还用来解决一个问题：多个线程使用共享线程的某个位置作为开关（flag），一旦该位置的值变了，就执行特定操作。这时，必须保证该位置的赋值操作，一定是在它前面的所有可能会改写内存的操作结束后执行；而该位置的取值操作，一定是在它后面所有可能会读取该位置的操作开始之前执行。`store`方法和`load`方法就能做到这一点，编译器不会为了优化，而打乱机器指令的执行顺序。
 
 ```javascript
 Atomics.load(array, index)
@@ -1122,7 +1128,7 @@ console.log('notified');
 
 **（2）Atomics.wait()，Atomics.wake()**
 
-使用`while`循环等待主线程的通知，不是很高效，`Atomics`对象提供了`wait()`和`wake()`两个方法用于等待通知。
+使用`while`循环等待主线程的通知，不是很高效，如果用在主线程，就会造成卡顿，`Atomics`对象提供了`wait()`和`wake()`两个方法用于等待通知。这两个方法相当于锁内存，即在一个线程进行操作时，让其他线程休眠（建立锁），等到操作结束，再唤醒那些休眠的线程（解除锁）。
 
 ```javascript
 Atomics.wait(sharedArray, index, value, time)
@@ -1177,6 +1183,8 @@ Atomics.xor(sharedArray, index, value)
 - `Atomics.compareExchange(sharedArray, index, oldval, newval)`：如果`sharedArray[index]`等于`oldval`，就写入`newval`，返回`oldval`。
 - `Atomics.exchange(sharedArray, index, value)`：设置`sharedArray[index]`的值，返回旧的值。
 - `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
+
+`Atomics.compareExchange`的一个用途是，从 SharedArrayBuffer 读取一个值，然后对该值进行某个操作，操作结束以后，检查一下 SharedArrayBuffer 里面原来那个值是否发生变化（即被其他线程改写过）。如果没有改写过，就将它写回原来的位置，否则读取新的值，再重头进行一次操作。
 
 ### Atomics 对象的例子
 
