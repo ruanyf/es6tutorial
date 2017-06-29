@@ -31,8 +31,7 @@
 1. [Module 的加载实现](#docs/module-loader)
 1. [编程风格](#docs/style)
 1. [读懂规格](#docs/spec)
-1. [二进制数组](#docs/arraybuffer)
-1. [SIMD](#docs/simd)
+1. [ArrayBuffer](#docs/arraybuffer)
 1. [参考链接](#docs/reference)
 
 ## 其他
