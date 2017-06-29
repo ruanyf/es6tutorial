@@ -222,6 +222,7 @@
 - Axel Rauschmayer, [Typed Arrays in ECMAScript 6](http://www.2ality.com/2015/09/typed-arrays.html)
 - Axel Rauschmayer, [ES proposal: Shared memory and atomics](http://2ality.com/2017/01/shared-array-buffer.html)
 - Lin Clark, [Avoiding race conditions in SharedArrayBuffers with Atomics](https://hacks.mozilla.org/2017/06/avoiding-race-conditions-in-sharedarraybuffers-with-atomics/): Atomics 对象使用场景的解释
+- Lars T Hansen, [Shared memory - a brief tutorial](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)
 
 ## SIMD
 

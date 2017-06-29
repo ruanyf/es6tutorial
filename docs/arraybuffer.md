@@ -975,8 +975,6 @@ bitmap.pixels = new Uint8Array(buffer, start);
 
 ## SharedArrayBuffer
 
-### 共享内存
-
 JavaScript 是单线程的，Web worker 引入了多线程：主线程用来与用户互动，Worker 线程用来承担计算任务。每个线程的数据都是隔离的，通过`postMessage()`通信。下面是一个例子。
 
 ```javascript
@@ -1075,11 +1073,28 @@ onmessage = function (ev) {
 };
 ```
 
-### Atomics 对象
+## Atomics 对象
 
 多线程共享内存，最大的问题就是如何防止两个线程同时修改某个地址，或者说，当一个线程修改共享内存以后，必须有一个机制让其他线程同步。SharedArrayBuffer API 提供`Atomics`对象，保证所有共享内存的操作都是“原子性”的，并且可以在所有进程内同步。
 
 什么叫“原子性操作”呢？现代编程语言中，一条普通的命令被编译器处理以后，会变成多条机器指令。如果是单线程运行，这是没有问题的；多线程环境并且共享内存时，就会出问题，因为这一组机器指令的运行期间，可能会插入其他线程的指令，从而导致运行结果出错。请看下面的例子。
+
+```javascript
+// 主线程
+ia[42] = 314159;  // 原先的值 191
+ia[37] = 123456;  // 原先的值 163
+
+// Worker 线程
+console.log(ia[37]);
+console.log(ia[42]);
+// 可能的结果
+// 123456
+// 191
+```
+
+上面代码中，主线程的原始顺序是先对42号位置赋值，再对37号位置赋值。但是，编译器和 CPU 为了优化，可能会该改变这两个操作的执行顺序（因为它们之间互不依赖），先对37号位置赋值，再对42号位置赋值。而执行到一半的时候，Worker 线程可能就会来读取数据，导致打印出`123456`和`191`。
+
+下面是另一个例子。
 
 ```javascript
 // 主线程
@@ -1095,7 +1110,7 @@ ia[112]++; // 错误
 Atomics.add(ia, 112, 1); // 正确
 ```
 
-上面代码中，Worker 线程直接改写共享内存`ia[112]++`是不正确的。因为这行语句会被编译成多条机器指令，这些指令之间无法保证不会插入其他进程的指令。
+上面代码中，Worker 线程直接改写共享内存`ia[112]++`是不正确的。因为这行语句会被编译成多条机器指令，这些指令之间无法保证不会插入其他进程的指令。请设想如果两个线程同时`ia[112]++`，很可能它们得到的结果都是不正确的。
 
 `Atomics`对象就是为了解决这个问题而提出，它可以保证一个操作所对应的多条机器指令，一定是作为一个整体运行的，中间不会被打断。也就是说，它所涉及的操作都可以看作是原子性的单操作，这可以避免线程竞争（），提高多线程共享内存时的操作安全。所以，`ia[112]++`要改写成`Atomics.add(ia, 112, 1)`。
 
@@ -1116,15 +1131,16 @@ Atomics.store(array, index, value)
 
 ```javascript
 // 主线程 main.js
-console.log('notifying...');
-Atomics.store(sharedArray, 0, 123);
+ia[42] = 314159;  // 原先的值 191
+Atomics.store(ia, 37, 123456);  // 原先的值是 163
 
 // Worker 线程 worker.js
-while (Atomics.load(sharedArray, 0) !== 123) ;
-console.log('notified');
+while (Atomics.load(ia, 37) == 163);
+console.log(ia[37]);  // 123456
+console.log(ia[42]);  // 314159
 ```
 
-上面代码中，主线程的`Atomics.store`向 SharedBuffer 视图的0号位置，写入123。Worker 线程的`Atomics.load`从该位置读出数据，只要不等于123就不断循环。
+上面代码中，主线程的`Atomics.store`向42号位置的赋值，一定是早于37位置的赋值。只要37号位置等于163，Worker 线程就不会终止循环，而对37号位置和42号位置的取值，一定是在`Atomics.load`操作之后。
 
 **（2）Atomics.wait()，Atomics.wake()**
 
@@ -1141,6 +1157,25 @@ Atomics.wake(sharedArray, index, count)
 ```
 
 `Atomics.wake`用于唤醒`count`数目在`sharedArray[index]`位置休眠的线程，让它继续往下运行。
+
+下面请看一个例子。
+
+```javascript
+// 线程一
+console.log(ia[37]);  // 163
+Atomics.store(ia, 37, 123456);
+Atomics.wake(ia, 37, 1);
+
+// 线程二
+Atomics.wait(ia, 37, 163);
+console.log(ia[37]);  // 123456
+```
+
+上面代码中，共享内存视图`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的休眠线程唤醒。
+
+另外，基于`wait`和`wake`这两个方法的锁内存实现，可以看 Lars T Hansen 的 [js-lock-and-condition](https://github.com/lars-t-hansen/js-lock-and-condition) 这个库。
+
+注意，浏览器的主线程有权“拒绝”休眠，这是为了防止用户失去响应。
 
 **（3）运算方法**
 
@@ -1185,21 +1220,4 @@ Atomics.xor(sharedArray, index, value)
 - `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
 
 `Atomics.compareExchange`的一个用途是，从 SharedArrayBuffer 读取一个值，然后对该值进行某个操作，操作结束以后，检查一下 SharedArrayBuffer 里面原来那个值是否发生变化（即被其他线程改写过）。如果没有改写过，就将它写回原来的位置，否则读取新的值，再重头进行一次操作。
-
-### Atomics 对象的例子
-
-```javascript
-// 线程一
-console.log(ia[37]);  // 163
-Atomics.store(ia, 37, 123456);
-Atomics.wake(ia, 37, 1);
-
-// 线程二
-Atomics.wait(ia, 37, 163);
-console.log(ia[37]);  // 123456
-```
-
-上面代码中，共享内存视图`ia`的第37号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的一个休眠线程唤醒。
-
-另外，基于`wait`和`wake`这两个方法的锁内存实现，可以看 Lars T Hansen 的 [js-lock-and-condition](https://github.com/lars-t-hansen/js-lock-and-condition) 这个库。
 
