@@ -442,7 +442,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === Object.prototype // true
 ```
 
-这种情况下，A作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
+这种情况下，`A`作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
 
 第三种特殊情况，子类继承`null`。
 
@@ -454,7 +454,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === undefined // true
 ```
 
-这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，A调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
 
 ```javascript
 class C extends null {
@@ -592,16 +592,18 @@ x.history // [[]]
 
 x.commit();
 x.history // [[], [1, 2]]
+
 x.push(3);
 x // [1, 2, 3]
+x.history // [[], [1, 2]]
 
 x.revert();
 x // [1, 2]
 ```
 
-上面代码中，`VersionedArray`结构会通过`commit`方法，将自己的当前状态存入`history`属性，然后通过`revert`方法，可以撤销当前版本，回到上一个版本。除此之外，`VersionedArray`依然是一个数组，所有原生的数组方法都可以在它上面调用。
+上面代码中，`VersionedArray`会通过`commit`方法，将自己的当前状态生成一个版本快照，存入`history`属性。`revert`方法用来将数组重置为最新一次保存的版本。除此之外，`VersionedArray`依然是一个普通数组，所有原生的数组方法都可以在它上面调用。
 
-下面是一个自定义`Error`子类的例子。
+下面是一个自定义`Error`子类的例子，可以用来定制报错时的行为。
 
 ```javascript
 class ExtendableError extends Error {
@@ -638,10 +640,10 @@ class NewObj extends Object{
   }
 }
 var o = new NewObj({attr: true});
-console.log(o.attr === true);  // false
+o.attr === true  // false
 ```
 
-上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为ES6改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，ES6 规定`Object`构造函数会忽略参数。
+上面代码中，`NewObj`继承了`Object`，但是无法通过`super`方法向父类`Object`传参。这是因为 ES6 改变了`Object`构造函数的行为，一旦发现`Object`方法不是通过`new Object()`这种形式调用，ES6 规定`Object`构造函数会忽略参数。
 
 ## Mixin 模式的实现
 
