@@ -435,10 +435,10 @@ export 42;
 import _ from 'lodash';
 ```
 
-如果想在一条`import`语句中，同时输入默认方法和其他变量，可以写成下面这样。
+如果想在一条`import`语句中，同时输入默认方法和其他接口，可以写成下面这样。
 
 ```javascript
-import _, { each } from 'lodash';
+import _, { each, each as forEach } from 'lodash';
 ```
 
 对应上面代码的`export`语句如下。
