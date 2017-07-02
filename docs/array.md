@@ -1,5 +1,298 @@
 # 数组的扩展
 
+## 扩展运算符
+
+### 含义
+
+扩展运算符（spread）是三个点（`...`）。它好比 rest 参数的逆运算，将一个数组转为用逗号分隔的参数序列。
+
+```javascript
+console.log(...[1, 2, 3])
+// 1 2 3
+
+console.log(1, ...[2, 3, 4], 5)
+// 1 2 3 4 5
+
+[...document.querySelectorAll('div')]
+// [<div>, <div>, <div>]
+```
+
+该运算符主要用于函数调用。
+
+```javascript
+function push(array, ...items) {
+  array.push(...items);
+}
+
+function add(x, y) {
+  return x + y;
+}
+
+var numbers = [4, 38];
+add(...numbers) // 42
+```
+
+上面代码中，`array.push(...items)`和`add(...numbers)`这两行，都是函数的调用，它们的都使用了扩展运算符。该运算符将一个数组，变为参数序列。
+
+扩展运算符与正常的函数参数可以结合使用，非常灵活。
+
+```javascript
+function f(v, w, x, y, z) { }
+var args = [0, 1];
+f(-1, ...args, 2, ...[3]);
+```
+
+扩展运算符后面还可以放置表达式。
+
+```javascript
+const arr = [
+  ...(x > 0 ? ['a'] : []),
+  'b',
+];
+```
+
+如果扩展运算符后面是一个空数组，则不产生任何效果。
+
+```javascript
+[...[], 1]
+// [1]
+```
+
+### 替代数组的 apply 方法
+
+由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
+
+```javascript
+// ES5 的写法
+function f(x, y, z) {
+  // ...
+}
+var args = [0, 1, 2];
+f.apply(null, args);
+
+// ES6的写法
+function f(x, y, z) {
+  // ...
+}
+var args = [0, 1, 2];
+f(...args);
+```
+
+下面是扩展运算符取代`apply`方法的一个实际的例子，应用`Math.max`方法，简化求出一个数组最大元素的写法。
+
+```javascript
+// ES5 的写法
+Math.max.apply(null, [14, 3, 77])
+
+// ES6 的写法
+Math.max(...[14, 3, 77])
+
+// 等同于
+Math.max(14, 3, 77);
+```
+
+上面代码中，由于 JavaScript 不提供求数组最大元素的函数，所以只能套用`Math.max`函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用`Math.max`了。
+
+另一个例子是通过`push`函数，将一个数组添加到另一个数组的尾部。
+
+```javascript
+// ES5的 写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+Array.prototype.push.apply(arr1, arr2);
+
+// ES6 的写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+arr1.push(...arr2);
+```
+
+上面代码的 ES5 写法中，`push`方法的参数不能是数组，所以只好通过`apply`方法变通使用`push`方法。有了扩展运算符，就可以直接将数组传入`push`方法。
+
+下面是另外一个例子。
+
+```javascript
+// ES5
+new (Date.bind.apply(Date, [null, 2015, 1, 1]))
+// ES6
+new Date(...[2015, 1, 1]);
+```
+
+### 扩展运算符的应用
+
+**（1）合并数组**
+
+扩展运算符提供了数组合并的新写法。
+
+```javascript
+// ES5
+[1, 2].concat(more)
+// ES6
+[1, 2, ...more]
+
+var arr1 = ['a', 'b'];
+var arr2 = ['c'];
+var arr3 = ['d', 'e'];
+
+// ES5的合并数组
+arr1.concat(arr2, arr3);
+// [ 'a', 'b', 'c', 'd', 'e' ]
+
+// ES6的合并数组
+[...arr1, ...arr2, ...arr3]
+// [ 'a', 'b', 'c', 'd', 'e' ]
+```
+
+**（2）与解构赋值结合**
+
+扩展运算符可以与解构赋值结合起来，用于生成数组。
+
+```javascript
+// ES5
+a = list[0], rest = list.slice(1)
+// ES6
+[a, ...rest] = list
+```
+
+下面是另外一些例子。
+
+```javascript
+const [first, ...rest] = [1, 2, 3, 4, 5];
+first // 1
+rest  // [2, 3, 4, 5]
+
+const [first, ...rest] = [];
+first // undefined
+rest  // []
+
+const [first, ...rest] = ["foo"];
+first  // "foo"
+rest   // []
+```
+
+如果将扩展运算符用于数组赋值，只能放在参数的最后一位，否则会报错。
+
+```javascript
+const [...butLast, last] = [1, 2, 3, 4, 5];
+// 报错
+
+const [first, ...middle, last] = [1, 2, 3, 4, 5];
+// 报错
+```
+
+**（3）函数的返回值**
+
+JavaScript 的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
+
+```javascript
+var dateFields = readDateFields(database);
+var d = new Date(...dateFields);
+```
+
+上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数`Date`。
+
+**（4）字符串**
+
+扩展运算符还可以将字符串转为真正的数组。
+
+```javascript
+[...'hello']
+// [ "h", "e", "l", "l", "o" ]
+```
+
+上面的写法，有一个重要的好处，那就是能够正确识别32位的Unicode字符。
+
+```javascript
+'x\uD83D\uDE80y'.length // 4
+[...'x\uD83D\uDE80y'].length // 3
+```
+
+上面代码的第一种写法，JavaScript会将32位Unicode字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
+
+```javascript
+function length(str) {
+  return [...str].length;
+}
+
+length('x\uD83D\uDE80y') // 3
+```
+
+凡是涉及到操作32位 Unicode 字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
+
+```javascript
+let str = 'x\uD83D\uDE80y';
+
+str.split('').reverse().join('')
+// 'y\uDE80\uD83Dx'
+
+[...str].reverse().join('')
+// 'y\uD83D\uDE80x'
+```
+
+上面代码中，如果不用扩展运算符，字符串的`reverse`操作就不正确。
+
+**（5）实现了 Iterator 接口的对象**
+
+任何 Iterator 接口的对象（参阅 Iterator 一章），都可以用扩展运算符转为真正的数组。
+
+```javascript
+var nodeList = document.querySelectorAll('div');
+var array = [...nodeList];
+```
+
+上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator 。
+
+对于那些没有部署 Iterator 接口的类似数组的对象，扩展运算符就无法将其转为真正的数组。
+
+```javascript
+let arrayLike = {
+  '0': 'a',
+  '1': 'b',
+  '2': 'c',
+  length: 3
+};
+
+// TypeError: Cannot spread non-iterable object.
+let arr = [...arrayLike];
+```
+
+上面代码中，`arrayLike`是一个类似数组的对象，但是没有部署 Iterator 接口，扩展运算符就会报错。这时，可以改为使用`Array.from`方法将`arrayLike`转为真正的数组。
+
+**（6）Map 和 Set 结构，Generator 函数**
+
+扩展运算符内部调用的是数据结构的 Iterator 接口，因此只要具有 Iterator 接口的对象，都可以使用扩展运算符，比如 Map 结构。
+
+```javascript
+let map = new Map([
+  [1, 'one'],
+  [2, 'two'],
+  [3, 'three'],
+]);
+
+let arr = [...map.keys()]; // [1, 2, 3]
+```
+
+Generator 函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
+
+```javascript
+var go = function*(){
+  yield 1;
+  yield 2;
+  yield 3;
+};
+
+[...go()] // [1, 2, 3]
+```
+
+上面代码中，变量`go`是一个 Generator 函数，执行后返回的是一个遍历器对象，对这个遍历器对象执行扩展运算符，就会将内部遍历得到的值，转为一个数组。
+
+如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
+
+```javascript
+var obj = {a: 1, b: 2};
+let arr = [...obj]; // TypeError: Cannot spread non-iterable object
+```
+
 ## Array.from()
 
 `Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
@@ -185,7 +478,7 @@ function ArrayOf(){
 }
 ```
 
-## 数组实例的copyWithin()
+## 数组实例的 copyWithin()
 
 数组实例的`copyWithin`方法，在当前数组内部，将指定位置的成员复制到其他位置（会覆盖原有成员），然后返回当前数组。也就是说，使用这个方法，会修改当前数组。
 
@@ -228,13 +521,13 @@ var i32a = new Int32Array([1, 2, 3, 4, 5]);
 i32a.copyWithin(0, 2);
 // Int32Array [3, 4, 5, 4, 5]
 
-// 对于没有部署TypedArray的copyWithin方法的平台
+// 对于没有部署 TypedArray 的 copyWithin 方法的平台
 // 需要采用下面的写法
 [].copyWithin.call(new Int32Array([1, 2, 3, 4, 5]), 0, 3, 4);
 // Int32Array [4, 2, 3, 4, 5]
 ```
 
-## 数组实例的find()和findIndex()
+## 数组实例的 find() 和 findIndex()
 
 数组实例的`find`方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为`true`的成员，然后返回该成员。如果没有符合条件的成员，则返回`undefined`。
 
@@ -298,9 +591,9 @@ new Array(3).fill(7)
 
 上面代码表示，`fill`方法从1号位开始，向原数组填充7，到2号位之前结束。
 
-## 数组实例的entries()，keys()和values()
+## 数组实例的 entries()，keys() 和 values()
 
-ES6提供三个新的方法——`entries()`，`keys()`和`values()`——用于遍历数组。它们都返回一个遍历器对象（详见《Iterator》一章），可以用`for...of`循环进行遍历，唯一的区别是`keys()`是对键名的遍历、`values()`是对键值的遍历，`entries()`是对键值对的遍历。
+ES6 提供三个新的方法——`entries()`，`keys()`和`values()`——用于遍历数组。它们都返回一个遍历器对象（详见《Iterator》一章），可以用`for...of`循环进行遍历，唯一的区别是`keys()`是对键名的遍历、`values()`是对键值的遍历，`entries()`是对键值对的遍历。
 
 ```javascript
 for (let index of ['a', 'b'].keys()) {

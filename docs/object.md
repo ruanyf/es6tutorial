@@ -432,7 +432,7 @@ Object.assign({b: 'c'},
 
 上面代码中，`Object.assign`要拷贝的对象只有一个不可枚举属性`invisible`，这个属性并没有被拷贝进去。
 
-属性名为Symbol值的属性，也会被`Object.assign`拷贝。
+属性名为 Symbol 值的属性，也会被`Object.assign`拷贝。
 
 ```javascript
 Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
@@ -601,13 +601,13 @@ Object.getOwnPropertyDescriptor(obj, 'foo')
 
 描述对象的`enumerable`属性，称为”可枚举性“，如果该属性为`false`，就表示某些操作会忽略当前属性。
 
-ES5有三个操作会忽略`enumerable`为`false`的属性。
+ES5 有三个操作会忽略`enumerable`为`false`的属性。
 
 - `for...in`循环：只遍历对象自身的和继承的可枚举的属性
 - `Object.keys()`：返回对象自身的所有可枚举的属性的键名
 - `JSON.stringify()`：只串行化对象自身的可枚举的属性
 
-ES6新增了一个操作`Object.assign()`，会忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
+ES6 新增了一个操作`Object.assign()`，会忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
 
 这四个操作之中，只有`for...in`会返回继承的属性。实际上，引入`enumerable`的最初目的，就是让某些属性可以规避掉`for...in`操作。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过这种手段，不会被`for...in`遍历到。
 
@@ -1123,7 +1123,7 @@ let aWithOverrides = Object.assign({}, a, { x: 1, y: 2 });
 
 上面代码中，`a`对象的`x`属性和`y`属性，拷贝到新对象后会被覆盖掉。
 
-这用来修改现有对象部分的部分属性就很方便了。
+这用来修改现有对象部分的属性就很方便了。
 
 ```javascript
 let newVersion = {
@@ -1133,6 +1133,22 @@ let newVersion = {
 ```
 
 上面代码中，`newVersion`对象自定义了`name`属性，其他属性全部复制自`previousVersion`对象。
+
+与数组的扩展运算符一样，对象的扩展运算符后面可以跟表达式。
+
+```javascript
+const obj = {
+  ...(x > 1 ? {a: 1} : {}),
+  b: 2,
+};
+```
+
+如果扩展运算符后面是一个空对象，则没有任何效果。
+
+```javascript
+{...{}, a: 1}
+// { a: 1 }
+```
 
 如果把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
 
@@ -1147,7 +1163,7 @@ let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
 扩展运算符的参数对象之中，如果有取值函数`get`，这个函数是会执行的。
 
 ```javascript
-// 并不会抛出错误，因为x属性只是被定义，但没执行
+// 并不会抛出错误，因为 x 属性只是被定义，但没执行
 let aWithXGetter = {
   ...a,
   get x() {
@@ -1155,7 +1171,7 @@ let aWithXGetter = {
   }
 };
 
-// 会抛出错误，因为x属性被执行了
+// 会抛出错误，因为 x 属性被执行了
 let runtimeError = {
   ...a,
   ...{

@@ -544,7 +544,7 @@ arr.forEach(function (element, index) {
 });
 ```
 
-JavaScript原有的`for...in`循环，只能获得对象的键名，不能直接获取键值。ES6提供`for...of`循环，允许遍历获得键值。
+JavaScript 原有的`for...in`循环，只能获得对象的键名，不能直接获取键值。ES6 提供`for...of`循环，允许遍历获得键值。
 
 ```javascript
 var arr = ['a', 'b', 'c', 'd'];
@@ -577,7 +577,7 @@ for (let i of arr) {
 
 上面代码中，`for...of`循环不会返回数组`arr`的`foo`属性。
 
-### Set和Map结构
+### Set 和 Map 结构
 
 Set 和 Map 结构也原生具有 Iterator 接口，可以直接使用`for...of`循环。
 

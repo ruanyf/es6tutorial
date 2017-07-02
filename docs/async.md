@@ -775,7 +775,7 @@ async function () {
 // b
 ```
 
-### 异步Generator函数
+### 异步 Generator 函数
 
 就像 Generator 函数返回一个同步遍历器对象一样，异步 Generator 函数的作用，是返回一个异步遍历器对象。
 
@@ -795,9 +795,9 @@ async function* readLines(path) {
 }
 ```
 
-上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回Promise对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是于同步Generator函数一致的。
+上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回 Promise 对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是于同步 Generator 函数一致的。
 
-可以像下面这样，使用上面代码定义的异步Generator函数。
+可以像下面这样，使用上面代码定义的异步 Generator 函数。
 
 ```javascript
 for await (const line of readLines(filePath)) {
@@ -815,7 +815,7 @@ async function* prefixLines(asyncIterable) {
 }
 ```
 
-`yield`命令依然是立刻返回的，但是返回的是一个Promise对象。
+`yield`命令依然是立刻返回的，但是返回的是一个 Promise 对象。
 
 ```javascript
 async function* asyncGenerator() {
