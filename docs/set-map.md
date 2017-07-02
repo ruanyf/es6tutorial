@@ -467,7 +467,7 @@ items.forEach(
 );
 ```
 
-事实上，不仅仅是数组，任何具有 Iterator 接口的数据结构（详见《Iterator》一章）都可以当作`Map`构造函数的参数。这就是说，`Set`和`Map`都可以用来生成新的 Map。
+事实上，不仅仅是数组，任何具有 Iterator 接口、且每个成员都是一个双元素的数组的数据结构（详见《Iterator》一章）都可以当作`Map`构造函数的参数。这就是说，`Set`和`Map`都可以用来生成新的 Map。
 
 ```javascript
 const set = new Set([
