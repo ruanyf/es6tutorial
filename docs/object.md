@@ -1101,6 +1101,24 @@ let aClone = { ...a };
 let aClone = Object.assign({}, a);
 ```
 
+上面的例子只是拷贝了对象实例的属性，如果想完整克隆一个对象，还拷贝对象原型的属性，可以采用下面的写法。
+
+```javascript
+// 写法一
+const clone1 = {
+  __proto__: Object.getPrototypeOf(obj),
+  ...obj
+};
+
+// 写法二
+const clone2 = Object.assign(
+  Object.create(Object.getPrototypeOf(obj)),
+  obj
+);
+```
+
+上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二。
+
 扩展运算符可以用于合并两个对象。
 
 ```javascript
@@ -1134,6 +1152,16 @@ let newVersion = {
 
 上面代码中，`newVersion`对象自定义了`name`属性，其他属性全部复制自`previousVersion`对象。
 
+如果把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
+
+```javascript
+let aWithDefaults = { x: 1, y: 2, ...a };
+// 等同于
+let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
+// 等同于
+let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
+```
+
 与数组的扩展运算符一样，对象的扩展运算符后面可以跟表达式。
 
 ```javascript
@@ -1150,14 +1178,10 @@ const obj = {
 // { a: 1 }
 ```
 
-如果把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
+如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
 
 ```javascript
-let aWithDefaults = { x: 1, y: 2, ...a };
-// 等同于
-let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
-// 等同于
-let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
+let emptyObject = { ...null, ...undefined }; // 不报错
 ```
 
 扩展运算符的参数对象之中，如果有取值函数`get`，这个函数是会执行的。
@@ -1182,15 +1206,9 @@ let runtimeError = {
 };
 ```
 
-如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
-
-```javascript
-let emptyObject = { ...null, ...undefined }; // 不报错
-```
-
 ## Object.getOwnPropertyDescriptors()
 
-ES5有一个`Object.getOwnPropertyDescriptor`方法，返回某个对象属性的描述对象（descriptor）。
+ES5 一个`Object.getOwnPropertyDescriptor`方法，返回某个对象属性的描述对象（descriptor）。
 
 ```javascript
 var obj = { p: 'a' };

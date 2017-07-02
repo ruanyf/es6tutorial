@@ -742,14 +742,17 @@ async function f() {
 
 ```javascript
 let body = '';
-for await(const data of req) body += data;
-const parsed = JSON.parse(body);
-console.log('got', parsed);
+
+async function f() {
+  for await(const data of req) body += data;
+  const parsed = JSON.parse(body);
+  console.log('got', parsed);
+}
 ```
 
 上面代码中，`req`是一个 asyncIterable 对象，用来异步读取数据。可以看到，使用`for await...of`循环以后，代码会非常简洁。
 
-如果`next`方法返回的Promise对象被`reject`，那么就要用`try...catch`捕捉。
+如果`next`方法返回的 Promise 对象被`reject`，`for await...of`就会报错，要用`try...catch`捕捉。
 
 ```javascript
 async function () {
@@ -782,6 +785,19 @@ async function () {
 在语法上，异步 Generator 函数就是`async`函数与 Generator 函数的结合。
 
 ```javascript
+async function* gen() {
+  yield 'hello';
+}
+const genObj = gen();
+genObj.next().then(x => console.log(x));
+// { value: 'hello', done: false }
+```
+
+上面代码中，`gen`是一个异步 Generator 函数，执行后返回一个异步 Iterator 对象。对该对象调用`next`方法，返回一个 Promise 对象。
+
+下面是另一个例子。
+
+```javascript
 async function* readLines(path) {
   let file = await fileOpen(path);
 
@@ -795,14 +811,18 @@ async function* readLines(path) {
 }
 ```
 
-上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回 Promise 对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是于同步 Generator 函数一致的。
+上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回 Promise 对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是与同步 Generator 函数一致的。
 
-可以像下面这样，使用上面代码定义的异步 Generator 函数。
+异步 Generator 函数内部，能够同时使用`await`和`yield`命令。可以这样理解，`await`命令用于将外部操作产生的值输入函数内部，`yield`命令用于将函数内部的值输出。
+
+上面代码定义的异步 Generator 函数的用法如下。
 
 ```javascript
-for await (const line of readLines(filePath)) {
-  console.log(line);
-}
+(async function () {
+  for await (const line of readLines(filePath)) {
+    console.log(line);
+  }
+})()
 ```
 
 异步 Generator 函数可以与`for await...of`循环结合起来使用。
@@ -815,7 +835,7 @@ async function* prefixLines(asyncIterable) {
 }
 ```
 
-`yield`命令依然是立刻返回的，但是返回的是一个 Promise 对象。
+异步 Generator 函数的返回值是一个异步 Iterator，即每次调用它的`next`方法，会返回一个 Promise 对象，也就是说，跟在`yield`命令后面的，应该是一个 Promise 对象。
 
 ```javascript
 async function* asyncGenerator() {
@@ -824,9 +844,34 @@ async function* asyncGenerator() {
   yield 'Result: '+ result; // (B)
   console.log('Done');
 }
+
+const ag = asyncGenerator();
+ag.next().then({value, done} => {
+  // ...
+})
 ```
 
-上面代码中，调用`next`方法以后，会在`B`处暂停执行，`yield`命令立刻返回一个Promise对象。这个Promise对象不同于`A`处`await`命令后面的那个 Promise 对象。主要有两点不同，一是`A`处的Promise对象`resolve`以后产生的值，会放入`result`变量；二是`B`处的Promise对象`resolve`以后产生的值，是表达式`'Result： ' + result`的值；二是`A`处的 Promise 对象一定先于`B`处的 Promise 对象`resolve`。
+上面代码中，`ag`是`asyncGenerator`函数返回的异步 Iterator 对象。调用`ag.next()`以后，`asyncGenerator`函数内部的执行顺序如下。
+
+1. 打印出`Start`。
+2. `await`命令返回一个 Promise 对象，但是程序不会停在这里，继续往下执行。
+3. 程序在`B`处暂停执行，`yield`命令立刻返回一个 Promise 对象，该对象就是`ag.next()`的返回值。
+4. `A`处`await`命令后面的那个 Promise 对象 resolved，产生的值放入`result`变量。
+5. `B`处的 Promise 对象 resolved，`then`方法指定的回调函数开始执行，该函数的参数是一个对象，`value`的值是表达式`'Result： ' + result`的值，`done`属性的值是`false`。
+
+A 和 B 两行的作用类似于下面的代码。
+
+```javascript
+return new Promise((resolve, reject) => {
+  doSomethingAsync()
+  .then(result => {
+     resolve({
+       value: 'Result: '+result,
+       done: false,
+     });
+  });
+});
+```
 
 如果异步 Generator 函数抛出错误，会被 Promise 对象`reject`，然后抛出的错误被`catch`方法捕获。
 
@@ -840,14 +885,14 @@ asyncGenerator()
 .catch(err => console.log(err)); // Error: Problem!
 ```
 
-注意，普通的 async 函数返回的是一个 Promise 对象，而异步 Generator 函数返回的是一个异步Iterator对象。基本上，可以这样理解，`async`函数和异步 Generator 函数，是封装异步操作的两种方法，都用来达到同一种目的。区别在于，前者自带执行器，后者通过`for await...of`执行，或者自己编写执行器。下面就是一个异步 Generator 函数的执行器。
+注意，普通的 async 函数返回的是一个 Promise 对象，而异步 Generator 函数返回的是一个异步 Iterator 对象。可以这样理解，async 函数和异步 Generator 函数，是封装异步操作的两种方法，都用来达到同一种目的。区别在于，前者自带执行器，后者通过`for await...of`执行，或者自己编写执行器。下面就是一个异步 Generator 函数的执行器。
 
 ```javascript
-async function takeAsync(asyncIterable, count=Infinity) {
+async function takeAsync(asyncIterable, count = Infinity) {
   const result = [];
   const iterator = asyncIterable[Symbol.asyncIterator]();
   while (result.length < count) {
-    const {value,done} = await iterator.next();
+    const {value, done} = await iterator.next();
     if (done) break;
     result.push(value);
   }
@@ -855,7 +900,7 @@ async function takeAsync(asyncIterable, count=Infinity) {
 }
 ```
 
-上面代码中，异步Generator函数产生的异步遍历器，会通过`while`循环自动执行，每当`await iterator.next()`完成，就会进入下一轮循环。
+上面代码中，异步 Generator 函数产生的异步遍历器，会通过`while`循环自动执行，每当`await iterator.next()`完成，就会进入下一轮循环。一旦`done`属性变为`true`，就会跳出循环，异步遍历器执行结束。
 
 下面是这个自动执行器的一个使用实例。
 
@@ -875,7 +920,18 @@ f().then(function (result) {
 })
 ```
 
-异步 Generator 函数出现以后，JavaScript就有了四种函数形式：普通函数、async 函数、Generator 函数和异步 Generator 函数。请注意区分每种函数的不同之处。
+异步 Generator 函数出现以后，JavaScript 就有了四种函数形式：普通函数、async 函数、Generator 函数和异步 Generator 函数。请注意区分每种函数的不同之处。基本上，如果是一系列按照顺序执行的异步操作（比如读取文件，然后写入新内容，再存入硬盘），可以使用 async 函数；如果是一系列产生相同数据结构的异步操作（比如一行一行读取文件），可以使用异步 Generator 函数。
+
+异步 Generator 函数也可以通过`next`方法的参数，接收外部传入的数据。
+
+```javascript
+const writer = openFile('someFile.txt');
+writer.next('hello'); // 立即执行
+writer.next('world'); // 立即执行
+await writer.return(); // 等待写入结束
+```
+
+上面代码中，`openFile`是一个异步 Generator 函数。`next`方法的参数，向该函数内部的操作传入数据。每次`next`方法都是同步执行的，最后的`await`命令用于等待整个写入操作结束。
 
 最后，同步的数据结构，也可以使用异步 Generator 函数。
 
@@ -901,13 +957,14 @@ async function* gen1() {
 }
 
 async function* gen2() {
+  // result 最终会等于 2
   const result = yield* gen1();
 }
 ```
 
 上面代码中，`gen2`函数里面的`result`变量，最后的值是`2`。
 
-与同步Generator函数一样，`for await...of`循环会展开`yield*`。
+与同步 Generator 函数一样，`for await...of`循环会展开`yield*`。
 
 ```javascript
 (async function () {
