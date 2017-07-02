@@ -70,6 +70,7 @@
 ## 数值
 
 - Nicolas Bevacqua, [ES6 Number Improvements in Depth](http://ponyfoo.com/articles/es6-number-improvements-in-depth)
+- Axel Rauschmayer, [ES proposal: arbitrary precision integers](http://2ality.com/2017/03/es-integer.html)
 
 ## 数组
 

@@ -680,3 +680,88 @@ Math.pow(99, 99)
 
 上面代码中，两个运算结果的最后一位有效数字是有差异的。
 
+## Integer 数据类型
+
+### 简介
+
+JavaScript 所有数字都保存成64位浮点数，这决定了整数的精确程度只能到53个二进制位。大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。
+
+现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Interger（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
+
+为了与 Number 类型区别，Integer 类型的数据必须使用后缀`n`表示。
+
+```javascript
+1n + 2n // 3n
+```
+
+二进制、八进制、十六进制的表示法，都要加上后缀`n`。
+
+```javascript
+0b1101n // 二进制
+0o777n // 八进制
+0xFFn // 十六进制
+```
+
+`typeof`运算符对于 Integer 类型的数据返回`integer`。
+
+```javascript
+typeof 123n
+// 'integer'
+```
+
+JavaScript 原生提供`Integer`对象，用来生成 Integer 类型的数值。转换规则基本与`Number()`一致。
+
+```javascript
+Integer(123) // 123n
+Integer('123') // 123n
+Integer(false) // 0n
+Integer(true) // 1n
+```
+
+以下的用法会报错。
+
+```javascript
+new Integer() // TypeError
+Integer(undefined) //TypeError
+Integer(null) // TypeError
+Integer('123n') // SyntaxError
+Integer('abc') // SyntaxError
+```
+
+### 运算
+
+在数学运算方面，Integer 类型的`+`、`-`、`*`和`**`这四个二元运算符，与 Number 类型的行为一致。除法运算`/`会舍去小数部分，返回一个整数。
+
+```javascript
+9n / 5n
+// 1n
+```
+
+几乎所有的 Number 运算符都可以用在 Integer，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`要求最高位补0，但是 Integer 类型没有最高位，导致这个运算符无意义。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型或者报错。
+
+Interger 类型不能与 Number 类型进行混合运算。
+
+```javascript
+1n + 1
+// 报错
+```
+
+这是因为无论返回的是 Integer 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 Integer 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，会超过 53 位精确数字，精度下降。
+
+相等运算符（`==`）会改变数据类型，也是不允许混合使用。
+
+```javascript
+0n == 0
+// 报错 TypeError
+
+0n == false
+// 报错 TypeError
+```
+
+精确相等运算符（`===`）不会改变数据类型，因此可以混合使用。
+
+```javascript
+0n === 0
+// false
+```
+
