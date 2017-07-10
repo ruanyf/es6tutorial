@@ -604,9 +604,9 @@ Math.log2 = Math.log2 || function(x) {
 };
 ```
 
-### 三角函数方法
+### 双曲函数方法
 
-ES6新增了6个三角函数方法。
+ES6新增了6个双曲函数方法。
 
 - `Math.sinh(x)` 返回`x`的双曲正弦（hyperbolic sine）
 - `Math.cosh(x)` 返回`x`的双曲余弦（hyperbolic cosine）
