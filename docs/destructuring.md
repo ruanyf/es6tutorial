@@ -217,29 +217,7 @@ foo // error: foo is not defined
 
 上面代码中，`foo`是匹配的模式，`baz`才是变量。真正被赋值的是变量`baz`，而不是模式`foo`。
 
-注意，采用这种写法时，变量的声明和赋值是一体的。对于`let`和`const`来说，变量不能重新声明，所以一旦赋值的变量以前声明过，就会报错。
-
-```javascript
-let foo;
-let {foo} = {foo: 1}; // SyntaxError: Duplicate declaration "foo"
-
-let baz;
-let {bar: baz} = {bar: 1}; // SyntaxError: Duplicate declaration "baz"
-```
-
-上面代码中，解构赋值的变量都会重新声明，所以报错了。不过，因为`var`命令允许重新声明，所以这个错误只会在使用`let`和`const`命令时出现。如果没有第二个`let`命令，上面的代码就不会报错。
-
-```javascript
-let foo;
-({foo} = {foo: 1}); // 成功
-
-let baz;
-({bar: baz} = {bar: 1}); // 成功
-```
-
-上面代码中，`let`命令下面一行的圆括号是必须的，否则会报错。因为解析器会将起首的大括号，理解成一个代码块，而不是赋值语句。
-
-和数组一样，解构也可以用于嵌套结构的对象。
+与数组一样，解构也可以用于嵌套结构的对象。
 
 ```javascript
 let obj = {
@@ -254,7 +232,23 @@ x // "Hello"
 y // "World"
 ```
 
-注意，这时`p`是模式，不是变量，因此不会被赋值。
+注意，这时`p`是模式，不是变量，因此不会被赋值。如果`p`也要作为变量赋值，可以写成下面这样。
+
+```javascript
+let obj = {
+  p: [
+    'Hello',
+    { y: 'World' }
+  ]
+};
+
+let { p, p: [x, { y }] } = obj;
+x // "Hello"
+y // "World"
+p // ["Hello", {y: "World"}]
+```
+
+下面是另一个例子。
 
 ```javascript
 var node = {
@@ -266,13 +260,13 @@ var node = {
   }
 };
 
-var { loc: { start: { line }} } = node;
+var { loc, loc: { start }, loc: { start: { line }} } = node;
 line // 1
-loc  // error: loc is undefined
-start // error: start is undefined
+loc  // Object {start: Object}
+start // Object {line: 1, column: 5}
 ```
 
-上面代码中，只有`line`是变量，`loc`和`start`都是模式，不会被赋值。
+上面代码有三次解构赋值，分别是对`loc`、`start`、`line`三个属性的解构赋值。注意，最后一次对`line`属性的解构赋值之中，只有`line`是变量，`loc`和`start`都是模式，不是变量。
 
 下面是嵌套赋值的例子。
 
@@ -296,10 +290,10 @@ var {x, y = 5} = {x: 1};
 x // 1
 y // 5
 
-var {x:y = 3} = {};
+var {x: y = 3} = {};
 y // 3
 
-var {x:y = 3} = {x: 5};
+var {x: y = 3} = {x: 5};
 y // 5
 
 var { message: msg = 'Something went wrong' } = {};
@@ -358,7 +352,7 @@ let x;
 
 上面代码将整个解构赋值语句，放在一个圆括号里面，就可以正确执行。关于圆括号与解构赋值的关系，参见下文。
 
-解构赋值允许，等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
+解构赋值允许等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
 
 ```javascript
 ({} = [true, false]);
