@@ -716,7 +716,7 @@ for (let e in es6) {
 for (let e of es6) {
   console.log(e);
 }
-// TypeError: es6 is not iterable
+// TypeError: es6[Symbol.iterator] is not iterable
 ```
 
 上面代码表示，对于普通的对象，`for...in`循环可以遍历键名，`for...of`循环会报错。
