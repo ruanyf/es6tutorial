@@ -686,7 +686,7 @@ Math.pow(99, 99)
 
 JavaScript 所有数字都保存成64位浮点数，这决定了整数的精确程度只能到53个二进制位。大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。
 
-现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Interger（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
+现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Integer（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
 
 为了与 Number 类型区别，Integer 类型的数据必须使用后缀`n`表示。
 
@@ -739,7 +739,7 @@ Integer('abc') // SyntaxError
 
 几乎所有的 Number 运算符都可以用在 Integer，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`要求最高位补0，但是 Integer 类型没有最高位，导致这个运算符无意义。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型或者报错。
 
-Interger 类型不能与 Number 类型进行混合运算。
+Integer 类型不能与 Number 类型进行混合运算。
 
 ```javascript
 1n + 1
