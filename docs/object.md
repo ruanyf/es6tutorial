@@ -1191,7 +1191,7 @@ let emptyObject = { ...null, ...undefined }; // 不报错
 let aWithXGetter = {
   ...a,
   get x() {
-    throws new Error('not thrown yet');
+    throw new Error('not throw yet');
   }
 };
 
@@ -1200,7 +1200,7 @@ let runtimeError = {
   ...a,
   ...{
     get x() {
-      throws new Error('thrown now');
+      throw new Error('throw now');
     }
   }
 };
