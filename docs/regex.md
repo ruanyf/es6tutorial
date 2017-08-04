@@ -546,7 +546,7 @@ let re = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/u;
    capture2, // 第二个组匹配 01
    capture3, // 第三个组匹配 02
    position, // 匹配开始的位置 0
-   S, // 原字符串 2015-01-05
+   S, // 原字符串 2015-01-02
    groups // 具名组构成的一个对象 {year, month, day}
  ) => {
  let {day, month, year} = args[args.length - 1];
