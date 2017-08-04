@@ -463,6 +463,8 @@ Reflect.ownKeys(myObject)
 观察者模式（Observer mode）指的是函数自动观察数据对象，一旦对象有变化，函数就会自动执行。
 
 ```javascript
+import { observable, observe } from '@nx-js/observer-util'
+
 const person = observable({
   name: '张三',
   age: 20
