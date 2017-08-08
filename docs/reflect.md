@@ -451,11 +451,11 @@ Object.getOwnPropertyNames(myObject)
 // ['foo', 'bar']
 
 Object.getOwnPropertySymbols(myObject)
-//[Symbol.for('baz'), Symbol.for('bing')]
+//[Symbol(baz), Symbol(bing)]
 
 // 新写法
 Reflect.ownKeys(myObject)
-// ['foo', 'bar', Symbol.for('baz'), Symbol.for('bing')]
+// ['foo', 'bar', Symbol(baz), Symbol(bing)]
 ```
 
 ## 实例：使用 Proxy 实现观察者模式
