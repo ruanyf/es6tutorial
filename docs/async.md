@@ -48,7 +48,7 @@ var asyncReadFile = async function () {
 Generator 函数的执行必须靠执行器，所以才有了`co`模块，而`async`函数自带执行器。也就是说，`async`函数的执行，与普通函数一模一样，只要一行。
 
 ```javascript
-var result = asyncReadFile();
+asyncReadFile();
 ```
 
 上面的代码调用了`asyncReadFile`函数，然后它就会自动执行，输出最后结果。这完全不像 Generator 函数，需要调用`next`方法，或者用`co`模块，才能真正执行，得到最后结果。
