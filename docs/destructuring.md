@@ -516,7 +516,7 @@ let { o: ({ p: p }) } = { o: { p: 2 } };
 // 报错
 function f([(z)]) { return z; }
 // 报错
-function f([z: (x)]) { return x; }
+function f([z,(x)]) { return x; }
 ```
 
 （3）赋值语句的模式
