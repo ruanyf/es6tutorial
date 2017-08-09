@@ -450,6 +450,11 @@ function move({x = 0, y = 0} = {}) {
   return [x, y];
 }
 
+//或者用这种写法，结果也一样
+function move({x = 0, y = 0}) {
+  return [x, y];
+}
+
 move({x: 3, y: 8}); // [3, 8]
 move({x: 3}); // [3, 0]
 move({}); // [0, 0]
