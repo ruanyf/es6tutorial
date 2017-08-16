@@ -17,7 +17,7 @@ function testable(target) {
 MyTestableClass.isTestable // true
 ```
 
-上面代码中，`@testable`就是一个修饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。
+上面代码中，`@testable`就是一个修饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。`testable`函数的参数`target`是`MyTestableClass`类本身。
 
 基本上，修饰器的行为就是下面这样。
 
@@ -148,7 +148,7 @@ class Person {
 
 上面代码中，修饰器`readonly`用来修饰“类”的`name`方法。
 
-此时，修饰器函数一共可以接受三个参数，第一个参数是所要修饰的目标对象，第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
+此时，修饰器函数一共可以接受三个参数，第一个参数是所要修饰的目标对象，即类的实例（这不同于类的修饰，那种情况时`target`参数指的是类本身）；第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
 
 ```javascript
 function readonly(target, name, descriptor){
