@@ -230,8 +230,8 @@ class Person {
 
 ```javascript
 function dec(id){
-    console.log('evaluated', id);
-    return (target, property, descriptor) => console.log('executed', id);
+  console.log('evaluated', id);
+  return (target, property, descriptor) => console.log('executed', id);
 }
 
 class Example {
@@ -247,7 +247,7 @@ class Example {
 
 上面代码中，外层修饰器`@dec(1)`先进入，但是内层修饰器`@dec(2)`先执行。
 
-除了注释，修饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是JavaScript代码静态分析的重要工具。
+除了注释，修饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是 JavaScript 代码静态分析的重要工具。
 
 ## 为什么修饰器不能用于函数？
 
@@ -430,7 +430,7 @@ person.facepalmHarder();
 
 **（5）@suppressWarnings**
 
-`suppressWarnings`修饰器抑制`decorated`修饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
+`suppressWarnings`修饰器抑制`deprecated`修饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
 
 ```javascript
 import { suppressWarnings } from 'core-decorators';
