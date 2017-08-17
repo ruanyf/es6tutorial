@@ -499,7 +499,7 @@ class Even {
 
 ### Symbol.isConcatSpreadable
 
-对象的`Symbol.isConcatSpreadable`属性等于一个布尔值，表示该对象使用`Array.prototype.concat()`时，是否可以展开。
+对象的`Symbol.isConcatSpreadable`属性等于一个布尔值，表示该对象用于`Array.prototype.concat()`时，是否可以展开。
 
 ```javascript
 let arr1 = ['c', 'd'];
@@ -511,9 +511,9 @@ arr2[Symbol.isConcatSpreadable] = false;
 ['a', 'b'].concat(arr2, 'e') // ['a', 'b', ['c','d'], 'e']
 ```
 
-上面代码说明，数组的默认行为是可以展开。`Symbol.isConcatSpreadable`属性等于`true`或`undefined`，都有这个效果。
+上面代码说明，数组的默认行为是可以展开，`Symbol.isConcatSpreadable`默认等于`undefined`。该属性等于`true`时，也有展开的效果。
 
-类似数组的对象也可以展开，但它的`Symbol.isConcatSpreadable`属性默认为`false`，必须手动打开。
+类似数组的对象正好相反，默认不展开。它的`Symbol.isConcatSpreadable`属性设为`true`，才可以展开。
 
 ```javascript
 let obj = {length: 2, 0: 'c', 1: 'd'};
@@ -523,7 +523,7 @@ obj[Symbol.isConcatSpreadable] = true;
 ['a', 'b'].concat(obj, 'e') // ['a', 'b', 'c', 'd', 'e']
 ```
 
-对于一个类来说，`Symbol.isConcatSpreadable`属性必须写成实例的属性。
+`Symbol.isConcatSpreadable`属性也可以定义在类里面。
 
 ```javascript
 class A1 extends Array {
@@ -535,7 +535,9 @@ class A1 extends Array {
 class A2 extends Array {
   constructor(args) {
     super(args);
-    this[Symbol.isConcatSpreadable] = false;
+  }
+  get [Symbol.isConcatSpreadable] () {
+    return false;
   }
 }
 let a1 = new A1();
@@ -549,6 +551,8 @@ a2[1] = 6;
 ```
 
 上面代码中，类`A1`是可展开的，类`A2`是不可展开的，所以使用`concat`时有不一样的结果。
+
+注意，`Symbol.isConcatSpreadable`的位置差异，`A1`是定义在实例上，`A2`是定义在类本身，效果相同。
 
 ### Symbol.species
 
