@@ -851,7 +851,7 @@ tag`First line\nSecond line`
 
 function tag(strings) {
   console.log(strings.raw[0]);
-  // "First line\\nSecond line"
+  // "First line\nSecond line"
 }
 ```
 
