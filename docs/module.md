@@ -625,7 +625,7 @@ export {users} from './users';
 
 ```javascript
 // script.js
-import {db, users} from './constants';
+import {db, users} from './index';
 ```
 
 ## import()
