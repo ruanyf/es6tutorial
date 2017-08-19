@@ -442,7 +442,7 @@ export default Breadcrumbs;
 
 ```javascript
 // bad
-import * as myObject './importModule';
+import * as myObject from './importModule';
 
 // good
 import myObject from './importModule';
