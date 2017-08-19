@@ -851,7 +851,8 @@ tag`First line\nSecond line`
 
 function tag(strings) {
   console.log(strings.raw[0]);
-  // "First line\\nSecond line"
+  // strings.raw[0] 为 "First line\\nSecond line"
+  // 打印输出 "First line\nSecond line"
 }
 ```
 
