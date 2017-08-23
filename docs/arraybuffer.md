@@ -1127,7 +1127,7 @@ Atomics.load(array, index)
 Atomics.store(array, index, value)
 ```
 
-`store`方法接受三个参数：SharedBuffer 的视图、位置索引和值，返回`sharedA[index]`的值。`load`方法只接受两个参数：SharedBuffer 的视图和位置索引，也是返回`sharedArray[index]`的值。
+`store`方法接受三个参数：SharedBuffer 的视图、位置索引和值，返回`sharedArray[index]`的值。`load`方法只接受两个参数：SharedBuffer 的视图和位置索引，也是返回`sharedArray[index]`的值。
 
 ```javascript
 // 主线程 main.js
