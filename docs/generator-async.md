@@ -506,10 +506,10 @@ run(g);
 
 ```javascript
 var g = function* (){
-  var f1 = yield readFile('fileA');
-  var f2 = yield readFile('fileB');
+  var f1 = yield readFileThunk('fileA');
+  var f2 = yield readFileThunk('fileB');
   // ...
-  var fn = yield readFile('fileN');
+  var fn = yield readFileThunk('fileN');
 };
 
 run(g);
