@@ -31,9 +31,7 @@ class A {}
 A = decorator(A) || A;
 ```
 
-注意，修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。也就是说，修饰器本质就是编译时执行的函数。
-
-修饰器函数的第一个参数，就是所要修饰的目标类。
+也就是说，修饰器是一个对类进行处理的函数。修饰器函数的第一个参数，就是所要修饰的目标类。
 
 ```javascript
 function testable(target) {
@@ -62,6 +60,8 @@ MyClass.isTestable // false
 ```
 
 上面代码中，修饰器`testable`可以接受参数，这就等于可以修改修饰器的行为。
+
+注意，修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。也就是说，修饰器本质就是编译时执行的函数。
 
 前面的例子是为类添加一个静态属性，如果想添加实例属性，可以通过目标类的`prototype`对象操作。
 
@@ -225,6 +225,26 @@ class Person {
 ```
 
 从上面代码中，我们一眼就能看出，`Person`类是可测试的，而`name`方法是只读和不可枚举的。
+
+下面是使用 Decorator 写法的[组件](https://github.com/ionic-team/stencil)，看上去一目了然。
+
+```javascript
+@Component({
+  tag: 'my-component',
+  styleUrl: 'my-component.scss'
+})
+export class MyComponent {
+  @Prop() first: string;
+  @Prop() last: string;
+  @State() isVisible: boolean = true;
+
+  render() {
+    return (
+      <p>Hello, my name is {this.first} {this.last}</p>
+    );
+  }
+}
+```
 
 如果同一个方法有多个修饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
 
@@ -521,7 +541,7 @@ obj.foo() // 'foo'
 
 上面代码之中，对象`Foo`有一个`foo`方法，通过`Object.assign`方法，可以将`foo`方法“混入”`MyClass`类，导致`MyClass`的实例`obj`对象都具有`foo`方法。这就是“混入”模式的一个简单实现。
 
-下面，我们部署一个通用脚本`mixins.js`，将mixin写成一个修饰器。
+下面，我们部署一个通用脚本`mixins.js`，将 Mixin 写成一个修饰器。
 
 ```javascript
 export function mixins(...list) {
@@ -547,9 +567,9 @@ let obj = new MyClass();
 obj.foo() // "foo"
 ```
 
-通过mixins这个修饰器，实现了在MyClass类上面“混入”Foo对象的`foo`方法。
+通过`mixins`这个修饰器，实现了在`MyClass`类上面“混入”`Foo`对象的`foo`方法。
 
-不过，上面的方法会改写`MyClass`类的`prototype`对象，如果不喜欢这一点，也可以通过类的继承实现mixin。
+不过，上面的方法会改写`MyClass`类的`prototype`对象，如果不喜欢这一点，也可以通过类的继承实现 Mixin。
 
 ```javascript
 class MyClass extends MyBaseClass {
@@ -631,9 +651,9 @@ new C().foo()
 
 ## Trait
 
-Trait也是一种修饰器，效果与Mixin类似，但是提供更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等等。
+Trait 也是一种修饰器，效果与 Mixin 类似，但是提供更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等等。
 
-下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的traits修饰器，不仅可以接受对象，还可以接受ES6类作为参数。
+下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的`traits`修饰器，不仅可以接受对象，还可以接受 ES6 类作为参数。
 
 ```javascript
 import { traits } from 'traits-decorator';
@@ -654,9 +674,9 @@ obj.foo() // foo
 obj.bar() // bar
 ```
 
-上面代码中，通过traits修饰器，在`MyClass`类上面“混入”了`TFoo`类的`foo`方法和`TBar`对象的`bar`方法。
+上面代码中，通过`traits`修饰器，在`MyClass`类上面“混入”了`TFoo`类的`foo`方法和`TBar`对象的`bar`方法。
 
-Trait不允许“混入”同名方法。
+Trait 不允许“混入”同名方法。
 
 ```javascript
 import { traits } from 'traits-decorator';
@@ -678,9 +698,9 @@ class MyClass { }
 // Error: Method named: foo is defined twice.
 ```
 
-上面代码中，TFoo和TBar都有foo方法，结果traits修饰器报错。
+上面代码中，`TFoo`和`TBar`都有`foo`方法，结果`traits`修饰器报错。
 
-一种解决方法是排除TBar的foo方法。
+一种解决方法是排除`TBar`的`foo`方法。
 
 ```javascript
 import { traits, excludes } from 'traits-decorator';
@@ -702,9 +722,9 @@ obj.foo() // foo
 obj.bar() // bar
 ```
 
-上面代码使用绑定运算符（::）在TBar上排除foo方法，混入时就不会报错了。
+上面代码使用绑定运算符（::）在`TBar`上排除`foo`方法，混入时就不会报错了。
 
-另一种方法是为TBar的foo方法起一个别名。
+另一种方法是为`TBar`的`foo`方法起一个别名。
 
 ```javascript
 import { traits, alias } from 'traits-decorator';
@@ -727,27 +747,27 @@ obj.aliasFoo() // foo
 obj.bar() // bar
 ```
 
-上面代码为TBar的foo方法起了别名aliasFoo，于是MyClass也可以混入TBar的foo方法了。
+上面代码为`TBar`的`foo`方法起了别名`aliasFoo`，于是`MyClass`也可以混入`TBar`的`foo`方法了。
 
-alias和excludes方法，可以结合起来使用。
+`alias`和`excludes`方法，可以结合起来使用。
 
 ```javascript
 @traits(TExample::excludes('foo','bar')::alias({baz:'exampleBaz'}))
 class MyClass {}
 ```
 
-上面代码排除了TExample的foo方法和bar方法，为baz方法起了别名exampleBaz。
+上面代码排除`了TExample`的`foo`方法和`bar`方法，为`baz`方法起了别名`exampleBaz`。
 
-as方法则为上面的代码提供了另一种写法。
+`as`方法则为上面的代码提供了另一种写法。
 
 ```javascript
 @traits(TExample::as({excludes:['foo', 'bar'], alias: {baz: 'exampleBaz'}}))
 class MyClass {}
 ```
 
-## Babel转码器的支持
+## Babel 转码器的支持
 
-目前，Babel转码器已经支持Decorator。
+目前，Babel 转码器已经支持 Decorator。
 
 首先，安装`babel-core`和`babel-plugin-transform-decorators`。由于后者包括在`babel-preset-stage-0`之中，所以改为安装`babel-preset-stage-0`亦可。
 
@@ -763,7 +783,7 @@ $ npm install babel-core babel-plugin-transform-decorators
 }
 ```
 
-这时，Babel就可以对Decorator转码了。
+这时，Babel 就可以对 Decorator 转码了。
 
 脚本中打开的命令如下。
 
@@ -771,4 +791,5 @@ $ npm install babel-core babel-plugin-transform-decorators
 babel.transform("code", {plugins: ["transform-decorators"]})
 ```
 
-Babel的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选Experimental，就能支持Decorator的在线转码。
+Babel 的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选 Experimental，就能支持 Decorator 的在线转码。
+
