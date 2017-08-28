@@ -313,7 +313,7 @@ foo() // ReferenceError: x is not defined
 ```javascript
 let foo = 'outer';
 
-function bar(func = x => foo) {
+function bar(func = () => foo) {
   let foo = 'inner';
   console.log(func());
 }
