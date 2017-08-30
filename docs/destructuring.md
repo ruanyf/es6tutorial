@@ -480,6 +480,31 @@ move(); // [0, 0]
 // [ 1, 'yes', 3 ]
 ```
 
+需要注意，对函数参数解构赋值会影响`arguments`的使用
+
+```javascript
+function fn([a, b]) {
+    console.log(arguments.length);  // 1
+    console.log(arguments[0]);  // [1, 2]
+    return a + b;
+}
+
+fn([1, 2]);
+```
+上面的例子对函数参数的解构赋值，函数内部的`arguments.length`为1，参数`a`、`b`需要通过`arguments[0]`获取。
+
+若此时参数还使用了默认值, 通过默认值赋值的变量将不能通过`arguments`获取到
+
+```javascript
+function fn([a = 0, b = 0]) {
+    console.log(arguments.length);  // 1
+    console.log(arguments[0]);  // []
+    return a + b;
+}
+
+fn([]);
+```
+
 ## 圆括号问题
 
 解构赋值虽然很方便，但是解析起来并不容易。对于编译器来说，一个式子到底是模式，还是表达式，没有办法从一开始就知道，必须解析到（或解析不到）等号才能知道。
