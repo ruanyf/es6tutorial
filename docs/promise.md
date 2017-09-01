@@ -581,7 +581,7 @@ Promise.all([p1, p2])
 var p = Promise.race([p1, p2, p3]);
 ```
 
-上面代码中，只要`p1`、`p2`、`p3`之中有一个实例率先改变状态，`p`的状态就跟着改变。那个率先改变的 Promise 实例的返回值，就传递给`p`的回调函数。
+上面代码中，只要`p1`、`p2`、`p3`之中有一个实例率先改变状态，`p`的状态就跟着改变。哪个率先改变的 Promise 实例的返回值，就传递给`p`的回调函数。
 
 `Promise.race`方法的参数与`Promise.all`方法一样，如果不是 Promise 实例，就会先调用下面讲到的`Promise.resolve`方法，将参数转为 Promise 实例，再进一步处理。
 
