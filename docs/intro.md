@@ -528,7 +528,7 @@ $traceurRuntime.ModuleStore.getAnonymousModule(function() {
 
 ### 命令行转换
 
-作为命令行工具使用时，Traceur 是一个 Node 的模块，首先需要用 Npm 安装。
+作为命令行工具使用时，Traceur 是一个 Node 的模块，首先需要用 npm 安装。
 
 ```bash
 $ npm install -g traceur
