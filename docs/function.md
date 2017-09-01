@@ -624,10 +624,20 @@ var sum = function(num1, num2) {
 var sum = (num1, num2) => { return num1 + num2; }
 ```
 
-由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号。
+由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号，否则会报错。
 
 ```javascript
-var getTempItem = id => ({ id: id, name: "Temp" });
+// 报错
+let getTempItem = id => { id: id, name: "Temp" };
+
+// 不报错
+let getTempItem = id => ({ id: id, name: "Temp" });
+```
+
+如果箭头函数只有一行语句，且不需要返回值，可以采用下面的写法，就不用写大括号了。
+
+```javascript
+let fn = () => void doesNotReturn();
 ```
 
 箭头函数可以与变量解构结合使用。
