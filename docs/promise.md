@@ -8,15 +8,15 @@ Promise 是异步编程的一种解决方案，比传统的解决方案——回
 
 `Promise`对象有以下两个特点。
 
-（1）对象的状态不受外界影响。`Promise`对象代表一个异步操作，有三种状态：`Pending`（进行中）、`Fulfilled`（已成功）和`Rejected`（已失败）。只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是`Promise`这个名字的由来，它的英语意思就是“承诺”，表示其他手段无法改变。
+（1）对象的状态不受外界影响。`Promise`对象代表一个异步操作，有三种状态：`pending`（进行中）、`fulfilled`（已成功）和`rejected`（已失败）。只有异步操作的结果，可以决定当前是哪一种状态，任何其他操作都无法改变这个状态。这也是`Promise`这个名字的由来，它的英语意思就是“承诺”，表示其他手段无法改变。
 
-（2）一旦状态改变，就不会再变，任何时候都可以得到这个结果。`Promise`对象的状态改变，只有两种可能：从`Pending`变为`Fulfiled`和从`Pending`变为`Rejected`。只要这两种情况发生，状态就凝固了，不会再变了，会一直保持这个结果，这时就称为 Resolved（已定型）。如果改变已经发生了，你再对`Promise`对象添加回调函数，也会立即得到这个结果。这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。
+（2）一旦状态改变，就不会再变，任何时候都可以得到这个结果。`Promise`对象的状态改变，只有两种可能：从`pending`变为`fulfilled`和从`pending`变为`rejected`。只要这两种情况发生，状态就凝固了，不会再变了，会一直保持这个结果，这时就称为 resolved（已定型）。如果改变已经发生了，你再对`Promise`对象添加回调函数，也会立即得到这个结果。这与事件（Event）完全不同，事件的特点是，如果你错过了它，再去监听，是得不到结果的。
 
-注意，为了行文方便，本章后面的`Resolved`统一只指`Fulfilled`状态，不包含`Rejected`状态。
+注意，为了行文方便，本章后面的`resolved`统一只指`fulfilled`状态，不包含`rejected`状态。
 
 有了`Promise`对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，`Promise`对象提供统一的接口，使得控制异步操作更加容易。
 
-`Promise`也有一些缺点。首先，无法取消`Promise`，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，`Promise`内部抛出的错误，不会反应到外部。第三，当处于`Pending`状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
+`Promise`也有一些缺点。首先，无法取消`Promise`，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，`Promise`内部抛出的错误，不会反应到外部。第三，当处于`pending`状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
 如果某些事件不断地反复发生，一般来说，使用 [Stream](https://nodejs.org/api/stream.html) 模式是比部署`Promise`更好的选择。
 
@@ -40,9 +40,9 @@ var promise = new Promise(function(resolve, reject) {
 
 `Promise`构造函数接受一个函数作为参数，该函数的两个参数分别是`resolve`和`reject`。它们是两个函数，由 JavaScript 引擎提供，不用自己部署。
 
-`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 Pending 变为 Resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 Pending 变为 Rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
+`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
 
-`Promise`实例生成以后，可以用`then`方法分别指定`Resolved`状态和`Rejected`状态的回调函数。
+`Promise`实例生成以后，可以用`then`方法分别指定`resolved`状态和`rejected`状态的回调函数。
 
 ```javascript
 promise.then(function(value) {
@@ -52,7 +52,7 @@ promise.then(function(value) {
 });
 ```
 
-`then`方法可以接受两个回调函数作为参数。第一个回调函数是`Promise`对象的状态变为`Resolved`时调用，第二个回调函数是`Promise`对象的状态变为`Rejected`时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受`Promise`对象传出的值作为参数。
+`then`方法可以接受两个回调函数作为参数。第一个回调函数是`Promise`对象的状态变为`resolved`时调用，第二个回调函数是`Promise`对象的状态变为`rejected`时调用。其中，第二个函数是可选的，不一定要提供。这两个函数都接受`Promise`对象传出的值作为参数。
 
 下面是一个`Promise`对象的简单例子。
 
@@ -68,7 +68,7 @@ timeout(100).then((value) => {
 });
 ```
 
-上面代码中，`timeout`方法返回一个`Promise`实例，表示一段时间以后才会发生的结果。过了指定的时间（`ms`参数）以后，`Promise`实例的状态变为`Resolved`，就会触发`then`方法绑定的回调函数。
+上面代码中，`timeout`方法返回一个`Promise`实例，表示一段时间以后才会发生的结果。过了指定的时间（`ms`参数）以后，`Promise`实例的状态变为`resolved`，就会触发`then`方法绑定的回调函数。
 
 Promise 新建后就会立即执行。
 
@@ -79,17 +79,17 @@ let promise = new Promise(function(resolve, reject) {
 });
 
 promise.then(function() {
-  console.log('Resolved.');
+  console.log('resolved.');
 });
 
 console.log('Hi!');
 
 // Promise
 // Hi!
-// Resolved
+// resolved
 ```
 
-上面代码中，Promise 新建后立即执行，所以首先输出的是`Promise`。然后，`then`方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以`Resolved`最后输出。
+上面代码中，Promise 新建后立即执行，所以首先输出的是`Promise`。然后，`then`方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行，所以`resolved`最后输出。
 
 下面是异步加载图片的例子。
 
@@ -164,7 +164,7 @@ var p2 = new Promise(function (resolve, reject) {
 
 上面代码中，`p1`和`p2`都是 Promise 的实例，但是`p2`的`resolve`方法将`p1`作为参数，即一个异步操作的结果是返回另一个异步操作。
 
-注意，这时`p1`的状态就会传递给`p2`，也就是说，`p1`的状态决定了`p2`的状态。如果`p1`的状态是`Pending`，那么`p2`的回调函数就会等待`p1`的状态改变；如果`p1`的状态已经是`Resolved`或者`Rejected`，那么`p2`的回调函数将会立刻执行。
+注意，这时`p1`的状态就会传递给`p2`，也就是说，`p1`的状态决定了`p2`的状态。如果`p1`的状态是`pending`，那么`p2`的回调函数就会等待`p1`的状态改变；如果`p1`的状态已经是`resolved`或者`rejected`，那么`p2`的回调函数将会立刻执行。
 
 ```javascript
 var p1 = new Promise(function (resolve, reject) {
@@ -210,7 +210,7 @@ new Promise((resolve, reject) => {
 
 ## Promise.prototype.then()
 
-Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型对象`Promise.prototype`上的。它的作用是为 Promise 实例添加状态改变时的回调函数。前面说过，`then`方法的第一个参数是`Resolved`状态的回调函数，第二个参数（可选）是`Rejected`状态的回调函数。
+Promise 实例具有`then`方法，也就是说，`then`方法是定义在原型对象`Promise.prototype`上的。它的作用是为 Promise 实例添加状态改变时的回调函数。前面说过，`then`方法的第一个参数是`resolved`状态的回调函数，第二个参数（可选）是`rejected`状态的回调函数。
 
 `then`方法返回的是一个新的`Promise`实例（注意，不是原来那个`Promise`实例）。因此可以采用链式写法，即`then`方法后面再调用另一个`then`方法。
 
@@ -230,13 +230,13 @@ getJSON("/posts.json").then(function(json) {
 getJSON("/post/1.json").then(function(post) {
   return getJSON(post.commentURL);
 }).then(function funcA(comments) {
-  console.log("Resolved: ", comments);
+  console.log("resolved: ", comments);
 }, function funcB(err){
-  console.log("Rejected: ", err);
+  console.log("rejected: ", err);
 });
 ```
 
-上面代码中，第一个`then`方法指定的回调函数，返回的是另一个`Promise`对象。这时，第二个`then`方法指定的回调函数，就会等待这个新的`Promise`对象状态发生变化。如果变为`Resolved`，就调用`funcA`，如果状态变为`Rejected`，就调用`funcB`。
+上面代码中，第一个`then`方法指定的回调函数，返回的是另一个`Promise`对象。这时，第二个`then`方法指定的回调函数，就会等待这个新的`Promise`对象状态发生变化。如果变为`resolved`，就调用`funcA`，如果状态变为`rejected`，就调用`funcB`。
 
 如果采用箭头函数，上面的代码可以写得更简洁。
 
@@ -244,8 +244,8 @@ getJSON("/post/1.json").then(function(post) {
 getJSON("/post/1.json").then(
   post => getJSON(post.commentURL)
 ).then(
-  comments => console.log("Resolved: ", comments),
-  err => console.log("Rejected: ", err)
+  comments => console.log("resolved: ", comments),
+  err => console.log("rejected: ", err)
 );
 ```
 
@@ -262,7 +262,7 @@ getJSON('/posts.json').then(function(posts) {
 });
 ```
 
-上面代码中，`getJSON`方法返回一个 Promise 对象，如果该对象状态变为`Resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`Rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
+上面代码中，`getJSON`方法返回一个 Promise 对象，如果该对象状态变为`resolved`，则会调用`then`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`rejected`，就会调用`catch`方法指定的回调函数，处理这个错误。另外，`then`方法指定的回调函数，如果运行中抛出错误，也会被`catch`方法捕获。
 
 ```javascript
 p.then((val) => console.log('fulfilled:', val))
@@ -311,7 +311,7 @@ promise.catch(function(error) {
 
 比较上面两种写法，可以发现`reject`方法的作用，等同于抛出错误。
 
-如果Promise状态已经变成`Resolved`，再抛出错误是无效的。
+如果Promise状态已经变成`resolved`，再抛出错误是无效的。
 
 ```javascript
 var promise = new Promise(function(resolve, reject) {
@@ -655,7 +655,7 @@ p1.then(function(value) {
 
 **（3）参数不是具有`then`方法的对象，或根本就不是对象**
 
-如果参数是一个原始值，或者是一个不具有`then`方法的对象，则`Promise.resolve`方法返回一个新的Promise对象，状态为`Resolved`。
+如果参数是一个原始值，或者是一个不具有`then`方法的对象，则`Promise.resolve`方法返回一个新的Promise对象，状态为`resolved`。
 
 ```javascript
 var p = Promise.resolve('Hello');
@@ -666,11 +666,11 @@ p.then(function (s){
 // Hello
 ```
 
-上面代码生成一个新的Promise对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是字符串对象不具有then方法），返回Promise实例的状态从一生成就是`Resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
+上面代码生成一个新的Promise对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是字符串对象不具有then方法），返回Promise实例的状态从一生成就是`resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
 
 **（4）不带有任何参数**
 
-`Promise.resolve`方法允许调用时不带参数，直接返回一个`Resolved`状态的Promise对象。
+`Promise.resolve`方法允许调用时不带参数，直接返回一个`resolved`状态的Promise对象。
 
 所以，如果希望得到一个Promise对象，比较方便的方法就是直接调用`Promise.resolve`方法。
 
@@ -767,7 +767,7 @@ Promise.prototype.done = function (onFulfilled, onRejected) {
 };
 ```
 
-从上面代码可见，`done`方法的使用，可以像`then`方法那样用，提供`Fulfilled`和`Rejected`状态的回调函数，也可以不提供任何参数。但不管怎样，`done`都会捕捉到任何可能出现的错误，并向全局抛出。
+从上面代码可见，`done`方法的使用，可以像`then`方法那样用，提供`fulfilled`和`rejected`状态的回调函数，也可以不提供任何参数。但不管怎样，`done`都会捕捉到任何可能出现的错误，并向全局抛出。
 
 ### finally()
 
