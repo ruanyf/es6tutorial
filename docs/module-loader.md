@@ -268,7 +268,7 @@ Node 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块
 
 Node 要求 ES6 模块采用`.mjs`后缀文件名。也就是说，只要脚本文件里面使用`import`或者`export`命令，那么就必须采用`.mjs`后缀名。`require`命令不能加载`.mjs`文件，会报错，只有`import`命令才可以加载`.mjs`文件。反过来，`.mjs`文件里面也不能使用`require`命令，必须使用`import`。
 
-目前，这项功能还在试验阶段。安装 Node 9.0 以上版本，要用`--experimental-modules`参数才能打开该功能。
+目前，这项功能还在试验阶段。安装 Node v8.5.0 或以上版本，要用`--experimental-modules`参数才能打开该功能。
 
 ```bash
 $ node --experimental-modules my-app.mjs
