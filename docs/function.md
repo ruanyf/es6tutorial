@@ -427,7 +427,7 @@ const sortNumbers = (...numbers) => numbers.sort();
 
 上面代码的两种写法，比较后可以发现，rest 参数的写法更自然也更简洁。
 
-rest 参数中的变量代表一个数组，所以数组特有的方法都可以用于这个变量。下面是一个利用 rest 参数改写数组`push`方法的例子。
+`arguments`对象不是数组，而是一个类似数组的对象。所以为了使用数组的方法，必须使用`Array.prototype.slice.call`先将其转为数组。rest 参数就不存在这个问题，它就是一个真正的数组，数组特有的方法都可以使用。下面是一个利用 rest 参数改写数组`push`方法的例子。
 
 ```javascript
 function push(array, ...items) {
