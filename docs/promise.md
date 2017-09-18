@@ -363,10 +363,10 @@ promise
 
 上面代码中，第二种写法要好于第一种写法，理由是第二种写法可以捕获前面`then`方法执行中的错误，也更接近同步的写法（`try/catch`）。因此，建议总是使用`catch`方法，而不使用`then`方法的第二个参数。
 
-跟传统的`try/catch`代码块不同的是，如果没有使用`catch`方法指定错误处理的回调函数，Promise对象抛出的错误不会传递到外层代码，即不会有任何反应。
+跟传统的`try/catch`代码块不同的是，如果没有使用`catch`方法指定错误处理的回调函数，Promise 对象抛出的错误不会传递到外层代码，即不会有任何反应。
 
 ```javascript
-var someAsyncThing = function() {
+const someAsyncThing = function() {
   return new Promise(function(resolve, reject) {
     // 下面一行会报错，因为x没有声明
     resolve(x + 2);
@@ -376,9 +376,27 @@ var someAsyncThing = function() {
 someAsyncThing().then(function() {
   console.log('everything is great');
 });
+
+setTimeout(() => { console.log(123) }, 2000);
+// Uncaught (in promise) ReferenceError: x is not defined
+// 123
 ```
 
-上面代码中，`someAsyncThing`函数产生的 Promise 对象会报错，但是由于没有指定`catch`方法，这个错误不会被捕获，也不会传递到外层代码。正常情况下，运行后不会有任何输出，但是浏览器此时会打印出错误“ReferenceError: x is not defined”，不过不会终止脚本执行，如果这个脚本放在服务器执行，退出码就是`0`（即表示执行成功）。
+上面代码中，`someAsyncThing`函数产生的 Promise 对象，内部有语法错误。浏览器运行到这一行，会打印出错误提示`ReferenceError: x is not defined`，但是不会退出进程、终止脚本执行，2秒之后还是会输出`123`。这就是说，Promise 内部的错误不会影响到 Promise 外部的代码，通俗的说法就是“Promise 会吃掉错误”。
+
+这个脚本放在服务器执行，退出码就是`0`（即表示执行成功）。不过，Node 有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误，上面的脚本会触发这个事件的监听函数，可以在监听函数里面抛出错误。
+
+```javascript
+process.on('unhandledRejection', function (err, p) {
+  throw err;
+});
+```
+
+上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。
+
+注意，Node 有计划在未来废除`unhandledRejection`事件。如果 Promise 内部有未捕获的错误，会直接终止进程，并且进程的退出码不为0。
+
+再看下面的例子。
 
 ```javascript
 var promise = new Promise(function (resolve, reject) {
@@ -392,17 +410,7 @@ promise.then(function (value) { console.log(value) });
 
 上面代码中，Promise 指定在下一轮“事件循环”再抛出错误。到了那个时候，Promise 的运行已经结束了，所以这个错误是在 Promise 函数体外抛出的，会冒泡到最外层，成了未捕获的错误。
 
-Node 有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误。
-
-```javascript
-process.on('unhandledRejection', function (err, p) {
-  console.error(err.stack)
-});
-```
-
-上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。
-
-需要注意的是，`catch`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then`方法。
+一般总是建议，Promise 对象后面要跟`catch`方法，这样可以处理 Promise 内部发生的错误。`catch`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then`方法。
 
 ```javascript
 var someAsyncThing = function() {
@@ -452,7 +460,7 @@ someAsyncThing().then(function() {
   return someOtherAsyncThing();
 }).catch(function(error) {
   console.log('oh no', error);
-  // 下面一行会报错，因为y没有声明
+  // 下面一行会报错，因为 y 没有声明
   y + 2;
 }).then(function() {
   console.log('carry on');
