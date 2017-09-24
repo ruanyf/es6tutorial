@@ -22,8 +22,8 @@ typeof s
 `Symbol`函数可以接受一个字符串作为参数，表示对 Symbol 实例的描述，主要是为了在控制台显示，或者转为字符串时，比较容易区分。
 
 ```javascript
-var s1 = Symbol('foo');
-var s2 = Symbol('bar');
+let s1 = Symbol('foo');
+let s2 = Symbol('bar');
 
 s1 // Symbol(foo)
 s2 // Symbol(bar)
@@ -50,14 +50,14 @@ sym // Symbol(abc)
 
 ```javascript
 // 没有参数的情况
-var s1 = Symbol();
-var s2 = Symbol();
+let s1 = Symbol();
+let s2 = Symbol();
 
 s1 === s2 // false
 
 // 有参数的情况
-var s1 = Symbol('foo');
-var s2 = Symbol('foo');
+let s1 = Symbol('foo');
+let s2 = Symbol('foo');
 
 s1 === s2 // false
 ```
@@ -67,7 +67,7 @@ s1 === s2 // false
 Symbol 值不能与其他类型的值进行运算，会报错。
 
 ```javascript
-var sym = Symbol('My symbol');
+let sym = Symbol('My symbol');
 
 "your symbol is " + sym
 // TypeError: can't convert symbol to string
@@ -78,7 +78,7 @@ var sym = Symbol('My symbol');
 但是，Symbol 值可以显式转为字符串。
 
 ```javascript
-var sym = Symbol('My symbol');
+let sym = Symbol('My symbol');
 
 String(sym) // 'Symbol(My symbol)'
 sym.toString() // 'Symbol(My symbol)'
@@ -87,7 +87,7 @@ sym.toString() // 'Symbol(My symbol)'
 另外，Symbol 值也可以转为布尔值，但是不能转为数值。
 
 ```javascript
-var sym = Symbol();
+let sym = Symbol();
 Boolean(sym) // true
 !sym  // false
 
@@ -104,19 +104,19 @@ sym + 2 // TypeError
 由于每一个 Symbol 值都是不相等的，这意味着 Symbol 值可以作为标识符，用于对象的属性名，就能保证不会出现同名的属性。这对于一个对象由多个模块构成的情况非常有用，能防止某一个键被不小心改写或覆盖。
 
 ```javascript
-var mySymbol = Symbol();
+let mySymbol = Symbol();
 
 // 第一种写法
-var a = {};
+let a = {};
 a[mySymbol] = 'Hello!';
 
 // 第二种写法
-var a = {
+let a = {
   [mySymbol]: 'Hello!'
 };
 
 // 第三种写法
-var a = {};
+let a = {};
 Object.defineProperty(a, mySymbol, { value: 'Hello!' });
 
 // 以上写法都得到同样结果
@@ -128,8 +128,8 @@ a[mySymbol] // "Hello!"
 注意，Symbol 值作为对象属性名时，不能用点运算符。
 
 ```javascript
-var mySymbol = Symbol();
-var a = {};
+const mySymbol = Symbol();
+const a = {};
 
 a.mySymbol = 'Hello!';
 a[mySymbol] // undefined
@@ -200,7 +200,7 @@ function getComplement(color) {
 
 ```javascript
 function getArea(shape, options) {
-  var area = 0;
+  let area = 0;
 
   switch (shape) {
     case 'Triangle': // 魔术字符串
@@ -220,12 +220,12 @@ getArea('Triangle', { width: 100, height: 100 }); // 魔术字符串
 常用的消除魔术字符串的方法，就是把它写成一个变量。
 
 ```javascript
-var shapeType = {
+const shapeType = {
   triangle: 'Triangle'
 };
 
 function getArea(shape, options) {
-  var area = 0;
+  let area = 0;
   switch (shape) {
     case shapeType.triangle:
       area = .5 * options.width * options.height;
@@ -256,14 +256,14 @@ Symbol 作为属性名，该属性不会出现在`for...in`、`for...of`循环�
 `Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
 
 ```javascript
-var obj = {};
-var a = Symbol('a');
-var b = Symbol('b');
+const obj = {};
+let a = Symbol('a');
+let b = Symbol('b');
 
 obj[a] = 'Hello';
 obj[b] = 'World';
 
-var objectSymbols = Object.getOwnPropertySymbols(obj);
+const objectSymbols = Object.getOwnPropertySymbols(obj);
 
 objectSymbols
 // [Symbol(a), Symbol(b)]
@@ -272,15 +272,15 @@ objectSymbols
 下面是另一个例子，`Object.getOwnPropertySymbols`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
 
 ```javascript
-var obj = {};
+const obj = {};
 
-var foo = Symbol("foo");
+let foo = Symbol("foo");
 
 Object.defineProperty(obj, foo, {
   value: "foobar",
 });
 
-for (var i in obj) {
+for (let i in obj) {
   console.log(i); // 无输出
 }
 
@@ -309,7 +309,7 @@ Reflect.ownKeys(obj)
 由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
 
 ```javascript
-var size = Symbol('size');
+let size = Symbol('size');
 
 class Collection {
   constructor() {
@@ -326,7 +326,7 @@ class Collection {
   }
 }
 
-var x = new Collection();
+let x = new Collection();
 Collection.sizeOf(x) // 0
 
 x.add('foo');
@@ -344,8 +344,8 @@ Object.getOwnPropertySymbols(x) // [Symbol(size)]
 有时，我们希望重新使用同一个Symbol值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol值。如果有，就返回这个Symbol值，否则就新建并返回一个以该字符串为名称的Symbol值。
 
 ```javascript
-var s1 = Symbol.for('foo');
-var s2 = Symbol.for('foo');
+let s1 = Symbol.for('foo');
+let s2 = Symbol.for('foo');
 
 s1 === s2 // true
 ```
@@ -367,10 +367,10 @@ Symbol("bar") === Symbol("bar")
 `Symbol.keyFor`方法返回一个已登记的 Symbol 类型值的`key`。
 
 ```javascript
-var s1 = Symbol.for("foo");
+let s1 = Symbol.for("foo");
 Symbol.keyFor(s1) // "foo"
 
-var s2 = Symbol("foo");
+let s2 = Symbol("foo");
 Symbol.keyFor(s2) // undefined
 ```
 
@@ -413,7 +413,7 @@ module.exports = global._foo;
 然后，加载上面的`mod.js`。
 
 ```javascript
-var a = require('./mod.js');
+const a = require('./mod.js');
 console.log(a.foo);
 ```
 
@@ -422,7 +422,7 @@ console.log(a.foo);
 但是，这里有一个问题，全局变量`global._foo`是可写的，任何文件都可以修改。
 
 ```javascript
-var a = require('./mod.js');
+const a = require('./mod.js');
 global._foo = 123;
 ```
 
@@ -448,7 +448,7 @@ module.exports = global[FOO_KEY];
 上面代码中，可以保证`global[FOO_KEY]`不会被无意间覆盖，但还是可以被改写。
 
 ```javascript
-var a = require('./mod.js');
+const a = require('./mod.js');
 global[Symbol.for('foo')] = 123;
 ```
 
@@ -581,8 +581,8 @@ static get [Symbol.species]() {
 class MyArray extends Array {
   static get [Symbol.species]() { return Array; }
 }
-var a = new MyArray(1,2,3);
-var mapped = a.map(x => x * x);
+let a = new MyArray(1,2,3);
+let mapped = a.map(x => x * x);
 
 mapped instanceof MyArray // false
 mapped instanceof Array // true
@@ -667,7 +667,7 @@ class MySplitter {
     this.value = value;
   }
   [Symbol.split](string) {
-    var index = string.indexOf(this.value);
+    let index = string.indexOf(this.value);
     if (index === -1) {
       return string;
     }
@@ -695,7 +695,7 @@ class MySplitter {
 对象的`Symbol.iterator`属性，指向该对象的默认遍历器方法。
 
 ```javascript
-var myIterable = {};
+const myIterable = {};
 myIterable[Symbol.iterator] = function* () {
   yield 1;
   yield 2;
@@ -776,7 +776,7 @@ class Collection {
     return 'xxx';
   }
 }
-var x = new Collection();
+let x = new Collection();
 Object.prototype.toString.call(x) // "[object xxx]"
 ```
 
