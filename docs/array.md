@@ -28,7 +28,7 @@ function add(x, y) {
   return x + y;
 }
 
-var numbers = [4, 38];
+const numbers = [4, 38];
 add(...numbers) // 42
 ```
 
@@ -38,7 +38,7 @@ add(...numbers) // 42
 
 ```javascript
 function f(v, w, x, y, z) { }
-var args = [0, 1];
+const args = [0, 1];
 f(-1, ...args, 2, ...[3]);
 ```
 
@@ -74,7 +74,7 @@ f.apply(null, args);
 function f(x, y, z) {
   // ...
 }
-var args = [0, 1, 2];
+let args = [0, 1, 2];
 f(...args);
 ```
 
@@ -102,8 +102,8 @@ var arr2 = [3, 4, 5];
 Array.prototype.push.apply(arr1, arr2);
 
 // ES6 的写法
-var arr1 = [0, 1, 2];
-var arr2 = [3, 4, 5];
+let arr1 = [0, 1, 2];
+let arr2 = [3, 4, 5];
 arr1.push(...arr2);
 ```
 
@@ -185,8 +185,8 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 JavaScript 的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
 
 ```javascript
-var dateFields = readDateFields(database);
-var d = new Date(...dateFields);
+let dateFields = readDateFields(database);
+let d = new Date(...dateFields);
 ```
 
 上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数`Date`。
@@ -236,8 +236,8 @@ str.split('').reverse().join('')
 任何 Iterator 接口的对象（参阅 Iterator 一章），都可以用扩展运算符转为真正的数组。
 
 ```javascript
-var nodeList = document.querySelectorAll('div');
-var array = [...nodeList];
+let nodeList = document.querySelectorAll('div');
+let array = [...nodeList];
 ```
 
 上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator 。
@@ -275,7 +275,7 @@ let arr = [...map.keys()]; // [1, 2, 3]
 Generator 函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
 
 ```javascript
-var go = function*(){
+const go = function*(){
   yield 1;
   yield 2;
   yield 3;
@@ -289,7 +289,7 @@ var go = function*(){
 如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
 
 ```javascript
-var obj = {a: 1, b: 2};
+const obj = {a: 1, b: 2};
 let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 ```
 
@@ -356,7 +356,7 @@ Array.from([1, 2, 3])
 ```javascript
 // arguments对象
 function foo() {
-  var args = [...arguments];
+  const args = [...arguments];
 }
 
 // NodeList对象
@@ -517,7 +517,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 // {0: 1, 3: 1, length: 5}
 
 // 将2号位到数组结束，复制到0号位
-var i32a = new Int32Array([1, 2, 3, 4, 5]);
+let i32a = new Int32Array([1, 2, 3, 4, 5]);
 i32a.copyWithin(0, 2);
 // Int32Array [3, 4, 5, 4, 5]
 
