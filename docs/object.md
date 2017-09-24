@@ -5,12 +5,12 @@
 ES6 允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
-var foo = 'bar';
-var baz = {foo};
+const foo = 'bar';
+const baz = {foo};
 baz // {foo: "bar"}
 
 // 等同于
-var baz = {foo: foo};
+const baz = {foo: foo};
 ```
 
 上面代码表明，ES6 允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
@@ -32,7 +32,7 @@ f(1, 2) // Object {x: 1, y: 2}
 除了属性简写，方法也可以简写。
 
 ```javascript
-var o = {
+const o = {
   method() {
     return "Hello!";
   }
@@ -40,7 +40,7 @@ var o = {
 
 // 等同于
 
-var o = {
+const o = {
   method: function() {
     return "Hello!";
   }
@@ -50,9 +50,9 @@ var o = {
 下面是一个实际的例子。
 
 ```javascript
-var birth = '2000/01/01';
+let birth = '2000/01/01';
 
-var Person = {
+const Person = {
 
   name: '张三',
 
@@ -69,8 +69,8 @@ var Person = {
 
 ```javascript
 function getPoint() {
-  var x = 1;
-  var y = 10;
+  const x = 1;
+  const y = 10;
   return {x, y};
 }
 
@@ -81,7 +81,7 @@ getPoint()
 CommonJS 模块输出一组变量，就非常合适使用简洁写法。
 
 ```javascript
-var ms = {};
+let ms = {};
 
 function getItem (key) {
   return key in ms ? ms[key] : null;
@@ -107,7 +107,7 @@ module.exports = {
 属性的赋值器（setter）和取值器（getter），事实上也是采用这种写法。
 
 ```javascript
-var cart = {
+const cart = {
   _wheels: 4,
 
   get wheels () {
@@ -126,7 +126,7 @@ var cart = {
 注意，简洁写法的属性名总是字符串，这会导致一些看上去比较奇怪的结果。
 
 ```javascript
-var obj = {
+const obj = {
   class () {}
 };
 
@@ -142,7 +142,7 @@ var obj = {
 如果某个方法的值是一个 Generator 函数，前面需要加上星号。
 
 ```javascript
-var obj = {
+const obj = {
   * m() {
     yield 'hello world';
   }
@@ -186,9 +186,9 @@ let obj = {
 下面是另一个例子。
 
 ```javascript
-var lastWord = 'last word';
+let lastWord = 'last word';
 
-var a = {
+const a = {
   'first word': 'hello',
   [lastWord]: 'world'
 };
@@ -214,13 +214,13 @@ obj.hello() // hi
 
 ```javascript
 // 报错
-var foo = 'bar';
-var bar = 'abc';
-var baz = { [foo] };
+const foo = 'bar';
+const bar = 'abc';
+const baz = { [foo] };
 
 // 正确
-var foo = 'bar';
-var baz = { [foo]: 'abc'};
+const foo = 'bar';
+const baz = { [foo]: 'abc'};
 ```
 
 注意，属性名表达式如果是一个对象，默认情况下会自动将对象转为字符串`[object Object]`，这一点要特别小心。
@@ -346,10 +346,10 @@ Object.defineProperty(Object, 'is', {
 `Object.assign`方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
 
 ```javascript
-var target = { a: 1 };
+const target = { a: 1 };
 
-var source1 = { b: 2 };
-var source2 = { c: 3 };
+const source1 = { b: 2 };
+const source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
@@ -360,10 +360,10 @@ target // {a:1, b:2, c:3}
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
 
 ```javascript
-var target = { a: 1, b: 1 };
+const target = { a: 1, b: 1 };
 
-var source1 = { b: 2, c: 2 };
-var source2 = { c: 3 };
+const source1 = { b: 2, c: 2 };
+const source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
@@ -372,7 +372,7 @@ target // {a:1, b:2, c:3}
 如果只有一个参数，`Object.assign`会直接返回该参数。
 
 ```javascript
-var obj = {a: 1};
+const obj = {a: 1};
 Object.assign(obj) === obj // true
 ```
 
@@ -400,11 +400,11 @@ Object.assign(obj, null) === obj // true
 其他类型的值（即数值、字符串和布尔值）不在首参数，也不会报错。但是，除了字符串会以数组形式，拷贝入目标对象，其他值都不会产生效果。
 
 ```javascript
-var v1 = 'abc';
-var v2 = true;
-var v3 = 10;
+const v1 = 'abc';
+const v2 = true;
+const v3 = 10;
 
-var obj = Object.assign({}, v1, v2, v3);
+const obj = Object.assign({}, v1, v2, v3);
 console.log(obj); // { "0": "a", "1": "b", "2": "c" }
 ```
 
@@ -444,8 +444,8 @@ Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
 `Object.assign`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
 
 ```javascript
-var obj1 = {a: {b: 1}};
-var obj2 = Object.assign({}, obj1);
+const obj1 = {a: {b: 1}};
+const obj2 = Object.assign({}, obj1);
 
 obj1.a.b = 2;
 obj2.a.b // 2
@@ -456,8 +456,8 @@ obj2.a.b // 2
 对于这种嵌套的对象，一旦遇到同名属性，`Object.assign`的处理方法是替换，而不是添加。
 
 ```javascript
-var target = { a: { b: 'c', d: 'e' } }
-var source = { a: { b: 'hello' } }
+const target = { a: { b: 'c', d: 'e' } }
+const source = { a: { b: 'hello' } }
 Object.assign(target, source)
 // { a: { b: 'hello' } }
 ```
@@ -838,7 +838,7 @@ d.a // "a"
 
 ```javascript
 // es6的写法
-var obj = {
+const obj = {
   method: function() { ... }
 };
 obj.__proto__ = someOtherObj;
@@ -895,7 +895,7 @@ Object.getPrototypeOf({ __proto__: null })
 Object.setPrototypeOf(object, prototype)
 
 // 用法
-var o = Object.setPrototypeOf({}, null);
+const o = Object.setPrototypeOf({}, null);
 ```
 
 该方法等同于下面的函数。
@@ -957,7 +957,7 @@ function Rectangle() {
   // ...
 }
 
-var rec = new Rectangle();
+const rec = new Rectangle();
 
 Object.getPrototypeOf(rec) === Rectangle.prototype
 // true
@@ -1033,7 +1033,7 @@ for (let [key, value] of entries(obj)) {
 `Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
+const obj = { foo: 'bar', baz: 42 };
 Object.values(obj)
 // ["bar", 42]
 ```
@@ -1041,7 +1041,7 @@ Object.values(obj)
 返回数组的成员顺序，与本章的《属性的遍历》部分介绍的排列规则一致。
 
 ```javascript
-var obj = { 100: 'a', 2: 'b', 7: 'c' };
+const obj = { 100: 'a', 2: 'b', 7: 'c' };
 Object.values(obj)
 // ["b", "c", "a"]
 ```
@@ -1051,14 +1051,14 @@ Object.values(obj)
 `Object.values`只返回对象自身的可遍历属性。
 
 ```javascript
-var obj = Object.create({}, {p: {value: 42}});
+const obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 
 上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的，因为`p`的属性描述对象的`enumerable`默认是`false`，`Object.values`不会返回这个属性。只要把`enumerable`改成`true`，`Object.values`就会返回属性`p`的值。
 
 ```javascript
-var obj = Object.create({}, {p:
+const obj = Object.create({}, {p:
   {
     value: 42,
     enumerable: true
@@ -1095,7 +1095,7 @@ Object.values(true) // []
 `Object.entries`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
+const obj = { foo: 'bar', baz: 42 };
 Object.entries(obj)
 // [ ["foo", "bar"], ["baz", 42] ]
 ```
@@ -1127,8 +1127,8 @@ for (let [k, v] of Object.entries(obj)) {
 `Object.entries`方法的另一个用处是，将对象转为真正的`Map`结构。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
-var map = new Map(Object.entries(obj));
+const obj = { foo: 'bar', baz: 42 };
+const map = new Map(Object.entries(obj));
 map // Map { foo: "bar", baz: 42 }
 ```
 
@@ -1220,7 +1220,7 @@ o3.a // undefined
 下面是另一个例子。
 
 ```javascript
-var o = Object.create({ x: 1, y: 2 });
+const o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
 let { x, ...{ y, z } } = o;
