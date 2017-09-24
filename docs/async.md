@@ -505,8 +505,9 @@ function spawn(genF) {
   return new Promise(function(resolve, reject) {
     const gen = genF();
     function step(nextF) {
+      let next; 
       try {
-        var next = nextF();
+        next = nextF();
       } catch(e) {
         return reject(e);
       }
