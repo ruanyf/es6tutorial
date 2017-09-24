@@ -1027,7 +1027,6 @@ Worker 线程从事件的`data`属性上面取到数据。
 
 ```javascript
 // Worker 线程
-let sharedBuffer;
 onmessage = function (ev) {
   // 主线程共享的数据，就是 1KB 的共享内存
   const sharedBuffer = ev.data;
