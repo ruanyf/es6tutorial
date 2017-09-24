@@ -185,13 +185,13 @@ ES6 规定暂时性死区和`let`、`const`语句不出现变量提升，主要�
 
 ```javascript
 // 报错
-function () {
+function func() {
   let a = 10;
   var a = 1;
 }
 
 // 报错
-function () {
+function func() {
   let a = 10;
   let a = 1;
 }
