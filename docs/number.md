@@ -331,17 +331,13 @@ Math.trunc(-0.1234) // -0
 对于非数值，`Math.trunc`内部使用`Number`方法将其先转为数值。
 
 ```javascript
-Math.trunc('123.456')
-// 123
-Math.trunc(true)
-//1
-Math.trunc(false)
-0
-Math.trunc(null)
-0
+Math.trunc('123.456') // 123
+Math.trunc(true) //1
+Math.trunc(false) // 0
+Math.trunc(null) // 0
 ```
 
-对于空值和无法截取整数的值，返回NaN。
+对于空值和无法截取整数的值，返回`NaN`。
 
 ```javascript
 Math.trunc(NaN);      // NaN
@@ -364,11 +360,11 @@ Math.trunc = Math.trunc || function(x) {
 
 它会返回五种值。
 
-- 参数为正数，返回+1；
-- 参数为负数，返回-1；
-- 参数为0，返回0；
-- 参数为-0，返回-0;
-- 其他值，返回NaN。
+- 参数为正数，返回`+1`；
+- 参数为负数，返回`-1`；
+- 参数为0，返回`0`；
+- 参数为-0，返回`-0`;
+- 其他值，返回`NaN`。
 
 ```javascript
 Math.sign(-5) // -1
@@ -376,14 +372,19 @@ Math.sign(5) // +1
 Math.sign(0) // +0
 Math.sign(-0) // -0
 Math.sign(NaN) // NaN
-Math.sign('9'); // +1
-Math.sign('foo'); // NaN
-Math.sign();      // NaN
-Math.sign("");         //0
-Math.sign(true);       //+1
-Math.sign(false);      //0
-Math.sign(null);       //0
-Math.sign(undefined);  //NaN
+```
+
+如果参数是非数值，会自动转为数值。对于那些无法转为数值的值，会返回`NaN`。
+
+```javascript
+Math.sign('')  // 0
+Math.sign(true)  // +1
+Math.sign(false)  // 0
+Math.sign(null)  // 0
+Math.sign('9')  // +1
+Math.sign('foo')  // NaN
+Math.sign()  // NaN
+Math.sign(undefined)  // NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
