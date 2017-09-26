@@ -47,7 +47,7 @@ function Point(x = 0, y = 0) {
   this.y = y;
 }
 
-var p = new Point();
+const p = new Point();
 p // { x: 0, y: 0 }
 ```
 
