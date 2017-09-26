@@ -333,6 +333,12 @@ Math.trunc(-0.1234) // -0
 ```javascript
 Math.trunc('123.456')
 // 123
+Math.trunc(true)
+//1
+Math.trunc(false)
+0
+Math.trunc(null)
+0
 ```
 
 对于空值和无法截取整数的值，返回NaN。
@@ -341,6 +347,7 @@ Math.trunc('123.456')
 Math.trunc(NaN);      // NaN
 Math.trunc('foo');    // NaN
 Math.trunc();         // NaN
+Math.trunc(undefined) // NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
@@ -372,6 +379,11 @@ Math.sign(NaN) // NaN
 Math.sign('9'); // +1
 Math.sign('foo'); // NaN
 Math.sign();      // NaN
+Math.sign("");         //0
+Math.sign(true);       //+1
+Math.sign(false);      //0
+Math.sign(null);       //0
+Math.sign(undefined);  //NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
