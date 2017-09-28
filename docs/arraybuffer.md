@@ -894,8 +894,8 @@ Fetch API取回的数据，就是`ArrayBuffer`对象。
 
 ```javascript
 fetch(url)
-.then(function(request){
-  return request.arrayBuffer()
+.then(function(response){
+  return response.arrayBuffer()
 })
 .then(function(arrayBuffer){
   // ...
