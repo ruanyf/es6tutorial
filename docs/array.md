@@ -747,7 +747,7 @@ Array.from(['a',,'b'])
 `copyWithin()`会连空位一起拷贝。
 
 ```javascript
-[,'a','b',,].copyWithin(2,0) // [,"a",,"a"]
+[,'a','b',,].copyWithin(2,0) // [undefined,"a",undefined,"a"]
 ```
 
 `fill()`会将空位视为正常的数组位置。
