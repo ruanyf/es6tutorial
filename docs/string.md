@@ -737,12 +737,13 @@ msg // "The total is 30 (31.5 with tax)"
 
 上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
 
-`passthru`函数采用rest参数的写法如下。
+`passthru`函数采用 rest 参数的写法如下。
 
 ```javascript
 function passthru(literals, ...values) {
   let output = "";
-  for (let index = 0; index < values.length; index++) {
+  let index;
+  for (index = 0; index < values.length; index++) {
     output += literals[index] + values[index];
   }
 
@@ -751,7 +752,7 @@ function passthru(literals, ...values) {
 }
 ```
 
-“标签模板”的一个重要应用，就是过滤HTML字符串，防止用户输入恶意内容。
+“标签模板”的一个重要应用，就是过滤 HTML 字符串，防止用户输入恶意内容。
 
 ```javascript
 let message =
