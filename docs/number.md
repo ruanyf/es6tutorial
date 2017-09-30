@@ -198,7 +198,7 @@ Number.EPSILON.toFixed(20)
 0.1 + 0.2 === 0.3 // false
 ```
 
-`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，如果两个浮点数的差小于2的-50次方（即`Number.EPSILON * Math.pow(2, 2)`，我们就可以认为这两个浮点数是相等的。
+`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，误差范围设为2的-50次方（即`Number.EPSILON * Math.pow(2, 2)`），即如果两个浮点数的差小于这个值，我们就认为这两个浮点数相等。
 
 ```javascript
 5.551115123125783e-17 < Number.EPSILON * Math.pow(2, 2)
@@ -223,7 +223,7 @@ withinErrorMargin(1.1 + 1.3, 2.4) // true
 
 ## 安全整数和 Number.isSafeInteger()
 
-JavaScript能够准确表示的整数范围在`-2^53`到`2^53`之间（不含两个端点），超过这个范围，无法精确表示这个值。
+JavaScript 能够准确表示的整数范围在`-2^53`到`2^53`之间（不含两个端点），超过这个范围，无法精确表示这个值。
 
 ```javascript
 Math.pow(2, 53) // 9007199254740992
