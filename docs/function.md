@@ -67,7 +67,7 @@ function foo(x = 5) {
 使用参数默认值时，函数不能有同名参数。
 
 ```javascript
-// 不报错
+// 报错
 function foo(x, x, y) {
   // ...
 }
