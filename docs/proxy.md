@@ -116,70 +116,28 @@ var fproxy = new Proxy(function(x, y) {
 }, handler);
 
 fproxy(1, 2) // 1
-new fproxy(1,2) // {value: 2}
+new fproxy(1, 2) // {value: 2}
 fproxy.prototype === Object.prototype // true
-fproxy.foo // "Hello, foo"
+fproxy.foo === "Hello, foo" // true
 ```
-
-下面是 Proxy 支持的拦截操作一览。
 
 对于可以设置、但没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
 
-**（1）get(target, propKey, receiver)**
+下面是 Proxy 支持的拦截操作一览，一共13种。
 
-拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
-
-最后一个参数`receiver`是一个对象，可选，参见下面`Reflect.get`的部分。
-
-**（2）set(target, propKey, value, receiver)**
-
-拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
-
-**（3）has(target, propKey)**
-
-拦截`propKey in proxy`的操作，返回一个布尔值。
-
-**（4）deleteProperty(target, propKey)**
-
-拦截`delete proxy[propKey]`的操作，返回一个布尔值。
-
-**（5）ownKeys(target)**
-
-拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而`Object.keys()`的返回结果仅包括目标对象自身的可遍历属性。
-
-**（6）getOwnPropertyDescriptor(target, propKey)**
-
-拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
-
-**（7）defineProperty(target, propKey, propDesc)**
-
-拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
-
-**（8）preventExtensions(target)**
-
-拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
-
-**（9）getPrototypeOf(target)**
-
-拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
-
-**（10）isExtensible(target)**
-
-拦截`Object.isExtensible(proxy)`，返回一个布尔值。
-
-**（11）setPrototypeOf(target, proto)**
-
-拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。
-
-如果目标对象是函数，那么还有两种额外操作可以拦截。
-
-**（12）apply(target, object, args)**
-
-拦截 Proxy 实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
-
-**（13）construct(target, args)**
-
-拦截 Proxy 实例作为构造函数调用的操作，比如`new proxy(...args)`。
+- **get(target, propKey, receiver)**：拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
+- **set(target, propKey, value, receiver)**：拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
+- **has(target, propKey)**：拦截`propKey in proxy`的操作，返回一个布尔值。
+- **deleteProperty(target, propKey)**：拦截`delete proxy[propKey]`的操作，返回一个布尔值。
+- **ownKeys(target)**：拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而`Object.keys()`的返回结果仅包括目标对象自身的可遍历属性。
+- **getOwnPropertyDescriptor(target, propKey)**：拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
+- **defineProperty(target, propKey, propDesc)**：拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
+- **preventExtensions(target)**：拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
+- **getPrototypeOf(target)**：拦截`Object.getPrototypeOf(proxy)`，返回一个对象。
+- **isExtensible(target)**：拦截`Object.isExtensible(proxy)`，返回一个布尔值。
+- **setPrototypeOf(target, proto)**：拦截`Object.setPrototypeOf(proxy, proto)`，返回一个布尔值。如果目标对象是函数，那么还有两种额外操作可以拦截。
+- **apply(target, object, args)**：拦截 Proxy 实例作为函数调用的操作，比如`proxy(...args)`、`proxy.call(object, ...args)`、`proxy.apply(...)`。
+- **construct(target, args)**：拦截 Proxy 实例作为构造函数调用的操作，比如`new proxy(...args)`。
 
 ## Proxy 实例的方法
 
@@ -187,7 +145,9 @@ fproxy.foo // "Hello, foo"
 
 ### get()
 
-`get`方法用于拦截某个属性的读取操作。上文已经有一个例子，下面是另一个拦截读取操作的例子。
+`get`方法用于拦截某个属性的读取操作，可以接受三个参数，依次为目标对象、属性名和 proxy 实例本身（即`this`关键字指向的那个对象），其中最后一个参数可选。
+
+`get`方法的用法，上文已经有一个例子，下面是另一个拦截读取操作的例子。
 
 ```javascript
 var person = {
@@ -215,7 +175,7 @@ proxy.age // 抛出一个错误
 ```javascript
 let proto = new Proxy({}, {
   get(target, propertyKey, receiver) {
-    console.log('GET '+propertyKey);
+    console.log('GET ' + propertyKey);
     return target[propertyKey];
   }
 });
@@ -282,7 +242,7 @@ pipe(3).double.pow.reverseInt.get; // 63
 
 上面代码设置 Proxy 以后，达到了将函数名链式使用的效果。
 
-下面的例子则是利用`get`拦截，实现一个生成各种DOM节点的通用函数`dom`。
+下面的例子则是利用`get`拦截，实现一个生成各种 DOM 节点的通用函数`dom`。
 
 ```javascript
 const dom = new Proxy({}, {
@@ -317,6 +277,19 @@ const el = dom.div({},
 document.body.appendChild(el);
 ```
 
+下面是一个`get`方法的第三个参数的例子。
+
+```javascript
+const proxy = new Proxy({}, {
+  get: function(target, property, receiver) {
+    return receiver;
+  }
+});
+proxy.getReceiver === proxy // true
+```
+
+上面代码中，`get`方法的第三个参数`receiver`，总是为当前的 Proxy 实例，即`get`方法内部的`this`所指向的那个对象。
+
 如果一个属性不可配置（configurable）和不可写（writable），则该属性不能被代理，通过 Proxy 对象访问该属性会报错。
 
 ```javascript
@@ -342,7 +315,7 @@ proxy.foo
 
 ### set()
 
-`set`方法用来拦截某个属性的赋值操作。
+`set`方法用来拦截某个属性的赋值操作，可以接受四个参数，依次为目标对象、属性名、属性值和 Proxy 实例本身，其中最后一个参数可选。
 
 假定`Person`对象有一个`age`属性，该属性应该是一个不大于200的整数，那么可以使用`Proxy`保证`age`的属性值符合要求。
 
@@ -377,7 +350,7 @@ person.age = 300 // 报错
 有时，我们会在对象上面设置内部属性，属性名的第一个字符使用下划线开头，表示这些属性不应该被外部使用。结合`get`和`set`方法，就可以做到防止这些内部属性被外部读写。
 
 ```javascript
-var handler = {
+const handler = {
   get (target, key) {
     invariant(key, 'get');
     return target[key];
@@ -393,8 +366,8 @@ function invariant (key, action) {
     throw new Error(`Invalid attempt to ${action} private "${key}" property`);
   }
 }
-var target = {};
-var proxy = new Proxy(target, handler);
+const target = {};
+const proxy = new Proxy(target, handler);
 proxy._prop
 // Error: Invalid attempt to get private "_prop" property
 proxy._prop = 'c'
@@ -402,6 +375,21 @@ proxy._prop = 'c'
 ```
 
 上面代码中，只要读写的属性名的第一个字符是下划线，一律抛错，从而达到禁止读写内部属性的目的。
+
+下面是`set`方法第四个参数的例子。
+
+```javascript
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = receiver;
+  }
+};
+const proxy = new Proxy({}, handler);
+proxy.foo = 'bar';
+proxy.foo = proxy // true
+```
+
+上面代码中，`set`方法的第四个参数`receiver`，总是返回`this`关键字所指向的那个对象，即`proxy`实例本身。
 
 注意，如果目标对象自身的某个属性，不可写也不可配置，那么`set`不得改变这个属性的值，只能返回同样的值，否则报错。
 
