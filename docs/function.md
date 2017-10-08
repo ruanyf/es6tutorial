@@ -586,6 +586,70 @@ foo.bind({}).name // "bound foo"
 (function(){}).bind({}).name // "bound "
 ```
 
+## new.target
+
+JavaScript 语言的函数可以直接调用，也可以通过`new`命令调用。
+
+```javascript
+function fn() {
+  this.foo = 'hello';
+}
+
+// 调用方式一
+fn()
+
+// 调用方式二
+new fn()
+```
+
+以前，一般在函数内部通过`instanceof`运算符判断，函数到底是哪一种方式调用。
+
+```javascript
+function fn() {
+  if (this instanceof fn) { // 通过 new 命令调用
+    this.foo = 'hello';
+  } else {
+    throw new Error('该函数只能通过 new 调用');
+  }
+}
+
+// 报错
+fn()
+
+// 不报错
+new fn()
+```
+
+这种方法的问题是，如果通过`call()`、`apply()`、`bind()`这些方法绑定`this`，就会判断失效。
+
+```javascript
+// 不报错
+fn.call(new fn())
+```
+
+为了解决这个问题，精确判断是否通过`new`调用，ES6 引入了`new.target`属性。如果通过`new`调用，`new.target`将指向当前正在执行的函数，其他情况都指向`undefined`。
+
+```javascript
+function fn() {
+  if (new.target === fn) { // 通过 new 命令调用
+    this.foo = 'hello';
+  } else {
+    throw new Error('该函数只能通过 new 调用');
+  }
+}
+
+// 报错
+fn()
+
+// 报错
+fn.call(new fn())
+
+// 不报错
+new fn()
+```
+
+注意，`new.target`只能在函数体内部使用，如果在函数体外部使用就会报错。
+
 ## 箭头函数
 
 ### 基本用法

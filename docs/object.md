@@ -441,6 +441,8 @@ Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
 
 ### 注意点
 
+**（1）浅拷贝**
+
 `Object.assign`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
 
 ```javascript
@@ -453,6 +455,8 @@ obj2.a.b // 2
 
 上面代码中，源对象`obj1`的`a`属性的值是一个对象，`Object.assign`拷贝得到的是这个对象的引用。这个对象的任何变化，都会反映到目标对象上面。
 
+**（2）同名属性的替换**
+
 对于这种嵌套的对象，一旦遇到同名属性，`Object.assign`的处理方法是替换，而不是添加。
 
 ```javascript
@@ -464,9 +468,11 @@ Object.assign(target, source)
 
 上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。
 
-有一些函数库提供`Object.assign`的定制版本（比如 Lodash 的`_.defaultsDeep`方法），可以解决浅拷贝的问题，得到深拷贝的合并。
+一些函数库提供`Object.assign`的定制版本（比如 Lodash 的`_.defaultsDeep`方法），可以得到深拷贝的合并。
 
-注意，`Object.assign`可以用来处理数组，但是会把数组视为对象。
+**（3）数组的处理**
+
+`Object.assign`可以用来处理数组，但是会把数组视为对象。
 
 ```javascript
 Object.assign([1, 2, 3], [4, 5])
@@ -474,6 +480,22 @@ Object.assign([1, 2, 3], [4, 5])
 ```
 
 上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此源数组的0号属性`4`覆盖了目标数组的0号属性`1`。
+
+**（4）取值函数的处理**
+
+`Object.assign`只能进行值的复制，如果要复制的值是一个取值函数，那么将求值后再复制。
+
+```javascript
+const source = {
+  get foo() { return 1 }
+};
+const target = {};
+
+Object.assign(target, source)
+// { foo: 1 }
+```
+
+上面代码中，`source`对象的`foo`属性是一个取值函数，`Object.assign`不会复制这个取值函数，只会拿到值以后，将这个值复制过去。
 
 ### 常见用途
 
