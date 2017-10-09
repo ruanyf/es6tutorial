@@ -663,25 +663,25 @@ ES6 一共有5种方法可以遍历对象的属性。
 
 **（2）Object.keys(obj)**
 
-`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）。
+`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
 
 **（3）Object.getOwnPropertyNames(obj)**
 
-`Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）。
+`Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。
 
 **（4）Object.getOwnPropertySymbols(obj)**
 
-`Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有 Symbol 属性。
+`Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有 Symbol 属性的键名。
 
 **（5）Reflect.ownKeys(obj)**
 
-`Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管属性名是 Symbol 或字符串，也不管是否可枚举。
+`Reflect.ownKeys`返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
 
-以上的5种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
+以上的5种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
 
-- 首先遍历所有属性名为数值的属性，按照数字排序。
-- 其次遍历所有属性名为字符串的属性，按照生成时间排序。
-- 最后遍历所有属性名为 Symbol 值的属性，按照生成时间排序。
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
 
 ```javascript
 Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
@@ -850,22 +850,24 @@ d.a // "a"
 
 上面代码返回一个新的对象`d`，代表了对象`a`和`b`被混入了对象`c`的操作。
 
-出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。
+出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，以后还会新增`Reflect.getOwnPropertyDescriptors`方法。
 
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+
+JavaScript 语言的对象继承是通过原型链实现的。ES6 提供了更多原型对象的操作方法。
 
 ### `__proto__`属性
 
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
-// es6的写法
+// es6 的写法
 const obj = {
   method: function() { ... }
 };
 obj.__proto__ = someOtherObj;
 
-// es5的写法
+// es5 的写法
 var obj = Object.create(someOtherObj);
 obj.method = function() { ... };
 ```
@@ -896,12 +898,13 @@ Object.defineProperty(Object.prototype, '__proto__', {
     }
   },
 });
+
 function isObject(value) {
   return Object(value) === value;
 }
 ```
 
-如果一个对象本身部署了`__proto__`属性，则该属性的值就是对象的原型。
+如果一个对象本身部署了`__proto__`属性，该属性的值就是对象的原型。
 
 ```javascript
 Object.getPrototypeOf({ __proto__: null })
@@ -1018,6 +1021,74 @@ Object.getPrototypeOf(null)
 Object.getPrototypeOf(undefined)
 // TypeError: Cannot convert undefined or null to object
 ```
+
+## super 关键字
+
+我们知道，`this`关键字总是指向函数所在的当前对象，ES6 又新增了另一个类似的关键字`super`，指向当前对象的原型对象。
+
+```javascript
+const proto = {
+  foo: 'hello'
+};
+
+const obj = {
+  find() {
+    return super.foo;
+  }
+};
+
+Object.setPrototypeOf(obj, proto);
+obj.find() // "hello"
+```
+
+上面代码中，对象`obj`的`find`方法之中，通过`super.foo`引用了原型对象`proto`的`foo`属性。
+
+注意，`super`关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错。
+
+```javascript
+// 报错
+const obj = {
+  foo: super.foo
+}
+
+// 报错
+const obj = {
+  foo: () => super.foo
+}
+
+// 报错
+const obj = {
+  foo: function () {
+    return super.foo
+  }
+}
+```
+
+上面三种`super`的用法都会报错，因为对于 JavaScript 引擎来说，这里的`super`都没有用在对象的方法之中。第一种写法是`super`用在属性里面，第二种和第三种写法是`super`用在一个函数里面，然后赋值给`foo`属性。目前，只有对象方法的简写法可以让 JavaScript 引擎确认，定义的是对象的方法。
+
+JavaScript 引擎内部，`super.foo`等同于`Object.getPrototypeOf(this).foo`（属性）或`Object.getPrototypeOf(this).foo.call(this)`（方法）。
+
+```javascript
+const proto = {
+  x: 'hello',
+  foo() {
+    console.log(this.x);
+  },
+};
+
+const obj = {
+  x: 'world',
+  foo() {
+    super.foo();
+  }
+}
+
+Object.setPrototypeOf(obj, proto);
+
+obj.foo() // "world"
+```
+
+上面代码中，`super.foo`指向原型对象`proto`的`foo`方法，但是绑定的`this`却还是当前对象`obj`，因此输出的就是`world`。
 
 ## Object.keys()，Object.values()，Object.entries()
 
