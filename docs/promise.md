@@ -461,7 +461,7 @@ someAsyncThing().then(function() {
 }).catch(function(error) {
   console.log('oh no', error);
   // 下面一行会报错，因为 y 没有声明
-  y + 2;
+  y + 2;  (此错误会传递到外层)
 }).then(function() {
   console.log('carry on');
 });
