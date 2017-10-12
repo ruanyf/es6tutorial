@@ -92,6 +92,23 @@ cp instanceof Point // true
 
 上面代码中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与 ES5 的行为完全一致。
 
+最后，父类的静态方法，也会被子类继承。
+
+```javascript
+class A {
+  static hello() {
+    console.log('hello world');
+  }
+}
+
+class B extends A {
+}
+
+B.hello()  // hello world
+```
+
+上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
+
 ## Object.getPrototypeOf()
 
 `Object.getPrototypeOf`方法可以用来从子类上获取父类。
