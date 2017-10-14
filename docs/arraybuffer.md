@@ -273,6 +273,10 @@ const typedArray = new Uint8Array([1, 2, 3, 4]);
 TypedArray数组也可以转换回普通数组。
 
 ```javascript
+const normalArray = [...typedArray];
+// or
+const normalArray = Array.from(typedArray);
+// or
 const normalArray = Array.prototype.slice.call(typedArray);
 ```
 
