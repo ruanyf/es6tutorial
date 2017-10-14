@@ -452,7 +452,17 @@ Float64Array.BYTES_PER_ELEMENT // 8
 ```javascript
 // ArrayBuffer转为字符串，参数为ArrayBuffer对象
 function ab2str(buf) {
-  return String.fromCharCode.apply(null, new Uint16Array(buf));
+  if (buf && buf.byteLength < 128000) {	// limit max length avoid overhead
+    return String.fromCharCode.apply(null, new Uint16Array(buf));
+  }
+
+  const len =  bufView.byteLength;
+  const bstr = new Array(len);
+  const bufView = new Uint16Array(buf);
+  for (let i = 0; i < len; i++) {
+    bstr[i] = String.fromCharCode.call(null, bufView[i]);
+  }
+  return bstr.join('');
 }
 
 // 字符串转为ArrayBuffer对象，参数为字符串
