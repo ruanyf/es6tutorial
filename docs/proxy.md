@@ -386,7 +386,7 @@ const handler = {
 };
 const proxy = new Proxy({}, handler);
 proxy.foo = 'bar';
-proxy.foo = proxy // true
+proxy.foo === proxy // true
 ```
 
 上面代码中，`set`方法的第四个参数`receiver`，总是返回`this`关键字所指向的那个对象，即`proxy`实例本身。
