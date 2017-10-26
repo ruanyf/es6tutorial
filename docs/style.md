@@ -1,14 +1,14 @@
 # 编程风格
 
-本章探讨如何将ES6的新语法，运用到编码实践之中，与传统的JavaScript语法结合在一起，写出合理的、易于阅读和维护的代码。
+本章探讨如何将 ES6 的新语法，运用到编码实践之中，与传统的 JavaScript 语法结合在一起，写出合理的、易于阅读和维护的代码。
 
-多家公司和组织已经公开了它们的风格规范，具体可参阅[jscs.info](http://jscs.info/)，下面的内容主要参考了[Airbnb](https://github.com/airbnb/javascript)的JavaScript风格规范。
+多家公司和组织已经公开了它们的风格规范，下面的内容主要参考了 [Airbnb](https://github.com/airbnb/javascript) 公司的 JavaScript 风格规范。
 
 ## 块级作用域
 
 **（1）let 取代 var**
 
-ES6提出了两个新的声明变量的命令：`let`和`const`。其中，`let`完全可以取代`var`，因为两者语义相同，而且`let`没有副作用。
+ES6 提出了两个新的声明变量的命令：`let`和`const`。其中，`let`完全可以取代`var`，因为两者语义相同，而且`let`没有副作用。
 
 ```javascript
 'use strict';
@@ -29,7 +29,7 @@ for (let i = 0; i < 10; i++) {
 ```javascript
 'use strict';
 
-if(true) {
+if (true) {
   console.log(x); // ReferenceError
   let x = 'hello';
 }
@@ -62,7 +62,7 @@ const [a, b, c] = [1, 2, 3];
 
 所有的函数都应该设置为常量。
 
-长远来看，JavaScript可能会有多线程的实现（比如Intel的River Trail那一类的项目），这时`let`表示的变量，只应出现在单线程运行的代码中，不能是多线程共享的，这样有利于保证线程安全。
+长远来看，JavaScript 可能会有多线程的实现（比如 Intel 公司的 River Trail 那一类的项目），这时`let`表示的变量，只应出现在单线程运行的代码中，不能是多线程共享的，这样有利于保证线程安全。
 
 ## 字符串
 
@@ -470,18 +470,19 @@ export default StyleGuide;
 
 ## ESLint的使用
 
-ESLint是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。
+ESLint 是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。
 
-首先，安装ESLint。
+首先，安装 ESLint。
 
 ```bash
 $ npm i -g eslint
 ```
 
-然后，安装Airbnb语法规则。
+然后，安装 Airbnb 语法规则，以及 import、a11y、react 插件。
 
 ```bash
 $ npm i -g eslint-config-airbnb
+$ npm i -g eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
 ```
 
 最后，在项目的根目录下新建一个`.eslintrc`文件，配置ESLint。
@@ -507,16 +508,18 @@ function greet() {
 greet();
 ```
 
-使用ESLint检查这个文件。
+使用 ESLint 检查这个文件，就会报出错误。
 
 ```bash
 $ eslint index.js
 index.js
+  1:1  error  Unexpected var, use let or const instead          no-var
   1:5  error  unusued is defined but never used                 no-unused-vars
   4:5  error  Expected indentation of 2 characters but found 4  indent
+  4:5  error  Unexpected var, use let or const instead          no-var
   5:5  error  Expected indentation of 2 characters but found 4  indent
 
-✖ 3 problems (3 errors, 0 warnings)
+✖ 5 problems (5 errors, 0 warnings)
 ```
 
-上面代码说明，原文件有三个错误，一个是定义了变量，却没有使用，另外两个是行首缩进为4个空格，而不是规定的2个空格。
+上面代码说明，原文件有五个错误，其中两个是不应该使用`var`命令，而要使用`let`或`const`；一个是定义了变量，却没有使用；另外两个是行首缩进为4个空格，而不是规定的2个空格。

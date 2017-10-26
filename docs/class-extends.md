@@ -92,6 +92,23 @@ cp instanceof Point // true
 
 上面代码中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与 ES5 的行为完全一致。
 
+最后，父类的静态方法，也会被子类继承。
+
+```javascript
+class A {
+  static hello() {
+    console.log('hello world');
+  }
+}
+
+class B extends A {
+}
+
+B.hello()  // hello world
+```
+
+上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
+
 ## Object.getPrototypeOf()
 
 `Object.getPrototypeOf`方法可以用来从子类上获取父类。
@@ -647,15 +664,29 @@ o.attr === true  // false
 
 ## Mixin 模式的实现
 
-Mixin 模式指的是，将多个类的接口“混入”（mix in）另一个类。它在 ES6 的实现如下。
+Mixin 指的是多个对象合成一个新的对象，新对象具有各个组成成员的接口。它的最简单实现如下。
+
+```javascript
+const a = {
+  a: 'a'
+};
+const b = {
+  b: 'b'
+};
+const c = {...a, ...b}; // {a: 'a', b: 'b'}
+```
+
+上面代码中，`c`对象是`a`对象和`b`对象的合成，具有两者的接口。
+
+下面是一个更完备的实现，将多个类的接口“混入”（mix in）另一个类。
 
 ```javascript
 function mix(...mixins) {
   class Mix {}
 
   for (let mixin of mixins) {
-    copyProperties(Mix, mixin);
-    copyProperties(Mix.prototype, mixin.prototype);
+    copyProperties(Mix, mixin); // 拷贝实例属性
+    copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
   }
 
   return Mix;

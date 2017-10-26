@@ -102,7 +102,7 @@ Promise 的最大问题是代码冗余，原来的任务被 Promise 包装了一
 举例来说，读取文件的协程写法如下。
 
 ```javascript
-function *asyncJob() {
+function* asyncJob() {
   // ...其他代码
   var f = yield readFile(fileA);
   // ...其他代码
@@ -567,7 +567,7 @@ co(gen).then(function (){
 
 （2）Promise 对象。将异步操作包装成 Promise 对象，用`then`方法交回执行权。
 
-co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也可以使用 co，详见后文的例子。（co v4.0版以后，`yield`命令后面只能是 Promise 对象，不再支持 Thunk 函数。）
+co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也可以使用 co，详见后文的例子。
 
 上一节已经介绍了基于 Thunk 函数的自动执行器。下面来看，基于 Promise 对象的自动执行器。这是理解 co 模块必须的。
 

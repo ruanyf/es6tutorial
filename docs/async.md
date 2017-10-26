@@ -9,9 +9,9 @@ async 函数是什么？一句话，它就是 Generator 函数的语法糖。
 前文有一个 Generator 函数，依次读取两个文件。
 
 ```javascript
-var fs = require('fs');
+const fs = require('fs');
 
-var readFile = function (fileName) {
+const readFile = function (fileName) {
   return new Promise(function (resolve, reject) {
     fs.readFile(fileName, function(error, data) {
       if (error) return reject(error);
@@ -20,9 +20,9 @@ var readFile = function (fileName) {
   });
 };
 
-var gen = function* () {
-  var f1 = yield readFile('/etc/fstab');
-  var f2 = yield readFile('/etc/shells');
+const gen = function* () {
+  const f1 = yield readFile('/etc/fstab');
+  const f2 = yield readFile('/etc/shells');
   console.log(f1.toString());
   console.log(f2.toString());
 };
@@ -31,9 +31,9 @@ var gen = function* () {
 写成`async`函数，就是下面这样。
 
 ```javascript
-var asyncReadFile = async function () {
-  var f1 = await readFile('/etc/fstab');
-  var f2 = await readFile('/etc/shells');
+const asyncReadFile = async function () {
+  const f1 = await readFile('/etc/fstab');
+  const f2 = await readFile('/etc/shells');
   console.log(f1.toString());
   console.log(f2.toString());
 };
@@ -75,8 +75,8 @@ asyncReadFile();
 
 ```javascript
 async function getStockPriceByName(name) {
-  var symbol = await getStockSymbol(name);
-  var stockPrice = await getStockPrice(symbol);
+  const symbol = await getStockSymbol(name);
+  const stockPrice = await getStockPrice(symbol);
   return stockPrice;
 }
 
@@ -318,9 +318,9 @@ async function f() {
 ```javascript
 async function main() {
   try {
-    var val1 = await firstStep();
-    var val2 = await secondStep(val1);
-    var val3 = await thirdStep(val1, val2);
+    const val1 = await firstStep();
+    const val2 = await secondStep(val1);
+    const val3 = await thirdStep(val1, val2);
 
     console.log('Final: ', val3);
   }
@@ -503,10 +503,11 @@ function fn(args) {
 ```javascript
 function spawn(genF) {
   return new Promise(function(resolve, reject) {
-    var gen = genF();
+    const gen = genF();
     function step(nextF) {
+      let next; 
       try {
-        var next = nextF();
+        next = nextF();
       } catch(e) {
         return reject(e);
       }
@@ -536,13 +537,13 @@ function spawn(genF) {
 function chainAnimationsPromise(elem, animations) {
 
   // 变量ret用来保存上一个动画的返回值
-  var ret = null;
+  let ret = null;
 
   // 新建一个空的Promise
-  var p = Promise.resolve();
+  let p = Promise.resolve();
 
   // 使用then方法，添加所有动画
-  for(var anim of animations) {
+  for(let anim of animations) {
     p = p.then(function(val) {
       ret = val;
       return anim(elem);
@@ -567,9 +568,9 @@ function chainAnimationsPromise(elem, animations) {
 function chainAnimationsGenerator(elem, animations) {
 
   return spawn(function*() {
-    var ret = null;
+    let ret = null;
     try {
-      for(var anim of animations) {
+      for(let anim of animations) {
         ret = yield anim(elem);
       }
     } catch(e) {
@@ -587,9 +588,9 @@ function chainAnimationsGenerator(elem, animations) {
 
 ```javascript
 async function chainAnimationsAsync(elem, animations) {
-  var ret = null;
+  let ret = null;
   try {
-    for(var anim of animations) {
+    for(let anim of animations) {
       ret = await anim(elem);
     }
   } catch(e) {

@@ -47,7 +47,7 @@ function Point(x = 0, y = 0) {
   this.y = y;
 }
 
-var p = new Point();
+const p = new Point();
 p // { x: 0, y: 0 }
 ```
 
@@ -139,7 +139,7 @@ fetch('http://example.com')
 上面代码中，如果函数`fetch`的第二个参数是一个对象，就可以为它的三个属性设置默认值。这种写法不能省略第二个参数，如果结合函数参数的默认值，就可以省略第二个参数。这时，就出现了双重默认值。
 
 ```javascript
-function fetch(url, { method = 'GET' } = {}) {
+function fetch(url, { body = '', method = 'GET', headers = {} } = {}) {
   console.log(method);
 }
 
@@ -149,7 +149,7 @@ fetch('http://example.com')
 
 上面代码中，函数`fetch`没有第二个参数时，函数参数的默认值就会生效，然后才是解构赋值的默认值生效，变量`method`才会取到默认值`GET`。
 
-再请问下面两种写法有什么差别？
+作为练习，请问下面两种写法有什么差别？
 
 ```javascript
 // 写法一
@@ -427,7 +427,7 @@ const sortNumbers = (...numbers) => numbers.sort();
 
 上面代码的两种写法，比较后可以发现，rest 参数的写法更自然也更简洁。
 
-rest 参数中的变量代表一个数组，所以数组特有的方法都可以用于这个变量。下面是一个利用 rest 参数改写数组`push`方法的例子。
+`arguments`对象不是数组，而是一个类似数组的对象。所以为了使用数组的方法，必须使用`Array.prototype.slice.call`先将其转为数组。rest 参数就不存在这个问题，它就是一个真正的数组，数组特有的方法都可以使用。下面是一个利用 rest 参数改写数组`push`方法的例子。
 
 ```javascript
 function push(array, ...items) {
@@ -624,10 +624,20 @@ var sum = function(num1, num2) {
 var sum = (num1, num2) => { return num1 + num2; }
 ```
 
-由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号。
+由于大括号被解释为代码块，所以如果箭头函数直接返回一个对象，必须在对象外面加上括号，否则会报错。
 
 ```javascript
-var getTempItem = id => ({ id: id, name: "Temp" });
+// 报错
+let getTempItem = id => { id: id, name: "Temp" };
+
+// 不报错
+let getTempItem = id => ({ id: id, name: "Temp" });
+```
+
+如果箭头函数只有一行语句，且不需要返回值，可以采用下面的写法，就不用写大括号了。
+
+```javascript
+let fn = () => void doesNotReturn();
 ```
 
 箭头函数可以与变量解构结合使用。
@@ -901,11 +911,11 @@ var fix = f => (x => f(v => x(x)(v)))
 
 上面两种写法，几乎是一一对应的。由于λ演算对于计算机科学非常重要，这使得我们可以用ES6作为替代工具，探索计算机科学。
 
-## 绑定 this
+## 双冒号运算符
 
-箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call`、`apply`、`bind`）。但是，箭头函数并不适用于所有场合，所以ES7提出了“函数绑定”（function bind）运算符，用来取代`call`、`apply`、`bind`调用。虽然该语法还是ES7的一个[提案](https://github.com/zenparsing/es-function-bind)，但是Babel转码器已经支持。
+箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call`、`apply`、`bind`）。但是，箭头函数并不适用于所有场合，所以现在有一个[提案](https://github.com/zenparsing/es-function-bind)，提出了“函数绑定”（function bind）运算符，用来取代`call`、`apply`、`bind`调用。
 
-函数绑定运算符是并排的两个冒号（::），双冒号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即this对象），绑定到右边的函数上面。
+函数绑定运算符是并排的两个冒号（`::`），双冒号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即`this`对象），绑定到右边的函数上面。
 
 ```javascript
 foo::bar;
@@ -934,7 +944,7 @@ let log = ::console.log;
 var log = console.log.bind(console);
 ```
 
-由于双冒号运算符返回的还是原对象，因此可以采用链式写法。
+双冒号运算符的运算结果，还是一个对象，因此可以采用链式写法。
 
 ```javascript
 // 例一

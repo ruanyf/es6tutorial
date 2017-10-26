@@ -842,16 +842,16 @@ class Foo {
 
 上面代码中，老写法的静态属性定义在类的外部。整个类生成以后，再生成静态属性。这样让人很容易忽略这个静态属性，也不符合相关代码应该放在一起的代码组织原则。另外，新写法是显式声明（declarative），而不是赋值处理，语义更好。
 
-## new.target属性
+## new.target 属性
 
-`new`是从构造函数生成实例的命令。ES6 为`new`命令引入了一个`new.target`属性，该属性一般用在构造函数之中，返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
+`new`是从构造函数生成实例对象的命令。ES6 为`new`命令引入了一个`new.target`属性，该属性一般用在构造函数之中，返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
 
 ```javascript
 function Person(name) {
   if (new.target !== undefined) {
     this.name = name;
   } else {
-    throw new Error('必须使用new生成实例');
+    throw new Error('必须使用 new 命令生成实例');
   }
 }
 
@@ -860,7 +860,7 @@ function Person(name) {
   if (new.target === Person) {
     this.name = name;
   } else {
-    throw new Error('必须使用 new 生成实例');
+    throw new Error('必须使用 new 命令生成实例');
   }
 }
 

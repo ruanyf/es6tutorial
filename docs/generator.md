@@ -265,6 +265,27 @@ b.next(13) // { value:42, done:true }
 
 注意，由于`next`方法的参数表示上一个`yield`表达式的返回值，所以在第一次使用`next`方法时，传递参数是无效的。V8 引擎直接忽略第一次使用`next`方法时的参数，只有从第二次使用`next`方法开始，参数才是有效的。从语义上讲，第一个`next`方法用来启动遍历器对象，所以不用带有参数。
 
+再看一个通过`next`方法的参数，向 Generator 函数内部输入值的例子。
+
+```javascript
+function* dataConsumer() {
+  console.log('Started');
+  console.log(`1. ${yield}`);
+  console.log(`2. ${yield}`);
+  return 'result';
+}
+
+let genObj = dataConsumer();
+genObj.next();
+// Started
+genObj.next('a')
+// 1. a
+genObj.next('b')
+// 2. b
+```
+
+上面代码是一个很直观的例子，每次通过`next`方法向 Generator 函数输入值，然后打印出来。
+
 如果想要第一次调用`next`方法时，就能够输入值，可以在 Generator 函数外面再包一层。
 
 ```javascript
@@ -286,27 +307,6 @@ wrapped().next('hello!')
 ```
 
 上面代码中，Generator 函数如果不用`wrapper`先包一层，是无法第一次调用`next`方法，就输入参数的。
-
-再看一个通过`next`方法的参数，向 Generator 函数内部输入值的例子。
-
-```javascript
-function* dataConsumer() {
-  console.log('Started');
-  console.log(`1. ${yield}`);
-  console.log(`2. ${yield}`);
-  return 'result';
-}
-
-let genObj = dataConsumer();
-genObj.next();
-// Started
-genObj.next('a')
-// 1. a
-genObj.next('b')
-// 2. b
-```
-
-上面代码是一个很直观的例子，每次通过`next`方法向 Generator 函数输入值，然后打印出来。
 
 ## for...of 循环
 
@@ -599,7 +599,7 @@ try {
 }
 ```
 
-上面代码中，第二个`next`方法向函数体内传入一个参数42，数值是没有`toUpperCase`方法的，所以会抛出一个TypeError错误，被函数体外的`catch`捕获。
+上面代码中，第二个`next`方法向函数体内传入一个参数42，数值是没有`toUpperCase`方法的，所以会抛出一个 TypeError 错误，被函数体外的`catch`捕获。
 
 一旦 Generator 执行过程中抛出错误，且没有被内部捕获，就不会再执行下去了。如果此后还调用`next`方法，将返回一个`value`属性等于`undefined`、`done`属性等于`true`的对象，即 JavaScript 引擎认为这个 Generator 已经运行结束了。
 
@@ -649,7 +649,7 @@ log(g());
 
 ## Generator.prototype.return()
 
-Generator函数返回的遍历器对象，还有一个`return`方法，可以返回给定的值，并且终结遍历Generator函数。
+Generator 函数返回的遍历器对象，还有一个`return`方法，可以返回给定的值，并且终结遍历 Generator 函数。
 
 ```javascript
 function* gen() {
@@ -705,6 +705,44 @@ g.next() // { value: 7, done: true }
 ```
 
 上面代码中，调用`return`方法后，就开始执行`finally`代码块，然后等到`finally`代码块执行完，再执行`return`方法。
+
+## next()、throw()、return() 的共同点
+
+网友 vision57 提出，`next()`、`throw()`、`return()`这三个方法本质上是同一件事，可以放在一起理解。它们的作用都是让 Generator 函数恢复执行，并且使用不同的语句替换`yield`表达式。
+
+`next()`是将`yield`表达式替换成一个值。
+
+```javascript
+const g = function* (x, y) {
+  let result = yield x + y;
+  return result;
+};
+
+const gen = g(1, 2);
+gen.next(); // Object {value: 3, done: false}
+
+gen.next(1); // Object {value: 1, done: true}
+// 相当于将 let result = yield x + y
+// 替换成 let result = 1;
+```
+
+上面代码中，第二个`next(1)`方法就相当于将`yield`表达式替换成一个值`1`。如果`next`方法没有参数，就相当于替换成`undefined`。
+
+`throw()`是将`yield`表达式替换成一个`throw`语句。
+
+```javascript
+gen.throw(new Error('出错了')); // Uncaught Error: 出错了
+// 相当于将 let result = yield x + y
+// 替换成 let result = throw(new Error('出错了'));
+```
+
+`return()`是将`yield`表达式替换成一个`return`语句。
+
+```javascript
+gen.return(2); // Object {value: 2, done: true}
+// 相当于将 let result = yield x + y
+// 替换成 let result = return 2;
+```
 
 ## yield* 表达式
 

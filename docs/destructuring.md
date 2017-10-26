@@ -192,7 +192,7 @@ baz // undefined
 如果变量名与属性名不一致，必须写成下面这样。
 
 ```javascript
-var { foo: baz } = { foo: 'aaa', bar: 'bbb' };
+let { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 
 let obj = { first: 'hello', last: 'world' };
@@ -251,7 +251,7 @@ p // ["Hello", {y: "World"}]
 下面是另一个例子。
 
 ```javascript
-var node = {
+const node = {
   loc: {
     start: {
       line: 1,
@@ -260,7 +260,7 @@ var node = {
   }
 };
 
-var { loc, loc: { start }, loc: { start: { line }} } = node;
+let { loc, loc: { start }, loc: { start: { line }} } = node;
 line // 1
 loc  // Object {start: Object}
 start // Object {line: 1, column: 5}
@@ -667,7 +667,7 @@ jQuery.ajax = function (url, {
 任何部署了Iterator接口的对象，都可以用`for...of`循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
 
 ```javascript
-var map = new Map();
+const map = new Map();
 map.set('first', 'hello');
 map.set('second', 'world');
 

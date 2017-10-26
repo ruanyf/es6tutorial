@@ -70,7 +70,7 @@ s.charCodeAt(1) // 57271
 ES6提供了`codePointAt`方法，能够正确处理4个字节储存的字符，返回一个字符的码点。
 
 ```javascript
-var s = '𠮷a';
+let s = '𠮷a';
 
 s.codePointAt(0) // 134071
 s.codePointAt(1) // 57271
@@ -85,7 +85,7 @@ s.codePointAt(2) // 97
 `codePointAt`方法返回的是码点的十进制值，如果想要十六进制的值，可以使用`toString`方法转换一下。
 
 ```javascript
-var s = '𠮷a';
+let s = '𠮷a';
 
 s.codePointAt(0).toString(16) // "20bb7"
 s.codePointAt(2).toString(16) // "61"
@@ -94,7 +94,7 @@ s.codePointAt(2).toString(16) // "61"
 你可能注意到了，`codePointAt`方法的参数，仍然是不正确的。比如，上面代码中，字符`a`在字符串`s`的正确位置序号应该是1，但是必须向`codePointAt`方法传入2。解决这个问题的一个办法是使用`for...of`循环，因为它会正确识别32位的UTF-16字符。
 
 ```javascript
-var s = '𠮷a';
+let s = '𠮷a';
 for (let ch of s) {
   console.log(ch.codePointAt(0).toString(16));
 }
@@ -153,7 +153,7 @@ for (let codePoint of 'foo') {
 除了遍历字符串，这个遍历器最大的优点是可以识别大于`0xFFFF`的码点，传统的`for`循环无法识别这样的码点。
 
 ```javascript
-var text = String.fromCodePoint(0x20BB7);
+let text = String.fromCodePoint(0x20BB7);
 
 for (let i = 0; i < text.length; i++) {
   console.log(text[i]);
@@ -236,7 +236,7 @@ ES6 提供字符串实例的`normalize()`方法，用来将字符的不同表示
 - **endsWith()**：返回布尔值，表示参数字符串是否在原字符串的尾部。
 
 ```javascript
-var s = 'Hello world!';
+let s = 'Hello world!';
 
 s.startsWith('Hello') // true
 s.endsWith('!') // true
@@ -246,7 +246,7 @@ s.includes('o') // true
 这三个方法都支持第二个参数，表示开始搜索的位置。
 
 ```javascript
-var s = 'Hello world!';
+let s = 'Hello world!';
 
 s.startsWith('world', 6) // true
 s.endsWith('Hello', 5) // true
@@ -386,14 +386,14 @@ console.log(`string text line 1
 string text line 2`);
 
 // 字符串中嵌入变量
-var name = "Bob", time = "today";
+let name = "Bob", time = "today";
 `Hello ${name}, how are you ${time}?`
 ```
 
 上面代码中的模板字符串，都是用反引号表示。如果在模板字符串中需要使用反引号，则前面要用反斜杠转义。
 
 ```javascript
-var greeting = `\`Yo\` World!`;
+let greeting = `\`Yo\` World!`;
 ```
 
 如果使用模板字符串表示多行字符串，所有的空格和缩进都会被保留在输出之中。
@@ -439,8 +439,8 @@ function authorize(user, action) {
 大括号内部可以放入任意的JavaScript表达式，可以进行运算，以及引用对象属性。
 
 ```javascript
-var x = 1;
-var y = 2;
+let x = 1;
+let y = 2;
 
 `${x} + ${y} = ${x + y}`
 // "1 + 2 = 3"
@@ -448,7 +448,7 @@ var y = 2;
 `${x} + ${y * 2} = ${x + y * 2}`
 // "1 + 4 = 5"
 
-var obj = {x: 1, y: 2};
+let obj = {x: 1, y: 2};
 `${obj.x + obj.y}`
 // "3"
 ```
@@ -470,7 +470,7 @@ function fn() {
 
 ```javascript
 // 变量place没有声明
-var msg = `Hello, ${place}`;
+let msg = `Hello, ${place}`;
 // 报错
 ```
 
@@ -533,9 +533,9 @@ func('Jack') // "Hello Jack!"
 下面，我们来看一个通过模板字符串，生成正式模板的实例。
 
 ```javascript
-var template = `
+let template = `
 <ul>
-  <% for(var i=0; i < data.supplies.length; i++) { %>
+  <% for(let i=0; i < data.supplies.length; i++) { %>
     <li><%= data.supplies[i] %></li>
   <% } %>
 </ul>
@@ -550,7 +550,7 @@ var template = `
 
 ```javascript
 echo('<ul>');
-for(var i=0; i < data.supplies.length; i++) {
+for(let i=0; i < data.supplies.length; i++) {
   echo('<li>');
   echo(data.supplies[i]);
   echo('</li>');
@@ -561,8 +561,8 @@ echo('</ul>');
 这个转换使用正则表达式就行了。
 
 ```javascript
-var evalExpr = /<%=(.+?)%>/g;
-var expr = /<%([\s\S]+?)%>/g;
+let evalExpr = /<%=(.+?)%>/g;
+let expr = /<%([\s\S]+?)%>/g;
 
 template = template
   .replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`')
@@ -574,9 +574,9 @@ template = 'echo(`' + template + '`);';
 然后，将`template`封装在一个函数里面返回，就可以了。
 
 ```javascript
-var script =
+let script =
 `(function parse(data){
-  var output = "";
+  let output = "";
 
   function echo(html){
     output += html;
@@ -594,8 +594,8 @@ return script;
 
 ```javascript
 function compile(template){
-  var evalExpr = /<%=(.+?)%>/g;
-  var expr = /<%([\s\S]+?)%>/g;
+  const evalExpr = /<%=(.+?)%>/g;
+  const expr = /<%([\s\S]+?)%>/g;
 
   template = template
     .replace(evalExpr, '`); \n  echo( $1 ); \n  echo(`')
@@ -603,9 +603,9 @@ function compile(template){
 
   template = 'echo(`' + template + '`);';
 
-  var script =
+  let script =
   `(function parse(data){
-    var output = "";
+    let output = "";
 
     function echo(html){
       output += html;
@@ -623,7 +623,7 @@ function compile(template){
 `compile`函数的用法如下。
 
 ```javascript
-var parse = eval(compile(template));
+let parse = eval(compile(template));
 div.innerHTML = parse({ supplies: [ "broom", "mop", "cleaner" ] });
 //   <ul>
 //     <li>broom</li>
@@ -647,8 +647,8 @@ alert(123)
 但是，如果模板字符里面有变量，就不是简单的调用了，而是会将模板字符串先处理成多个参数，再调用函数。
 
 ```javascript
-var a = 5;
-var b = 10;
+let a = 5;
+let b = 10;
 
 tag`Hello ${ a + b } world ${ a * b }`;
 // 等同于
@@ -690,8 +690,8 @@ tag(['Hello ', ' world ', ''], 15, 50)
 我们可以按照需要编写`tag`函数的代码。下面是`tag`函数的一种写法，以及运行结果。
 
 ```javascript
-var a = 5;
-var b = 10;
+let a = 5;
+let b = 10;
 
 function tag(s, v1, v2) {
   console.log(s[0]);
@@ -715,12 +715,12 @@ tag`Hello ${ a + b } world ${ a * b}`;
 下面是一个更复杂的例子。
 
 ```javascript
-var total = 30;
-var msg = passthru`The total is ${total} (${total*1.05} with tax)`;
+let total = 30;
+let msg = passthru`The total is ${total} (${total*1.05} with tax)`;
 
 function passthru(literals) {
-  var result = '';
-  var i = 0;
+  let result = '';
+  let i = 0;
 
   while (i < literals.length) {
     result += literals[i++];
@@ -737,12 +737,13 @@ msg // "The total is 30 (31.5 with tax)"
 
 上面这个例子展示了，如何将各个参数按照原来的位置拼合回去。
 
-`passthru`函数采用rest参数的写法如下。
+`passthru`函数采用 rest 参数的写法如下。
 
 ```javascript
 function passthru(literals, ...values) {
-  var output = "";
-  for (var index = 0; index < values.length; index++) {
+  let output = "";
+  let index;
+  for (index = 0; index < values.length; index++) {
     output += literals[index] + values[index];
   }
 
@@ -751,16 +752,16 @@ function passthru(literals, ...values) {
 }
 ```
 
-“标签模板”的一个重要应用，就是过滤HTML字符串，防止用户输入恶意内容。
+“标签模板”的一个重要应用，就是过滤 HTML 字符串，防止用户输入恶意内容。
 
 ```javascript
-var message =
+let message =
   SaferHTML`<p>${sender} has sent you a message.</p>`;
 
 function SaferHTML(templateData) {
-  var s = templateData[0];
-  for (var i = 1; i < arguments.length; i++) {
-    var arg = String(arguments[i]);
+  let s = templateData[0];
+  for (let i = 1; i < arguments.length; i++) {
+    let arg = String(arguments[i]);
 
     // Escape special characters in the substitution.
     s += arg.replace(/&/g, "&amp;")
@@ -777,8 +778,8 @@ function SaferHTML(templateData) {
 上面代码中，`sender`变量往往是用户提供的，经过`SaferHTML`函数处理，里面的特殊字符都会被转义。
 
 ```javascript
-var sender = '<script>alert("abc")</script>'; // 恶意代码
-var message = SaferHTML`<p>${sender} has sent you a message.</p>`;
+let sender = '<script>alert("abc")</script>'; // 恶意代码
+let message = SaferHTML`<p>${sender} has sent you a message.</p>`;
 
 message
 // <p>&lt;script&gt;alert("abc")&lt;/script&gt; has sent you a message.</p>
@@ -797,7 +798,7 @@ i18n`Welcome to ${siteName}, you are visitor number ${visitorNumber}!`
 ```javascript
 // 下面的hashTemplate函数
 // 是一个自定义的模板处理函数
-var libraryHtml = hashTemplate`
+let libraryHtml = hashTemplate`
   <ul>
     #for book in ${myBooks}
       <li><i>#{book.title}</i> by #{book.author}</li>
@@ -883,8 +884,8 @@ String.raw`Hi\\n`
 
 ```javascript
 String.raw = function (strings, ...values) {
-  var output = "";
-  for (var index = 0; index < values.length; index++) {
+  let output = "";
+  for (let index = 0; index < values.length; index++) {
     output += strings.raw[index] + values[index];
   }
 

@@ -28,7 +28,7 @@ function add(x, y) {
   return x + y;
 }
 
-var numbers = [4, 38];
+const numbers = [4, 38];
 add(...numbers) // 42
 ```
 
@@ -38,7 +38,7 @@ add(...numbers) // 42
 
 ```javascript
 function f(v, w, x, y, z) { }
-var args = [0, 1];
+const args = [0, 1];
 f(-1, ...args, 2, ...[3]);
 ```
 
@@ -74,7 +74,7 @@ f.apply(null, args);
 function f(x, y, z) {
   // ...
 }
-var args = [0, 1, 2];
+let args = [0, 1, 2];
 f(...args);
 ```
 
@@ -102,8 +102,8 @@ var arr2 = [3, 4, 5];
 Array.prototype.push.apply(arr1, arr2);
 
 // ES6 的写法
-var arr1 = [0, 1, 2];
-var arr2 = [3, 4, 5];
+let arr1 = [0, 1, 2];
+let arr2 = [3, 4, 5];
 arr1.push(...arr2);
 ```
 
@@ -120,7 +120,45 @@ new Date(...[2015, 1, 1]);
 
 ### 扩展运算符的应用
 
-**（1）合并数组**
+**（1）复制数组**
+
+数组是复合的数据类型，直接复制的话，只是复制了指向底层数据结构的指针，而不是克隆一个全新的数组。
+
+```javascript
+const a1 = [1, 2];
+const a2 = a1;
+
+a2[0] = 2;
+a1 // [2, 2]
+```
+
+上面代码中，`a2`并不是`a1`的克隆，而是指向同一份数据的另一个指针。修改`a2`，会直接导致`a1`的变化。
+
+ES5 只能用变通方法来复制数组。
+
+```javascript
+const a1 = [1, 2];
+const a2 = a1.concat();
+
+a2[0] = 2;
+a1 // [1, 2]
+```
+
+上面代码中，`a1`会返回原数组的克隆，再修改`a2`就不会对`a1`产生影响。
+
+扩展运算符提供了复制数组的简便写法。
+
+```javascript
+const a1 = [1, 2];
+// 写法一
+const a2 = [...a1];
+// 写法二
+const [...a2] = a1;
+```
+
+上面的两种写法，`a2`都是`a1`的克隆。
+
+**（2）合并数组**
 
 扩展运算符提供了数组合并的新写法。
 
@@ -143,7 +181,7 @@ arr1.concat(arr2, arr3);
 // [ 'a', 'b', 'c', 'd', 'e' ]
 ```
 
-**（2）与解构赋值结合**
+**（3）与解构赋值结合**
 
 扩展运算符可以与解构赋值结合起来，用于生成数组。
 
@@ -180,17 +218,6 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 // 报错
 ```
 
-**（3）函数的返回值**
-
-JavaScript 的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
-
-```javascript
-var dateFields = readDateFields(database);
-var d = new Date(...dateFields);
-```
-
-上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数`Date`。
-
 **（4）字符串**
 
 扩展运算符还可以将字符串转为真正的数组。
@@ -200,14 +227,14 @@ var d = new Date(...dateFields);
 // [ "h", "e", "l", "l", "o" ]
 ```
 
-上面的写法，有一个重要的好处，那就是能够正确识别32位的Unicode字符。
+上面的写法，有一个重要的好处，那就是能够正确识别四个字节的 Unicode 字符。
 
 ```javascript
 'x\uD83D\uDE80y'.length // 4
 [...'x\uD83D\uDE80y'].length // 3
 ```
 
-上面代码的第一种写法，JavaScript会将32位Unicode字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
+上面代码的第一种写法，JavaScript 会将四个字节的 Unicode 字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
 
 ```javascript
 function length(str) {
@@ -217,7 +244,7 @@ function length(str) {
 length('x\uD83D\uDE80y') // 3
 ```
 
-凡是涉及到操作32位 Unicode 字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
+凡是涉及到操作四个字节的 Unicode 字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
 
 ```javascript
 let str = 'x\uD83D\uDE80y';
@@ -236,8 +263,8 @@ str.split('').reverse().join('')
 任何 Iterator 接口的对象（参阅 Iterator 一章），都可以用扩展运算符转为真正的数组。
 
 ```javascript
-var nodeList = document.querySelectorAll('div');
-var array = [...nodeList];
+let nodeList = document.querySelectorAll('div');
+let array = [...nodeList];
 ```
 
 上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator 。
@@ -275,7 +302,7 @@ let arr = [...map.keys()]; // [1, 2, 3]
 Generator 函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
 
 ```javascript
-var go = function*(){
+const go = function*(){
   yield 1;
   yield 2;
   yield 3;
@@ -289,7 +316,7 @@ var go = function*(){
 如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
 
 ```javascript
-var obj = {a: 1, b: 2};
+const obj = {a: 1, b: 2};
 let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 ```
 
@@ -356,7 +383,7 @@ Array.from([1, 2, 3])
 ```javascript
 // arguments对象
 function foo() {
-  var args = [...arguments];
+  const args = [...arguments];
 }
 
 // NodeList对象
@@ -517,7 +544,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 // {0: 1, 3: 1, length: 5}
 
 // 将2号位到数组结束，复制到0号位
-var i32a = new Int32Array([1, 2, 3, 4, 5]);
+let i32a = new Int32Array([1, 2, 3, 4, 5]);
 i32a.copyWithin(0, 2);
 // Int32Array [3, 4, 5, 4, 5]
 

@@ -164,14 +164,20 @@ ES5 可以通过下面的代码，部署`Number.isInteger()`。
 
 ## Number.EPSILON
 
-ES6在Number对象上面，新增一个极小的常量`Number.EPSILON`。
+ES6 在`Number`对象上面，新增一个极小的常量`Number.EPSILON`。根据规格，它表示1与大于1的最小浮点数之间的差。
+
+对于64位浮点数来说，大于1的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续51个零。这个值减去1之后，就等于2的-52次方。
 
 ```javascript
+Number.EPSILON === Math.pow(2, -52)
+// true
 Number.EPSILON
 // 2.220446049250313e-16
 Number.EPSILON.toFixed(20)
-// '0.00000000000000022204'
+// "0.00000000000000022204"
 ```
+
+`Number.EPSILON`实际上是 JavaScript 能够表示的最小精度。误差如果小于这个值，就可以认为已经没有意义了，即不存在误差了。
 
 引入一个这么小的量的目的，在于为浮点数计算，设置一个误差范围。我们知道浮点数计算是不精确的。
 
@@ -186,30 +192,38 @@ Number.EPSILON.toFixed(20)
 // '0.00000000000000005551'
 ```
 
-但是如果这个误差能够小于`Number.EPSILON`，我们就可以认为得到了正确结果。
+上面代码解释了，为什么比较`0.1 + 0.2`与`0.3`得到的结果是`false`。
 
 ```javascript
-5.551115123125783e-17 < Number.EPSILON
+0.1 + 0.2 === 0.3 // false
+```
+
+`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，误差范围设为2的-50次方（即`Number.EPSILON * Math.pow(2, 2)`），即如果两个浮点数的差小于这个值，我们就认为这两个浮点数相等。
+
+```javascript
+5.551115123125783e-17 < Number.EPSILON * Math.pow(2, 2)
 // true
 ```
 
-因此，`Number.EPSILON`的实质是一个可以接受的误差范围。
+因此，`Number.EPSILON`的实质是一个可以接受的最小误差范围。
 
 ```javascript
 function withinErrorMargin (left, right) {
-  return Math.abs(left - right) < Number.EPSILON;
+  return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
 }
-withinErrorMargin(0.1 + 0.2, 0.3)
-// true
-withinErrorMargin(0.2 + 0.2, 0.3)
-// false
+
+0.1 + 0.2 === 0.3 // false
+withinErrorMargin(0.1 + 0.2, 0.3) // true
+
+1.1 + 1.3 === 2.4 // false
+withinErrorMargin(1.1 + 1.3, 2.4) // true
 ```
 
 上面的代码为浮点数运算，部署了一个误差检查函数。
 
-## 安全整数和Number.isSafeInteger()
+## 安全整数和 Number.isSafeInteger()
 
-JavaScript能够准确表示的整数范围在`-2^53`到`2^53`之间（不含两个端点），超过这个范围，无法精确表示这个值。
+JavaScript 能够准确表示的整数范围在`-2^53`到`2^53`之间（不含两个端点），超过这个范围，无法精确表示这个值。
 
 ```javascript
 Math.pow(2, 53) // 9007199254740992
@@ -331,16 +345,19 @@ Math.trunc(-0.1234) // -0
 对于非数值，`Math.trunc`内部使用`Number`方法将其先转为数值。
 
 ```javascript
-Math.trunc('123.456')
-// 123
+Math.trunc('123.456') // 123
+Math.trunc(true) //1
+Math.trunc(false) // 0
+Math.trunc(null) // 0
 ```
 
-对于空值和无法截取整数的值，返回NaN。
+对于空值和无法截取整数的值，返回`NaN`。
 
 ```javascript
 Math.trunc(NaN);      // NaN
 Math.trunc('foo');    // NaN
 Math.trunc();         // NaN
+Math.trunc(undefined) // NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
@@ -357,11 +374,11 @@ Math.trunc = Math.trunc || function(x) {
 
 它会返回五种值。
 
-- 参数为正数，返回+1；
-- 参数为负数，返回-1；
-- 参数为0，返回0；
-- 参数为-0，返回-0;
-- 其他值，返回NaN。
+- 参数为正数，返回`+1`；
+- 参数为负数，返回`-1`；
+- 参数为0，返回`0`；
+- 参数为-0，返回`-0`;
+- 其他值，返回`NaN`。
 
 ```javascript
 Math.sign(-5) // -1
@@ -369,9 +386,19 @@ Math.sign(5) // +1
 Math.sign(0) // +0
 Math.sign(-0) // -0
 Math.sign(NaN) // NaN
-Math.sign('9'); // +1
-Math.sign('foo'); // NaN
-Math.sign();      // NaN
+```
+
+如果参数是非数值，会自动转为数值。对于那些无法转为数值的值，会返回`NaN`。
+
+```javascript
+Math.sign('')  // 0
+Math.sign(true)  // +1
+Math.sign(false)  // 0
+Math.sign(null)  // 0
+Math.sign('9')  // +1
+Math.sign('foo')  // NaN
+Math.sign()  // NaN
+Math.sign(undefined)  // NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
