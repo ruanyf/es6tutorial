@@ -62,9 +62,9 @@ const dataView = new DataView(buf);
 dataView.getUint8(0) // 0
 ```
 
-上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，从偏移0开始读取8bit数据，结果得到0，因为原始内存的`ArrayBuffer`对象，默认所有位都是0。
+上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，从头读取8位二进制数据，结果得到0，因为原始内存的`ArrayBuffer`对象，默认所有位都是0。
 
-另一种TypedArray视图，与`DataView`视图的一个区别是，它不是一个构造函数，而是一组构造函数，代表不同的数据格式。
+另一种 TypedArray 视图，与`DataView`视图的一个区别是，它不是一个构造函数，而是一组构造函数，代表不同的数据格式。
 
 ```javascript
 const buffer = new ArrayBuffer(12);
@@ -79,7 +79,7 @@ x1[0] // 2
 
 上面代码对同一段内存，分别建立两种视图：32位带符号整数（`Int32Array`构造函数）和8位不带符号整数（`Uint8Array`构造函数）。由于两个视图对应的是同一段内存，一个视图修改底层内存，会影响到另一个视图。
 
-TypedArray视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受普通数组作为参数，直接分配内存生成底层的`ArrayBuffer`实例，并同时完成对这段内存的赋值。
+TypedArray 视图的构造函数，除了接受`ArrayBuffer`实例作为参数，还可以接受普通数组作为参数，直接分配内存生成底层的`ArrayBuffer`实例，并同时完成对这段内存的赋值。
 
 ```javascript
 const typedArray = new Uint8Array([0,1,2]);
