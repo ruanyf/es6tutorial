@@ -62,7 +62,7 @@ const dataView = new DataView(buf);
 dataView.getUint8(0) // 0
 ```
 
-上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，读取第一个元素，结果得到0，因为原始内存的`ArrayBuffer`对象，默认所有位都是0。
+上面代码对一段32字节的内存，建立`DataView`视图，然后以不带符号的8位整数格式，从偏移0开始读取8bit数据，结果得到0，因为原始内存的`ArrayBuffer`对象，默认所有位都是0。
 
 另一种TypedArray视图，与`DataView`视图的一个区别是，它不是一个构造函数，而是一组构造函数，代表不同的数据格式。
 
