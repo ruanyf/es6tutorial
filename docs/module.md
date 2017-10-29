@@ -404,9 +404,9 @@ export {add as default};
 // export default add;
 
 // app.js
-import { default as xxx } from 'modules';
+import { default as foo } from 'modules';
 // 等同于
-// import xxx from 'modules';
+// import foo from 'modules';
 ```
 
 正是因为`export default`命令其实只是输出一个叫做`default`的变量，所以它后面不能跟变量声明语句。

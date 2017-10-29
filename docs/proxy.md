@@ -181,7 +181,7 @@ let proto = new Proxy({}, {
 });
 
 let obj = Object.create(proto);
-obj.xxx // "GET xxx"
+obj.foo // "GET foo"
 ```
 
 上面代码中，拦截操作定义在`Prototype`对象上面，所以如果读取`obj`对象继承的属性时，拦截会生效。
