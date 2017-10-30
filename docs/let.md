@@ -63,15 +63,13 @@ a[6](); // 6
 
 ```javascript
 for (let i = 0; i < 3; i++) {
-  let i = 'abc';
   console.log(i);
+  let i = 'abc';
 }
-// abc
-// abc
-// abc
+// ReferenceError: i is not defined
 ```
 
-上面代码正确运行，输出了3次`abc`。这表明函数内部的变量`i`与循环变量`i`不在同一个作用域，有各自单独的作用域。
+上面代码因为函数内部的变量声明在后所以出现报错。这表明函数内部的变量`i`与循环变量`i`不在同一个作用域，有各自单独的作用域。
 
 ### 不存在变量提升
 
