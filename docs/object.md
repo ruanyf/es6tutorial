@@ -1371,9 +1371,15 @@ const clone2 = Object.assign(
   Object.create(Object.getPrototypeOf(obj)),
   obj
 );
+
+// 写法三
+const clone3 = Object.create(
+  Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj)
+)
 ```
 
-上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二。
+上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二和写法三。
 
 扩展运算符可以用于合并两个对象。
 
