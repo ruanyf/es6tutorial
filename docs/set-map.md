@@ -1030,13 +1030,14 @@ undefined
 undefined
 
 // 新建一个变量 key，指向一个 5*1024*1024 的数组
-> let key = new Array(5*1024*1024);
+> let key = new Array(5 * 1024 * 1024);
 undefined
 
 // 设置 WeakMap 实例的键名，也指向 key 数组
-// 这时，key 数组的引用计数为 2，
-// 变量 key 引用一次，WeakMap 的键名引用第二次
-> wm.set(key,1);
+// 这时，key 数组实际被引用了两次，
+// 变量 key 引用一次，WeakMap 的键名引用了第二次
+// 但是，WeakMap 是弱引用，对于引擎来说，引用计数还是1
+> wm.set(key, 1);
 WeakMap {}
 
 > global.gc();
