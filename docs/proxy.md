@@ -288,7 +288,7 @@ const proxy = new Proxy({}, {
 proxy.getReceiver === proxy // true
 ```
 
-上面代码中，`get`方法的第三个参数`receiver`，总是为当前的 Proxy 实例，即`get`方法内部的`this`所指向的那个对象。
+上面代码中，`get`方法的第三个参数`receiver`，总是为当前的 Proxy 实例。
 
 如果一个属性不可配置（configurable）和不可写（writable），则该属性不能被代理，通过 Proxy 对象访问该属性会报错。
 
