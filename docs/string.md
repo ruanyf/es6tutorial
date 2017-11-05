@@ -885,7 +885,8 @@ String.raw`Hi\\n`
 ```javascript
 String.raw = function (strings, ...values) {
   let output = "";
-  for (let index = 0; index < values.length; index++) {
+  let index;
+  for (index = 0; index < values.length; index++) {
     output += strings.raw[index] + values[index];
   }
 
