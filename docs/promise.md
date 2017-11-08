@@ -118,14 +118,7 @@ function loadImageAsync(url) {
 ```javascript
 const getJSON = function(url) {
   const promise = new Promise(function(resolve, reject){
-    const client = new XMLHttpRequest();
-    client.open("GET", url);
-    client.onreadystatechange = handler;
-    client.responseType = "json";
-    client.setRequestHeader("Accept", "application/json");
-    client.send();
-
-    function handler() {
+    const handler = function () {
       if (this.readyState !== 4) {
         return;
       }
@@ -135,6 +128,13 @@ const getJSON = function(url) {
         reject(new Error(this.statusText));
       }
     };
+    const client = new XMLHttpRequest();
+    client.open("GET", url);
+    client.onreadystatechange = handler;
+    client.responseType = "json";
+    client.setRequestHeader("Accept", "application/json");
+    client.send();
+
   });
 
   return promise;
