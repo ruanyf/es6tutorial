@@ -872,7 +872,7 @@ Object.getOwnPropertyNames(p)
 // Uncaught TypeError: 'ownKeys' on proxy: trap returned extra keys but proxy target is non-extensible
 ```
 
-上面代码中，`Obj`对象是不可扩展的，这时`ownKeys`方法返回的数组之中，包含了`obj`对象的多余属性`b`，所以导致了报错。
+上面代码中，`obj`对象是不可扩展的，这时`ownKeys`方法返回的数组之中，包含了`obj`对象的多余属性`b`，所以导致了报错。
 
 ### preventExtensions()
 
