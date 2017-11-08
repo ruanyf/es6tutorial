@@ -118,7 +118,7 @@ function loadImageAsync(url) {
 ```javascript
 const getJSON = function(url) {
   const promise = new Promise(function(resolve, reject){
-    const handler = function () {
+    const handler = function() {
       if (this.readyState !== 4) {
         return;
       }
