@@ -231,7 +231,7 @@ let b = new B();
 
 上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
 
-ES6 规定，通过`super`调用父类的方法时，`super`会绑定子类的`this`。
+ES6 规定，通过`super`调用父类的方法时，方法内部的`this`指向子类。
 
 ```javascript
 class A {
@@ -257,9 +257,9 @@ let b = new B();
 b.m() // 2
 ```
 
-上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`会绑定子类`B`的`this`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`内部的`this`指向子类`B`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
 
-由于绑定子类的`this`，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
+由于`this`指向子类，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
 
 ```javascript
 class A {
@@ -342,7 +342,7 @@ class B extends A {
 let b = new B();
 ```
 
-上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`绑定`B`的`this`，所以`super.valueOf()`返回的是一个`B`的实例。
+上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`使得`this`指向`B`，所以`super.valueOf()`返回的是一个`B`的实例。
 
 最后，由于对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
