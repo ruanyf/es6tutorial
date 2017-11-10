@@ -454,7 +454,7 @@ Math.clz32(0b00100000000000000000000000000000) // 2
 
 上面代码中，0的二进制形式全为0，所以有32个前导0；1的二进制形式是`0b1`，只占1位，所以32位之中有31个前导0；1000的二进制形式是`0b1111101000`，一共有10位，所以32位之中有22个前导0。
 
-`clz32`这个函数名就来自”count leading zero bits in 32-bit binary representations of a number“（计算32位整数的前导0）的缩写。
+`clz32`这个函数名就来自”count leading zero bits in 32-bit binary representation of a number“（计算一个数的32位二进制形式的前导0的个数）的缩写。
 
 左移运算符（`<<`）与`Math.clz32`方法直接相关。
 
