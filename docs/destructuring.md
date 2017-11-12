@@ -506,7 +506,7 @@ let {(x): c} = {};
 let { o: ({ p: p }) } = { o: { p: 2 } };
 ```
 
-上面6个语句都会报错，因为它们都是变量声明语句，模式不能使用圆括号。
+上面 6 个语句都会报错，因为它们都是变量声明语句，模式不能使用圆括号。
 
 （2）函数参数
 
@@ -600,9 +600,9 @@ function f({x, y, z}) { ... }
 f({z: 3, y: 2, x: 1});
 ```
 
-**（4）提取JSON数据**
+**（4）提取 JSON 数据**
 
-解构赋值对提取JSON对象中的数据，尤其有用。
+解构赋值对提取 JSON 对象中的数据，尤其有用。
 
 ```javascript
 let jsonData = {
@@ -637,9 +637,9 @@ jQuery.ajax = function (url, {
 
 指定参数的默认值，就避免了在函数体内部再写`var foo = config.foo || 'default foo';`这样的语句。
 
-**（6）遍历Map结构**
+**（6）遍历 Map 结构**
 
-任何部署了Iterator接口的对象，都可以用`for...of`循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
+任何部署了 Iterator 接口的对象，都可以用`for...of`循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。
 
 ```javascript
 const map = new Map();

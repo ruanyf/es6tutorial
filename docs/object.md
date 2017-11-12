@@ -479,7 +479,7 @@ Object.assign([1, 2, 3], [4, 5])
 // [4, 5, 3]
 ```
 
-上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此源数组的0号属性`4`覆盖了目标数组的0号属性`1`。
+上面代码中，`Object.assign`把数组视为属性名为 0、1、2 的对象，因此源数组的 0 号属性`4`覆盖了目标数组的 0 号属性`1`。
 
 **（4）取值函数的处理**
 
@@ -604,7 +604,7 @@ processContent({ url: {port: 8000} })
 // }
 ```
 
-上面代码的原意是将`url.port`改成8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`，所以`url.host`就不存在了。
+上面代码的原意是将`url.port`改成 8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`，所以`url.host`就不存在了。
 
 ## 属性的可枚举性和遍历
 
@@ -655,7 +655,7 @@ Object.getOwnPropertyDescriptor(class {foo() {}}.prototype, 'foo').enumerable
 
 ### 属性的遍历
 
-ES6 一共有5种方法可以遍历对象的属性。
+ES6 一共有 5 种方法可以遍历对象的属性。
 
 **（1）for...in**
 
@@ -677,7 +677,7 @@ ES6 一共有5种方法可以遍历对象的属性。
 
 `Reflect.ownKeys`返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
 
-以上的5种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
+以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
 
 - 首先遍历所有数值键，按照数值升序排列。
 - 其次遍历所有字符串键，按照加入时间升序排列。
@@ -1489,10 +1489,10 @@ const firstName = message?.body?.user?.firstName || 'default';
 
 “Null 传导运算符”有四种用法。
 
-- `obj?.prop`  // 读取对象属性
-- `obj?.[expr]`  // 同上
+- `obj?.prop` // 读取对象属性
+- `obj?.[expr]` // 同上
 - `func?.(...args)` // 函数或对象方法的调用
-- `new C?.(...args)`  // 构造函数的调用
+- `new C?.(...args)` // 构造函数的调用
 
 传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
 
@@ -1510,4 +1510,3 @@ a?.b = 42
 // 如果 a 是 null 或 undefined，下面的语句不产生任何效果
 delete a?.b
 ```
-

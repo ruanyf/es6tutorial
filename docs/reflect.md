@@ -84,7 +84,7 @@ Reflect.apply(Math.floor, undefined, [1.75]) // 1
 
 ## 静态方法
 
-`Reflect`对象一共有13个静态方法。
+`Reflect`对象一共有 13 个静态方法。
 
 - Reflect.apply(target, thisArg, args)
 - Reflect.construct(target, args)
@@ -517,4 +517,3 @@ function set(target, key, value, receiver) {
 ```
 
 上面代码中，先定义了一个`Set`集合，所有观察者函数都放进这个集合。然后，`observable`函数返回原始对象的代理，拦截赋值操作。拦截函数`set`之中，会自动执行所有观察者。
-
