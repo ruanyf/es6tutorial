@@ -234,7 +234,7 @@ for (i = 0; i < len; i++) {
 const itemsCopy = [...items];
 ```
 
-使用Array.from方法，将类似数组的对象转为数组。
+使用 Array.from 方法，将类似数组的对象转为数组。
 
 ```javascript
 const foo = document.querySelectorAll('.foo');
@@ -251,7 +251,7 @@ const nodes = Array.from(foo);
 })();
 ```
 
-那些需要使用函数表达式的场合，尽量用箭头函数代替。因为这样更简洁，而且绑定了this。
+那些需要使用函数表达式的场合，尽量用箭头函数代替。因为这样更简洁，而且绑定了 this。
 
 ```javascript
 // bad
@@ -268,7 +268,7 @@ const nodes = Array.from(foo);
 [1, 2, 3].map(x => x * x);
 ```
 
-箭头函数取代`Function.prototype.bind`，不应再用self/\_this/that绑定 this。
+箭头函数取代`Function.prototype.bind`，不应再用 self/\_this/that 绑定 this。
 
 ```javascript
 // bad
@@ -298,7 +298,7 @@ function divide(a, b, { option = false } = {}) {
 }
 ```
 
-不要在函数体内使用arguments变量，使用rest运算符（...）代替。因为rest运算符显式表明你想要获取参数，而且arguments是一个类似数组的对象，而rest运算符可以提供一个真正的数组。
+不要在函数体内使用 arguments 变量，使用 rest 运算符（...）代替。因为 rest 运算符显式表明你想要获取参数，而且 arguments 是一个类似数组的对象，而 rest 运算符可以提供一个真正的数组。
 
 ```javascript
 // bad
@@ -327,9 +327,9 @@ function handleThings(opts = {}) {
 }
 ```
 
-## Map结构
+## Map 结构
 
-注意区分Object和Map，只有模拟现实世界的实体对象时，才使用Object。如果只是需要`key: value`的数据结构，使用Map结构。因为Map有内建的遍历机制。
+注意区分 Object 和 Map，只有模拟现实世界的实体对象时，才使用 Object。如果只是需要`key: value`的数据结构，使用 Map 结构。因为 Map 有内建的遍历机制。
 
 ```javascript
 let map = new Map(arr);
@@ -349,7 +349,7 @@ for (let item of map.entries()) {
 
 ## Class
 
-总是用Class，取代需要prototype的操作。因为Class的写法更简洁，更易于理解。
+总是用 Class，取代需要 prototype 的操作。因为 Class 的写法更简洁，更易于理解。
 
 ```javascript
 // bad
@@ -398,7 +398,7 @@ class PeekableQueue extends Queue {
 
 ## 模块
 
-首先，Module语法是JavaScript模块的标准写法，坚持使用这种写法。使用`import`取代`require`。
+首先，Module 语法是 JavaScript 模块的标准写法，坚持使用这种写法。使用`import`取代`require`。
 
 ```javascript
 // bad
@@ -468,7 +468,7 @@ const StyleGuide = {
 export default StyleGuide;
 ```
 
-## ESLint的使用
+## ESLint 的使用
 
 ESLint 是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。
 
@@ -485,7 +485,7 @@ $ npm i -g eslint-config-airbnb
 $ npm i -g eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
 ```
 
-最后，在项目的根目录下新建一个`.eslintrc`文件，配置ESLint。
+最后，在项目的根目录下新建一个`.eslintrc`文件，配置 ESLint。
 
 ```javascript
 {
@@ -522,4 +522,4 @@ index.js
 ✖ 5 problems (5 errors, 0 warnings)
 ```
 
-上面代码说明，原文件有五个错误，其中两个是不应该使用`var`命令，而要使用`let`或`const`；一个是定义了变量，却没有使用；另外两个是行首缩进为4个空格，而不是规定的2个空格。
+上面代码说明，原文件有五个错误，其中两个是不应该使用`var`命令，而要使用`let`或`const`；一个是定义了变量，却没有使用；另外两个是行首缩进为 4 个空格，而不是规定的 2 个空格。

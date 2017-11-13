@@ -59,7 +59,7 @@ asyncReadFile();
 
 （3）更广的适用性。
 
-`co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+`co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是 Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
 
 （4）返回值是 Promise。
 
@@ -104,7 +104,7 @@ async function asyncPrint(value, ms) {
 asyncPrint('hello world', 50);
 ```
 
-上面代码指定50毫秒以后，输出`hello world`。
+上面代码指定 50 毫秒以后，输出`hello world`。
 
 由于`async`函数返回的是 Promise 对象，可以作为`await`命令的参数。所以，上面的例子也可以写成下面的形式。
 
@@ -505,7 +505,7 @@ function spawn(genF) {
   return new Promise(function(resolve, reject) {
     const gen = genF();
     function step(nextF) {
-      let next; 
+      let next;
       try {
         next = nextF();
       } catch(e) {
@@ -600,7 +600,7 @@ async function chainAnimationsAsync(elem, animations) {
 }
 ```
 
-可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将Generator写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用Generator写法，自动执行器需要用户自己提供。
+可以看到 Async 函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将 Generator 写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用 Generator 写法，自动执行器需要用户自己提供。
 
 ## 实例：按顺序完成异步操作
 
@@ -636,7 +636,7 @@ async function logInOrder(urls) {
 }
 ```
 
-上面代码确实大大简化，问题是所有远程操作都是继发。只有前一个URL返回结果，才会去读取下一个URL，这样做效率很差，非常浪费时间。我们需要的是并发发出远程请求。
+上面代码确实大大简化，问题是所有远程操作都是继发。只有前一个 URL 返回结果，才会去读取下一个 URL，这样做效率很差，非常浪费时间。我们需要的是并发发出远程请求。
 
 ```javascript
 async function logInOrder(urls) {
@@ -719,7 +719,7 @@ async function f() {
 
 上面代码中，`next`方法用`await`处理以后，就不必使用`then`方法了。整个流程已经很接近同步处理了。
 
-注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的Promise对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
+注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的 Promise 对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
 
 ```javascript
 const asyncGenObj = createAsyncIterable(['a', 'b']);
@@ -753,7 +753,7 @@ async function f() {
 // b
 ```
 
-上面代码中，`createAsyncIterable()`返回一个异步遍历器，`for...of`循环自动调用这个遍历器的`next`方法，会得到一个Promise对象。`await`用来处理这个Promise对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
+上面代码中，`createAsyncIterable()`返回一个异步遍历器，`for...of`循环自动调用这个遍历器的`next`方法，会得到一个 Promise 对象。`await`用来处理这个 Promise 对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
 
 `for await...of`循环的一个用途，是部署了 asyncIterable 操作的异步接口，可以直接放入这个循环。
 
@@ -988,7 +988,7 @@ async function* createAsyncIterable(syncIterable) {
 
 上面代码中，由于没有异步操作，所以也就没有使用`await`关键字。
 
-### yield* 语句
+### yield\* 语句
 
 `yield*`语句也可以跟一个异步遍历器。
 
@@ -1018,4 +1018,3 @@ async function* gen2() {
 // a
 // b
 ```
-

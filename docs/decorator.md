@@ -285,7 +285,7 @@ function foo() {
 }
 ```
 
-上面的代码，意图是执行后`counter`等于1，但是实际上结果是`counter`等于0。因为函数提升，使得实际执行的代码是下面这样。
+上面的代码，意图是执行后`counter`等于 1，但是实际上结果是`counter`等于 0。因为函数提升，使得实际执行的代码是下面这样。
 
 ```javascript
 @add
@@ -792,4 +792,3 @@ babel.transform("code", {plugins: ["transform-decorators"]})
 ```
 
 Babel 的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选 Experimental，就能支持 Decorator 的在线转码。
-

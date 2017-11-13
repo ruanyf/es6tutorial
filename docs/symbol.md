@@ -247,7 +247,7 @@ const shapeType = {
 };
 ```
 
-上面代码中，除了将`shapeType.triangle`的值设为一个Symbol，其他地方都不用修改。
+上面代码中，除了将`shapeType.triangle`的值设为一个 Symbol，其他地方都不用修改。
 
 ## 属性名的遍历
 
@@ -293,7 +293,7 @@ Object.getOwnPropertySymbols(obj)
 
 上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
 
-另一个新的API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+另一个新的 API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
 
 ```javascript
 let obj = {
@@ -341,7 +341,7 @@ Object.getOwnPropertySymbols(x) // [Symbol(size)]
 
 ## Symbol.for()，Symbol.keyFor()
 
-有时，我们希望重新使用同一个 Symbol 值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。
+有时，我们希望重新使用同一个 Symbol 值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。
 
 ```javascript
 let s1 = Symbol.for('foo');
@@ -352,7 +352,7 @@ s1 === s2 // true
 
 上面代码中，`s1`和`s2`都是 Symbol 值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
 
-`Symbol.for()`与`Symbol()`这两种写法，都会生成新的 Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30次，会返回30个不同的 Symbol 值。
+`Symbol.for()`与`Symbol()`这两种写法，都会生成新的 Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30 次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30 次，会返回 30 个不同的 Symbol 值。
 
 ```javascript
 Symbol.for("bar") === Symbol.for("bar")
@@ -391,9 +391,9 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 ## 实例：模块的 Singleton 模式
 
-Singleton模式指的是调用一个类，任何时候返回的都是同一个实例。
+Singleton 模式指的是调用一个类，任何时候返回的都是同一个实例。
 
-对于Node来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
+对于 Node 来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
 
 很容易想到，可以把实例放到顶层对象`global`。
 
@@ -428,7 +428,7 @@ global._foo = 123;
 
 上面的代码，会使得别的脚本加载`mod.js`都失真。
 
-为了防止这种情况出现，我们就可以使用Symbol。
+为了防止这种情况出现，我们就可以使用 Symbol。
 
 ```javascript
 // mod.js
@@ -461,11 +461,11 @@ const FOO_KEY = Symbol('foo');
 // 后面代码相同 ……
 ```
 
-上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然Node会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
+上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然 Node 会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
 
-## 内置的Symbol值
+## 内置的 Symbol 值
 
-除了定义自己使用的Symbol值以外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法。
+除了定义自己使用的 Symbol 值以外，ES6 还提供了 11 个内置的 Symbol 值，指向语言内部使用的方法。
 
 ### Symbol.hasInstance
 
@@ -712,7 +712,7 @@ myIterable[Symbol.iterator] = function* () {
 [...myIterable] // [1, 2, 3]
 ```
 
-对象进行`for...of`循环时，会调用`Symbol.iterator`方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+对象进行`for...of`循环时，会调用`Symbol.iterator`方法，返回该对象的默认遍历器，详细介绍参见《Iterator 和 for...of 循环》一章。
 
 ```javascript
 class Collection {
@@ -787,11 +787,11 @@ let x = new Collection();
 Object.prototype.toString.call(x) // "[object xxx]"
 ```
 
-ES6新增内置对象的`Symbol.toStringTag`属性值如下。
+ES6 新增内置对象的`Symbol.toStringTag`属性值如下。
 
 - `JSON[Symbol.toStringTag]`：'JSON'
 - `Math[Symbol.toStringTag]`：'Math'
-- Module对象`M[Symbol.toStringTag]`：'Module'
+- Module 对象`M[Symbol.toStringTag]`：'Module'
 - `ArrayBuffer.prototype[Symbol.toStringTag]`：'ArrayBuffer'
 - `DataView.prototype[Symbol.toStringTag]`：'DataView'
 - `Map.prototype[Symbol.toStringTag]`：'Map'
@@ -827,7 +827,7 @@ Object.keys(Array.prototype[Symbol.unscopables])
 // ['copyWithin', 'entries', 'fill', 'find', 'findIndex', 'includes', 'keys']
 ```
 
-上面代码说明，数组有7个属性，会被`with`命令排除。
+上面代码说明，数组有 7 个属性，会被`with`命令排除。
 
 ```javascript
 // 没有 unscopables 时

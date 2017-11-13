@@ -536,7 +536,7 @@ MyArray.prototype = Object.create(Array.prototype, {
 });
 ```
 
-上面代码定义了一个继承Array的`MyArray`类。但是，这个类的行为与`Array`完全不一致。
+上面代码定义了一个继承 Array 的`MyArray`类。但是，这个类的行为与`Array`完全不一致。
 
 ```javascript
 var colors = new MyArray();
@@ -712,4 +712,3 @@ class DistributedEdit extends mix(Loggable, Serializable) {
   // ...
 }
 ```
-
