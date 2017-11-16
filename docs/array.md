@@ -583,7 +583,7 @@ i32a.copyWithin(0, 2);
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的`this`对象。
 
-另外，这两个方法都可以发现`NaN`，弥补了数组的`IndexOf`方法的不足。
+另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf`方法的不足。
 
 ```javascript
 [NaN].indexOf(NaN)
