@@ -202,7 +202,7 @@ async function getTitle(url) {
   let html = await response.text();
   return html.match(/<title>([\s\S]+)<\/title>/i)[1];
 }
-getTitle('https://tc39.github.io/ecma262/').then(console.log)
+getTitle('https://tc39.github.io/ecma262/').then(v => console.log(v))
 // "ECMAScript 2017 Language Specification"
 ```
 
