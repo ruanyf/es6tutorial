@@ -476,15 +476,23 @@ person.facepalmWithoutWarning();
 我们可以使用修饰器，使得对象的方法被调用时，自动发出一个事件。
 
 ```javascript
-import postal from "postal/lib/postal.lodash";
+const postal = require("postal/lib/postal.lodash");
 
 export default function publish(topic, channel) {
+  const channelName = channel || '/';
+  const msgChannel = postal.channel(channelName);
+  msgChannel.subscribe(topic, v => {
+    console.log('频道: ', channelName);
+    console.log('事件: ', topic);
+    console.log('数据: ', v);
+  });
+
   return function(target, name, descriptor) {
     const fn = descriptor.value;
 
     descriptor.value = function() {
       let value = fn.apply(this, arguments);
-      postal.channel(channel || target.channel || "/").publish(topic, value);
+      msgChannel.publish(topic, value);
     };
   };
 }
@@ -495,29 +503,37 @@ export default function publish(topic, channel) {
 它的用法如下。
 
 ```javascript
-import publish from "path/to/decorators/publish";
+// index.js
+import publish from './publish';
 
 class FooComponent {
-  @publish("foo.some.message", "component")
+  @publish('foo.some.message', 'component')
   someMethod() {
-    return {
-      my: "data"
-    };
+    return { my: 'data' };
   }
-  @publish("foo.some.other")
+  @publish('foo.some.other')
   anotherMethod() {
     // ...
   }
 }
+
+let foo = new FooComponent();
+
+foo.someMethod();
+foo.anotherMethod();
 ```
 
 以后，只要调用`someMethod`或者`anotherMethod`，就会自动发出一个事件。
 
-```javascript
-let foo = new FooComponent();
+```bash
+$ bash-node index.js
+频道:  component
+事件:  foo.some.message
+数据:  { my: 'data' }
 
-foo.someMethod() // 在"component"频道发布"foo.some.message"事件，附带的数据是{ my: "data" }
-foo.anotherMethod() // 在"/"频道发布"foo.some.other"事件，不附带数据
+频道:  /
+事件:  foo.some.other
+数据:  undefined
 ```
 
 ## Mixin
