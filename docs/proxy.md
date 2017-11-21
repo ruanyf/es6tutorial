@@ -123,7 +123,7 @@ fproxy.foo === "Hello, foo" // true
 
 对于可以设置、但没有设置拦截的操作，则直接落在目标对象上，按照原先的方式产生结果。
 
-下面是 Proxy 支持的拦截操作一览，一共13种。
+下面是 Proxy 支持的拦截操作一览，一共 13 种。
 
 - **get(target, propKey, receiver)**：拦截对象属性的读取，比如`proxy.foo`和`proxy['foo']`。
 - **set(target, propKey, value, receiver)**：拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
@@ -317,7 +317,7 @@ proxy.foo
 
 `set`方法用来拦截某个属性的赋值操作，可以接受四个参数，依次为目标对象、属性名、属性值和 Proxy 实例本身，其中最后一个参数可选。
 
-假定`Person`对象有一个`age`属性，该属性应该是一个不大于200的整数，那么可以使用`Proxy`保证`age`的属性值符合要求。
+假定`Person`对象有一个`age`属性，该属性应该是一个不大于 200 的整数，那么可以使用`Proxy`保证`age`的属性值符合要求。
 
 ```javascript
 let validator = {
@@ -1049,4 +1049,3 @@ function createWebService(baseUrl) {
 ```
 
 同理，Proxy 也可以用来实现数据库的 ORM 层。
-

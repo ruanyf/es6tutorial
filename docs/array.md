@@ -234,7 +234,7 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 [...'x\uD83D\uDE80y'].length // 3
 ```
 
-上面代码的第一种写法，JavaScript 会将四个字节的 Unicode 字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
+上面代码的第一种写法，JavaScript 会将四个字节的 Unicode 字符，识别为 2 个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
 
 ```javascript
 function length(str) {
@@ -322,7 +322,7 @@ let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 
 ## Array.from()
 
-`Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
+`Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括 ES6 新增的数据结构 Set 和 Map）。
 
 下面是一个类似数组的对象，`Array.from`将它转为真正的数组。
 
@@ -341,7 +341,7 @@ var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
 let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 ```
 
-实际应用中，常见的类似数组的对象是DOM操作返回的NodeList集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
+实际应用中，常见的类似数组的对象是 DOM 操作返回的 NodeList 集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
 
 ```javascript
 // NodeList对象
@@ -359,7 +359,7 @@ function foo() {
 
 上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`forEach`方法。
 
-只要是部署了Iterator接口的数据结构，`Array.from`都能将其转为数组。
+只要是部署了 Iterator 接口的数据结构，`Array.from`都能将其转为数组。
 
 ```javascript
 Array.from('hello')
@@ -369,7 +369,7 @@ let namesSet = new Set(['a', 'b'])
 Array.from(namesSet) // ['a', 'b']
 ```
 
-上面代码中，字符串和Set结构都具有Iterator接口，因此可以被`Array.from`转为真正的数组。
+上面代码中，字符串和 Set 结构都具有 Iterator 接口，因此可以被`Array.from`转为真正的数组。
 
 如果参数是一个真正的数组，`Array.from`会返回一个一模一样的新数组。
 
@@ -418,7 +418,7 @@ Array.from([1, 2, 3], (x) => x * x)
 // [1, 4, 9]
 ```
 
-下面的例子是取出一组DOM节点的文本内容。
+下面的例子是取出一组 DOM 节点的文本内容。
 
 ```javascript
 let spans = document.querySelectorAll('span.name');
@@ -458,7 +458,7 @@ Array.from({ length: 2 }, () => 'jack')
 
 上面代码中，`Array.from`的第一个参数指定了第二个参数运行的次数。这种特性可以让该方法的用法变得非常灵活。
 
-`Array.from()`的另一个应用是，将字符串转为数组，然后返回字符串的长度。因为它能正确处理各种Unicode字符，可以避免JavaScript将大于`\uFFFF`的Unicode字符，算作两个字符的bug。
+`Array.from()`的另一个应用是，将字符串转为数组，然后返回字符串的长度。因为它能正确处理各种 Unicode 字符，可以避免 JavaScript 将大于`\uFFFF`的 Unicode 字符，算作两个字符的 bug。
 
 ```javascript
 function countSymbols(string) {
@@ -484,7 +484,7 @@ Array(3) // [, , ,]
 Array(3, 11, 8) // [3, 11, 8]
 ```
 
-上面代码中，`Array`方法没有参数、一个参数、三个参数时，返回结果都不一样。只有当参数个数不少于2个时，`Array()`才会返回由参数组成的新数组。参数个数只有一个时，实际上是指定数组的长度。
+上面代码中，`Array`方法没有参数、一个参数、三个参数时，返回结果都不一样。只有当参数个数不少于 2 个时，`Array()`才会返回由参数组成的新数组。参数个数只有一个时，实际上是指定数组的长度。
 
 `Array.of`基本上可以用来替代`Array()`或`new Array()`，并且不存在由于参数不同而导致的重载。它的行为非常统一。
 
@@ -516,7 +516,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 它接受三个参数。
 
 - target（必需）：从该位置开始替换数据。
-- start（可选）：从该位置开始读取数据，默认为0。如果为负值，表示倒数。
+- start（可选）：从该位置开始读取数据，默认为 0。如果为负值，表示倒数。
 - end（可选）：到该位置前停止读取数据，默认等于数组长度。如果为负值，表示倒数。
 
 这三个参数都应该是数值，如果不是，会自动转为数值。
@@ -526,7 +526,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 // [4, 5, 3, 4, 5]
 ```
 
-上面代码表示将从3号位直到数组结束的成员（4和5），复制到从0号位开始的位置，结果覆盖了原来的1和2。
+上面代码表示将从 3 号位直到数组结束的成员（4 和 5），复制到从 0 号位开始的位置，结果覆盖了原来的 1 和 2。
 
 下面是更多例子。
 
@@ -563,7 +563,7 @@ i32a.copyWithin(0, 2);
 // -5
 ```
 
-上面代码找出数组中第一个小于0的成员。
+上面代码找出数组中第一个小于 0 的成员。
 
 ```javascript
 [1, 5, 10, 15].find(function(value, index, arr) {
@@ -583,7 +583,7 @@ i32a.copyWithin(0, 2);
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的`this`对象。
 
-另外，这两个方法都可以发现`NaN`，弥补了数组的`IndexOf`方法的不足。
+另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf`方法的不足。
 
 ```javascript
 [NaN].indexOf(NaN)
@@ -595,7 +595,7 @@ i32a.copyWithin(0, 2);
 
 上面代码中，`indexOf`方法无法识别数组的`NaN`成员，但是`findIndex`方法可以借助`Object.is`方法做到。
 
-## 数组实例的fill()
+## 数组实例的 fill()
 
 `fill`方法使用给定值，填充一个数组。
 
@@ -616,7 +616,7 @@ new Array(3).fill(7)
 // ['a', 7, 'c']
 ```
 
-上面代码表示，`fill`方法从1号位开始，向原数组填充7，到2号位之前结束。
+上面代码表示，`fill`方法从 1 号位开始，向原数组填充 7，到 2 号位之前结束。
 
 ## 数组实例的 entries()，keys() 和 values()
 
@@ -715,7 +715,7 @@ contains(['foo', 'bar'], 'baz'); // => false
 Array(3) // [, , ,]
 ```
 
-上面代码中，`Array(3)`返回一个具有3个空位的数组。
+上面代码中，`Array(3)`返回一个具有 3 个空位的数组。
 
 注意，空位不是`undefined`，一个位置的值等于`undefined`，依然是有值的。空位是没有任何值，`in`运算符可以说明这一点。
 
@@ -724,7 +724,7 @@ Array(3) // [, , ,]
 0 in [, , ,] // false
 ```
 
-上面代码说明，第一个数组的0号位置是有值的，第二个数组的0号位置没有值。
+上面代码说明，第一个数组的 0 号位置是有值的，第二个数组的 0 号位置没有值。
 
 ES5 对空位的处理，已经很不一致了，大多数情况下会忽略空位。
 
@@ -816,4 +816,3 @@ for (let i of arr) {
 ```
 
 由于空位的处理规则非常不统一，所以建议避免出现空位。
-

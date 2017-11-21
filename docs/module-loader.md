@@ -194,7 +194,7 @@ console.log(foo);
 setTimeout(() => console.log(foo), 500);
 ```
 
-上面代码中，`m1.js`的变量`foo`，在刚加载时等于`bar`，过了500毫秒，又变为等于`baz`。
+上面代码中，`m1.js`的变量`foo`，在刚加载时等于`bar`，过了 500 毫秒，又变为等于`baz`。
 
 让我们看看，`m2.js`能否正确读取这个变化。
 
@@ -694,7 +694,7 @@ export function odd(n) {
 }
 ```
 
-上面代码中，`even.js`里面的函数`even`有一个参数`n`，只要不等于0，就会减去1，传入加载的`odd()`。`odd.js`也会做类似操作。
+上面代码中，`even.js`里面的函数`even`有一个参数`n`，只要不等于 0，就会减去 1，传入加载的`odd()`。`odd.js`也会做类似操作。
 
 运行上面这段代码，结果如下。
 
@@ -711,7 +711,7 @@ true
 17
 ```
 
-上面代码中，参数`n`从10变为0的过程中，`even()`一共会执行6次，所以变量`counter`等于6。第二次调用`even()`时，参数`n`从20变为0，`even()`一共会执行11次，加上前面的6次，所以变量`counter`等于17。
+上面代码中，参数`n`从 10 变为 0 的过程中，`even()`一共会执行 6 次，所以变量`counter`等于 6。第二次调用`even()`时，参数`n`从 20 变为 0，`even()`一共会执行 11 次，加上前面的 6 次，所以变量`counter`等于 17。
 
 这个例子要是改写成 CommonJS，就根本无法执行，会报错。
 
@@ -785,7 +785,7 @@ $ compile-modules convert -o out.js file1.js
 </script>
 ```
 
-上面代码中的`./app`，指的是当前目录下的app.js文件。它可以是ES6模块文件，`System.import`会自动将其转码。
+上面代码中的`./app`，指的是当前目录下的 app.js 文件。它可以是 ES6 模块文件，`System.import`会自动将其转码。
 
 需要注意的是，`System.import`使用异步加载，返回一个 Promise 对象，可以针对这个对象编程。下面是一个模块文件。
 
@@ -812,4 +812,3 @@ System.import('app/es6-file').then(function(m) {
 ```
 
 上面代码中，`System.import`方法返回的是一个 Promise 对象，所以可以用`then`方法指定回调函数。
-

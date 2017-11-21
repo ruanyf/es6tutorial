@@ -38,9 +38,9 @@ new RegExp(/abc/ig, 'i').flags
 
 ## 字符串的正则方法
 
-字符串对象共有4个方法，可以使用正则表达式：`match()`、`replace()`、`search()`和`split()`。
+字符串对象共有 4 个方法，可以使用正则表达式：`match()`、`replace()`、`search()`和`split()`。
 
-ES6 将这4个方法，在语言内部全部调用`RegExp`的实例方法，从而做到所有与正则相关的方法，全都定义在`RegExp`对象上。
+ES6 将这 4 个方法，在语言内部全部调用`RegExp`的实例方法，从而做到所有与正则相关的方法，全都定义在`RegExp`对象上。
 
 - `String.prototype.match` 调用 `RegExp.prototype[Symbol.match]`
 - `String.prototype.replace` 调用 `RegExp.prototype[Symbol.replace]`
@@ -49,7 +49,7 @@ ES6 将这4个方法，在语言内部全部调用`RegExp`的实例方法，从�
 
 ## u 修饰符
 
-ES6 对正则表达式添加了`u`修饰符，含义为“Unicode模式”，用来正确处理大于`\uFFFF`的 Unicode 字符。也就是说，会正确处理四个字节的 UTF-16 编码。
+ES6 对正则表达式添加了`u`修饰符，含义为“Unicode 模式”，用来正确处理大于`\uFFFF`的 Unicode 字符。也就是说，会正确处理四个字节的 UTF-16 编码。
 
 ```javascript
 /^\uD83D/u.test('\uD83D\uDC2A') // false
@@ -83,7 +83,7 @@ ES6 新增了使用大括号表示 Unicode 字符，这种表示法在正则表�
 /\u{20BB7}/u.test('𠮷') // true
 ```
 
-上面代码表示，如果不加`u`修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配61个连续的`u`。
+上面代码表示，如果不加`u`修饰符，正则表达式无法识别`\u{61}`这种表示法，只会认为这匹配 61 个连续的`u`。
 
 **（3）量词**
 
@@ -358,7 +358,7 @@ re.flags // 's'
 
 ## 后行断言
 
-JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。目前，有一个[提案](https://github.com/goyakin/es-regexp-lookbehind)，引入后行断言，V8 引擎4.9版已经支持。
+JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。目前，有一个[提案](https://github.com/goyakin/es-regexp-lookbehind)，引入后行断言，V8 引擎 4.9 版已经支持。
 
 ”先行断言“指的是，`x`只有在`y`前面才匹配，必须写成`/x(?=y)/`。比如，只匹配百分号之前的数字，要写成`/\d+(?=%)/`。”先行否定断言“指的是，`x`只有不在`y`前面才匹配，必须写成`/x(?!y)/`。比如，只匹配不在百分号之前的数字，要写成`/\d+(?!%)/`。
 
@@ -500,7 +500,7 @@ const month = matchObj.groups.month; // 12
 const day = matchObj.groups.day; // 31
 ```
 
-上面代码中，“具名组匹配”在圆括号内部，模式的头部添加“问号 + 尖括号 + 组名”（`?<year>`），然后就可以在`exec`方法返回结果的`groups`属性上引用该组名。同时，数字序号（` matchObj[1]`）依然有效。
+上面代码中，“具名组匹配”在圆括号内部，模式的头部添加“问号 + 尖括号 + 组名”（`?<year>`），然后就可以在`exec`方法返回结果的`groups`属性上引用该组名。同时，数字序号（`matchObj[1]`）依然有效。
 
 具名组匹配等于为每一组匹配加上了 ID，便于描述匹配的目的。如果组的顺序变了，也不用改变匹配后的处理代码。
 
@@ -581,4 +581,3 @@ const RE_TWICE = /^(?<word>[a-z]+)!\k<word>!\1$/;
 RE_TWICE.test('abc!abc!abc') // true
 RE_TWICE.test('abc!abc!ab') // false
 ```
-
