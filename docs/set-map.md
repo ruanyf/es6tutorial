@@ -249,7 +249,7 @@ let unique = [...new Set(arr)];
 // [3, 5, 2]
 ```
 
-而且，数组的`map`和`filter`方法也可以用于 Set 了。
+而且，数组的`map`和`filter`方法也可以间接用于 Set 了。
 
 ```javascript
 let set = new Set([1, 2, 3]);
