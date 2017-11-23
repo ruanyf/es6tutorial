@@ -707,7 +707,7 @@ Object.getOwnPropertyDescriptors(obj)
 //      enumerable: true,
 //      configurable: true },
 //   bar:
-//    { get: [Function: bar],
+//    { get: [Function: get bar],
 //      set: undefined,
 //      enumerable: true,
 //      configurable: true } }
@@ -761,7 +761,7 @@ const target2 = {};
 Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source));
 Object.getOwnPropertyDescriptor(target2, 'foo')
 // { get: undefined,
-//   set: [Function: foo],
+//   set: [Function: set foo],
 //   enumerable: true,
 //   configurable: true }
 ```
