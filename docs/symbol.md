@@ -591,11 +591,14 @@ class MyArray extends Array {
 let a = new MyArray(1,2,3);
 let mapped = a.map(x => x * x);
 
+a instanceof MyArray // true
+a instanceof Array // true
+
 mapped instanceof MyArray // false
 mapped instanceof Array // true
 ```
 
-上面代码中，由于构造函数被替换成了`Array`。所以，`mapped`对象不是`MyArray`的实例，而是`Array`的实例。
+上面代码中，`a`是`MyArray`的实例，所以`a instanceof MyArray`返回`true`。由于构造函数被替换成了`Array`，所以`a`实际上也是`Array`的实例，于是`a instanceof Array`也返回`true`。而`mapped`是`Array.prototype.map`运算的结果，已经是真正的数组，它是`Array`的实例，而不是`MyArray`的实例，于是`mapped instanceof Array`返回`true`，而`mapped instanceof MyArray`返回`false`。
 
 ### Symbol.match
 
