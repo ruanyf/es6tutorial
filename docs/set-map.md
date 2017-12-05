@@ -35,7 +35,7 @@ items.size // 5
 
 // 例三
 function divs () {
-  return [...document.querySelectorAll('div')];
+  return document.querySelectorAll('div');
 }
 
 const set = new Set(divs());
