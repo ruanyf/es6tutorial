@@ -331,7 +331,7 @@ let validator = {
       }
     }
 
-    // 对于age以外的属性，直接保存
+    // 对于满足条件的 age 属性以及其他属性，直接保存
     obj[prop] = value;
   }
 };
