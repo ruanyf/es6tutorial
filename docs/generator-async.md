@@ -219,7 +219,7 @@ Thunk 函数早在上个世纪 60 年代就诞生了。
 ```javascript
 var x = 1;
 
-function f(m){
+function f(m) {
   return m * 2;
 }
 

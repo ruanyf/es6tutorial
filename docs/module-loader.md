@@ -464,7 +464,7 @@ console.log(es_namespace.default);
 // { bar:'my-default' }
 ```
 
-上面代码中，`default`接口变成了`es_namespace.default`属性。另外，由于存在缓存机制，`es.js`对`foo`的重新赋值没有在模块外部反映出来。
+上面代码中，`default`接口变成了`es_namespace.default`属性。另外，由于存在缓存机制，`es.mjs`对`foo`的重新赋值没有在模块外部反映出来。
 
 下面是另一个例子。
 
