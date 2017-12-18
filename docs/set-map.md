@@ -367,7 +367,7 @@ ws.add(window);
 ws.add(obj);
 
 ws.has(window); // true
-ws.has(foo);    // false
+ws.has(foo);    // true
 
 ws.delete(window);
 ws.has(window);    // false
