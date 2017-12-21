@@ -563,18 +563,27 @@ a2[1] = 6;
 
 ### Symbol.species
 
-对象的`Symbol.species`属性，指向当前对象的构造函数。创造实例时，默认会调用这个方法，即使用这个属性返回的函数当作构造函数，来创造新的实例对象。
+对象的`Symbol.species`属性，指向一个构造函数。创建造衍生对象时，会使用该属性。
 
 ```javascript
 class MyArray extends Array {
-  // 覆盖父类 Array 的构造函数
+}
+
+const a = new MyArray();
+a.map(x => x) instanceof MyArray // true
+```
+
+上面代码中，子类`MyArray`继承了父类`Array`。`a.map(x => x)`会创建一个`MyArray`的衍生对象，该衍生对象还是`MyArray`的实例。
+
+现在，`MyArray`设置`Symbol.species`属性。
+
+```javascript
+class MyArray extends Array {
   static get [Symbol.species]() { return Array; }
 }
 ```
 
-上面代码中，子类`MyArray`继承了父类`Array`。创建`MyArray`的实例对象时，本来会调用它自己的构造函数（本例中被省略了），但是由于定义了`Symbol.species`属性，所以会使用这个属性返回的的函数，创建`MyArray`的实例。
-
-这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
+上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
 
 ```javascript
 static get [Symbol.species]() {
@@ -582,23 +591,39 @@ static get [Symbol.species]() {
 }
 ```
 
-下面是一个例子。
+现在，再来看前面的例子。
 
 ```javascript
 class MyArray extends Array {
   static get [Symbol.species]() { return Array; }
 }
-let a = new MyArray(1,2,3);
-let mapped = a.map(x => x * x);
 
-a instanceof MyArray // true
-a instanceof Array // true
-
-mapped instanceof MyArray // false
-mapped instanceof Array // true
+const a = new MyArray();
+a.map(x => x) instanceof MyArray // false
+a.map(x => x) instanceof Array // true
 ```
 
-上面代码中，`a`是`MyArray`的实例，所以`a instanceof MyArray`返回`true`。由于构造函数被替换成了`Array`，所以`a`实际上也是`Array`的实例，于是`a instanceof Array`也返回`true`。而`mapped`是`Array.prototype.map`运算的结果，已经是真正的数组，它是`Array`的实例，而不是`MyArray`的实例，于是`mapped instanceof Array`返回`true`，而`mapped instanceof MyArray`返回`false`。
+上面代码中，`a.map(x => x)`创建的衍生对象，就不是`MyArray`的实例，而直接就是`Array`的实例。
+
+再看一个例子。
+
+```javascript
+class T1 extends Promise {
+}
+
+class T2 extends Promise {
+  static get [Symbol.species]() {
+    return Promise;
+  }
+}
+
+new T1(r => r()).then(v => v) instanceof T1 // true
+new T2(r => r()).then(v => v) instanceof T2 // false
+```
+
+上面代码中，`T2`定义了`Symbol.species`属性，`T1`没有。结果就导致了创建衍生对象时（`then`方法），`T1`调用的是自身的构造方法，而`T2`调用的是`Promise`的构造方法。
+
+总之，`Symbol.species`的作用在于，实例对象在运行过程中，需要再次调用自身的构造函数时，会调用该属性指定的构造函数。它主要的用途是，有些类库是在基类的基础上修改的，那么子类使用继承的方法时，作者可能希望返回基类的实例，而不是子类的实例。
 
 ### Symbol.match
 
