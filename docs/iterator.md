@@ -69,9 +69,9 @@ function makeIterator(array) {
 ```javascript
 var it = idMaker();
 
-it.next().value // '0'
-it.next().value // '1'
-it.next().value // '2'
+it.next().value // 0
+it.next().value // 1
+it.next().value // 2
 // ...
 
 function idMaker() {
