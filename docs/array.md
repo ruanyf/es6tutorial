@@ -346,8 +346,8 @@ let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 ```javascript
 // NodeList对象
 let ps = document.querySelectorAll('p');
-Array.from(ps).forEach(function (p) {
-  console.log(p);
+Array.from(ps).filter(p => {
+  return p.textContent.length > 100;
 });
 
 // arguments对象
