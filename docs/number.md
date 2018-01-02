@@ -142,14 +142,30 @@ Number.isInteger("15") // false
 Number.isInteger(true) // false
 ```
 
-注意，由于 JavaScript 表示数值时最多只能存储 16 位十进制位数，超出位数上限时会导致精度丢失，导致误判。
+注意，由于 JavaScript 浮点数采用的是 IEEE 754 标准，表示数值时最多只能存储 52 位二进制位数（整数和小数的二进制总位数）。超出位数上限时，第 53 位会尝试是否往第 52 位进位（0 不进位，1 进位），它和它往后的位数一概丢弃，这种情况下可能会导致误判。
 
 ```javascript
-234 === 234 + 1e-14 // true
-Number.isInteger(234.00000000000001) // true
-// 3 位整数，14 位小数，一共17位，使最后一位1丢失，误判为true
+3 === 3 + 2e-16 // true
+Number.isInteger(3.0000000000000002) // true
+// 3 的二进制 2 位，2e-16 的二进制最多能表示 50 位，第 3 位至 52 位全为 0，直到第 54 位才开始出现 1，而这一位被丢弃了，误判为 true
 
+3 + 4e-16 === 3 + 6e-16 // true
+Number.isInteger(3.0000000000000004) // false
+Number.isInteger(3.0000000000000006) // false
+// 第 50 位已为 1，且不会丢精度，所以 JavaScript 判定此数包含小数，返回 false
+```
 
+数值的整数部分为 0 时，其绝对值大于`Number.MIN_VALUE`就视为非整数。
+
+```javascript
+3 === 3 + 2e-16 // true
+Number.isInteger(3.0000000000000002) // true
+// 3 的二进制 2 位，2e-16 的二进制最多能表示 50 位，第 3 位至 52 位全为 0，直到第 54 位才开始出现 1，而这一位被丢弃了，误判为 true
+
+3 + 4e-16 === 3 + 6e-16 // true
+Number.isInteger(3.0000000000000004) // false
+Number.isInteger(3.0000000000000006) // false
+// 第 50 位已为 1，且不会丢精度，所以 JavaScript 判定此数包含小数，返回 false
 ```
 
 ES5 可以通过下面的代码，部署`Number.isInteger()`。
