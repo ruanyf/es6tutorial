@@ -132,7 +132,7 @@ Number.parseFloat === parseFloat // true
 
 ## Number.isInteger()
 
-`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在 JavaScript 内部，整数和浮点数是同样的储存方法，所以 3 和 3.0 被视为同一个值。
+`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在 JavaScript 内部，整数和浮点数采用的是同样的储存方法，所以 3 和 3.0 被视为同一个值。
 
 ```javascript
 Number.isInteger(25) // true
@@ -140,6 +140,16 @@ Number.isInteger(25.0) // true
 Number.isInteger(25.1) // false
 Number.isInteger("15") // false
 Number.isInteger(true) // false
+```
+
+注意，由于 JavaScript 表示数值时最多只能存储 16 位十进制位数，超出位数上限时会导致精度丢失，导致误判。
+
+```javascript
+234 === 234 + 1e-14 // true
+Number.isInteger(234.00000000000001) // true
+// 3 位整数，14 位小数，一共17位，使最后一位1丢失，误判为true
+
+
 ```
 
 ES5 可以通过下面的代码，部署`Number.isInteger()`。
