@@ -374,7 +374,9 @@ class Foo {}
 
 上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
 
-## 私有方法
+## 私有方法和私有属性
+
+### 现有的方法
 
 私有方法是常见需求，但 ES6 不提供，只能通过变通方法模拟实现。
 
@@ -441,9 +443,9 @@ export default class myClass{
 
 上面代码中，`bar`和`snaf`都是`Symbol`值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
 
-## 私有属性
+### 私有属性的提案
 
-与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-class-fields#private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
 
 ```javascript
 class Point {
@@ -484,6 +486,28 @@ class Foo {
   constructor(a, b) { #a = a; #b = b; }
 }
 ```
+
+上面代码中，`#sum()`就是一个私有方法。
+
+另外，私有属性也可以设置 getter 和 setter 方法。
+
+```javascript
+class Counter {
+  #xValue = 0;
+
+  get #x() { return #xValue; }
+  set #x(value) {
+    this.#xValue = value;
+  }
+
+  constructor() {
+    super();
+    // ...
+  }
+}
+```
+
+上面代码中，`#x`是一个私有属性，它的读写都通过`get #x()`和`set #x()`来完成。
 
 ## this 的指向
 
