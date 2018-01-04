@@ -185,6 +185,7 @@
 - Jake Archibald, [Async functions - making promises friendly](https://developers.google.com/web/fundamentals/getting-started/primers/async-functions)
 - Axel Rauschmayer, [ES proposal: asynchronous iteration](http://www.2ality.com/2016/10/asynchronous-iteration.html): 异步遍历器的详细介绍
 - Dima Grossman, [How to write async await without try-catch blocks in Javascript](http://blog.grossman.io/how-to-write-async-await-without-try-catch-blocks-in-javascript/): 除了 try/catch 以外的 async 函数内部捕捉错误的方法
+- Mostafa Gaafa, [6 Reasons Why JavaScript’s Async/Await Blows Promises Away](https://hackernoon.com/6-reasons-why-javascripts-async-await-blows-promises-away-tutorial-c7ec10518dd9): Async 函数的6个好处
 
 ## Class
 
