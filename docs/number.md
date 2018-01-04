@@ -538,17 +538,30 @@ Math.imul(0x7fffffff, 0x7fffffff) // 1
 
 ### Math.fround()
 
-Math.fround 方法返回一个数的单精度浮点数形式。
+`Math.fround` 方法返回一个数的单精度浮点数形式。
+
+对于 -2 的 24 次方至 2 的 24 次方（不含两端）的整数，返回结果与参数本身一致。
 
 ```javascript
-Math.fround(0)     // 0
-Math.fround(1)     // 1
-Math.fround(1.337) // 1.3370000123977661
-Math.fround(1.5)   // 1.5
-Math.fround(NaN)   // NaN
+Math.fround(0)   // 0
+Math.fround(1)   // 1
+Math.fround(2 ** 24 - 1)   // 16777215
 ```
 
-对于整数来说，`Math.fround`方法返回结果不会有任何不同，区别主要是那些无法用 64 个二进制位精确表示的小数。这时，`Math.fround`方法会返回最接近这个小数的单精度浮点数。
+单精度浮点数采用 IEEE 754 标准，最多由 24 位二进制位数（1 位隐藏位与 23 位有效位）表达数值，若参数绝对值大于 2 的 24 次方，返回的结果便开始丢失精度。
+
+```javascript
+Math.fround(2 ** 24)       // 16777216
+Math.fround(2 ** 24 + 1)   // 16777216
+```
+
+`Math.fround` 方法主要将双精度浮点数转为单精度浮点数，第 25 位二进制数尝试往上一位进位，它与它往后的位数全部丢弃。
+
+```javascript
+Math.fround(1.125) // 1.125
+Math.fround(0.3)   // 0.30000001192092896
+Math.fround(0.8)   // 0.800000011920929
+```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
 
