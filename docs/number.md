@@ -543,8 +543,8 @@ Math.imul(0x7fffffff, 0x7fffffff) // 1
 对于 -2 的 24 次方至 2 的 24 次方（不含两端）的整数，返回结果与参数本身一致。
 
 ```javascript
-Math.fround(0)   // 0
-Math.fround(1)   // 1
+Math.fround(0)     // 0
+Math.fround(1)   // 1
 Math.fround(2 ** 24 - 1)   // 16777215
 ```
 
@@ -558,9 +558,27 @@ Math.fround(2 ** 24 + 1)   // 16777216
 `Math.fround` 方法主要将双精度浮点数转为单精度浮点数，第 25 位二进制数尝试往上一位进位，它与它往后的位数全部丢弃。
 
 ```javascript
+// 未丢失有效精度
 Math.fround(1.125) // 1.125
-Math.fround(0.3)   // 0.30000001192092896
-Math.fround(0.8)   // 0.800000011920929
+Math.fround(7.25)  // 7.25
+
+// 丢失精度
+Math.fround(0.3)   // 0.30000001192092896
+Math.fround(0.7)   // 0.699999988079071
+Math.fround(1.0000000123) // 1
+```
+
+对于 NaN 和 Infinity ，此方法返回原值。其它类型而言，`Math.fround` 方法会将其转为数值再返回单精度浮点数。
+
+```javascript
+Math.fround(NaN)      // NaN
+Math.fround(Infinity) // Infinity
+
+Math.fround('5')      // 5
+Math.fround(true)     // 1
+Math.fround(null)     // 0
+Math.fround([])       // 0
+Math.fround({})       // NaN
 ```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
