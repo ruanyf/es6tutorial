@@ -147,7 +147,8 @@ Number.isInteger(true) // false
 ```javascript
 3 === 3 + 2e-16 // true
 Number.isInteger(3.0000000000000002) // true
-// 3 的二进制 2 位，2e-16 的二进制最多能表示 51 位，第 3 ~ 53 位全为 0，直到第 55 位才开始出现 1，而这一位被丢弃了，误判为 true
+// 3 的二进制 2 位，2e-16 的二进制最多能表示 51 位
+// 第 3 ~ 53 位全为 0，直到第 55 位才开始出现 1，而这一位被丢弃了，误判为 true
 
 3 + 4e-16 === 3 + 6e-16 // true
 Number.isInteger(3.0000000000000004) // false
@@ -155,7 +156,7 @@ Number.isInteger(3.0000000000000006) // false
 // 第 51 位已为 1，且不会丢精度，所以 JavaScript 判定此数包含小数，返回 false
 ```
 
-数值的大小在 -1 与 1 之间（不含两个端点）时，其绝对值小于`Number.MIN_VALUE`即视为 0。
+数值的大小在 -1 与 1 之间（不含两个端点）时，其绝对值小于 `Number.MIN_VALUE` 即视为 0。
 
 ```javascript
 Number.MIN_VALUE // 5e-324
@@ -165,7 +166,7 @@ Number.isInteger(5e-325) // true
 
 3e-324 === Number.MIN_VALUE // true
 Number.isInteger(3e-324) // false
-// 同样由于精度问题，即使是比`Number.MIN_VALUE`略小的数也会被判为 5e-324。
+// 同样由于精度问题，即使是比 Number.MIN_VALUE 略小的数也会被判为 5e-324。
 ```
 
 因此，在金融、天文等领域的数据精度要求较高、判断值是否整数的情况下，不建议使用`Number.isInteger()`原生函数，请使用包含正则的函数替代。
@@ -543,7 +544,7 @@ Math.imul(0x7fffffff, 0x7fffffff) // 1
 对于 -2 的 24 次方至 2 的 24 次方（不含两端）的整数，返回结果与参数本身一致。
 
 ```javascript
-Math.fround(0)     // 0
+Math.fround(0)   // 0
 Math.fround(1)   // 1
 Math.fround(2 ** 24 - 1)   // 16777215
 ```
@@ -568,7 +569,7 @@ Math.fround(0.7)   // 0.699999988079071
 Math.fround(1.0000000123) // 1
 ```
 
-对于 NaN 和 Infinity ，此方法返回原值。其它类型而言，`Math.fround` 方法会将其转为数值再返回单精度浮点数。
+对于 `NaN` 和 `Infinity`，此方法返回原值。其它类型而言，`Math.fround` 方法会将其转为数值再返回单精度浮点数。
 
 ```javascript
 Math.fround(NaN)      // NaN
