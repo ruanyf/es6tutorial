@@ -132,70 +132,53 @@ Number.parseFloat === parseFloat // true
 
 ## Number.isInteger()
 
-`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在 JavaScript 内部，整数和浮点数采用的是同样的储存方法，所以 3 和 3.0 被视为同一个值。
+`Number.isInteger()`用来判断一个数值是否为整数。
+
+```javascript
+Number.isInteger(25) // true
+Number.isInteger(25.1) // false
+```
+
+JavaScript 内部，整数和浮点数采用的是同样的储存方法，所以 25  和 25.0 被视为同一个值。
 
 ```javascript
 Number.isInteger(25) // true
 Number.isInteger(25.0) // true
-Number.isInteger(25.1) // false
-Number.isInteger("15") // false
+```
+
+如果参数不是数值，`Number.isInteger`返回`false`。
+
+```javascript
+Number.isInteger() // false
+Number.isInteger(null) // false
+Number.isInteger('15') // false
 Number.isInteger(true) // false
 ```
 
-注意，由于 JavaScript 浮点数采用的是 IEEE 754 标准，表示数值时最多只能存储 53 位二进制位数（1 位隐藏位与 52 位有效位）。超出位数上限时，第 54 位会尝试是否往第 53 位进位（0 不进位，1 进位），它和它往后的位数一概丢弃，这种情况下可能会导致误判。
+注意，由于 JavaScript 采用 IEEE 754 标准，数值存储为64位双精度格式，数值精度最多可以达到 53 个二进制位（1 个隐藏位与 52 个有效位）。如果数值的精度超过这个限度，第54位及后面的位就会被丢弃，这种情况下，`Number.isInteger`可能会误判。
 
 ```javascript
-3 === 3 + 2e-16 // true
 Number.isInteger(3.0000000000000002) // true
-// 3 的二进制 2 位，2e-16 的二进制最多能表示 51 位
-// 第 3 ~ 53 位全为 0，直到第 55 位才开始出现 1，而这一位被丢弃了，误判为 true
-
-3 + 4e-16 === 3 + 6e-16 // true
-Number.isInteger(3.0000000000000004) // false
-Number.isInteger(3.0000000000000006) // false
-// 第 51 位已为 1，且不会丢精度，所以 JavaScript 判定此数包含小数，返回 false
 ```
 
-数值的大小在 -1 与 1 之间（不含两个端点）时，其绝对值小于 `Number.MIN_VALUE` 即视为 0。
+上面代码中，`Number.isInteger`的参数明明不是整数，但是会返回`true`。原因就是这个小数的精度达到了小数点后16个十进制位，转成二进制位超过了53个二进制位，导致最后的那个`2`被丢弃了。
+
+类似的情况还有，如果一个数值的绝对值小于`Number.MIN_VALUE`（5E-324），即小于 JavaScript 能够分辨的最小值，会被自动转为 0。这时，`Number.isInteger`也会误判。
 
 ```javascript
-Number.MIN_VALUE // 5e-324
-5e-325 === 0 // true
-Number.isInteger(Number.MIN_VALUE) // false
-Number.isInteger(5e-325) // true
-
-3e-324 === Number.MIN_VALUE // true
-Number.isInteger(3e-324) // false
-// 同样由于精度问题，即使是比 Number.MIN_VALUE 略小的数也会被判为 5e-324。
+Number.isInteger(5E-324) // false
+Number.isInteger(5E-325) // true
 ```
 
-因此，在金融、天文等领域的数据精度要求较高、判断值是否整数的情况下，不建议使用`Number.isInteger()`原生函数，请使用包含正则的函数替代。
+上面代码中，`5E-325`由于值太小，会被自动转为0，因此返回`true`。
 
-ES5 可以通过下面的代码，部署`Number.isInteger()`。
-
-```javascript
-(function (global) {
-  var floor = Math.floor,
-    isFinite = global.isFinite;
-
-  Object.defineProperty(Number, 'isInteger', {
-    value: function isInteger(value) {
-      return typeof value === 'number' &&
-        isFinite(value) &&
-        floor(value) === value;
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-```
+总之，如果对数据精度的要求较高，不建议使用`Number.isInteger()`判断一个数值是否为整数。
 
 ## Number.EPSILON
 
 ES6 在`Number`对象上面，新增一个极小的常量`Number.EPSILON`。根据规格，它表示 1 与大于 1 的最小浮点数之间的差。
 
-对于 64 位浮点数来说，大于 1 的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续 51 个零。这个值减去 1 之后，就等于 2 的-52 次方。
+对于 64 位浮点数来说，大于 1 的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续 51 个零。这个值减去 1 之后，就等于 2 的 -52 次方。
 
 ```javascript
 Number.EPSILON === Math.pow(2, -52)
@@ -539,9 +522,9 @@ Math.imul(0x7fffffff, 0x7fffffff) // 1
 
 ### Math.fround()
 
-`Math.fround` 方法返回一个数的单精度浮点数形式。
+`Math.fround`方法返回一个数的32位单精度浮点数形式。
 
-对于 -2 的 24 次方至 2 的 24 次方（不含两端）的整数，返回结果与参数本身一致。
+对于32位单精度格式来说，数值精度是24个二进制位（1 位隐藏位与 23 位有效位），所以对于 -2<sup>24</sup> 至 2<sup>24</sup> 之间的整数（不含两个端点），返回结果与参数本身一致。
 
 ```javascript
 Math.fround(0)   // 0
@@ -549,14 +532,14 @@ Math.fround(1)   // 1
 Math.fround(2 ** 24 - 1)   // 16777215
 ```
 
-单精度浮点数采用 IEEE 754 标准，最多由 24 位二进制位数（1 位隐藏位与 23 位有效位）表达数值，若参数绝对值大于 2 的 24 次方，返回的结果便开始丢失精度。
+如果参数的绝对值大于 2<sup>24</sup>，返回的结果便开始丢失精度。
 
 ```javascript
 Math.fround(2 ** 24)       // 16777216
 Math.fround(2 ** 24 + 1)   // 16777216
 ```
 
-`Math.fround` 方法主要将双精度浮点数转为单精度浮点数，第 25 位二进制数尝试往上一位进位，它与它往后的位数全部丢弃。
+`Math.fround`方法的主要作用，是将64位双精度浮点数转为32位单精度浮点数。如果小数的精度超过24个二进制位，返回值就会不同于原值，否则返回值不变（即与64位双精度值一致）。
 
 ```javascript
 // 未丢失有效精度
@@ -569,7 +552,7 @@ Math.fround(0.7)   // 0.699999988079071
 Math.fround(1.0000000123) // 1
 ```
 
-对于 `NaN` 和 `Infinity`，此方法返回原值。其它类型而言，`Math.fround` 方法会将其转为数值再返回单精度浮点数。
+对于 `NaN` 和 `Infinity`，此方法返回原值。对于其它类型的非数值，`Math.fround` 方法会先将其转为数值，再返回单精度浮点数。
 
 ```javascript
 Math.fround(NaN)      // NaN
@@ -585,7 +568,7 @@ Math.fround({})       // NaN
 对于没有部署这个方法的环境，可以用下面的代码模拟。
 
 ```javascript
-Math.fround = Math.fround || function(x) {
+Math.fround = Math.fround || function (x) {
   return new Float32Array([x])[0];
 };
 ```
