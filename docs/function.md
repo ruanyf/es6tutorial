@@ -944,7 +944,7 @@ let log = ::console.log;
 var log = console.log.bind(console);
 ```
 
-双冒号运算符的运算结果，还是一个对象，因此可以采用链式写法。
+双冒号运算符的运算结果，还是一个函数，因此可以采用链式写法。
 
 ```javascript
 // 例一
