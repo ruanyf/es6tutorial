@@ -597,6 +597,7 @@ class VersionedArray extends Array {
   }
   revert() {
     this.splice(0, this.length, ...this.history[this.history.length - 1]);
+    this.history.pop();
   }
 }
 
