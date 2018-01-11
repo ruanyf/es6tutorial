@@ -480,12 +480,16 @@ for (let x of obj) {
 ```javascript
 function readLinesSync(file) {
   return {
-    next() {
-      return { done: false };
-    },
-    return() {
-      file.close();
-      return { done: true };
+    [Symbol.iterator]() {
+      return {
+        next() {
+          return { done: false };
+        },
+        return() {
+          file.close();
+          return { done: true };
+        }
+      };
     },
   };
 }
