@@ -190,7 +190,7 @@ foo()
 
 ```javascript
 // main.js
-import {firstName, lastName, year} from './profile';
+import {firstName, lastName, year} from './profile.js';
 
 function setName(element) {
   element.textContent = firstName + ' ' + lastName;
@@ -202,7 +202,7 @@ function setName(element) {
 如果想为输入的变量重新取一个名字，`import`命令要使用`as`关键字，将输入的变量重命名。
 
 ```javascript
-import { lastName as surname } from './profile';
+import { lastName as surname } from './profile.js';
 ```
 
 `import`后面的`from`指定模块文件的位置，可以是相对路径，也可以是绝对路径，`.js`后缀可以省略。如果只是模块名，不带有路径，那么必须有配置文件，告诉 JavaScript 引擎该模块的位置。
