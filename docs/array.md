@@ -515,7 +515,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 
 它接受三个参数。
 
-- target（必需）：从该位置开始替换数据。
+- target（必需）：从该位置开始替换数据。如果为负值，表示倒数。
 - start（可选）：从该位置开始读取数据，默认为 0。如果为负值，表示倒数。
 - end（可选）：到该位置前停止读取数据，默认等于数组长度。如果为负值，表示倒数。
 
@@ -582,6 +582,16 @@ i32a.copyWithin(0, 2);
 ```
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的`this`对象。
+
+```javascript
+function f(v){
+  return v > this.age;
+}
+let person = {name: 'John', age: 20};
+[10, 12, 26, 15].find(f, person);    // 26
+```
+
+上面的代码中，`find`函数接收了第二个参数`person`对象，回调函数中的`this`对象指向`person`对象。
 
 另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf`方法的不足。
 
