@@ -28,7 +28,7 @@ ES6 规格使用了一些专门的术语，了解这些术语，可以帮助你�
 
 举例来说，`Boolean(value)`的算法，第一步是这样的。
 
-> 1. Let b be ToBoolean(value).
+> 1. Let `b` be `ToBoolean(value)`.
 
 这里的`ToBoolean`就是一个抽象操作，是引擎内部求出布尔值的算法。
 
@@ -79,23 +79,23 @@ F.[[Call]](V, argumentsList)
 
 ES6 规格将这个标准流程，使用简写的方式表达。
 
-> 1. Let result be AbstractOp().
-> 1. ReturnIfAbrupt(result).
-> 1. return result.
+> 1. Let `result` be `AbstractOp()`.
+> 1. `ReturnIfAbrupt(result)`.
+> 1. return `result`.
 
 这个简写方式里面的`ReturnIfAbrupt(result)`，就代表了上面的第二步和第三步，即如果有报错，就返回错误，否则取出值。
 
 甚至还有进一步的简写格式。
 
-> 1. Let result be ? AbstractOp().
-> 1. return result.
+> 1. Let `result` be `? AbstractOp()`.
+> 1. return `result`.
 
 上面流程的`?`，就代表`AbstractOp()`可能会报错。一旦报错，就返回错误，否则取出值。
 
 除了`?`，ES 6 规格还使用另一个简写符号`!`。
 
-> 1. Let result be ! AbstractOp().
-> 1. return result.
+> 1. Let `result` be `! AbstractOp()`.
+> 1. return `result`.
 
 上面流程的`!`，代表`AbstractOp()`不会报错，返回的一定是 normal completion，总是可以取出值。
 
