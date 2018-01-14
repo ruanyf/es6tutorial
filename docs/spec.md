@@ -70,10 +70,10 @@ F.[[Call]](V, argumentsList)
 
 抽象操作的运行流程，一般是下面这样。
 
-> 1. Let resultCompletionRecord be AbstractOp().
-> 1. If resultCompletionRecord is an abrupt completion, return resultCompletionRecord.
-> 1. Let result be resultCompletionRecord.[[Value]].
-> 1. return result.
+> 1. Let `resultCompletionRecord` be `AbstractOp()`.
+> 1. If `resultCompletionRecord` is an abrupt completion, return `resultCompletionRecord`.
+> 1. Let `result` be `resultCompletionRecord.[[Value]]`.
+> 1. return `result`.
 
 上面的第一步是调用抽象操作`AbstractOp()`，得到`resultCompletionRecord`，这是一个 Completion Record。第二步，如果这个 Record 属于 abrupt completion，就将`resultCompletionRecord`返回给用户。如果此处没有返回，就表示运行结果正常，所得的值存放在`resultCompletionRecord.[[Value]]`属性。第三步，将这个值记为`result`。第四步，将`result`返回给用户。
 
