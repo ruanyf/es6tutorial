@@ -563,7 +563,7 @@ a2[1] = 6;
 
 ### Symbol.species
 
-对象的`Symbol.species`属性，指向一个构造函数。创建造衍生对象时，会使用该属性。
+对象的`Symbol.species`属性，指向一个构造函数。创建衍生对象时，会使用该属性。
 
 ```javascript
 class MyArray extends Array {
@@ -583,7 +583,7 @@ class MyArray extends Array {
 }
 ```
 
-上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
+上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
 
 ```javascript
 static get [Symbol.species]() {

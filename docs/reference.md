@@ -36,6 +36,7 @@
 - Jani Hartikainen, [ES6: What are the benefits of the new features in practice?](http://codeutopia.net/blog/2015/01/06/es6-what-are-the-benefits-of-the-new-features-in-practice/)
 - kangax, [Javascript quiz. ES6 edition](http://perfectionkills.com/javascript-quiz-es6/): ES6 小测试
 - Jeremy Fairbank, [HTML5DevConf ES7 and Beyond!](https://speakerdeck.com/jfairbank/html5devconf-es7-and-beyond): ES7 新增语法点介绍
+- Timothy Gu, [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/): 如何读懂 ES6 规格
 
 ## let 和 const
 

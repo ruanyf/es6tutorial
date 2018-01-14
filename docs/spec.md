@@ -16,9 +16,92 @@ ECMAScript 6 的规格，可以在 ECMA 国际标准组织的官方网站（[www
 
 ECMAScript 6 规格的 26 章之中，第 1 章到第 3 章是对文件本身的介绍，与语言关系不大。第 4 章是对这门语言总体设计的描述，有兴趣的读者可以读一下。第 5 章到第 8 章是语言宏观层面的描述。第 5 章是规格的名词解释和写法的介绍，第 6 章介绍数据类型，第 7 章介绍语言内部用到的抽象操作，第 8 章介绍代码如何运行。第 9 章到第 26 章介绍具体的语法。
 
-对于一般用户来说，除了第 4 章，其他章节都涉及某一方面的细节，不用通读，只要在用到的时候，查阅相关章节即可。下面通过一些例子，介绍如何使用这份规格。
+对于一般用户来说，除了第 4 章，其他章节都涉及某一方面的细节，不用通读，只要在用到的时候，查阅相关章节即可。
+
+## 术语
+
+ES6 规格使用了一些专门的术语，了解这些术语，可以帮助你读懂规格。本节介绍其中的几个。
+
+### 抽象操作
+
+所谓”抽象操作“（abstract operations）就是引擎的一些内部方法，外部不能调用。规格定义了一系列的抽象操作，规定了它们的行为，留给各种引擎自己去实现。
+
+举例来说，`Boolean(value)`的算法，第一步是这样的。
+
+> 1. Let b be ToBoolean(value).
+
+这里的`ToBoolean`就是一个抽象操作，是引擎内部求出布尔值的算法。
+
+许多函数的算法都会多次用到同样的步骤，所以 ES6 规格将它们抽出来，定义成”抽象操作“，方便描述。
+
+### Record 和 field
+
+ES6 规格将键值对（key-value map）的数据结构称为 Record，其中的每一组键值对称为 field。这就是说，一个 Record 由多个 field 组成，而每个 field 都包含一个键名（key）和一个键值（value）。
+
+### [[Notation]]
+
+ES6 规格大量使用`[[Notation]]`这种书写法，比如`[[Value]]`、`[[Writable]]`、`[[Get]]`、`[[Set]]`等等。它用来指代 field 的键名。
+
+举例来说，`obj`是一个 Record，它有一个`Prototype`属性。ES6 规格不会写`obj.Prototype`，而是写`obj.[[Prototype]]`。一般来说，使用`[[Notation]]`这种书写法的属性，都是对象的内部属性。
+
+所有的 JavaScript 函数都有一个内部属性`[[Call]]`，用来运行该函数。
+
+```javascript
+F.[[Call]](V, argumentsList)
+```
+
+上面代码中，`F`是一个函数对象，`[[Call]]`是它的内部方法，`F.[[call]]()`表示运行该函数，`V`表示`[[Call]]`运行时`this`的值，`argumentsList`则是调用时传入函数的参数。
+
+### Completion Record
+
+每一个语句都会返回一个 Completion Record，表示运行结果。每个 Completion Record 有一个`[[Type]]`属性，表示运行结果的类型。
+
+`[[Type]]`属性有五种可能的值。
+
+- normal
+- return
+- throw
+- break
+- continue
+
+如果`[[Type]]`的值是`normal`，就称为 normal completion，表示运行正常。其他的值，都称为 abrupt completion。其中，开发者只需要关注`[[Type]]`为`throw`的情况，即运行出错；`break`、`continue`、`return`这三个值都只出现在特定场景，可以不用考虑。
+
+## 抽象操作的标准流程
+
+抽象操作的运行流程，一般是下面这样。
+
+> 1. Let resultCompletionRecord be AbstractOp().
+> 1. If resultCompletionRecord is an abrupt completion, return resultCompletionRecord.
+> 1. Let result be resultCompletionRecord.[[Value]].
+> 1. return result.
+
+上面的第一步是调用抽象操作`AbstractOp()`，得到`resultCompletionRecord`，这是一个 Completion Record。第二步，如果这个 Record 属于 abrupt completion，就将`resultCompletionRecord`返回给用户。如果此处没有返回，就表示运行结果正常，所得的值存放在`resultCompletionRecord.[[Value]]`属性。第三步，将这个值记为`result`。第四步，将`result`返回给用户。
+
+ES6 规格将这个标准流程，使用简写的方式表达。
+
+> 1. Let result be AbstractOp().
+> 1. ReturnIfAbrupt(result).
+> 1. return result.
+
+这个简写方式里面的`ReturnIfAbrupt(result)`，就代表了上面的第二步和第三步，即如果有报错，就返回错误，否则取出值。
+
+甚至还有进一步的简写格式。
+
+> 1. Let result be ? AbstractOp().
+> 1. return result.
+
+上面流程的`?`，就代表`AbstractOp()`可能会报错。一旦报错，就返回错误，否则取出值。
+
+除了`?`，ES 6 规格还使用另一个简写符号`!`。
+
+> 1. Let result be ! AbstractOp().
+> 1. return result.
+
+上面流程的`!`，代表`AbstractOp()`不会报错，返回的一定是 normal completion，总是可以取出值。
 
 ## 相等运算符
+
+下面通过一些例子，介绍如何使用这份规格。
 
 相等运算符（`==`）是一个很让人头痛的运算符，它的语法行为多变，不符合直觉。这个小节就看看规格怎么规定它的行为。
 
