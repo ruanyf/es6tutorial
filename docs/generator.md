@@ -313,7 +313,7 @@ wrapped().next('hello!')
 `for...of`循环可以自动遍历 Generator 函数时生成的`Iterator`对象，且此时不再需要调用`next`方法。
 
 ```javascript
-function *foo() {
+function* foo() {
   yield 1;
   yield 2;
   yield 3;
@@ -912,16 +912,16 @@ read.next().value // "h"
 如果被代理的 Generator 函数有`return`语句，那么就可以向代理它的 Generator 函数返回数据。
 
 ```javascript
-function *foo() {
+function* foo() {
   yield 2;
   yield 3;
   return "foo";
 }
 
-function *bar() {
+function* bar() {
   yield 1;
-  var v = yield *foo();
-  console.log( "v: " + v );
+  var v = yield* foo();
+  console.log("v: " + v);
   yield 4;
 }
 
@@ -1225,7 +1225,7 @@ JavaScript 代码运行时，会产生一个全局的上下文环境（context�
 Generator 函数不是这样，它执行产生的上下文环境，一旦遇到`yield`命令，就会暂时退出堆栈，但是并不消失，里面的所有变量和对象会冻结在当前状态。等到对它执行`next`命令时，这个上下文环境又会重新加入调用栈，冻结的变量和对象恢复执行。
 
 ```javascript
-function *gen() {
+function* gen() {
   yield 1;
   return 2;
 }
@@ -1371,7 +1371,7 @@ function scheduler(task) {
 ```javascript
 let steps = [step1Func, step2Func, step3Func];
 
-function *iterateSteps(steps){
+function* iterateSteps(steps){
   for (var i=0; i< steps.length; i++){
     var step = steps[i];
     yield step();
@@ -1467,7 +1467,7 @@ gen.next().done  // true
 Generator 可以看作是数据结构，更确切地说，可以看作是一个数组结构，因为 Generator 函数可以返回一系列的值，这意味着它可以对任意表达式，提供类似数组的接口。
 
 ```javascript
-function *doStuff() {
+function* doStuff() {
   yield fs.readFile.bind(null, 'hello.txt');
   yield fs.readFile.bind(null, 'world.txt');
   yield fs.readFile.bind(null, 'and-such.txt');
