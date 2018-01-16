@@ -35,7 +35,7 @@ Number('0o10')  // 8
 
 ES6 在`Number`对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
 
-`Number.isFinite()`用来检查一个数值是否为有限的（finite）。
+`Number.isFinite()`用来检查一个数值是否为有限的（finite），即不是`Infinity`。
 
 ```javascript
 Number.isFinite(15); // true
@@ -48,22 +48,7 @@ Number.isFinite('15'); // false
 Number.isFinite(true); // false
 ```
 
-ES5 可以通过下面的代码，部署`Number.isFinite`方法。
-
-```javascript
-(function (global) {
-  var global_isFinite = global.isFinite;
-
-  Object.defineProperty(Number, 'isFinite', {
-    value: function isFinite(value) {
-      return typeof value === 'number' && global_isFinite(value);
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-```
+注意，如果参数类型不是数值，`Number.isFinite`一律返回`false`。
 
 `Number.isNaN()`用来检查一个值是否为`NaN`。
 
@@ -73,26 +58,11 @@ Number.isNaN(15) // false
 Number.isNaN('15') // false
 Number.isNaN(true) // false
 Number.isNaN(9/NaN) // true
-Number.isNaN('true'/0) // true
-Number.isNaN('true'/'true') // true
+Number.isNaN('true' / 0) // true
+Number.isNaN('true' / 'true') // true
 ```
 
-ES5 通过下面的代码，部署`Number.isNaN()`。
-
-```javascript
-(function (global) {
-  var global_isNaN = global.isNaN;
-
-  Object.defineProperty(Number, 'isNaN', {
-    value: function isNaN(value) {
-      return typeof value === 'number' && global_isNaN(value);
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-```
+注意，如果参数类型不是数值，`Number.isNaN`一律返回`false`。
 
 它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，`Number.isFinite()`对于非数值一律返回`false`, `Number.isNaN()`只有对于`NaN`才返回`true`，非`NaN`一律返回`false`。
 
