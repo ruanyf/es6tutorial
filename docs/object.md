@@ -5,12 +5,12 @@
 ES6 允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
-var foo = 'bar';
-var baz = {foo};
+const foo = 'bar';
+const baz = {foo};
 baz // {foo: "bar"}
 
 // 等同于
-var baz = {foo: foo};
+const baz = {foo: foo};
 ```
 
 上面代码表明，ES6 允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
@@ -32,7 +32,7 @@ f(1, 2) // Object {x: 1, y: 2}
 除了属性简写，方法也可以简写。
 
 ```javascript
-var o = {
+const o = {
   method() {
     return "Hello!";
   }
@@ -40,7 +40,7 @@ var o = {
 
 // 等同于
 
-var o = {
+const o = {
   method: function() {
     return "Hello!";
   }
@@ -50,9 +50,9 @@ var o = {
 下面是一个实际的例子。
 
 ```javascript
-var birth = '2000/01/01';
+let birth = '2000/01/01';
 
-var Person = {
+const Person = {
 
   name: '张三',
 
@@ -69,8 +69,8 @@ var Person = {
 
 ```javascript
 function getPoint() {
-  var x = 1;
-  var y = 10;
+  const x = 1;
+  const y = 10;
   return {x, y};
 }
 
@@ -81,7 +81,7 @@ getPoint()
 CommonJS 模块输出一组变量，就非常合适使用简洁写法。
 
 ```javascript
-var ms = {};
+let ms = {};
 
 function getItem (key) {
   return key in ms ? ms[key] : null;
@@ -107,7 +107,7 @@ module.exports = {
 属性的赋值器（setter）和取值器（getter），事实上也是采用这种写法。
 
 ```javascript
-var cart = {
+const cart = {
   _wheels: 4,
 
   get wheels () {
@@ -126,7 +126,7 @@ var cart = {
 注意，简洁写法的属性名总是字符串，这会导致一些看上去比较奇怪的结果。
 
 ```javascript
-var obj = {
+const obj = {
   class () {}
 };
 
@@ -142,7 +142,7 @@ var obj = {
 如果某个方法的值是一个 Generator 函数，前面需要加上星号。
 
 ```javascript
-var obj = {
+const obj = {
   * m() {
     yield 'hello world';
   }
@@ -186,9 +186,9 @@ let obj = {
 下面是另一个例子。
 
 ```javascript
-var lastWord = 'last word';
+let lastWord = 'last word';
 
-var a = {
+const a = {
   'first word': 'hello',
   [lastWord]: 'world'
 };
@@ -214,13 +214,13 @@ obj.hello() // hi
 
 ```javascript
 // 报错
-var foo = 'bar';
-var bar = 'abc';
-var baz = { [foo] };
+const foo = 'bar';
+const bar = 'abc';
+const baz = { [foo] };
 
 // 正确
-var foo = 'bar';
-var baz = { [foo]: 'abc'};
+const foo = 'bar';
+const baz = { [foo]: 'abc'};
 ```
 
 注意，属性名表达式如果是一个对象，默认情况下会自动将对象转为字符串`[object Object]`，这一点要特别小心。
@@ -346,10 +346,10 @@ Object.defineProperty(Object, 'is', {
 `Object.assign`方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
 
 ```javascript
-var target = { a: 1 };
+const target = { a: 1 };
 
-var source1 = { b: 2 };
-var source2 = { c: 3 };
+const source1 = { b: 2 };
+const source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
@@ -360,10 +360,10 @@ target // {a:1, b:2, c:3}
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
 
 ```javascript
-var target = { a: 1, b: 1 };
+const target = { a: 1, b: 1 };
 
-var source1 = { b: 2, c: 2 };
-var source2 = { c: 3 };
+const source1 = { b: 2, c: 2 };
+const source2 = { c: 3 };
 
 Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
@@ -372,7 +372,7 @@ target // {a:1, b:2, c:3}
 如果只有一个参数，`Object.assign`会直接返回该参数。
 
 ```javascript
-var obj = {a: 1};
+const obj = {a: 1};
 Object.assign(obj) === obj // true
 ```
 
@@ -400,11 +400,11 @@ Object.assign(obj, null) === obj // true
 其他类型的值（即数值、字符串和布尔值）不在首参数，也不会报错。但是，除了字符串会以数组形式，拷贝入目标对象，其他值都不会产生效果。
 
 ```javascript
-var v1 = 'abc';
-var v2 = true;
-var v3 = 10;
+const v1 = 'abc';
+const v2 = true;
+const v3 = 10;
 
-var obj = Object.assign({}, v1, v2, v3);
+const obj = Object.assign({}, v1, v2, v3);
 console.log(obj); // { "0": "a", "1": "b", "2": "c" }
 ```
 
@@ -441,11 +441,13 @@ Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
 
 ### 注意点
 
+**（1）浅拷贝**
+
 `Object.assign`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
 
 ```javascript
-var obj1 = {a: {b: 1}};
-var obj2 = Object.assign({}, obj1);
+const obj1 = {a: {b: 1}};
+const obj2 = Object.assign({}, obj1);
 
 obj1.a.b = 2;
 obj2.a.b // 2
@@ -453,27 +455,47 @@ obj2.a.b // 2
 
 上面代码中，源对象`obj1`的`a`属性的值是一个对象，`Object.assign`拷贝得到的是这个对象的引用。这个对象的任何变化，都会反映到目标对象上面。
 
+**（2）同名属性的替换**
+
 对于这种嵌套的对象，一旦遇到同名属性，`Object.assign`的处理方法是替换，而不是添加。
 
 ```javascript
-var target = { a: { b: 'c', d: 'e' } }
-var source = { a: { b: 'hello' } }
+const target = { a: { b: 'c', d: 'e' } }
+const source = { a: { b: 'hello' } }
 Object.assign(target, source)
 // { a: { b: 'hello' } }
 ```
 
 上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。
 
-有一些函数库提供`Object.assign`的定制版本（比如 Lodash 的`_.defaultsDeep`方法），可以解决浅拷贝的问题，得到深拷贝的合并。
+一些函数库提供`Object.assign`的定制版本（比如 Lodash 的`_.defaultsDeep`方法），可以得到深拷贝的合并。
 
-注意，`Object.assign`可以用来处理数组，但是会把数组视为对象。
+**（3）数组的处理**
+
+`Object.assign`可以用来处理数组，但是会把数组视为对象。
 
 ```javascript
 Object.assign([1, 2, 3], [4, 5])
 // [4, 5, 3]
 ```
 
-上面代码中，`Object.assign`把数组视为属性名为0、1、2的对象，因此源数组的0号属性`4`覆盖了目标数组的0号属性`1`。
+上面代码中，`Object.assign`把数组视为属性名为 0、1、2 的对象，因此源数组的 0 号属性`4`覆盖了目标数组的 0 号属性`1`。
+
+**（4）取值函数的处理**
+
+`Object.assign`只能进行值的复制，如果要复制的值是一个取值函数，那么将求值后再复制。
+
+```javascript
+const source = {
+  get foo() { return 1 }
+};
+const target = {};
+
+Object.assign(target, source)
+// { foo: 1 }
+```
+
+上面代码中，`source`对象的`foo`属性是一个取值函数，`Object.assign`不会复制这个取值函数，只会拿到值以后，将这个值复制过去。
 
 ### 常见用途
 
@@ -582,7 +604,7 @@ processContent({ url: {port: 8000} })
 // }
 ```
 
-上面代码的原意是将`url.port`改成8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`，所以`url.host`就不存在了。
+上面代码的原意是将`url.port`改成 8000，`url.host`不变。实际结果却是`options.url`覆盖掉`DEFAULTS.url`，所以`url.host`就不存在了。
 
 ## 属性的可枚举性和遍历
 
@@ -633,7 +655,7 @@ Object.getOwnPropertyDescriptor(class {foo() {}}.prototype, 'foo').enumerable
 
 ### 属性的遍历
 
-ES6 一共有5种方法可以遍历对象的属性。
+ES6 一共有 5 种方法可以遍历对象的属性。
 
 **（1）for...in**
 
@@ -641,25 +663,25 @@ ES6 一共有5种方法可以遍历对象的属性。
 
 **（2）Object.keys(obj)**
 
-`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）。
+`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
 
 **（3）Object.getOwnPropertyNames(obj)**
 
-`Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）。
+`Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。
 
 **（4）Object.getOwnPropertySymbols(obj)**
 
-`Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有 Symbol 属性。
+`Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有 Symbol 属性的键名。
 
 **（5）Reflect.ownKeys(obj)**
 
-`Reflect.ownKeys`返回一个数组，包含对象自身的所有属性，不管属性名是 Symbol 或字符串，也不管是否可枚举。
+`Reflect.ownKeys`返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
 
-以上的5种方法遍历对象的属性，都遵守同样的属性遍历的次序规则。
+以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
 
-- 首先遍历所有属性名为数值的属性，按照数字排序。
-- 其次遍历所有属性名为字符串的属性，按照生成时间排序。
-- 最后遍历所有属性名为 Symbol 值的属性，按照生成时间排序。
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
 
 ```javascript
 Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
@@ -685,7 +707,7 @@ Object.getOwnPropertyDescriptors(obj)
 //      enumerable: true,
 //      configurable: true },
 //   bar:
-//    { get: [Function: bar],
+//    { get: [Function: get bar],
 //      set: undefined,
 //      enumerable: true,
 //      configurable: true } }
@@ -739,7 +761,7 @@ const target2 = {};
 Object.defineProperties(target2, Object.getOwnPropertyDescriptors(source));
 Object.getOwnPropertyDescriptor(target2, 'foo')
 // { get: undefined,
-//   set: [Function: foo],
+//   set: [Function: set foo],
 //   enumerable: true,
 //   configurable: true }
 ```
@@ -828,22 +850,24 @@ d.a // "a"
 
 上面代码返回一个新的对象`d`，代表了对象`a`和`b`被混入了对象`c`的操作。
 
-出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，还会有`Reflect.getOwnPropertyDescriptors`方法。
+出于完整性的考虑，`Object.getOwnPropertyDescriptors`进入标准以后，以后还会新增`Reflect.getOwnPropertyDescriptors`方法。
 
 ## `__proto__`属性，Object.setPrototypeOf()，Object.getPrototypeOf()
+
+JavaScript 语言的对象继承是通过原型链实现的。ES6 提供了更多原型对象的操作方法。
 
 ### `__proto__`属性
 
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
-// es6的写法
-var obj = {
+// es6 的写法
+const obj = {
   method: function() { ... }
 };
 obj.__proto__ = someOtherObj;
 
-// es5的写法
+// es5 的写法
 var obj = Object.create(someOtherObj);
 obj.method = function() { ... };
 ```
@@ -874,12 +898,13 @@ Object.defineProperty(Object.prototype, '__proto__', {
     }
   },
 });
+
 function isObject(value) {
   return Object(value) === value;
 }
 ```
 
-如果一个对象本身部署了`__proto__`属性，则该属性的值就是对象的原型。
+如果一个对象本身部署了`__proto__`属性，该属性的值就是对象的原型。
 
 ```javascript
 Object.getPrototypeOf({ __proto__: null })
@@ -895,7 +920,7 @@ Object.getPrototypeOf({ __proto__: null })
 Object.setPrototypeOf(object, prototype)
 
 // 用法
-var o = Object.setPrototypeOf({}, null);
+const o = Object.setPrototypeOf({}, null);
 ```
 
 该方法等同于下面的函数。
@@ -957,7 +982,7 @@ function Rectangle() {
   // ...
 }
 
-var rec = new Rectangle();
+const rec = new Rectangle();
 
 Object.getPrototypeOf(rec) === Rectangle.prototype
 // true
@@ -997,6 +1022,74 @@ Object.getPrototypeOf(undefined)
 // TypeError: Cannot convert undefined or null to object
 ```
 
+## super 关键字
+
+我们知道，`this`关键字总是指向函数所在的当前对象，ES6 又新增了另一个类似的关键字`super`，指向当前对象的原型对象。
+
+```javascript
+const proto = {
+  foo: 'hello'
+};
+
+const obj = {
+  find() {
+    return super.foo;
+  }
+};
+
+Object.setPrototypeOf(obj, proto);
+obj.find() // "hello"
+```
+
+上面代码中，对象`obj`的`find`方法之中，通过`super.foo`引用了原型对象`proto`的`foo`属性。
+
+注意，`super`关键字表示原型对象时，只能用在对象的方法之中，用在其他地方都会报错。
+
+```javascript
+// 报错
+const obj = {
+  foo: super.foo
+}
+
+// 报错
+const obj = {
+  foo: () => super.foo
+}
+
+// 报错
+const obj = {
+  foo: function () {
+    return super.foo
+  }
+}
+```
+
+上面三种`super`的用法都会报错，因为对于 JavaScript 引擎来说，这里的`super`都没有用在对象的方法之中。第一种写法是`super`用在属性里面，第二种和第三种写法是`super`用在一个函数里面，然后赋值给`foo`属性。目前，只有对象方法的简写法可以让 JavaScript 引擎确认，定义的是对象的方法。
+
+JavaScript 引擎内部，`super.foo`等同于`Object.getPrototypeOf(this).foo`（属性）或`Object.getPrototypeOf(this).foo.call(this)`（方法）。
+
+```javascript
+const proto = {
+  x: 'hello',
+  foo() {
+    console.log(this.x);
+  },
+};
+
+const obj = {
+  x: 'world',
+  foo() {
+    super.foo();
+  }
+}
+
+Object.setPrototypeOf(obj, proto);
+
+obj.foo() // "world"
+```
+
+上面代码中，`super.foo`指向原型对象`proto`的`foo`方法，但是绑定的`this`却还是当前对象`obj`，因此输出的就是`world`。
+
 ## Object.keys()，Object.values()，Object.entries()
 
 ### Object.keys()
@@ -1033,7 +1126,7 @@ for (let [key, value] of entries(obj)) {
 `Object.values`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
+const obj = { foo: 'bar', baz: 42 };
 Object.values(obj)
 // ["bar", 42]
 ```
@@ -1041,7 +1134,7 @@ Object.values(obj)
 返回数组的成员顺序，与本章的《属性的遍历》部分介绍的排列规则一致。
 
 ```javascript
-var obj = { 100: 'a', 2: 'b', 7: 'c' };
+const obj = { 100: 'a', 2: 'b', 7: 'c' };
 Object.values(obj)
 // ["b", "c", "a"]
 ```
@@ -1051,14 +1144,14 @@ Object.values(obj)
 `Object.values`只返回对象自身的可遍历属性。
 
 ```javascript
-var obj = Object.create({}, {p: {value: 42}});
+const obj = Object.create({}, {p: {value: 42}});
 Object.values(obj) // []
 ```
 
 上面代码中，`Object.create`方法的第二个参数添加的对象属性（属性`p`），如果不显式声明，默认是不可遍历的，因为`p`的属性描述对象的`enumerable`默认是`false`，`Object.values`不会返回这个属性。只要把`enumerable`改成`true`，`Object.values`就会返回属性`p`的值。
 
 ```javascript
-var obj = Object.create({}, {p:
+const obj = Object.create({}, {p:
   {
     value: 42,
     enumerable: true
@@ -1095,7 +1188,7 @@ Object.values(true) // []
 `Object.entries`方法返回一个数组，成员是参数对象自身的（不含继承的）所有可遍历（enumerable）属性的键值对数组。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
+const obj = { foo: 'bar', baz: 42 };
 Object.entries(obj)
 // [ ["foo", "bar"], ["baz", 42] ]
 ```
@@ -1127,8 +1220,8 @@ for (let [k, v] of Object.entries(obj)) {
 `Object.entries`方法的另一个用处是，将对象转为真正的`Map`结构。
 
 ```javascript
-var obj = { foo: 'bar', baz: 42 };
-var map = new Map(Object.entries(obj));
+const obj = { foo: 'bar', baz: 42 };
+const map = new Map(Object.entries(obj));
 map // Map { foo: "bar", baz: 42 }
 ```
 
@@ -1204,7 +1297,7 @@ x.a.b // 2
 
 上面代码中，`x`是解构赋值所在的对象，拷贝了对象`obj`的`a`属性。`a`属性引用了一个对象，修改这个对象的值，会影响到解构赋值对它的引用。
 
-另外，解构赋值不会拷贝继承自原型对象的属性。
+另外，扩展运算符的解构赋值，不能复制继承自原型对象的属性。
 
 ```javascript
 let o1 = { a: 1 };
@@ -1220,7 +1313,7 @@ o3.a // undefined
 下面是另一个例子。
 
 ```javascript
-var o = Object.create({ x: 1, y: 2 });
+const o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
 let { x, ...{ y, z } } = o;
@@ -1229,7 +1322,7 @@ y // undefined
 z // 3
 ```
 
-上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是双重解构赋值，只能读取对象`o`自身的属性，所以只有变量`z`可以赋值成功。
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是扩展运算符的解构赋值，只能读取对象`o`自身的属性，所以变量`z`可以赋值成功，变量`y`取不到值。
 
 解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
 
@@ -1278,9 +1371,15 @@ const clone2 = Object.assign(
   Object.create(Object.getPrototypeOf(obj)),
   obj
 );
+
+// 写法三
+const clone3 = Object.create(
+  Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj)
+)
 ```
 
-上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二。
+上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二和写法三。
 
 扩展运算符可以用于合并两个对象。
 
@@ -1390,10 +1489,10 @@ const firstName = message?.body?.user?.firstName || 'default';
 
 “Null 传导运算符”有四种用法。
 
-- `obj?.prop`  // 读取对象属性
-- `obj?.[expr]`  // 同上
+- `obj?.prop` // 读取对象属性
+- `obj?.[expr]` // 同上
 - `func?.(...args)` // 函数或对象方法的调用
-- `new C?.(...args)`  // 构造函数的调用
+- `new C?.(...args)` // 构造函数的调用
 
 传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
 
@@ -1411,4 +1510,3 @@ a?.b = 42
 // 如果 a 是 null 或 undefined，下面的语句不产生任何效果
 delete a?.b
 ```
-

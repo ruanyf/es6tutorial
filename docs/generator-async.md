@@ -138,7 +138,7 @@ g.next() // { value: undefined, done: true }
 
 Generator 函数可以暂停执行和恢复执行，这是它能封装异步任务的根本原因。除此之外，它还有两个特性，使它可以作为异步编程的完整解决方案：函数体内外的数据交换和错误处理机制。
 
-`next`返回值的value属性，是 Generator 函数向外输出数据；`next`方法还可以接受参数，向 Generator 函数体内输入数据。
+`next`返回值的 value 属性，是 Generator 函数向外输出数据；`next`方法还可以接受参数，向 Generator 函数体内输入数据。
 
 ```javascript
 function* gen(x){
@@ -212,14 +212,14 @@ Thunk 函数是自动执行 Generator 函数的一种方法。
 
 ### 参数的求值策略
 
-Thunk 函数早在上个世纪60年代就诞生了。
+Thunk 函数早在上个世纪 60 年代就诞生了。
 
 那时，编程语言刚刚起步，计算机学家还在研究，编译器怎么写比较好。一个争论的焦点是"求值策略"，即函数的参数到底应该何时求值。
 
 ```javascript
 var x = 1;
 
-function f(m){
+function f(m) {
   return m * 2;
 }
 
@@ -228,7 +228,7 @@ f(x + 5)
 
 上面代码先定义函数`f`，然后向它传入表达式`x + 5`。请问，这个表达式应该何时求值？
 
-一种意见是"传值调用"（call by value），即在进入函数体之前，就计算`x + 5`的值（等于6），再将这个值传入函数`f`。C语言就采用这种策略。
+一种意见是"传值调用"（call by value），即在进入函数体之前，就计算`x + 5`的值（等于 6），再将这个值传入函数`f`。C 语言就采用这种策略。
 
 ```javascript
 f(x + 5)
@@ -280,7 +280,7 @@ function f(thunk) {
 }
 ```
 
-上面代码中，函数f的参数`x + 5`被一个函数替换了。凡是用到原参数的地方，对`Thunk`函数求值即可。
+上面代码中，函数 f 的参数`x + 5`被一个函数替换了。凡是用到原参数的地方，对`Thunk`函数求值即可。
 
 这就是 Thunk 函数的定义，它是“传名调用”的一种实现策略，用来替换某个表达式。
 
@@ -523,7 +523,7 @@ Thunk 函数并不是 Generator 函数自动执行的唯一方案。因为自动
 
 ### 基本用法
 
-[co 模块](https://github.com/tj/co)是著名程序员 TJ Holowaychuk 于2013年6月发布的一个小工具，用于 Generator 函数的自动执行。
+[co 模块](https://github.com/tj/co)是著名程序员 TJ Holowaychuk 于 2013 年 6 月发布的一个小工具，用于 Generator 函数的自动执行。
 
 下面是一个 Generator 函数，用于依次读取两个文件。
 
@@ -567,7 +567,7 @@ co(gen).then(function (){
 
 （2）Promise 对象。将异步操作包装成 Promise 对象，用`then`方法交回执行权。
 
-co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也可以使用 co，详见后文的例子。（co v4.0版以后，`yield`命令后面只能是 Promise 对象，不再支持 Thunk 函数。）
+co 模块其实就是将两种自动执行器（Thunk 函数和 Promise 对象），包装成一个模块。使用 co 的前提条件是，Generator 函数的`yield`命令后面，只能是 Thunk 函数或 Promise 对象。如果数组或对象的成员，全部都是 Promise 对象，也可以使用 co，详见后文的例子。
 
 上一节已经介绍了基于 Thunk 函数的自动执行器。下面来看，基于 Promise 对象的自动执行器。这是理解 co 模块必须的。
 
@@ -788,4 +788,3 @@ co(function*() {
 ```
 
 上面代码采用 Stream 模式读取《悲惨世界》的文本文件，对于每个数据块都使用`stream.once`方法，在`data`、`end`、`error`三个事件上添加一次性回调函数。变量`res`只有在`data`事件发生时才有值，然后累加每个数据块之中`valjean`这个词出现的次数。
-

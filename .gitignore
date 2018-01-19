@@ -1,1 +1,22 @@
-npm-debug.log
+git # OS X
+Icon?
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+.directory
+*~
+
+# npm
+node_modules
+dist
+*.gz
+
+# webstorm
+.idea/
+
+

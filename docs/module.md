@@ -19,7 +19,7 @@ let exists = _fs.exists;
 let readfile = _fs.readfile;
 ```
 
-上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），生成一个对象（`_fs`），然后再从这个对象上面读取3个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
+上面代码的实质是整体加载`fs`模块（即加载`fs`的所有方法），生成一个对象（`_fs`），然后再从这个对象上面读取 3 个方法。这种加载称为“运行时加载”，因为只有运行时才能得到这个对象，导致完全没办法在编译时做“静态优化”。
 
 ES6 模块不是对象，而是通过`export`命令显式指定输出的代码，再通过`import`命令输入。
 
@@ -28,7 +28,7 @@ ES6 模块不是对象，而是通过`export`命令显式指定输出的代码�
 import { stat, exists, readFile } from 'fs';
 ```
 
-上面代码的实质是从`fs`模块加载3个方法，其他方法不加载。这种加载称为“编译时加载”或者静态加载，即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。当然，这也导致了没法引用 ES6 模块本身，因为它不是对象。
+上面代码的实质是从`fs`模块加载 3 个方法，其他方法不加载。这种加载称为“编译时加载”或者静态加载，即 ES6 可以在编译时就完成模块加载，效率要比 CommonJS 模块的加载方式高。当然，这也导致了没法引用 ES6 模块本身，因为它不是对象。
 
 由于 ES6 模块是编译时加载，使得静态分析成为可能。有了它，就能进一步拓宽 JavaScript 的语法，比如引入宏（macro）和类型检验（type system）这些只能靠静态分析实现的功能。
 
@@ -50,7 +50,7 @@ ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`
 - 函数的参数不能有同名属性，否则报错
 - 不能使用`with`语句
 - 不能对只读属性赋值，否则报错
-- 不能使用前缀0表示八进制数，否则报错
+- 不能使用前缀 0 表示八进制数，否则报错
 - 不能删除不可删除的属性，否则报错
 - 不能删除变量`delete prop`，会报错，只能删除属性`delete global[prop]`
 - `eval`不会在它的外层作用域引入变量
@@ -130,7 +130,7 @@ var m = 1;
 export m;
 ```
 
-上面两种写法都会报错，因为没有提供对外的接口。第一种写法直接输出1，第二种写法通过变量`m`，还是直接输出1。`1`只是一个值，不是接口。正确的写法是下面这样。
+上面两种写法都会报错，因为没有提供对外的接口。第一种写法直接输出 1，第二种写法通过变量`m`，还是直接输出 1。`1`只是一个值，不是接口。正确的写法是下面这样。
 
 ```javascript
 // 写法一
@@ -169,11 +169,11 @@ export var foo = 'bar';
 setTimeout(() => foo = 'baz', 500);
 ```
 
-上面代码输出变量`foo`，值为`bar`，500毫秒之后变成`baz`。
+上面代码输出变量`foo`，值为`bar`，500 毫秒之后变成`baz`。
 
 这一点与 CommonJS 规范完全不同。CommonJS 模块输出的是值的缓存，不存在动态更新，详见下文《Module 的加载实现》一节。
 
-最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下一节的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了ES6模块的设计初衷。
+最后，`export`命令可以出现在模块的任何位置，只要处于模块顶层就可以。如果处于块级作用域内，就会报错，下一节的`import`命令也是如此。这是因为处于条件代码块之中，就没法做静态优化了，违背了 ES6 模块的设计初衷。
 
 ```javascript
 function foo() {
@@ -190,7 +190,7 @@ foo()
 
 ```javascript
 // main.js
-import {firstName, lastName, year} from './profile';
+import {firstName, lastName, year} from './profile.js';
 
 function setName(element) {
   element.textContent = firstName + ' ' + lastName;
@@ -202,7 +202,7 @@ function setName(element) {
 如果想为输入的变量重新取一个名字，`import`命令要使用`as`关键字，将输入的变量重命名。
 
 ```javascript
-import { lastName as surname } from './profile';
+import { lastName as surname } from './profile.js';
 ```
 
 `import`后面的`from`指定模块文件的位置，可以是相对路径，也可以是绝对路径，`.js`后缀可以省略。如果只是模块名，不带有路径，那么必须有配置文件，告诉 JavaScript 引擎该模块的位置。
@@ -390,7 +390,7 @@ import {crc32} from 'crc32'; // 输入
 
 上面代码的两组写法，第一组是使用`export default`时，对应的`import`语句不需要使用大括号；第二组是不使用`export default`时，对应的`import`语句需要使用大括号。
 
-`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export default`命令只能使用一次。所以，`import`命令后面才不用加大括号，因为只可能对应一个方法。
+`export default`命令用于指定模块的默认输出。显然，一个模块只能有一个默认输出，因此`export default`命令只能使用一次。所以，import命令后面才不用加大括号，因为只可能唯一对应`export default`命令。
 
 本质上，`export default`就是输出一个叫做`default`的变量或方法，然后系统允许你为它取任意名字。所以，下面的写法是有效的。
 
@@ -404,9 +404,9 @@ export {add as default};
 // export default add;
 
 // app.js
-import { default as xxx } from 'modules';
+import { default as foo } from 'modules';
 // 等同于
-// import xxx from 'modules';
+// import foo from 'modules';
 ```
 
 正是因为`export default`命令其实只是输出一个叫做`default`的变量，所以它后面不能跟变量声明语句。
@@ -425,7 +425,7 @@ export default var a = 1;
 
 上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
 
-同样地，因为`export default`本质是将该命令后面的值，赋给`default`变量以后再默认，所以直接将一个值写在`export default`之后。
+同样地，因为`export default`命令的本质是将后面的值，赋给`default`变量，所以可以直接将一个值写在`export default`之后。
 
 ```javascript
 // 正确
@@ -784,4 +784,3 @@ async function main() {
 }
 main();
 ```
-

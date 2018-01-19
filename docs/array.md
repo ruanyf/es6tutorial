@@ -28,7 +28,7 @@ function add(x, y) {
   return x + y;
 }
 
-var numbers = [4, 38];
+const numbers = [4, 38];
 add(...numbers) // 42
 ```
 
@@ -38,7 +38,7 @@ add(...numbers) // 42
 
 ```javascript
 function f(v, w, x, y, z) { }
-var args = [0, 1];
+const args = [0, 1];
 f(-1, ...args, 2, ...[3]);
 ```
 
@@ -58,7 +58,7 @@ const arr = [
 // [1]
 ```
 
-### 替代数组的 apply 方法
+### 替代函数的 apply 方法
 
 由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
 
@@ -74,7 +74,7 @@ f.apply(null, args);
 function f(x, y, z) {
   // ...
 }
-var args = [0, 1, 2];
+let args = [0, 1, 2];
 f(...args);
 ```
 
@@ -102,8 +102,8 @@ var arr2 = [3, 4, 5];
 Array.prototype.push.apply(arr1, arr2);
 
 // ES6 的写法
-var arr1 = [0, 1, 2];
-var arr2 = [3, 4, 5];
+let arr1 = [0, 1, 2];
+let arr2 = [3, 4, 5];
 arr1.push(...arr2);
 ```
 
@@ -120,7 +120,45 @@ new Date(...[2015, 1, 1]);
 
 ### 扩展运算符的应用
 
-**（1）合并数组**
+**（1）复制数组**
+
+数组是复合的数据类型，直接复制的话，只是复制了指向底层数据结构的指针，而不是克隆一个全新的数组。
+
+```javascript
+const a1 = [1, 2];
+const a2 = a1;
+
+a2[0] = 2;
+a1 // [2, 2]
+```
+
+上面代码中，`a2`并不是`a1`的克隆，而是指向同一份数据的另一个指针。修改`a2`，会直接导致`a1`的变化。
+
+ES5 只能用变通方法来复制数组。
+
+```javascript
+const a1 = [1, 2];
+const a2 = a1.concat();
+
+a2[0] = 2;
+a1 // [1, 2]
+```
+
+上面代码中，`a1`会返回原数组的克隆，再修改`a2`就不会对`a1`产生影响。
+
+扩展运算符提供了复制数组的简便写法。
+
+```javascript
+const a1 = [1, 2];
+// 写法一
+const a2 = [...a1];
+// 写法二
+const [...a2] = a1;
+```
+
+上面的两种写法，`a2`都是`a1`的克隆。
+
+**（2）合并数组**
 
 扩展运算符提供了数组合并的新写法。
 
@@ -143,7 +181,7 @@ arr1.concat(arr2, arr3);
 // [ 'a', 'b', 'c', 'd', 'e' ]
 ```
 
-**（2）与解构赋值结合**
+**（3）与解构赋值结合**
 
 扩展运算符可以与解构赋值结合起来，用于生成数组。
 
@@ -180,17 +218,6 @@ const [first, ...middle, last] = [1, 2, 3, 4, 5];
 // 报错
 ```
 
-**（3）函数的返回值**
-
-JavaScript 的函数只能返回一个值，如果需要返回多个值，只能返回数组或对象。扩展运算符提供了解决这个问题的一种变通方法。
-
-```javascript
-var dateFields = readDateFields(database);
-var d = new Date(...dateFields);
-```
-
-上面代码从数据库取出一行数据，通过扩展运算符，直接将其传入构造函数`Date`。
-
 **（4）字符串**
 
 扩展运算符还可以将字符串转为真正的数组。
@@ -200,14 +227,14 @@ var d = new Date(...dateFields);
 // [ "h", "e", "l", "l", "o" ]
 ```
 
-上面的写法，有一个重要的好处，那就是能够正确识别32位的Unicode字符。
+上面的写法，有一个重要的好处，那就是能够正确识别四个字节的 Unicode 字符。
 
 ```javascript
 'x\uD83D\uDE80y'.length // 4
 [...'x\uD83D\uDE80y'].length // 3
 ```
 
-上面代码的第一种写法，JavaScript会将32位Unicode字符，识别为2个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
+上面代码的第一种写法，JavaScript 会将四个字节的 Unicode 字符，识别为 2 个字符，采用扩展运算符就没有这个问题。因此，正确返回字符串长度的函数，可以像下面这样写。
 
 ```javascript
 function length(str) {
@@ -217,7 +244,7 @@ function length(str) {
 length('x\uD83D\uDE80y') // 3
 ```
 
-凡是涉及到操作32位 Unicode 字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
+凡是涉及到操作四个字节的 Unicode 字符的函数，都有这个问题。因此，最好都用扩展运算符改写。
 
 ```javascript
 let str = 'x\uD83D\uDE80y';
@@ -236,8 +263,8 @@ str.split('').reverse().join('')
 任何 Iterator 接口的对象（参阅 Iterator 一章），都可以用扩展运算符转为真正的数组。
 
 ```javascript
-var nodeList = document.querySelectorAll('div');
-var array = [...nodeList];
+let nodeList = document.querySelectorAll('div');
+let array = [...nodeList];
 ```
 
 上面代码中，`querySelectorAll`方法返回的是一个`nodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator 。
@@ -275,7 +302,7 @@ let arr = [...map.keys()]; // [1, 2, 3]
 Generator 函数运行后，返回一个遍历器对象，因此也可以使用扩展运算符。
 
 ```javascript
-var go = function*(){
+const go = function*(){
   yield 1;
   yield 2;
   yield 3;
@@ -289,13 +316,13 @@ var go = function*(){
 如果对没有 Iterator 接口的对象，使用扩展运算符，将会报错。
 
 ```javascript
-var obj = {a: 1, b: 2};
+const obj = {a: 1, b: 2};
 let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 ```
 
 ## Array.from()
 
-`Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括ES6新增的数据结构Set和Map）。
+`Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括 ES6 新增的数据结构 Set 和 Map）。
 
 下面是一个类似数组的对象，`Array.from`将它转为真正的数组。
 
@@ -314,13 +341,13 @@ var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
 let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 ```
 
-实际应用中，常见的类似数组的对象是DOM操作返回的NodeList集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
+实际应用中，常见的类似数组的对象是 DOM 操作返回的 NodeList 集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
 
 ```javascript
 // NodeList对象
 let ps = document.querySelectorAll('p');
-Array.from(ps).forEach(function (p) {
-  console.log(p);
+Array.from(ps).filter(p => {
+  return p.textContent.length > 100;
 });
 
 // arguments对象
@@ -332,7 +359,7 @@ function foo() {
 
 上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`forEach`方法。
 
-只要是部署了Iterator接口的数据结构，`Array.from`都能将其转为数组。
+只要是部署了 Iterator 接口的数据结构，`Array.from`都能将其转为数组。
 
 ```javascript
 Array.from('hello')
@@ -342,7 +369,7 @@ let namesSet = new Set(['a', 'b'])
 Array.from(namesSet) // ['a', 'b']
 ```
 
-上面代码中，字符串和Set结构都具有Iterator接口，因此可以被`Array.from`转为真正的数组。
+上面代码中，字符串和 Set 结构都具有 Iterator 接口，因此可以被`Array.from`转为真正的数组。
 
 如果参数是一个真正的数组，`Array.from`会返回一个一模一样的新数组。
 
@@ -356,7 +383,7 @@ Array.from([1, 2, 3])
 ```javascript
 // arguments对象
 function foo() {
-  var args = [...arguments];
+  const args = [...arguments];
 }
 
 // NodeList对象
@@ -391,7 +418,7 @@ Array.from([1, 2, 3], (x) => x * x)
 // [1, 4, 9]
 ```
 
-下面的例子是取出一组DOM节点的文本内容。
+下面的例子是取出一组 DOM 节点的文本内容。
 
 ```javascript
 let spans = document.querySelectorAll('span.name');
@@ -431,7 +458,7 @@ Array.from({ length: 2 }, () => 'jack')
 
 上面代码中，`Array.from`的第一个参数指定了第二个参数运行的次数。这种特性可以让该方法的用法变得非常灵活。
 
-`Array.from()`的另一个应用是，将字符串转为数组，然后返回字符串的长度。因为它能正确处理各种Unicode字符，可以避免JavaScript将大于`\uFFFF`的Unicode字符，算作两个字符的bug。
+`Array.from()`的另一个应用是，将字符串转为数组，然后返回字符串的长度。因为它能正确处理各种 Unicode 字符，可以避免 JavaScript 将大于`\uFFFF`的 Unicode 字符，算作两个字符的 bug。
 
 ```javascript
 function countSymbols(string) {
@@ -457,7 +484,7 @@ Array(3) // [, , ,]
 Array(3, 11, 8) // [3, 11, 8]
 ```
 
-上面代码中，`Array`方法没有参数、一个参数、三个参数时，返回结果都不一样。只有当参数个数不少于2个时，`Array()`才会返回由参数组成的新数组。参数个数只有一个时，实际上是指定数组的长度。
+上面代码中，`Array`方法没有参数、一个参数、三个参数时，返回结果都不一样。只有当参数个数不少于 2 个时，`Array()`才会返回由参数组成的新数组。参数个数只有一个时，实际上是指定数组的长度。
 
 `Array.of`基本上可以用来替代`Array()`或`new Array()`，并且不存在由于参数不同而导致的重载。它的行为非常统一。
 
@@ -488,8 +515,8 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 
 它接受三个参数。
 
-- target（必需）：从该位置开始替换数据。
-- start（可选）：从该位置开始读取数据，默认为0。如果为负值，表示倒数。
+- target（必需）：从该位置开始替换数据。如果为负值，表示倒数。
+- start（可选）：从该位置开始读取数据，默认为 0。如果为负值，表示倒数。
 - end（可选）：到该位置前停止读取数据，默认等于数组长度。如果为负值，表示倒数。
 
 这三个参数都应该是数值，如果不是，会自动转为数值。
@@ -499,7 +526,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 // [4, 5, 3, 4, 5]
 ```
 
-上面代码表示将从3号位直到数组结束的成员（4和5），复制到从0号位开始的位置，结果覆盖了原来的1和2。
+上面代码表示将从 3 号位直到数组结束的成员（4 和 5），复制到从 0 号位开始的位置，结果覆盖了原来的 1 和 2。
 
 下面是更多例子。
 
@@ -517,7 +544,7 @@ Array.prototype.copyWithin(target, start = 0, end = this.length)
 // {0: 1, 3: 1, length: 5}
 
 // 将2号位到数组结束，复制到0号位
-var i32a = new Int32Array([1, 2, 3, 4, 5]);
+let i32a = new Int32Array([1, 2, 3, 4, 5]);
 i32a.copyWithin(0, 2);
 // Int32Array [3, 4, 5, 4, 5]
 
@@ -536,7 +563,7 @@ i32a.copyWithin(0, 2);
 // -5
 ```
 
-上面代码找出数组中第一个小于0的成员。
+上面代码找出数组中第一个小于 0 的成员。
 
 ```javascript
 [1, 5, 10, 15].find(function(value, index, arr) {
@@ -556,7 +583,17 @@ i32a.copyWithin(0, 2);
 
 这两个方法都可以接受第二个参数，用来绑定回调函数的`this`对象。
 
-另外，这两个方法都可以发现`NaN`，弥补了数组的`IndexOf`方法的不足。
+```javascript
+function f(v){
+  return v > this.age;
+}
+let person = {name: 'John', age: 20};
+[10, 12, 26, 15].find(f, person);    // 26
+```
+
+上面的代码中，`find`函数接收了第二个参数`person`对象，回调函数中的`this`对象指向`person`对象。
+
+另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf`方法的不足。
 
 ```javascript
 [NaN].indexOf(NaN)
@@ -568,7 +605,7 @@ i32a.copyWithin(0, 2);
 
 上面代码中，`indexOf`方法无法识别数组的`NaN`成员，但是`findIndex`方法可以借助`Object.is`方法做到。
 
-## 数组实例的fill()
+## 数组实例的 fill()
 
 `fill`方法使用给定值，填充一个数组。
 
@@ -589,7 +626,7 @@ new Array(3).fill(7)
 // ['a', 7, 'c']
 ```
 
-上面代码表示，`fill`方法从1号位开始，向原数组填充7，到2号位之前结束。
+上面代码表示，`fill`方法从 1 号位开始，向原数组填充 7，到 2 号位之前结束。
 
 ## 数组实例的 entries()，keys() 和 values()
 
@@ -688,7 +725,7 @@ contains(['foo', 'bar'], 'baz'); // => false
 Array(3) // [, , ,]
 ```
 
-上面代码中，`Array(3)`返回一个具有3个空位的数组。
+上面代码中，`Array(3)`返回一个具有 3 个空位的数组。
 
 注意，空位不是`undefined`，一个位置的值等于`undefined`，依然是有值的。空位是没有任何值，`in`运算符可以说明这一点。
 
@@ -697,11 +734,11 @@ Array(3) // [, , ,]
 0 in [, , ,] // false
 ```
 
-上面代码说明，第一个数组的0号位置是有值的，第二个数组的0号位置没有值。
+上面代码说明，第一个数组的 0 号位置是有值的，第二个数组的 0 号位置没有值。
 
 ES5 对空位的处理，已经很不一致了，大多数情况下会忽略空位。
 
-- `forEach()`, `filter()`, `every()` 和`some()`都会跳过空位。
+- `forEach()`, `filter()`, `reduce()`, `every()` 和`some()`都会跳过空位。
 - `map()`会跳过空位，但会保留这个值
 - `join()`和`toString()`会将空位视为`undefined`，而`undefined`和`null`会被处理成空字符串。
 
@@ -714,6 +751,9 @@ ES5 对空位的处理，已经很不一致了，大多数情况下会忽略空�
 
 // every方法
 [,'a'].every(x => x==='a') // true
+
+// reduce方法
+[1,,2].reduce((x,y) => return x+y) // 3
 
 // some方法
 [,'a'].some(x => x !== 'a') // false
@@ -789,4 +829,3 @@ for (let i of arr) {
 ```
 
 由于空位的处理规则非常不统一，所以建议避免出现空位。
-

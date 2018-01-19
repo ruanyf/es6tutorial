@@ -122,7 +122,7 @@ let [x, y = 'b'] = ['a']; // x='a', y='b'
 let [x, y = 'b'] = ['a', undefined]; // x='a', y='b'
 ```
 
-注意，ES6 内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，如果一个数组成员不严格等于`undefined`，默认值是不会生效的。
+注意，ES6 内部使用严格相等运算符（`===`），判断一个位置是否有值。所以，只有当一个数组成员严格等于`undefined`，默认值才会生效。
 
 ```javascript
 let [x = 1] = [undefined];
@@ -161,10 +161,10 @@ if ([1][0] === undefined) {
 let [x = 1, y = x] = [];     // x=1; y=1
 let [x = 1, y = x] = [2];    // x=2; y=2
 let [x = 1, y = x] = [1, 2]; // x=1; y=2
-let [x = y, y = 1] = [];     // ReferenceError
+let [x = y, y = 1] = [];     // ReferenceError: y is not defined
 ```
 
-上面最后一个表达式之所以会报错，是因为`x`用到默认值`y`时，`y`还没有声明。
+上面最后一个表达式之所以会报错，是因为`x`用`y`做默认值时，`y`还没有声明。
 
 ## 对象的解构赋值
 
@@ -192,7 +192,7 @@ baz // undefined
 如果变量名与属性名不一致，必须写成下面这样。
 
 ```javascript
-var { foo: baz } = { foo: 'aaa', bar: 'bbb' };
+let { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 
 let obj = { first: 'hello', last: 'world' };
@@ -251,7 +251,7 @@ p // ["Hello", {y: "World"}]
 下面是另一个例子。
 
 ```javascript
-var node = {
+const node = {
   loc: {
     start: {
       line: 1,
@@ -260,7 +260,7 @@ var node = {
   }
 };
 
-var { loc, loc: { start }, loc: { start: { line }} } = node;
+let { loc, loc: { start }, loc: { start: { line }} } = node;
 line // 1
 loc  // Object {start: Object}
 start // Object {line: 1, column: 5}
@@ -310,7 +310,7 @@ var {x = 3} = {x: null};
 x // null
 ```
 
-上面代码中，如果`x`属性等于`null`，就不严格相等于`undefined`，导致默认值不会生效。
+上面代码中，属性`x`等于`null`，因为`null`与`undefined`不严格相等，所以是个有效的赋值，导致默认值`3`不会生效。
 
 如果解构失败，变量的值等于`undefined`。
 
@@ -379,7 +379,7 @@ first // 1
 last // 3
 ```
 
-上面代码对数组进行对象解构。数组`arr`的`0`键对应的值是`1`，`[arr.length - 1]`就是`2`键，对应的值是`3`。方括号这种写法，属于“属性名表达式”，参见《对象的扩展》一章。
+上面代码对数组进行对象解构。数组`arr`的`0`键对应的值是`1`，`[arr.length - 1]`就是`2`键，对应的值是`3`。方括号这种写法，属于“属性名表达式”（参见《对象的扩展》一章）。
 
 ## 字符串的解构赋值
 
@@ -506,7 +506,7 @@ let {(x): c} = {};
 let { o: ({ p: p }) } = { o: { p: 2 } };
 ```
 
-上面6个语句都会报错，因为它们都是变量声明语句，模式不能使用圆括号。
+上面 6 个语句都会报错，因为它们都是变量声明语句，模式不能使用圆括号。
 
 （2）函数参数
 
@@ -600,9 +600,9 @@ function f({x, y, z}) { ... }
 f({z: 3, y: 2, x: 1});
 ```
 
-**（4）提取JSON数据**
+**（4）提取 JSON 数据**
 
-解构赋值对提取JSON对象中的数据，尤其有用。
+解构赋值对提取 JSON 对象中的数据，尤其有用。
 
 ```javascript
 let jsonData = {
@@ -637,12 +637,12 @@ jQuery.ajax = function (url, {
 
 指定参数的默认值，就避免了在函数体内部再写`var foo = config.foo || 'default foo';`这样的语句。
 
-**（6）遍历Map结构**
+**（6）遍历 Map 结构**
 
-任何部署了Iterator接口的对象，都可以用`for...of`循环遍历。Map结构原生支持Iterator接口，配合变量的解构赋值，获取键名和键值就非常方便。
+任何部署了 Iterator 接口的对象，都可以用`for...of`循环遍历。Map 结构原生支持 Iterator 接口，配合变量的解构赋值，获取键名和键值就非常方便。
 
 ```javascript
-var map = new Map();
+const map = new Map();
 map.set('first', 'hello');
 map.set('second', 'world');
 

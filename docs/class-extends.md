@@ -92,6 +92,23 @@ cp instanceof Point // true
 
 上面代码中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与 ES5 的行为完全一致。
 
+最后，父类的静态方法，也会被子类继承。
+
+```javascript
+class A {
+  static hello() {
+    console.log('hello world');
+  }
+}
+
+class B extends A {
+}
+
+B.hello()  // hello world
+```
+
+上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
+
 ## Object.getPrototypeOf()
 
 `Object.getPrototypeOf`方法可以用来从子类上获取父类。
@@ -214,7 +231,7 @@ let b = new B();
 
 上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
 
-ES6 规定，通过`super`调用父类的方法时，`super`会绑定子类的`this`。
+ES6 规定，通过`super`调用父类的方法时，方法内部的`this`指向子类。
 
 ```javascript
 class A {
@@ -240,9 +257,9 @@ let b = new B();
 b.m() // 2
 ```
 
-上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`会绑定子类`B`的`this`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`内部的`this`指向子类`B`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
 
-由于绑定子类的`this`，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
+由于`this`指向子类，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
 
 ```javascript
 class A {
@@ -325,7 +342,7 @@ class B extends A {
 let b = new B();
 ```
 
-上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`绑定`B`的`this`，所以`super.valueOf()`返回的是一个`B`的实例。
+上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`使得`this`指向`B`，所以`super.valueOf()`返回的是一个`B`的实例。
 
 最后，由于对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
@@ -519,7 +536,7 @@ MyArray.prototype = Object.create(Array.prototype, {
 });
 ```
 
-上面代码定义了一个继承Array的`MyArray`类。但是，这个类的行为与`Array`完全不一致。
+上面代码定义了一个继承 Array 的`MyArray`类。但是，这个类的行为与`Array`完全不一致。
 
 ```javascript
 var colors = new MyArray();
@@ -647,15 +664,29 @@ o.attr === true  // false
 
 ## Mixin 模式的实现
 
-Mixin 模式指的是，将多个类的接口“混入”（mix in）另一个类。它在 ES6 的实现如下。
+Mixin 指的是多个对象合成一个新的对象，新对象具有各个组成成员的接口。它的最简单实现如下。
+
+```javascript
+const a = {
+  a: 'a'
+};
+const b = {
+  b: 'b'
+};
+const c = {...a, ...b}; // {a: 'a', b: 'b'}
+```
+
+上面代码中，`c`对象是`a`对象和`b`对象的合成，具有两者的接口。
+
+下面是一个更完备的实现，将多个类的接口“混入”（mix in）另一个类。
 
 ```javascript
 function mix(...mixins) {
   class Mix {}
 
   for (let mixin of mixins) {
-    copyProperties(Mix, mixin);
-    copyProperties(Mix.prototype, mixin.prototype);
+    copyProperties(Mix, mixin); // 拷贝实例属性
+    copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
   }
 
   return Mix;
@@ -681,4 +712,3 @@ class DistributedEdit extends mix(Loggable, Serializable) {
   // ...
 }
 ```
-

@@ -290,7 +290,7 @@ p1.__proto__ === p2.__proto__
 
 这也意味着，可以通过实例的`__proto__`属性为“类”添加方法。
 
-> `__proto__` 并不是语言本身的特性，这是各大厂商具体实现时添加的私有属性，虽然目前很多现代浏览器的JS引擎中都提供了这个私有属性，但依旧不建议在生产中使用该属性，避免对环境产生依赖。生产环境中，我们可以使用 `Object.getPrototypeOf` 方法来获取实例对象的原型，然后再来为原型添加方法/属性。
+> `__proto__` 并不是语言本身的特性，这是各大厂商具体实现时添加的私有属性，虽然目前很多现代浏览器的 JS 引擎中都提供了这个私有属性，但依旧不建议在生产中使用该属性，避免对环境产生依赖。生产环境中，我们可以使用 `Object.getPrototypeOf` 方法来获取实例对象的原型，然后再来为原型添加方法/属性。
 
 ```javascript
 var p1 = new Point(2,3);
@@ -374,7 +374,9 @@ class Foo {}
 
 上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
 
-## 私有方法
+## 私有方法和私有属性
+
+### 现有的方法
 
 私有方法是常见需求，但 ES6 不提供，只能通过变通方法模拟实现。
 
@@ -441,9 +443,9 @@ export default class myClass{
 
 上面代码中，`bar`和`snaf`都是`Symbol`值，导致第三方无法获取到它们，因此达到了私有方法和私有属性的效果。
 
-## 私有属性
+### 私有属性的提案
 
-与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-class-fields#private-fields)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
 
 ```javascript
 class Point {
@@ -484,6 +486,28 @@ class Foo {
   constructor(a, b) { #a = a; #b = b; }
 }
 ```
+
+上面代码中，`#sum()`就是一个私有方法。
+
+另外，私有属性也可以设置 getter 和 setter 方法。
+
+```javascript
+class Counter {
+  #xValue = 0;
+
+  get #x() { return #xValue; }
+  set #x(value) {
+    this.#xValue = value;
+  }
+
+  constructor() {
+    super();
+    // ...
+  }
+}
+```
+
+上面代码中，`#x`是一个私有属性，它的读写都通过`get #x()`和`set #x()`来完成。
 
 ## this 的指向
 
@@ -842,16 +866,16 @@ class Foo {
 
 上面代码中，老写法的静态属性定义在类的外部。整个类生成以后，再生成静态属性。这样让人很容易忽略这个静态属性，也不符合相关代码应该放在一起的代码组织原则。另外，新写法是显式声明（declarative），而不是赋值处理，语义更好。
 
-## new.target属性
+## new.target 属性
 
-`new`是从构造函数生成实例的命令。ES6 为`new`命令引入了一个`new.target`属性，该属性一般用在构造函数之中，返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
+`new`是从构造函数生成实例对象的命令。ES6 为`new`命令引入了一个`new.target`属性，该属性一般用在构造函数之中，返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
 
 ```javascript
 function Person(name) {
   if (new.target !== undefined) {
     this.name = name;
   } else {
-    throw new Error('必须使用new生成实例');
+    throw new Error('必须使用 new 命令生成实例');
   }
 }
 
@@ -860,7 +884,7 @@ function Person(name) {
   if (new.target === Person) {
     this.name = name;
   } else {
-    throw new Error('必须使用 new 生成实例');
+    throw new Error('必须使用 new 命令生成实例');
   }
 }
 
@@ -930,4 +954,3 @@ var y = new Rectangle(3, 4);  // 正确
 上面代码中，`Shape`类不能被实例化，只能用于继承。
 
 注意，在函数外部，使用`new.target`会报错。
-
