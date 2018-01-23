@@ -238,7 +238,7 @@ f()
 
 注意，上面代码中，`await`语句前面没有`return`，但是`reject`方法的参数依然传入了`catch`方法的回调函数。这里如果在`await`前面加上`return`，效果是一样的。
 
-只要一个`await`语句后面的 Promise 变为`reject`，那么整个`async`函数都会中断执行。
+只要一个`await`语句后面的 Promise 变为`reject`，那么整个`async`函数都会中断执行并报错。
 
 ```javascript
 async function f() {
@@ -297,8 +297,7 @@ f()
 // Error：出错了
 ```
 
-上面代码中，`async`函数`f`执行后，`await`后面的 Promise 对象会抛出一个错误对象，导致`catch`方法的回调函数被调用，它的参数就是抛出的错误对象。具体的执行机制，可以参考后文的“async 函数的实现原理”。
-
+上面代码中，`async`函数`f`执行后，`await`后面的 Promise 对象会抛出一个错误对象，会中断代码执行，`catch`方法的回调函数并不会被调用。
 防止出错的方法，也是将其放在`try...catch`代码块之中。
 
 ```javascript
