@@ -865,32 +865,17 @@ ES6 还为原生的 String 对象，提供了一个`raw`方法。
 
 ```javascript
 String.raw`Hi\n${2+3}!`;
-// "Hi\\n5!"
+// 返回 "Hi\\n5!"
 
 String.raw`Hi\u000A!`;
-// 'Hi\\u000A!'
+// 返回 "Hi\\u000A!"
 ```
 
-如果原字符串的斜杠已经转义，那么`String.raw`不会做任何处理。
+如果原字符串的斜杠已经转义，那么`String.raw`会进行再次转义。
 
 ```javascript
 String.raw`Hi\\n`
-// "Hi\\n"
-```
-
-`String.raw`的代码基本如下。
-
-```javascript
-String.raw = function (strings, ...values) {
-  let output = "";
-  let index;
-  for (index = 0; index < values.length; index++) {
-    output += strings.raw[index] + values[index];
-  }
-
-  output += strings.raw[index]
-  return output;
-}
+// 返回 "Hi\\\\n"
 ```
 
 `String.raw`方法可以作为处理模板字符串的基本方法，它会将所有变量替换，而且对斜杠进行转义，方便下一步作为字符串来使用。
@@ -903,6 +888,21 @@ String.raw({ raw: 'test' }, 0, 1, 2);
 
 // 等同于
 String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
+```
+
+作为函数，`String.raw`的代码实现基本如下。
+
+```javascript
+String.raw = function (strings, ...values) {
+  let output = '';
+  let index;
+  for (index = 0; index < values.length; index++) {
+    output += strings.raw[index] + values[index];
+  }
+
+  output += strings.raw[index]
+  return output;
+}
 ```
 
 ## 模板字符串的限制
