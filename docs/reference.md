@@ -67,6 +67,7 @@
 - Axel Rauschmayer, [New regular expression features in ECMAScript 6](http://www.2ality.com/2015/07/regexp-es6.html)：ES6 正则特性的详细介绍
 - Yang Guo, [RegExp lookbehind assertions](http://v8project.blogspot.jp/2016/02/regexp-lookbehind-assertions.html)：介绍后行断言
 - Axel Rauschmayer, [ES proposal: RegExp named capture groups](http://2ality.com/2017/05/regexp-named-capture-groups.html): 具名组匹配的介绍
+- Mathias Bynens, [ECMAScript regular expressions are getting better!](https://mathiasbynens.be/notes/es-regexp-proposals): 介绍 ES2018 添加的多项正则语法
 
 ## 数值
 

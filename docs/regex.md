@@ -291,9 +291,9 @@ ES6 为正则表达式新增了`flags`属性，会返回正则表达式的修饰
 
 ## s 修饰符：dotAll 模式
 
-正则表达式中，点（`.`）是一个特殊字符，代表任意的单个字符，但是行终止符（line terminator character）除外。
+正则表达式中，点（`.`）是一个特殊字符，代表任意的单个字符，但是有两个例外。一个是四个字节的 UTF-16 字符，这个可以用`u`修饰符解决；另一个是行终止符（line terminator character）。
 
-以下四个字符属于”行终止符“。
+所谓行终止符，就是该字符表示一行的终结。以下四个字符属于”行终止符“。
 
 - U+000A 换行符（`\n`）
 - U+000D 回车符（`\r`）
@@ -314,7 +314,7 @@ ES6 为正则表达式新增了`flags`属性，会返回正则表达式的修饰
 // true
 ```
 
-这种解决方案毕竟不太符合直觉，所以现在有一个[提案](https://github.com/mathiasbynens/es-regexp-dotall-flag)，引入`/s`修饰符，使得`.`可以匹配任意单个字符。
+这种解决方案毕竟不太符合直觉，ES2018 [引入](https://github.com/tc39/proposal-regexp-dotall-flag)`s`修饰符，使得`.`可以匹配任意单个字符。
 
 ```javascript
 /foo.bar/s.test('foo\nbar') // true
@@ -336,7 +336,7 @@ re.flags // 's'
 
 ## 后行断言
 
-JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。目前，有一个[提案](https://github.com/goyakin/es-regexp-lookbehind)，引入后行断言，V8 引擎 4.9 版已经支持。
+JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先行否定断言（negative lookahead），不支持后行断言（lookbehind）和后行否定断言（negative lookbehind）。ES2018 引入[后行断言](https://github.com/tc39/proposal-regexp-lookbehind)，V8 引擎 4.9 版（Chrome 62）已经支持。
 
 ”先行断言“指的是，`x`只有在`y`前面才匹配，必须写成`/x(?=y)/`。比如，只匹配百分号之前的数字，要写成`/\d+(?=%)/`。”先行否定断言“指的是，`x`只有不在`y`前面才匹配，必须写成`/x(?!y)/`。比如，只匹配不在百分号之前的数字，要写成`/\d+(?!%)/`。
 
@@ -375,9 +375,9 @@ const RE_DOLLAR_PREFIX = /(?<=\$)foo/g;
 /^(\d+)(\d+)$/.exec('1053') // ["1053", "105", "3"]
 ```
 
-上面代码中，需要捕捉两个组匹配。没有"后行断言"时，第一个括号是贪婪模式，第二个括号只能捕获一个字符，所以结果是`105`和`3`。而"后行断言"时，由于执行顺序是从右到左，第二个括号是贪婪模式，第一个括号只能捕获一个字符，所以结果是`1`和`053`。
+上面代码中，需要捕捉两个组匹配。没有“后行断言”时，第一个括号是贪婪模式，第二个括号只能捕获一个字符，所以结果是`105`和`3`。而“后行断言”时，由于执行顺序是从右到左，第二个括号是贪婪模式，第一个括号只能捕获一个字符，所以结果是`1`和`053`。
 
-其次，"后行断言"的反斜杠引用，也与通常的顺序相反，必须放在对应的那个括号之前。
+其次，“后行断言”的反斜杠引用，也与通常的顺序相反，必须放在对应的那个括号之前。
 
 ```javascript
 /(?<=(o)d\1)r/.exec('hodor')  // null
@@ -388,7 +388,7 @@ const RE_DOLLAR_PREFIX = /(?<=\$)foo/g;
 
 ## Unicode 属性类
 
-目前，有一个[提案](https://github.com/mathiasbynens/es-regexp-unicode-property-escapes)，引入了一种新的类的写法`\p{...}`和`\P{...}`，允许正则表达式匹配符合 Unicode 某种属性的所有字符。
+ES2018 [引入](https://github.com/tc39/proposal-regexp-unicode-property-escapes)了一种新的类的写法`\p{...}`和`\P{...}`，允许正则表达式匹配符合 Unicode 某种属性的所有字符。
 
 ```javascript
 const regexGreekSymbol = /\p{Script=Greek}/u;
@@ -403,10 +403,11 @@ Unicode 属性类要指定属性名和属性值。
 \p{UnicodePropertyName=UnicodePropertyValue}
 ```
 
-对于某些属性，可以只写属性名。
+对于某些属性，可以只写属性名，或者只写属性值。
 
 ```javascript
 \p{UnicodePropertyName}
+\p{UnicodePropertyValue}
 ```
 
 `\P{…}`是`\p{…}`的反向匹配，即匹配不满足条件的字符。
@@ -435,11 +436,17 @@ regex.test('ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ') // true
 下面是其他一些例子。
 
 ```javascript
+// 匹配所有空格
+\p{White_Space}
+
 // 匹配各种文字的所有字母，等同于 Unicode 版的 \w
 [\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
 
 // 匹配各种文字的所有非字母的字符，等同于 Unicode 版的 \W
 [^\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
+
+// 匹配 Emoji
+/\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu
 
 // 匹配所有的箭头字符
 const regexArrows = /^\p{Block=Arrows}+$/u;
@@ -459,15 +466,17 @@ const RE_DATE = /(\d{4})-(\d{2})-(\d{2})/;
 上面代码中，正则表达式里面有三组圆括号。使用`exec`方法，就可以将这三组匹配结果提取出来。
 
 ```javascript
+const RE_DATE = /(\d{4})-(\d{2})-(\d{2})/;
+
 const matchObj = RE_DATE.exec('1999-12-31');
 const year = matchObj[1]; // 1999
 const month = matchObj[2]; // 12
 const day = matchObj[3]; // 31
 ```
 
-组匹配的一个问题是，每一组的匹配含义不容易看出来，而且只能用数字序号引用，要是组的顺序变了，引用的时候就必须修改序号。
+组匹配的一个问题是，每一组的匹配含义不容易看出来，而且只能用数字序号（比如`matchObj[1]`）引用，要是组的顺序变了，引用的时候就必须修改序号。
 
-现在有一个“具名组匹配”（Named Capture Groups）的[提案](https://github.com/tc39/proposal-regexp-named-groups)，允许为每一个组匹配指定一个名字，既便于阅读代码，又便于引用。
+ES2018 引入了[具名组匹配](https://github.com/tc39/proposal-regexp-named-groups)（Named Capture Groups），允许为每一个组匹配指定一个名字，既便于阅读代码，又便于引用。
 
 ```javascript
 const RE_DATE = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
@@ -559,3 +568,53 @@ const RE_TWICE = /^(?<word>[a-z]+)!\k<word>!\1$/;
 RE_TWICE.test('abc!abc!abc') // true
 RE_TWICE.test('abc!abc!ab') // false
 ```
+
+## String.prototype.matchAll
+
+如果一个正则表达式在字符串里面有多个匹配，现在一般使用`g`修饰符或`y`修饰符，在循环里面逐一取出。
+
+```javascript
+var regex = /t(e)(st(\d?))/g;
+var string = 'test1test2test3';
+
+var matches = [];
+var match;
+while (match = regex.exec(string)) {
+  matches.push(match);
+}
+
+matches
+// [
+//   ["test1", "e", "st1", "1", index: 0, input: "test1test2test3"],
+//   ["test2", "e", "st2", "2", index: 5, input: "test1test2test3"],
+//   ["test3", "e", "st3", "3", index: 10, input: "test1test2test3"]
+// ]
+```
+
+上面代码中，`while`循环取出每一轮的正则匹配，一共三轮。
+
+目前有一个[提案](https://github.com/tc39/proposal-string-matchall)，增加了`String.prototype.matchAll`方法，可以一次性取出所有匹配。不过，它返回的是一个遍历器（Iterator），而不是数组。
+
+```javascript
+const string = 'test1test2test3';
+const regex = /t(e)(st(\d?))/g;
+for (const match of string.matchAll(regex)) {
+  console.log(match);
+}
+// ["test1", "e", "st1", "1", index: 0, input: "test1test2test3"]
+// ["test2", "e", "st2", "2", index: 5, input: "test1test2test3"]
+// ["test3", "e", "st3", "3", index: 10, input: "test1test2test3"]
+```
+
+上面代码中，由于`string.matchAll(regex)`返回的是遍历器，所以可以用`for...of`循环取出。相对于返回数组，返回遍历器的好处在于，如果匹配结果是一个很大的数组，那么遍历器比较节省资源。
+
+遍历器转为数组是非常简单的，使用`...`运算符和`Array.from`方法就可以了。
+
+```javascript
+// 转为数组方法一
+[...string.matchAll(regex)]
+
+// 转为数组方法二
+Array.from(string.matchAll(regex));
+```
+
