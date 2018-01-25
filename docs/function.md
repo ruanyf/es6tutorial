@@ -1331,7 +1331,7 @@ clownsEverywhere(
 
 ## catch 语句的参数
 
-目前，有一个[提案](https://github.com/tc39/proposal-optional-catch-binding)，允许`try...catch`结构中的`catch`语句调用时不带有参数。这个提案跟参数有关，也放在这一章介绍。
+ES2018 [允许](https://github.com/tc39/proposal-optional-catch-binding)`try...catch`结构的`catch`语句不带有参数。这个提案跟参数有关，也放在这一章介绍。
 
 传统的写法是`catch`语句必须带有参数，用来接收`try`代码块抛出的错误。
 
@@ -1342,6 +1342,8 @@ try {
   //  ···
 }
 ```
+
+上面代码中，即使没有用到`error`，传统写法也是不允许省略。
 
 新的写法允许省略`catch`后面的参数，而不报错。
 
@@ -1364,4 +1366,4 @@ try {
 }
 ```
 
-上面代码中，`JSON.parse`报错只有一种可能：解析失败。因此，可以不需要抛出的错误实例。
+上面代码中，`JSON.parse`报错只有一种可能：解析失败。所以一旦报错，基本上不需要用到错误实例，所以可以省略`catch`后面的参数。

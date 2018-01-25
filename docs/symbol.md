@@ -569,13 +569,17 @@ a2[1] = 6;
 class MyArray extends Array {
 }
 
-const a = new MyArray();
-a.map(x => x) instanceof MyArray // true
+const a = new MyArray(1, 2, 3);
+const b = a.map(x => x);
+const c = a.filter(x => x > 1);
+
+b instanceof MyArray // true
+c instanceof MyArray // true
 ```
 
-上面代码中，子类`MyArray`继承了父类`Array`。`a.map(x => x)`会创建一个`MyArray`的衍生对象，该衍生对象还是`MyArray`的实例。
+上面代码中，子类`MyArray`继承了父类`Array`，`a`是`MyArray`的实例，`b`和`c`是`a`的衍生对象。你可能会认为，`b`和`c`都是调用数组方法生成的，所以应该是数组（`Array`的实例），但实际上它们也是`MyArray`的实例。
 
-现在，`MyArray`设置`Symbol.species`属性。
+`Symbol.species`属性就是为了解决这个问题而提供的。现在，我们可以为`MyArray`设置`Symbol.species`属性。
 
 ```javascript
 class MyArray extends Array {
@@ -583,7 +587,7 @@ class MyArray extends Array {
 }
 ```
 
-上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
+上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`取值器。默认的`Symbol.species`属性等同于下面的写法。
 
 ```javascript
 static get [Symbol.species]() {
@@ -599,11 +603,13 @@ class MyArray extends Array {
 }
 
 const a = new MyArray();
-a.map(x => x) instanceof MyArray // false
-a.map(x => x) instanceof Array // true
+const b = a.map(x => x);
+
+b instanceof MyArray // false
+b instanceof Array // true
 ```
 
-上面代码中，`a.map(x => x)`创建的衍生对象，就不是`MyArray`的实例，而直接就是`Array`的实例。
+上面代码中，`a.map(x => x)`生成的衍生对象，就不是`MyArray`的实例，而直接就是`Array`的实例。
 
 再看一个例子。
 
