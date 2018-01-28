@@ -501,12 +501,12 @@ let o = new MyClass();
 ```javascript
 export { foo, bar } from 'my_module';
 
-// 等同于
+// 可以简单理解为
 import { foo, bar } from 'my_module';
 export { foo, bar };
 ```
 
-上面代码中，`export`和`import`语句可以结合在一起，写成一行。
+上面代码中，`export`和`import`语句可以结合在一起，写成一行。但需要注意的是实际上foo、bar并没有被导入到当前模块，不能直接使用foo、bar模块。
 
 模块的接口改名和整体输出，也可以采用这种写法。
 
