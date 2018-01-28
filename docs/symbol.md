@@ -422,11 +422,13 @@ console.log(a.foo);
 但是，这里有一个问题，全局变量`global._foo`是可写的，任何文件都可以修改。
 
 ```javascript
+global._foo = { foo: 'world' };
+
 const a = require('./mod.js');
-global._foo = 123;
+console.log(a.foo);
 ```
 
-上面的代码，会使得别的脚本加载`mod.js`都失真。
+上面的代码，会使得加载`mod.js`的脚本都失真。
 
 为了防止这种情况出现，我们就可以使用 Symbol。
 
@@ -448,8 +450,9 @@ module.exports = global[FOO_KEY];
 上面代码中，可以保证`global[FOO_KEY]`不会被无意间覆盖，但还是可以被改写。
 
 ```javascript
+global[Symbol.for('foo')] = { foo: 'world' };
+
 const a = require('./mod.js');
-global[Symbol.for('foo')] = 123;
 ```
 
 如果键名使用`Symbol`方法生成，那么外部将无法引用这个值，当然也就无法改写。
@@ -461,7 +464,7 @@ const FOO_KEY = Symbol('foo');
 // 后面代码相同 ……
 ```
 
-上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然 Node 会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
+上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然 Node 会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是绝对可靠。
 
 ## 内置的 Symbol 值
 
