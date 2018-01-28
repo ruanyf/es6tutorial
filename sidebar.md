@@ -32,6 +32,7 @@
 1. [编程风格](#docs/style)
 1. [读懂规格](#docs/spec)
 1. [ArrayBuffer](#docs/arraybuffer)
+1. [最新提案](#docs/proposals)
 1. [参考链接](#docs/reference)
 
 ## 其他
