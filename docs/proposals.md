@@ -117,3 +117,46 @@ class Product {
 上面代码中，`throw`都出现在表达式里面。
 
 语法上，`throw`表达式里面的`throw`不再是一个命令，而是一个运算符。为了避免与`throw`命令混淆，规定`throw`出现在行首，一律解释为`throw`语句，而不是`throw`表达式。
+
+## Null 传导运算符
+
+编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
+
+```javascript
+const firstName = (message
+  && message.body
+  && message.body.user
+  && message.body.user.firstName) || 'default';
+```
+
+这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
+
+```javascript
+const firstName = message?.body?.user?.firstName || 'default';
+```
+
+上面代码有三个`?.`运算符，只要其中一个返回`null`或`undefined`，就不再往下运算，而是返回`undefined`。
+
+“Null 传导运算符”有四种用法。
+
+- `obj?.prop` // 读取对象属性
+- `obj?.[expr]` // 同上
+- `func?.(...args)` // 函数或对象方法的调用
+- `new C?.(...args)` // 构造函数的调用
+
+传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
+
+下面是更多的例子。
+
+```javascript
+// 如果 a 是 null 或 undefined, 返回 undefined
+// 否则返回 a.b.c().d
+a?.b.c().d
+
+// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
+// 否则执行 a.b = 42
+a?.b = 42
+
+// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
+delete a?.b
+```

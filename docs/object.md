@@ -1255,11 +1255,11 @@ a // 1
 b // [2, 3]
 ```
 
-ES2017 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
+ES2018 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
 
-**（1）解构赋值**
+### 解构赋值
 
-对象的解构赋值用于从一个对象取值，相当于将所有可遍历的、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
+对象的解构赋值用于从一个对象取值，相当于将目标对象自身的所有可遍历的（enumerable）、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
 
 ```javascript
 let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
@@ -1331,7 +1331,7 @@ function baseFunction({ a, b }) {
   // ...
 }
 function wrapperFunction({ x, y, ...restConfig }) {
-  // 使用x和y参数进行操作
+  // 使用 x 和 y 参数进行操作
   // 其余参数传给原始函数
   return baseFunction(restConfig);
 }
@@ -1339,9 +1339,9 @@ function wrapperFunction({ x, y, ...restConfig }) {
 
 上面代码中，原始函数`baseFunction`接受`a`和`b`作为参数，函数`wrapperFunction`在`baseFunction`的基础上进行了扩展，能够接受多余的参数，并且保留原始函数的行为。
 
-**（2）扩展运算符**
+### 扩展运算符
 
-扩展运算符（`...`）用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
+对象的扩展运算符（`...`）用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
 
 ```javascript
 let z = { a: 3, b: 4 };
@@ -1419,6 +1419,8 @@ let newVersion = {
 ```javascript
 let aWithDefaults = { x: 1, y: 2, ...a };
 // 等同于
+ even if property keys don’t clash, because objects record insertion order:
+
 let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
 // 等同于
 let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
@@ -1438,6 +1440,8 @@ const obj = {
 ```javascript
 {...{}, a: 1}
 // { a: 1 }
+ even if property keys don’t clash, because objects record insertion order:
+
 ```
 
 如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
@@ -1468,45 +1472,3 @@ let runtimeError = {
 };
 ```
 
-## Null 传导运算符
-
-编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
-
-```javascript
-const firstName = (message
-  && message.body
-  && message.body.user
-  && message.body.user.firstName) || 'default';
-```
-
-这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
-
-```javascript
-const firstName = message?.body?.user?.firstName || 'default';
-```
-
-上面代码有三个`?.`运算符，只要其中一个返回`null`或`undefined`，就不再往下运算，而是返回`undefined`。
-
-“Null 传导运算符”有四种用法。
-
-- `obj?.prop` // 读取对象属性
-- `obj?.[expr]` // 同上
-- `func?.(...args)` // 函数或对象方法的调用
-- `new C?.(...args)` // 构造函数的调用
-
-传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
-
-下面是更多的例子。
-
-```javascript
-// 如果 a 是 null 或 undefined, 返回 undefined
-// 否则返回 a.b.c().d
-a?.b.c().d
-
-// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
-// 否则执行 a.b = 42
-a?.b = 42
-
-// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
-delete a?.b
-```
