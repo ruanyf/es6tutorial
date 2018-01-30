@@ -1076,6 +1076,7 @@ function* g() {
 }
 
 let obj = g();
+obj.next();
 obj.a // undefined
 ```
 
