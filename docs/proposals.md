@@ -190,3 +190,189 @@ const PS = eval("'\u2029'");
 根据这个提案，上面的代码不会报错。
 
 注意，模板字符串现在就允许直接输入这两个字符。另外，正则表达式依然不允许直接输入这两个字符，这是没有问题的，因为 JSON 本来就不允许直接包含正则表达式。
+
+## 函数的部分执行
+
+### 语法
+
+多参数的函数有时需要绑定其中的一个或多个函数，然后返回一个新函数。
+
+```javascript
+function add(x, y) { return x + y; }
+function add7(x) { return x + 7; }
+```
+
+上面代码中，`add7`函数其实是`add`函数的一个特殊版本，通过将一个参数绑定为`7`，就可以从`add`得到`add7`。
+
+```javascript
+// bind 方法
+const add7 = add.bind(null, 7);
+
+// 箭头函数
+const add7 = x => add(x, 7);
+```
+
+上面两种写法都有些冗余。其中，`bind`方法的局限更加明显，它必须提供`this`，并且只能从前到后一个个绑定参数，无法只绑定非头部的参数。
+
+现在有一个[提案](https://github.com/tc39/proposal-partial-application)，使用绑定参数然后返回一个新函数更加容器。这叫做函数的部分执行（partial application）。
+
+```javascript
+const add = (x, y) => x + y;
+const addOne = add(1, ?);
+
+const maxGreaterThanZero = Math.max(0, ...);
+```
+
+根据新提案，`?`是单个参数的占位符，`...`是多个参数的占位符。以下的形式都属于函数的部分执行。
+
+```javascript
+f(x, ?)
+f(x, ...)
+f(?, x)
+f(..., x)
+f(?, x, ?)
+f(..., x, ...)
+```
+
+`?`和`...`只能出现在函数的调用之中，并且会返回一个新函数。
+
+```javascript
+const g = f(?, 1, ...);
+// 等同于
+const g = (x, ...y) => f(x, 1, ...y);
+```
+
+### 注意点
+
+函数的部分执行有一些特别注意的地方。
+
+（1）函数的部分执行是基于原函数的。如果原函数发生变化，部分执行生成的新函数也会立即反映这种变化。
+
+```javascript
+let f = (x, y) => x + y;
+
+const g = f(?, 3);
+g(1); // 4
+
+// 替换函数 f
+f = (x, y) => x * y;
+
+g(1); // 3
+```
+
+上面代码中，定义了函数的部分执行以后，更换原函数会立即影响到新函数。
+
+（2）如果预先提供的那个值是一个表达式，那么这个表达式并不会在定义时求值，而是在每次调用时求值。
+
+```javascript
+let a = 3;
+const f = (x, y) => x + y;
+
+const g = f(?, a);
+g(1); // 4
+
+// 改变 a 的值
+a = 10;
+g(1); // 11
+```
+
+上面代码中，预先提供的参数是变量`a`，那么每次调用函数`g`的时候，才会对`a`进行求值。
+
+（3）如果新函数的参数多于占位符的数量，那么多余的参数将被忽略。
+
+```javascript
+const f = (x, ...y) => [x, ...y];
+const g = f(?, 1);
+g(2, 3, 4); // [2, 1]
+```
+
+上面代码中，函数`g`只有一个占位符，也就意味着它只能接受一个参数，多余的参数都会被忽略。
+
+写成下面这样，多余的参数就没有问题。
+
+```javascript
+const f = (x, ...y) => [x, ...y];
+const g = f(?, 1, ...);
+g(2, 3, 4); // [2, 1, 3, 4];
+```
+
+（4）`...`只会被采集一次，如果函数的部分执行使用了多个`...`，那么每个`...`的值都将相同。
+
+```javascript
+const f = (...x) => x;
+const g = f(..., 9, ...);
+g(1, 2, 3); // [1, 2, 3, 9, 1, 2, 3]
+```
+
+上面代码中，`g`定义了两个`...`占位符，真正执行的时候，它们的值是一样的。
+
+## 管道运算符
+
+Unix 操作系统有一个管道机制（pipeline），可以把前一个操作的值传给后一个操作。这个机制非常有用，使得简单的操作可以组合成为复杂的操作。许多语言都有管道的实现，现在有一个[提案](https://github.com/tc39/proposal-partial-application)，让 JavaScript 也拥有管道机制。
+
+JavaScript 的管道是一个运算符，写作`|>`。它的左边是一个表达式，右边是一个函数。管道运算符把左边表达式的值，传入右边的函数进行求职。
+
+```javascript
+x |> f
+// 等同于
+f(x)
+```
+
+管道运算符最大的好处，就是可以把嵌套的函数，写成从左到右的链式表达式。
+
+```javascript
+function doubleSay (str) {
+  return str + ", " + str;
+}
+
+function capitalize (str) {
+  return str[0].toUpperCase() + str.substring(1);
+}
+
+function exclaim (str) {
+  return str + '!';
+}
+```
+
+上面是三个简单的函数。如果要嵌套执行，传统的写法和管道的写法分别如下。
+
+```javascript
+// 传统的写法
+exclaim(capitalize(doubleSay('hello')))
+// "Hello, hello!"
+
+// 管道的写法
+'hello'
+  |> doubleSay
+  |> capitalize
+  |> exclaim
+// "Hello, hello!"
+```
+
+管道运算符只能传递一个值，这意味着它右边的函数必须是一个单参数函数。如果是多参数函数，就必须进行柯里化，改成单参数的版本。
+
+```javascript
+function double (x) { return x + x; }
+function add (x, y) { return x + y; }
+
+let person = { score: 25 };
+person.score
+  |> double
+  |> (_ => add(7, _))
+// 57
+```
+
+上面代码中，`add`函数需要两个参数。但是，管道运算符只能传入一个值，因此需要事先提供另一个参数，并将其改成单参数的箭头函数`_ => add(7, _)`。这个函数里面的下划线并没有特别的含义，可以用其他符号代替，使用下划线只是因为，它能够形象地表示这里是占位符。
+
+管道运算符对于`await`函数也适用。
+
+```javascript
+x |> await f
+// 等同于
+await f(x)
+
+const userAge = userId |> await fetchUserById |> getAgeFromUser;
+// 等同于
+const userAge = getAgeFromUser(await fetchUserById(userId));
+```
+

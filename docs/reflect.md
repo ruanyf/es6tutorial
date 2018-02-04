@@ -387,6 +387,24 @@ Reflect.defineProperty(MyDate, 'now', {
 
 如果`Reflect.defineProperty`的第一个参数不是对象，就会抛出错误，比如`Reflect.defineProperty(1, 'foo')`。
 
+这个方法可以与`Proxy.defineProperty`配合使用。
+
+```javascript
+const p = new Proxy({}, {
+  defineProperty(target, prop, descriptor) {
+    console.log(descriptor);
+    return Reflect.defineProperty(target, prop, descriptor);
+  }
+});
+
+p.foo = 'bar';
+// {value: "bar", writable: true, enumerable: true, configurable: true}
+
+p.foo // "bar"
+```
+
+上面代码中，`Proxy.defineProperty`对属性赋值设置了拦截，然后使用`Reflect.defineProperty`完成了赋值。
+
 ### Reflect.getOwnPropertyDescriptor(target, propertyKey)
 
 `Reflect.getOwnPropertyDescriptor`基本等同于`Object.getOwnPropertyDescriptor`，用于得到指定属性的描述对象，将来会替代掉后者。
