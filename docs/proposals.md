@@ -387,3 +387,197 @@ const userAge = userId |> await fetchUserById |> getAgeFromUser;
 const userAge = getAgeFromUser(await fetchUserById(userId));
 ```
 
+## 数值分隔符
+
+欧美语言中，较长的数值允许每三位添加一个分隔符（通常是一个逗号），增加数值的可读性。比如，`1000`可以写作`1,000`。
+
+现在有一个[提案](https://github.com/tc39/proposal-numeric-separator)，允许 JavaScript 的数值使用下划线（`_`）作为分隔符。
+
+```javascript
+let budget = 1_000_000_000_000;
+budget === 10 ** 12 // true
+```
+
+JavaScript 的数值分隔符没有指定间隔的位数，也就是说，可以每三位添加一个分隔符，也可以每一位、每两位、每四位添加一个。
+
+```javascript
+123_00 === 12_300 // true
+
+12345_00 === 123_4500 // true
+12345_00 === 1_234_500 // true
+```
+
+小数和科学计数法也可以使用数值分隔符。
+
+```javascript
+// 小数
+0.000_001
+// 科学计数法
+1e10_000
+```
+
+数值分隔符有几个使用注意点。
+
+- 不能在数值的最前面（leading）或最后面（trailing）。
+- 不能两个或两个以上的分隔符连在一起。
+- 小数点的前后不能有分隔符。
+- 科学计数法里面，表示指数的`e`或`E`前后不能有分隔符。
+
+下面的写法都会报错。
+
+```javascript
+// 全部报错
+3_.141
+3._141
+1_e12
+1e_12
+123__456
+_1464301
+1464301_
+```
+
+除了十进制，其他进制的数值也可以使用分隔符。
+
+```javascript
+// 二进制
+0b1010_0001_1000_0101
+// 十六进制
+0xA0_B0_C0
+```
+
+注意，分隔符不能紧跟着进制的前缀`0b`、`0B`、`0o`、`0O`、`0x`、`0X`。
+
+```javascript
+// 报错
+0_b111111000
+0b_111111000
+```
+
+下面三个将字符串转成数值的函数，不支持数值分隔符。主要原因是提案的设计者认为，数值分隔符主要是为了编码时书写数值的方便，而不是为了处理外部输入的数据。
+
+- Number()
+- parseInt()
+- parseFloat()
+
+```javascript
+Number('123_456') // NaN
+parseInt('123_456') // 123
+```
+
+## Integer 数据类型
+
+### 简介
+
+JavaScript 所有数字都保存成 64 位浮点数，这决定了整数的精确程度只能到 53 个二进制位。大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。
+
+现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Integer（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
+
+为了与 Number 类型区别，Integer 类型的数据必须使用后缀`n`表示。
+
+```javascript
+1n + 2n // 3n
+```
+
+二进制、八进制、十六进制的表示法，都要加上后缀`n`。
+
+```javascript
+0b1101n // 二进制
+0o777n // 八进制
+0xFFn // 十六进制
+```
+
+`typeof`运算符对于 Integer 类型的数据返回`integer`。
+
+```javascript
+typeof 123n
+// 'integer'
+```
+
+JavaScript 原生提供`Integer`对象，用来生成 Integer 类型的数值。转换规则基本与`Number()`一致。
+
+```javascript
+Integer(123) // 123n
+Integer('123') // 123n
+Integer(false) // 0n
+Integer(true) // 1n
+```
+
+以下的用法会报错。
+
+```javascript
+new Integer() // TypeError
+Integer(undefined) //TypeError
+Integer(null) // TypeError
+Integer('123n') // SyntaxError
+Integer('abc') // SyntaxError
+```
+
+### 运算
+
+在数学运算方面，Integer 类型的`+`、`-`、`*`和`**`这四个二元运算符，与 Number 类型的行为一致。除法运算`/`会舍去小数部分，返回一个整数。
+
+```javascript
+9n / 5n
+// 1n
+```
+
+几乎所有的 Number 运算符都可以用在 Integer，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`要求最高位补 0，但是 Integer 类型没有最高位，导致这个运算符无意义。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型或者报错。
+
+Integer 类型不能与 Number 类型进行混合运算。
+
+```javascript
+1n + 1
+// 报错
+```
+
+这是因为无论返回的是 Integer 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 Integer 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，会超过 53 位精确数字，精度下降。
+
+相等运算符（`==`）会改变数据类型，也是不允许混合使用。
+
+```javascript
+0n == 0
+// 报错 TypeError
+
+0n == false
+// 报错 TypeError
+```
+
+精确相等运算符（`===`）不会改变数据类型，因此可以混合使用。
+
+```javascript
+0n === 0
+// false
+```
+
+## Math.signbit()
+
+`Math.sign()`用来判断一个值的正负，但是如果参数是`-0`，它会返回`-0`。
+
+```javascript
+Math.sign(-0) // -0
+```
+
+这导致对于判断符号位的正负，`Math.sign()`不是很有用。JavaScript 内部使用 64 位浮点数（国际标准 IEEE 754）表示数值，IEEE 754 规定第一位是符号位，`0`表示正数，`1`表示负数。所以会有两种零，`+0`是符号位为`0`时的零值，`-0`是符号位为`1`时的零值。实际编程中，判断一个值是`+0`还是`-0`非常麻烦，因为它们是相等的。
+
+```javascript
++0 === -0 // true
+```
+
+目前，有一个[提案](http://jfbastien.github.io/papers/Math.signbit.html)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
+
+```javascript
+Math.signbit(2) //false
+Math.signbit(-2) //true
+Math.signbit(0) //false
+Math.signbit(-0) //true
+```
+
+可以看到，该方法正确返回了`-0`的符号位是设置了的。
+
+该方法的算法如下。
+
+- 如果参数是`NaN`，返回`false`
+- 如果参数是`-0`，返回`true`
+- 如果参数是负值，返回`true`
+- 其他情况返回`false`
+
