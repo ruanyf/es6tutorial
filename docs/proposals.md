@@ -464,21 +464,30 @@ Number('123_456') // NaN
 parseInt('123_456') // 123
 ```
 
-## Integer 数据类型
+## BigInt 数据类型
 
 ### 简介
 
-JavaScript 所有数字都保存成 64 位浮点数，这决定了整数的精确程度只能到 53 个二进制位。大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。
-
-现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Integer（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
-
-为了与 Number 类型区别，Integer 类型的数据必须使用后缀`n`表示。
+JavaScript 所有数字都保存成 64 位浮点数，这给数值的表示带来了两大限制。一是数值的精度只能到 53 个二进制位（相当于 16 个十进制位），大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。二是大于或等于2的1024次方的数值，JavaScript 无法表示，会返回`Infinite`。
 
 ```javascript
+// 超过 53 个二进制位的数值，无法保持精度
+Math.pow(2, 53) === Math.pow(2, 53) + 1 // true
+
+// 超过 2 的 1024 次方的数值，无法表示
+Math.pow(2, 1024) // Infinity
+```
+
+现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了一种新的数据类型 BigInt（大整数），来解决这个问题。BigInt 只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
+
+为了与 Number 类型区别，BigInt 类型的数据必须使用后缀`n`表示。
+
+```javascript
+1234n
 1n + 2n // 3n
 ```
 
-二进制、八进制、十六进制的表示法，都要加上后缀`n`。
+BigInt 同样可以使用各种进制表示，都要加上后缀`n`。
 
 ```javascript
 0b1101n // 二进制
@@ -486,51 +495,86 @@ JavaScript 所有数字都保存成 64 位浮点数，这决定了整数的精�
 0xFFn // 十六进制
 ```
 
-`typeof`运算符对于 Integer 类型的数据返回`integer`。
+`typeof`运算符对于 BigInt 类型的数据返回`bigint`。
 
 ```javascript
-typeof 123n
-// 'integer'
+typeof 123n // 'BigInt'
 ```
 
-JavaScript 原生提供`Integer`对象，用来生成 Integer 类型的数值。转换规则基本与`Number()`一致。
+### BigInt 对象
+
+JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BitInt 类型的数值。转换规则基本与`Number()`一致，将别的类型的值转为 BigInt。
 
 ```javascript
-Integer(123) // 123n
-Integer('123') // 123n
-Integer(false) // 0n
-Integer(true) // 1n
+BigInt(123) // 123n
+BigInt('123') // 123n
+BitInt(false) // 0n
+BitInt(true) // 1n
 ```
 
-以下的用法会报错。
+`BitInt`构造函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
 
 ```javascript
-new Integer() // TypeError
-Integer(undefined) //TypeError
-Integer(null) // TypeError
-Integer('123n') // SyntaxError
-Integer('abc') // SyntaxError
+new BitInt() // TypeError
+BigInt(undefined) //TypeError
+BigInt(null) // TypeError
+BigInt('123n') // SyntaxError
+BigInt('abc') // SyntaxError
 ```
+
+上面代码中，尤其值得注意字符串`123n`无法解析成 Number 类型，所以会报错。
+
+BigInt 对象继承了 Object 提供的实例方法。
+
+- `BigInt.prototype.toLocaleString()`
+- `BigInt.prototype.toString()`
+- `BigInt.prototype.valueOf()`
+
+此外，还提供了三个静态方法。
+
+- `BigInt.asUintN(width, BigInt)`： 对给定的大整数，返回 0 到 2<sup>width</sup> - 1 之间的大整数形式。
+- `BigInt.asIntN(width, BigInt)`：对给定的大整数，返回 -2<sup>width - 1</sup> 到 2<sup>width - 1</sup> - 1 之间的大整数形式。
+- `BigInt.parseInt(string[, radix])`：近似于`Number.parseInt`，将一个字符串转换成指定进制的大整数。
+
+```javascript
+// 将一个大整数转为 64 位整数的形式
+const int64a = BigInt.asUintN(64, 12345n);
+
+// Number.parseInt 与 BigInt.parseInt 的对比
+Number.parseInt('9007199254740993', 10)
+// 9007199254740992
+BigInt.parseInt('9007199254740993', 10)
+// 9007199254740993n
+```
+
+上面代码中，由于有效数字超出了最大限度，`Number.parseInt`方法返回的结果是不精确的，而`BigInt.parseInt`方法正确返回了对应的大整数。
+
+对于二进制数组，BigInt 新增了两个类型`BigUint64Array`和`BigInt64Array`，这两种数据类型返回的都是大整数。`DataView`对象的实例方法`DataView.prototype.getBigInt64`和`DataView.prototype.getBigUint64`，返回的也是大整数。
 
 ### 运算
 
-在数学运算方面，Integer 类型的`+`、`-`、`*`和`**`这四个二元运算符，与 Number 类型的行为一致。除法运算`/`会舍去小数部分，返回一个整数。
+数学运算方面，BigInt 类型的`+`、`-`、`*`和`**`这四个二元运算符，与 Number 类型的行为一致。除法运算`/`会舍去小数部分，返回一个整数。
 
 ```javascript
 9n / 5n
 // 1n
 ```
 
-几乎所有的 Number 运算符都可以用在 Integer，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`要求最高位补 0，但是 Integer 类型没有最高位，导致这个运算符无意义。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型或者报错。
+几乎所有的 Number 运算符都可以用在 BigInt，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`运算符是不带符号的，但是 BigInt 总是带有符号的，导致该运算无意义，完全等同于右移运算符`>>`。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型，为了不破坏 asm.js 就规定`+1n`会报错。
 
 Integer 类型不能与 Number 类型进行混合运算。
 
 ```javascript
-1n + 1
-// 报错
+1n + 1.3 // 报错
 ```
 
-这是因为无论返回的是 Integer 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 Integer 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，会超过 53 位精确数字，精度下降。
+上面代码报错是因为无论返回的是 BigInt 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 BigInt 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，有效精度只能保持 53 位，导致精度下降。
+
+asm.js 里面，`|0`跟在一个数值的后面会返回一个32位整数。根据不能与 Number 类型混合运算的规则，BigInt 如果与`|0`进行运算会报错。
+
+```javascript
+1n | 0 // 报错
+```
 
 相等运算符（`==`）会改变数据类型，也是不允许混合使用。
 
@@ -547,6 +591,24 @@ Integer 类型不能与 Number 类型进行混合运算。
 ```javascript
 0n === 0
 // false
+```
+
+大整数可以转为其他数据类型。
+
+```javascript
+Boolean(0n) // false
+Boolean(1n) // true
+Number(1n)  // 1
+String(1n)  // "1"
+
+!0n // true
+!1n // false
+```
+
+大整数也可以与字符串混合运算。
+
+```javascript
+'' + 123n // "123"
 ```
 
 ## Math.signbit()
