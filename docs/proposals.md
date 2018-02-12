@@ -195,7 +195,7 @@ const PS = eval("'\u2029'");
 
 ### 语法
 
-多参数的函数有时需要绑定其中的一个或多个函数，然后返回一个新函数。
+多参数的函数有时需要绑定其中的一个或多个参数，然后返回一个新函数。
 
 ```javascript
 function add(x, y) { return x + y; }
@@ -214,7 +214,7 @@ const add7 = x => add(x, 7);
 
 上面两种写法都有些冗余。其中，`bind`方法的局限更加明显，它必须提供`this`，并且只能从前到后一个个绑定参数，无法只绑定非头部的参数。
 
-现在有一个[提案](https://github.com/tc39/proposal-partial-application)，使用绑定参数然后返回一个新函数更加容器。这叫做函数的部分执行（partial application）。
+现在有一个[提案](https://github.com/tc39/proposal-partial-application)，使得绑定参数并返回一个新函数更加容易。这叫做函数的部分执行（partial application）。
 
 ```javascript
 const add = (x, y) => x + y;
