@@ -89,8 +89,6 @@ const x = 1;
 
 console.log(x === window.x); //false
 console.log(this === undefined); // true
-
-delete x; // 句法错误，严格模式禁止删除变量
 ```
 
 利用顶层的`this`等于`undefined`这个语法点，可以侦测当前代码是否在 ES6 模块之中。
