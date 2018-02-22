@@ -944,23 +944,15 @@ let log = ::console.log;
 var log = console.log.bind(console);
 ```
 
-双冒号运算符的运算结果，还是一个函数，因此可以采用链式写法。
+如果双冒号运算符的运算结果，还是一个对象，就可以采用链式写法。
 
 ```javascript
-// 例一
 import { map, takeWhile, forEach } from "iterlib";
 
 getPlayers()
 ::map(x => x.character())
 ::takeWhile(x => x.strength > 100)
 ::forEach(x => console.log(x));
-
-// 例二
-let { find, html } = jake;
-
-document.querySelectorAll("div.myClass")
-::find("p")
-::html("hahaha");
 ```
 
 ## 尾调用优化
