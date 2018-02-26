@@ -118,7 +118,7 @@ class Product {
 
 语法上，`throw`表达式里面的`throw`不再是一个命令，而是一个运算符。为了避免与`throw`命令混淆，规定`throw`出现在行首，一律解释为`throw`语句，而不是`throw`表达式。
 
-## Null 传导运算符
+## 链判断运算符
 
 编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
 
@@ -129,37 +129,92 @@ const firstName = (message
   && message.body.user.firstName) || 'default';
 ```
 
-这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
+这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
 
 ```javascript
 const firstName = message?.body?.user?.firstName || 'default';
 ```
 
-上面代码有三个`?.`运算符，只要其中一个返回`null`或`undefined`，就不再往下运算，而是返回`undefined`。
+上面代码有三个`?.`运算符，直接在链式调用的时候判断，左侧的对象是否为`null`或`undefined`。如果是的，就不再往下运算，而是返回`undefined`。
 
-“Null 传导运算符”有四种用法。
+链判断运算符号有三种用法。
 
 - `obj?.prop` // 读取对象属性
 - `obj?.[expr]` // 同上
 - `func?.(...args)` // 函数或对象方法的调用
-- `new C?.(...args)` // 构造函数的调用
 
-传导运算符之所以写成`obj?.prop`，而不是`obj?prop`，是为了方便编译器能够区分三元运算符`?:`（比如`obj?prop:123`）。
+下面是判断函数是否存在的例子。
+
+```javascript
+iterator.return?.()
+```
+
+上面代码中，`iterator.return`如果有定义，就会调用该方法，否则直接返回`undefined`。
 
 下面是更多的例子。
 
 ```javascript
-// 如果 a 是 null 或 undefined, 返回 undefined
-// 否则返回 a.b.c().d
-a?.b.c().d
+a?.b
+// 等同于
+a == null ? undefined : a.b
 
-// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
-// 否则执行 a.b = 42
-a?.b = 42
+a?.[x]
+// 等同于
+a == null ? undefined : a[x]
 
-// 如果 a 是 null 或 undefined，下面的语句不产生任何效果
-delete a?.b
+a?.b()
+// 等同于
+a == null ? undefined : a.b()
+
+a?.()
+// 等同于
+a == null ? undefined : a()
 ```
+
+使用这个运算符，有几个注意点。
+
+（1）短路机制
+
+```javascript
+a?.[++x]
+// 等同于
+a == null ? undefined : a[++x]
+```
+
+上面代码中，如果`a`是`undefined`或`null`，那么`x`不会进行递增运算。也就是说，链判断运算符一旦为真，右侧的表达式就不再求值。
+
+（2）delete 运算符
+
+```javascript
+delete a?.b
+// 等同于
+a == null ? undefined : delete a.b
+```
+
+上面代码中，如果`a`是`undefined`或`null`，会直接返回`undefined`，而不会进行`delete`运算。
+
+（3）报错场合
+
+以下写法是禁止，会报错。
+
+```javascript
+// 构造函数判断
+new a?.()
+
+// 运算符右侧是模板字符串
+a?.`{b}`
+
+// 链判断运算符前后有构造函数或模板字符串
+new a?.b()
+a?.b`{c}`
+
+// 链运算符用于赋值运算符左侧
+a?.b = c
+```
+
+（4）右侧不得为十进制数值
+
+为了保证兼容以前的代码，允许`foo?.3:0`被解析成`foo ? .3 : 0`，因此规定如果`?.`后面紧跟一个十进制数字，那么`?.`不再被看成是一个完整的运算符，而会按照三元运算符进行处理，也就是说，那个小数点会归属于后面的十进制数字，形成一个小数。
 
 ## 直接输入 U+2028 和 U+2029
 
