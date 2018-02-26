@@ -129,7 +129,7 @@ const firstName = (message
   && message.body.user.firstName) || 'default';
 ```
 
-这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/claudepache/es-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
+这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/tc39/proposal-optional-chaining)，引入了“Null 传导运算符”（null propagation operator）`?.`，简化上面的写法。
 
 ```javascript
 const firstName = message?.body?.user?.firstName || 'default';
