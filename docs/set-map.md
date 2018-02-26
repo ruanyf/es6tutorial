@@ -805,7 +805,7 @@ new Map([
 
 **（3）Map 转为对象**
 
-如果所有 Map 的键都是字符串，它可以转为对象。
+如果所有 Map 的键都是字符串，它可以无损地转为对象。
 
 ```javascript
 function strMapToObj(strMap) {
@@ -822,6 +822,8 @@ const myMap = new Map()
 strMapToObj(myMap)
 // { yes: true, no: false }
 ```
+
+如果有非字符串的键名，那么这个键名会被转成字符串，再作为对象的键名。
 
 **（4）对象转为 Map**
 
