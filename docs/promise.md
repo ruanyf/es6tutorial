@@ -681,8 +681,10 @@ const p = Promise.race([
     setTimeout(() => reject(new Error('request timeout')), 5000)
   })
 ]);
-p.then(response => console.log(response));
-p.catch(error => console.log(error));
+
+p
+.then(console.log)
+.catch(console.error);
 ```
 
 上面代码中，如果 5 秒之内`fetch`方法无法返回结果，变量`p`的状态就会变为`rejected`，从而触发`catch`方法指定的回调函数。
