@@ -182,7 +182,7 @@ match.index // 3
 REGEX.lastIndex // 4
 
 // 4号位开始匹配失败
-REGEX.exec('xaxa') // null
+REGEX.exec('xaya') // null
 ```
 
 上面代码中，`lastIndex`属性指定每次搜索的开始位置，`g`修饰符从这个位置开始向后搜索，直到发现匹配为止。
@@ -202,7 +202,7 @@ REGEX.exec('xaya') // null
 REGEX.lastIndex = 3;
 
 // 3号位置是粘连，匹配成功
-const match = REGEX.exec('xaxa');
+const match = REGEX.exec('xaya');
 match.index // 3
 REGEX.lastIndex // 4
 ```
