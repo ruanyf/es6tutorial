@@ -1032,6 +1032,7 @@ const proto = {
 };
 
 const obj = {
+  foo: 'world',
   find() {
     return super.foo;
   }
