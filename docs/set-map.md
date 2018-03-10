@@ -34,21 +34,20 @@ const items = new Set([1, 2, 3, 4, 5, 5, 5, 5]);
 items.size // 5
 
 // 例三
-function divs () {
-  return [...document.querySelectorAll('div')];
-}
-
-const set = new Set(divs());
+const set = new Set(document.querySelectorAll('div'));
 set.size // 56
 
 // 类似于
-divs().forEach(div => set.add(div));
+const set = new Set();
+document
+ .querySelectorAll('div')
+ .forEach(div => set.add(div));
 set.size // 56
 ```
 
 上面代码中，例一和例二都是`Set`函数接受数组作为参数，例三是接受类似数组的对象作为参数。
 
-上面代码中，也展示了一种去除数组重复成员的方法。
+上面代码也展示了一种去除数组重复成员的方法。
 
 ```javascript
 // 去除数组的重复成员
