@@ -357,7 +357,7 @@ function foo() {
 }
 ```
 
-上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`forEach`方法。
+上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`filter`方法。
 
 只要是部署了 Iterator 接口的数据结构，`Array.from`都能将其转为数组。
 
