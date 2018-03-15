@@ -231,7 +231,7 @@ let b = new B();
 
 上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
 
-ES6 规定，通过`super`调用父类的方法时，方法内部的`this`指向子类。
+ES6 规定，通过`super`调用父类的方法时，方法内部的`this`指向当前的子类实例。
 
 ```javascript
 class A {
@@ -257,9 +257,9 @@ let b = new B();
 b.m() // 2
 ```
 
-上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`内部的`this`指向子类`B`，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`内部的`this`指向子类`B`的实例，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
 
-由于`this`指向子类，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
+由于`this`指向子类实例，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
 
 ```javascript
 class A {

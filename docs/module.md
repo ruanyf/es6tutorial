@@ -650,7 +650,7 @@ import {db, users} from './index';
 
 ### 简介
 
-前面介绍过，`import`命令会被 JavaScript 引擎静态分析，先于模块内的其他模块执行（叫做”连接“更合适）。所以，下面的代码会报错。
+前面介绍过，`import`命令会被 JavaScript 引擎静态分析，先于模块内的其他语句执行（`import`命令叫做”连接“ binding 其实更合适）。所以，下面的代码会报错。
 
 ```javascript
 // 报错
@@ -668,7 +668,7 @@ const path = './' + fileName;
 const myModual = require(path);
 ```
 
-上面的语句就是动态加载，`require`到底加载哪一个模块，只有运行时才知道。`import`语句做不到这一点。
+上面的语句就是动态加载，`require`到底加载哪一个模块，只有运行时才知道。`import`命令做不到这一点。
 
 因此，有一个[提案](https://github.com/tc39/proposal-dynamic-import)，建议引入`import()`函数，完成动态加载。
 
@@ -692,9 +692,34 @@ import(`./section-modules/${someVariable}.js`)
   });
 ```
 
-`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，也会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。
+`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。
 
-`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。
+`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。`import()`的浏览器实现，类似于下面的写法。
+
+```javascript
+function importModule(url) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    const tempGlobal = "__tempModuleLoadingVariable" + Math.random().toString(32).substring(2);
+    script.type = "module";
+    script.textContent = `import * as m from "${url}"; window.${tempGlobal} = m;`;
+
+    script.onload = () => {
+      resolve(window[tempGlobal]);
+      delete window[tempGlobal];
+      script.remove();
+    };
+
+    script.onerror = () => {
+      reject(new Error("Failed to load module script with URL " + url));
+      delete window[tempGlobal];
+      script.remove();
+    };
+
+    document.documentElement.appendChild(script);
+  });
+}
+```
 
 ### 适用场合
 
