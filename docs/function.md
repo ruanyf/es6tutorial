@@ -278,7 +278,7 @@ function f(y = x) {
   console.log(y);
 }
 
-f() // 1
+f() // 1  这个例子应该报错 Identifier 'x' has already been declared，我在chrome下测试是这样。因为let不允许重复定义变量。
 ```
 
 上面代码中，函数`f`调用时，参数`y = x`形成一个单独的作用域。这个作用域里面，变量`x`本身没有定义，所以指向外层的全局变量`x`。函数调用时，函数体内部的局部变量`x`影响不到默认值变量`x`。
