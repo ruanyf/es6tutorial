@@ -1317,13 +1317,19 @@ o3.a // undefined
 const o = Object.create({ x: 1, y: 2 });
 o.z = 3;
 
-let { x, ...{ y, z } } = o;
+let { x, ...newObj } = o;
+let { y, z } = newObj;
 x // 1
 y // undefined
 z // 3
 ```
 
-上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是扩展运算符的解构赋值，只能读取对象`o`自身的属性，所以变量`z`可以赋值成功，变量`y`取不到值。
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是扩展运算符的解构赋值，只能读取对象`o`自身的属性，所以变量`z`可以赋值成功，变量`y`取不到值。ES6 规定，变量声明语句之中，如果使用解构赋值，扩展运算符后面必须是一个变量名，而不能是一个解构赋值表达式，所以上面代码引入了中间变量`newObj`，如果写成下面这样会报错。
+
+```javascript
+let { x, ...{ y, z } } = o;
+// SyntaxError: ... must be followed by an identifier in declaration contexts
+```
 
 解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
 
