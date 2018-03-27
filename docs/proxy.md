@@ -145,7 +145,7 @@ fproxy.foo === "Hello, foo" // true
 
 ### get()
 
-`get`方法用于拦截某个属性的读取操作，可以接受三个参数，依次为目标对象、属性名和 proxy 实例本身（即`this`关键字指向的那个对象），其中最后一个参数可选。
+`get`方法用于拦截某个属性的读取操作，可以接受三个参数，依次为目标对象、属性名和 proxy 实例本身（严格地说，是操作行为所针对的对象），其中最后一个参数可选。
 
 `get`方法的用法，上文已经有一个例子，下面是另一个拦截读取操作的例子。
 
@@ -389,9 +389,45 @@ proxy.foo = 'bar';
 proxy.foo === proxy // true
 ```
 
-上面代码中，`set`方法的第四个参数`receiver`，总是返回`this`关键字所指向的那个对象，即`proxy`实例本身。
+上面代码中，`set`方法的第四个参数`receiver`，指的是操作行为所在的那个对象，一般情况下是`proxy`实例本身，请看下面的例子。
 
-注意，如果目标对象自身的某个属性，不可写也不可配置，那么`set`不得改变这个属性的值，只能返回同样的值，否则报错。
+```javascript
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = receiver;
+  }
+};
+const proxy = new Proxy({}, handler);
+const myObj = {};
+Object.setPrototypeOf(myObj, proxy);
+
+myObj.foo = 'bar';
+myObj.foo === myObj // true
+```
+
+上面代码中，设置`myObj.foo`属性的值时，`myObj`并没有`foo`属性，因此引擎会到`myObj`的原型链去找`foo`属性。`myObj`的原型对象`proxy`是一个 Proxy 实例，设置它的`foo`属性会触发`set`方法。这时，第四个参数`receiver`就指向原始赋值行为所在的对象`myObj`。
+
+注意，如果目标对象自身的某个属性，不可写或不可配置，那么`set`方法将不起作用。
+
+```javascript
+const obj = {};
+Object.defineProperty(obj, 'foo', {
+  value: 'bar',
+  writable: false,
+});
+
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = 'baz';
+  }
+};
+
+const proxy = new Proxy(obj, handler);
+proxy.foo = 'baz';
+proxy.foo // "bar"
+```
+
+上面代码中，`obj.foo`属性不可写，Proxy 对这个属性的`set`代理将不会生效。
 
 ### apply()
 
