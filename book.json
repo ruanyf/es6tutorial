@@ -1,0 +1,36 @@
+{
+  "author": "阮一峰",
+  "description": "《ECMAScript 6 入门》是一本开源的 JavaScript 语言教程，全面介绍 ECMAScript 6 新引入的语法特性。",
+  "extension": null,
+  "generator": "site",
+  "isbn": "9787121324758",
+  "links": {
+	"sharing": {
+	  "all": null,
+	  "facebook": null,
+	  "google": null,
+	  "twitter": null,
+	  "weibo": null
+	},
+	"sidebar": {
+	  "阮一峰的个人网站": "http://www.ruanyifeng.com/blog/"
+	}
+  },
+  "output": null,
+  "pdf": {
+	"fontSize": 12,
+	"footerTemplate": null,
+	"headerTemplate": null,
+	"margin": {
+	  "bottom": 36,
+	  "left": 62,
+	  "right": 62,
+	  "top": 36
+	},
+	"pageNumbers": false,
+	"paperSize": "a4"
+  },
+  "plugins": [],
+  "title": "ECMAScript 6 入门",
+  "variables": {}
+}
