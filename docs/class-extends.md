@@ -370,7 +370,7 @@ class B extends A {
 let b = new B();
 ```
 
-上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`使得`this`指向`B`，所以`super.valueOf()`返回的是一个`B`的实例。
+上面代码中，`super.valueOf()`表明`super`是一个对象，因此就不会报错。同时，由于`super`使得`this`指向`B`的实例，所以`super.valueOf()`返回的是一个`B`的实例。
 
 最后，由于对象总是继承其他对象的，所以可以在任意一个对象中，使用`super`关键字。
 
