@@ -231,7 +231,7 @@ let b = new B();
 
 上面代码中，属性`x`是定义在`A.prototype`上面的，所以`super.x`可以取到它的值。
 
-ES6 规定，在子类普通方法中通过`super`调用父类的方法（此时调用的是父类普通方法，因为`super`指向父类的原型对象）时，方法内部的`this`指向当前的子类实例；在子类静态方法中通过`super`调用父类的方法（此时调用的是父类静态方法，因为`super`指向父类）时，方法内部的`this`指向当前的子类；
+ES6 规定，在子类普通方法中通过`super`调用父类的方法时，方法内部的`this`指向当前的子类实例。
 
 ```javascript
 class A {
@@ -313,6 +313,34 @@ child.myMethod(2); // instance 2
 ```
 
 上面代码中，`super`在静态方法之中指向父类，在普通方法之中指向父类的原型对象。
+
+另外，在子类的静态方法中通过`super`调用父类的方法时，方法内部的`this`指向当前的子类，而不是子类的实例。
+
+```javascript
+class A {
+  constructor() {
+    this.x = 1;
+  }
+  static print() {
+    console.log(this.x);
+  }
+}
+
+class B extends A {
+  constructor() {
+    super();
+    this.x = 2;
+  }
+  static m() {
+    super.print();
+  }
+}
+
+B.x = 3;
+B.m() // 3
+```
+
+上面代码中，静态方法`B.m`里面，`super.print`指向父类的静态方法。这个方法里面的`this`指向的是`B`，而不是`B`的实例。
 
 注意，使用`super`的时候，必须显式指定是作为函数、还是作为对象使用，否则会报错。
 

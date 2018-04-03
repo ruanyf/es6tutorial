@@ -757,7 +757,7 @@ async function f() {
 // b
 ```
 
-上面代码中，`createAsyncIterable()`返回一个拥有异步遍历器的对象，`for...of`循环自动调用这个对象的异步遍历器的`next`方法，会得到一个 Promise 对象。`await`用来处理这个 Promise 对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
+上面代码中，`createAsyncIterable()`返回一个拥有异步遍历器接口的对象，`for...of`循环自动调用这个对象的异步遍历器的`next`方法，会得到一个 Promise 对象。`await`用来处理这个 Promise 对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
 
 `for await...of`循环的一个用途，是部署了 asyncIterable 操作的异步接口，可以直接放入这个循环。
 
