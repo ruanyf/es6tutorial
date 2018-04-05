@@ -594,12 +594,9 @@ ES6 允许使用“箭头”（`=>`）定义函数。
 
 ```javascript
 var f = v => v;
-```
 
-上面的箭头函数等同于：
-
-```javascript
-var f = function(v) {
+// 等同于
+var f = function (v) {
   return v;
 };
 ```
@@ -633,6 +630,15 @@ let getTempItem = id => { id: id, name: "Temp" };
 // 不报错
 let getTempItem = id => ({ id: id, name: "Temp" });
 ```
+
+下面是一种特殊情况，虽然可以运行，但会得到错误的结果。
+
+```javascript
+let foo = () => { a: 1 };
+foo() // undefined
+```
+
+上面代码中，原始意图是返回一个对象`{ a: 1 }`，但是由于引擎认为大括号是代码块，所以执行了一行语句`a: 1`。这时，`a`可以被解释为语句的标签，因此实际执行的语句是`1;`，然后函数就结束了，没有返回值。
 
 如果箭头函数只有一行语句，且不需要返回值，可以采用下面的写法，就不用写大括号了。
 
