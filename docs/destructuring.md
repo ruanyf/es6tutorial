@@ -630,7 +630,7 @@ jQuery.ajax = function (url, {
   crossDomain = false,
   global = true,
   // ... more config
-}) {
+} = {}) {
   // ... do stuff
 };
 ```
