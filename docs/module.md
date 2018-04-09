@@ -692,34 +692,7 @@ import(`./section-modules/${someVariable}.js`)
   });
 ```
 
-`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。
-
-`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。`import()`的浏览器实现，类似于下面的写法。
-
-```javascript
-function importModule(url) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    const tempGlobal = "__tempModuleLoadingVariable" + Math.random().toString(32).substring(2);
-    script.type = "module";
-    script.textContent = `import * as m from "${url}"; window.${tempGlobal} = m;`;
-
-    script.onload = () => {
-      resolve(window[tempGlobal]);
-      delete window[tempGlobal];
-      script.remove();
-    };
-
-    script.onerror = () => {
-      reject(new Error("Failed to load module script with URL " + url));
-      delete window[tempGlobal];
-      script.remove();
-    };
-
-    document.documentElement.appendChild(script);
-  });
-}
-```
+`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。
 
 ### 适用场合
 
