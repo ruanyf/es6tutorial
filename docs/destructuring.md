@@ -633,6 +633,10 @@ jQuery.ajax = function (url, {
 } = {}) {
   // ... do stuff
 };
+
+function print([x = 1, y = 2] = []) {
+  console.log(x, y)
+}
 ```
 
 指定参数的默认值，就避免了在函数体内部再写`var foo = config.foo || 'default foo';`这样的语句。
