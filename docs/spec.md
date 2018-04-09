@@ -127,15 +127,15 @@ ES6 规格将这个标准流程，使用简写的方式表达。
 >    Return the result of performing Strict Equality Comparison `x === y`.
 > 1. If `x` is `null` and `y` is `undefined`, return `true`.
 > 1. If `x` is `undefined` and `y` is `null`, return `true`.
-> 1. If `Type(x)` is Number and `Type(y)` is String,\
+> 1. If `Type(x)` is Number and `Type(y)` is String,
 >    return the result of the comparison `x == ToNumber(y)`.
-> 1. If `Type(x)` is String and `Type(y)` is Number,\
+> 1. If `Type(x)` is String and `Type(y)` is Number,
 >    return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(x)` is Boolean, return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(y)` is Boolean, return the result of the comparison `x == ToNumber(y)`.
-> 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then\
+> 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then
 >    return the result of the comparison `x == ToPrimitive(y)`.
-> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then\
+> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then
 >    return the result of the comparison `ToPrimitive(x) == y`.
 > 1. Return `false`.
 
