@@ -484,7 +484,7 @@ someAsyncThing().then(function() {
 // carry on [ReferenceError: y is not defined]
 ```
 
-上面代码中，第二个`catch`方法用来捕获，前一个`catch`方法抛出的错误。
+上面代码中，第二个`catch`方法用来捕获前一个`catch`方法抛出的错误。
 
 ## Promise.prototype.finally()
 
