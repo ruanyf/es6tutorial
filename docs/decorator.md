@@ -201,7 +201,7 @@ function log(target, name, descriptor) {
 
   descriptor.value = function() {
     console.log(`Calling ${name} with`, arguments);
-    return oldValue.apply(null, arguments);
+    return oldValue.apply(this, arguments);
   };
 
   return descriptor;
