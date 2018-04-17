@@ -799,6 +799,37 @@ async function () {
 // b
 ```
 
+Node v10 支持异步遍历器，Stream 就部署了这个接口。下面是读取文件的传统写法与异步遍历器写法的差异。
+
+```javascript
+// 传统写法
+function main(inputFilePath) {
+  const readStream = fs.createReadStream(
+    inputFilePath,
+    { encoding: 'utf8', highWaterMark: 1024 }
+  );
+  readStream.on('data', (chunk) => {
+    console.log('>>> '+chunk);
+  });
+  readStream.on('end', () => {
+    console.log('### DONE ###');
+  });
+}
+
+// 异步遍历器写法
+async function main(inputFilePath) {
+  const readStream = fs.createReadStream(
+    inputFilePath,
+    { encoding: 'utf8', highWaterMark: 1024 }
+  );
+
+  for await (const chunk of readStream) {
+    console.log('>>> '+chunk);
+  }
+  console.log('### DONE ###');
+}
+```
+
 ### 异步 Generator 函数
 
 就像 Generator 函数返回一个同步遍历器对象一样，异步 Generator 函数的作用，是返回一个异步遍历器对象。
