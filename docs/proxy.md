@@ -129,7 +129,7 @@ fproxy.foo === "Hello, foo" // true
 - **set(target, propKey, value, receiver)**：拦截对象属性的设置，比如`proxy.foo = v`或`proxy['foo'] = v`，返回一个布尔值。
 - **has(target, propKey)**：拦截`propKey in proxy`的操作，返回一个布尔值。
 - **deleteProperty(target, propKey)**：拦截`delete proxy[propKey]`的操作，返回一个布尔值。
-- **ownKeys(target)**：拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而`Object.keys()`的返回结果仅包括目标对象自身的可遍历属性。
+- **ownKeys(target)**：拦截`Object.getOwnPropertyNames(proxy)`、`Object.getOwnPropertySymbols(proxy)`、`Object.keys(proxy)`、`for...in`循环，返回一个数组。该方法返回目标对象所有自身的属性的属性名，而`Object.keys()`的返回结果仅包括目标对象自身的可遍历属性。
 - **getOwnPropertyDescriptor(target, propKey)**：拦截`Object.getOwnPropertyDescriptor(proxy, propKey)`，返回属性的描述对象。
 - **defineProperty(target, propKey, propDesc)**：拦截`Object.defineProperty(proxy, propKey, propDesc）`、`Object.defineProperties(proxy, propDescs)`，返回一个布尔值。
 - **preventExtensions(target)**：拦截`Object.preventExtensions(proxy)`，返回一个布尔值。
@@ -756,6 +756,7 @@ Object.isExtensible(p) // 报错
 - `Object.getOwnPropertyNames()`
 - `Object.getOwnPropertySymbols()`
 - `Object.keys()`
+- `for...in`循环
 
 下面是拦截`Object.keys()`的例子。
 
@@ -849,6 +850,23 @@ var p = new Proxy({}, {
 Object.getOwnPropertyNames(p)
 // [ 'a', 'b', 'c' ]
 ```
+
+`for...in`循环也受到`ownKeys`方法的拦截。
+
+```javascript
+const obj = { hello: 'world' };
+const proxy = new Proxy(obj, {
+  ownKeys: function () {
+    return ['a', 'b'];
+  }
+});
+
+for (let key in proxy) {
+  console.log(key); // 没有任何输出
+}
+```
+
+上面代码中，`ownkeys`指定只返回`a`和`b`属性，由于`obj`没有这两个属性，因此`for...in`循环不会有任何输出。
 
 `ownKeys`方法返回的数组成员，只能是字符串或 Symbol 值。如果有其他类型的值，或者返回的根本不是数组，就会报错。
 
