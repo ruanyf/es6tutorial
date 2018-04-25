@@ -426,10 +426,10 @@ setTimeout(_ => module.exports = null);
 
 ```javascript
 // 不正确
-import { readfile } from 'fs';
+import { readFile } from 'fs';
 ```
 
-上面的写法不正确，因为`fs`是 CommonJS 格式，只有在运行时才能确定`readfile`接口，而`import`命令要求编译时就确定这个接口。解决方法就是改为整体输入。
+上面的写法不正确，因为`fs`是 CommonJS 格式，只有在运行时才能确定`readFile`接口，而`import`命令要求编译时就确定这个接口。解决方法就是改为整体输入。
 
 ```javascript
 // 正确的写法一
