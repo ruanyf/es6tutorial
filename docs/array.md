@@ -480,7 +480,7 @@ Array.of(3).length // 1
 
 ```javascript
 Array() // []
-Array(3) // [, , ,]
+Array(3) // [ , , ]
 Array(3, 11, 8) // [3, 11, 8]
 ```
 
