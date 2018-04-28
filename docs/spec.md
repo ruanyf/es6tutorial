@@ -192,7 +192,7 @@ Object.keys(a1) // ["0", "1", "2"]
 Object.keys(a2) // []
 
 a1.map(n => 1) // [1, 1, 1]
-a2.map(n => 1) // [, , ,]
+a2.map(n => 1) // [empty, empty, empty]
 ```
 
 上面代码一共列出了四种运算，数组`a1`和`a2`的结果都不一样。前三种运算（`in`运算符、数组的`hasOwnProperty`方法、`Object.keys`方法）都说明，数组`a2`取不到属性名。最后一种运算（数组的`map`方法）说明，数组`a2`没有发生遍历。
@@ -274,7 +274,7 @@ const arr = [, , ,];
 arr.map(n => {
   console.log(n);
   return 1;
-}) // [, , ,]
+}) // [empty, empty, empty]
 ```
 
 上面代码中，`arr`是一个全是空位的数组，`map`方法遍历成员时，发现是空位，就直接跳过，不会进入回调函数。因此，回调函数里面的`console.log`语句根本不会执行，整个`map`方法返回一个全是空位的新数组。
