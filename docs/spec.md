@@ -124,18 +124,18 @@ ES6 规格将这个标准流程，使用简写的方式表达。
 > 1. ReturnIfAbrupt(x).
 > 1. ReturnIfAbrupt(y).
 > 1. If `Type(x)` is the same as `Type(y)`, then
->     1. Return the result of performing Strict Equality Comparison `x === y`.
+>    1. Return the result of performing Strict Equality Comparison `x === y`.
 > 1. If `x` is `null` and `y` is `undefined`, return `true`.
 > 1. If `x` is `undefined` and `y` is `null`, return `true`.
-> 1. If `Type(x)` is Number and `Type(y)` is String,</br>
+> 1. If `Type(x)` is Number and `Type(y)` is String, 
 >    return the result of the comparison `x == ToNumber(y)`.
-> 1. If `Type(x)` is String and `Type(y)` is Number,</br>
+> 1. If `Type(x)` is String and `Type(y)` is Number, 
 >    return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(x)` is Boolean, return the result of the comparison `ToNumber(x) == y`.
 > 1. If `Type(y)` is Boolean, return the result of the comparison `x == ToNumber(y)`.
-> 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then</br>
+> 1. If `Type(x)` is either String, Number, or Symbol and `Type(y)` is Object, then 
 >    return the result of the comparison `x == ToPrimitive(y)`.
-> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then</br>
+> 1. If `Type(x)` is Object and `Type(y)` is either String, Number, or Symbol, then 
 >    return the result of the comparison `ToPrimitive(x) == y`.
 > 1. Return `false`.
 
@@ -229,17 +229,17 @@ a2.map(n => 1) // [, , ,]
 > 1. `ReturnIfAbrupt(A)`.
 > 1. Let `k` be 0.
 > 1. Repeat, while `k` < `len`
->     1. Let `Pk` be `ToString(k)`.
->     1. Let `kPresent` be `HasProperty(O, Pk)`.
->     1. `ReturnIfAbrupt(kPresent)`.
->     1. If `kPresent` is `true`, then
->         1. Let `kValue` be `Get(O, Pk)`.
->         1. `ReturnIfAbrupt(kValue)`.
->         1. Let `mappedValue` be `Call(callbackfn, T, «kValue, k, O»)`.
->         1. `ReturnIfAbrupt(mappedValue)`.
->         1. Let `status` be `CreateDataPropertyOrThrow (A, Pk, mappedValue)`.
->         1. `ReturnIfAbrupt(status)`.
->     1. Increase `k` by 1.
+>    1. Let `Pk` be `ToString(k)`.
+>    1. Let `kPresent` be `HasProperty(O, Pk)`.
+>    1. `ReturnIfAbrupt(kPresent)`.
+>    1. If `kPresent` is `true`, then
+>       1. Let `kValue` be `Get(O, Pk)`.
+>       1. `ReturnIfAbrupt(kValue)`.
+>       1. Let `mappedValue` be `Call(callbackfn, T, «kValue, k, O»)`.
+>       1. `ReturnIfAbrupt(mappedValue)`.
+>       1. Let `status` be `CreateDataPropertyOrThrow (A, Pk, mappedValue)`.
+>       1. `ReturnIfAbrupt(status)`.
+>    1. Increase `k` by 1.
 > 1. Return `A`.
 
 翻译如下。
@@ -254,20 +254,20 @@ a2.map(n => 1) // [, , ,]
 > 1. 如果报错就返回
 > 1. 设定`k`等于 0
 > 1. 只要`k`小于当前数组的`length`属性，就重复下面步骤
->     1. 设定`Pk`等于`ToString(k)`，即将`K`转为字符串
->     1. 设定`kPresent`等于`HasProperty(O, Pk)`，即求当前数组有没有指定属性
->     1. 如果报错就返回
->     1. 如果`kPresent`等于`true`，则进行下面步骤
->         1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性
->         1. 如果报错就返回
->         1. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数
->         1. 如果报错就返回
->         1. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置
->         1. 如果报错就返回
->     1. `k`增加 1
+>    1. 设定`Pk`等于`ToString(k)`，即将`K`转为字符串
+>    1. 设定`kPresent`等于`HasProperty(O, Pk)`，即求当前数组有没有指定属性
+>    1. 如果报错就返回
+>    1. 如果`kPresent`等于`true`，则进行下面步骤
+>       1. 设定`kValue`等于`Get(O, Pk)`，取出当前数组的指定属性
+>       1. 如果报错就返回
+>       1. 设定`mappedValue`等于`Call(callbackfn, T, «kValue, k, O»)`，即执行回调函数
+>       1. 如果报错就返回
+>       1. 设定`status`等于`CreateDataPropertyOrThrow (A, Pk, mappedValue)`，即将回调函数的值放入`A`数组的指定位置
+>       1. 如果报错就返回
+>    1. `k`增加 1
 > 1. 返回`A`
 
-仔细查看上面的算法，可以发现，当处理一个全是空位的数组时，前面步骤都没有问题。进入第 10 步的 ii 时，`kPresent`会报错，因为空位对应的属性名，对于数组来说是不存在的，因此就会返回，不会进行后面的步骤。
+仔细查看上面的算法，可以发现，当处理一个全是空位的数组时，前面步骤都没有问题。进入第 10 步中第 2 步时，`kPresent`会报错，因为空位对应的属性名，对于数组来说是不存在的，因此就会返回，不会进行后面的步骤。
 
 ```javascript
 const arr = [, , ,];
