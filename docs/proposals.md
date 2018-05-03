@@ -535,6 +535,13 @@ Math.pow(2, 1024) // Infinity
 
 现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了一种新的数据类型 BigInt（大整数），来解决这个问题。BigInt 只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
 
+```javascript
+const a = 2172141653n;
+const b = 15346349309n;
+a * b // 33334444555566667777n
+Number(a) * Number(b) // 33334444555566670000
+```
+
 为了与 Number 类型区别，BigInt 类型的数据必须使用后缀`n`表示。
 
 ```javascript
@@ -553,7 +560,7 @@ BigInt 同样可以使用各种进制表示，都要加上后缀`n`。
 `typeof`运算符对于 BigInt 类型的数据返回`bigint`。
 
 ```javascript
-typeof 123n // 'BigInt'
+typeof 123n // 'bigint'
 ```
 
 ### BigInt 对象
@@ -625,28 +632,40 @@ Integer 类型不能与 Number 类型进行混合运算。
 
 上面代码报错是因为无论返回的是 BigInt 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 BigInt 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，有效精度只能保持 53 位，导致精度下降。
 
+同样的原因，如果一个标准库函数的参数预期是 Number 类型，但是得到的是一个 BigInt，就会报错。
+
+```javascript
+// 错误的写法
+Math.sqrt(4n) // 报错
+
+// 正确的写法
+Math.sqrt(Number(4n)) // 2
+```
+
+上面代码中，`Math.sqrt`的参数预期是 Number 类型，如果是 BigInt 就会报错，必须先用`Number`方法转一下类型，才能进行计算。
+
 asm.js 里面，`|0`跟在一个数值的后面会返回一个32位整数。根据不能与 Number 类型混合运算的规则，BigInt 如果与`|0`进行运算会报错。
 
 ```javascript
 1n | 0 // 报错
 ```
 
-相等运算符（`==`）会改变数据类型，也是不允许混合使用。
+比较运算符（比如`>`）和相等运算符（`==`）允许 BigInt 与其他类型的值混合计算，因为这样做不会损失精度。
 
 ```javascript
-0n == 0
-// 报错 TypeError
-
-0n == false
-// 报错 TypeError
+0n < 1 // true
+0n < true // true
+0n == 0 // true
+0n == false // true
 ```
 
-精确相等运算符（`===`）不会改变数据类型，因此可以混合使用。
+同理，精确相等运算符（`===`）也可以混合使用。
 
 ```javascript
-0n === 0
-// false
+0n === 0 // false
 ```
+
+上面代码中，由于`0n`与`0`的数据类型不同，所以返回`false`。
 
 大整数可以转为其他数据类型。
 
