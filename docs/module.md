@@ -650,7 +650,7 @@ import {db, users} from './index';
 
 ### 简介
 
-前面介绍过，`import`命令会被 JavaScript 引擎静态分析，先于模块内的其他语句执行（`import`命令叫做”连接“ binding 其实更合适）。所以，下面的代码会报错。
+前面介绍过，`import`命令会被 JavaScript 引擎静态分析，先于模块内的其他语句执行（`import`命令叫做“连接” binding 其实更合适）。所以，下面的代码会报错。
 
 ```javascript
 // 报错
