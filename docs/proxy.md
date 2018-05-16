@@ -277,7 +277,7 @@ const el = dom.div({},
 document.body.appendChild(el);
 ```
 
-下面是一个`get`方法的第三个参数的例子。
+下面是一个`get`方法的第三个参数的例子，它总是指向原始的读操作所在的那个对象，一般情况下就是 Proxy 实例。
 
 ```javascript
 const proxy = new Proxy({}, {
@@ -288,7 +288,20 @@ const proxy = new Proxy({}, {
 proxy.getReceiver === proxy // true
 ```
 
-上面代码中，`get`方法的第三个参数`receiver`，总是为当前的 Proxy 实例。
+上面代码中，`proxy`对象的`getReceiver`属性是由`proxy`对象提供的，所以`receiver`指向`proxy`对象。
+
+```javascript
+const proxy = new Proxy({}, {
+  get: function(target, property, receiver) {
+    return receiver;
+  }
+});
+
+const d = Object.create(proxy);
+d.a === d // true
+```
+
+上面代码中，`d`对象本身没有`a`属性，所以读取`d.a`的时候，会去`d`的原型`proxy`对象找。这时，`receiver`就指向`d`，代表原始的读操作所在的那个对象。
 
 如果一个属性不可配置（configurable）和不可写（writable），则该属性不能被代理，通过 Proxy 对象访问该属性会报错。
 
@@ -389,7 +402,7 @@ proxy.foo = 'bar';
 proxy.foo === proxy // true
 ```
 
-上面代码中，`set`方法的第四个参数`receiver`，指的是操作行为所在的那个对象，一般情况下是`proxy`实例本身，请看下面的例子。
+上面代码中，`set`方法的第四个参数`receiver`，指的是原始的操作行为所在的那个对象，一般情况下是`proxy`实例本身，请看下面的例子。
 
 ```javascript
 const handler = {
