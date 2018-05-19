@@ -132,6 +132,20 @@ codePointLength(s) // 2
 
 上面代码中，不加`u`修饰符，就无法识别非规范的`K`字符。
 
+## RegExp.prototype.unicode 属性
+
+正则实例对象新增`unicode`属性，表示是否设置了`u`修饰符。
+
+```javascript
+const r1 = /hello/;
+const r2 = /hello/u;
+
+r1.unicode // false
+r2.unicode // true
+```
+
+上面代码中，正则表达式是否设置了`u`修饰符，可以从`unicode`属性看出来。
+
 ## y 修饰符
 
 除了`u`修饰符，ES6 还为正则表达式添加了`y`修饰符，叫做“粘连”（sticky）修饰符。
@@ -264,16 +278,16 @@ tokenize(TOKEN_G, '3x + 4')
 
 上面代码中，`g`修饰符会忽略非法字符，而`y`修饰符不会，这样就很容易发现错误。
 
-## sticky 属性
+## RegExp.prototype.sticky 属性
 
-与`y`修饰符相匹配，ES6 的正则对象多了`sticky`属性，表示是否设置了`y`修饰符。
+与`y`修饰符相匹配，ES6 的正则实例对象多了`sticky`属性，表示是否设置了`y`修饰符。
 
 ```javascript
 var r = /hello\d/y;
 r.sticky // true
 ```
 
-## flags 属性
+## RegExp.prototype.flags 属性
 
 ES6 为正则表达式新增了`flags`属性，会返回正则表达式的修饰符。
 

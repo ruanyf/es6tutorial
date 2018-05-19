@@ -595,10 +595,9 @@ var handler = {
 
 `construct`方法可以接受两个参数。
 
-- `target`: 目标对象
-- `args`：构建函数的参数对象
-
-下面是一个例子。
+- `target`：目标对象
+- `args`：构造函数的参数对象
+- `newTarget`：创造实例对象时，`new`命令作用的构造函数（下面例子的`p`）
 
 ```javascript
 var p = new Proxy(function () {}, {
@@ -664,11 +663,10 @@ var handler = {
 };
 var target = {};
 var proxy = new Proxy(target, handler);
-proxy.foo = 'bar'
-// TypeError: proxy defineProperty handler returned false for property '"foo"'
+proxy.foo = 'bar' // 不会生效
 ```
 
-上面代码中，`defineProperty`方法返回`false`，导致添加新属性会抛出错误。
+上面代码中，`defineProperty`方法返回`false`，导致添加新属性总是无效。
 
 注意，如果目标对象不可扩展（extensible），则`defineProperty`不能增加目标对象上不存在的属性，否则会报错。另外，如果目标对象的某个属性不可写（writable）或不可配置（configurable），则`defineProperty`方法不得改变这两个设置。
 
