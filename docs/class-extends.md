@@ -499,7 +499,7 @@ A.__proto__ === Function.prototype // true
 A.prototype.__proto__ === undefined // true
 ```
 
-这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回的对象不继承任何方法，所以它的`__proto__`指向`Function.prototype`，即实质上执行了下面的代码。
+这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回的对象不继承任何方法，所以它的`__proto__`指向`undefined`，即实质上执行了下面的代码。
 
 ```javascript
 class C extends null {
