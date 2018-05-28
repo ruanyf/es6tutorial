@@ -163,13 +163,15 @@ let obj = {
 Symbol 类型还可以用于定义一组常量，保证这组常量的值都是不相等的。
 
 ```javascript
+const log = {};
+
 log.levels = {
   DEBUG: Symbol('debug'),
   INFO: Symbol('info'),
   WARN: Symbol('warn')
 };
-log(log.levels.DEBUG, 'debug message');
-log(log.levels.INFO, 'info message');
+console.log(log.levels.DEBUG, 'debug message');
+console.log(log.levels.INFO, 'info message');
 ```
 
 下面是另外一个例子。
