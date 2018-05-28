@@ -229,7 +229,7 @@ const shapeType = {
 function getArea(shape, options) {
   let area = 0;
   switch (shape) {
-    case shapeType.triangle:
+    case shape.triangle: 
       area = .5 * options.width * options.height;
       break;
   }
