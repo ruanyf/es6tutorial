@@ -140,6 +140,7 @@
 ## Promise 对象
 
 - Jake Archibald, [JavaScript Promises: There and back again](http://www.html5rocks.com/en/tutorials/es6/promises/)
+- Jake Archibald, [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
 - Tilde, [rsvp.js](https://github.com/tildeio/rsvp.js)
 - Sandeep Panda, [An Overview of JavaScript Promises](http://www.sitepoint.com/overview-javascript-promises/): ES6 Promise 入门介绍
 - Dave Atchley, [ES6 Promises](http://www.datchley.name/es6-promises/): Promise 的语法介绍

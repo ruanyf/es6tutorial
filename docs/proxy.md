@@ -303,7 +303,7 @@ d.a === d // true
 
 上面代码中，`d`对象本身没有`a`属性，所以读取`d.a`的时候，会去`d`的原型`proxy`对象找。这时，`receiver`就指向`d`，代表原始的读操作所在的那个对象。
 
-如果一个属性不可配置（configurable）和不可写（writable），则该属性不能被代理，通过 Proxy 对象访问该属性会报错。
+如果一个属性不可配置（configurable）且不可写（writable），则 Proxy 不能修改该属性，否则通过 Proxy 对象访问该属性会报错。
 
 ```javascript
 const target = Object.defineProperties({}, {
@@ -420,7 +420,7 @@ myObj.foo === myObj // true
 
 上面代码中，设置`myObj.foo`属性的值时，`myObj`并没有`foo`属性，因此引擎会到`myObj`的原型链去找`foo`属性。`myObj`的原型对象`proxy`是一个 Proxy 实例，设置它的`foo`属性会触发`set`方法。这时，第四个参数`receiver`就指向原始赋值行为所在的对象`myObj`。
 
-注意，如果目标对象自身的某个属性，不可写或不可配置，那么`set`方法将不起作用。
+注意，如果目标对象自身的某个属性，不可写且不可配置，那么`set`方法将不起作用。
 
 ```javascript
 const obj = {};
