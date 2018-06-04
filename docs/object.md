@@ -861,13 +861,13 @@ JavaScript 语言的对象继承是通过原型链实现的。ES6 提供了更�
 `__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
-// es6 的写法
+// es5 的写法
 const obj = {
   method: function() { ... }
 };
 obj.__proto__ = someOtherObj;
 
-// es5 的写法
+// es6 的写法
 var obj = Object.create(someOtherObj);
 obj.method = function() { ... };
 ```

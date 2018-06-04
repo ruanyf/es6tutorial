@@ -460,7 +460,7 @@ async function dbFuc(db) {
 }
 ```
 
-目前，[`@std/esm`](https://www.npmjs.com/package/@std/esm)模块加载器支持顶层`await`，即`await`命令可以不放在 async 函数里面，直接使用。
+目前，[`esm`](https://www.npmjs.com/package/esm)模块加载器支持顶层`await`，即`await`命令可以不放在 async 函数里面，直接使用。
 
 ```javascript
 // async 函数的写法
@@ -476,7 +476,7 @@ const res = await fetch('google.com');
 console.log(await res.text());
 ```
 
-上面代码中，第二种写法的脚本必须使用`@std/esm`加载器，才会生效。
+上面代码中，第二种写法的脚本必须使用`esm`加载器，才会生效。
 
 ## async 函数的实现原理
 
