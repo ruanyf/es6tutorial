@@ -163,23 +163,33 @@ const [...a2] = a1;
 扩展运算符提供了数组合并的新写法。
 
 ```javascript
-// ES5
-[1, 2].concat(more)
-// ES6
-[1, 2, ...more]
+const arr1 = ['a', 'b'];
+const arr2 = ['c'];
+const arr3 = ['d', 'e'];
 
-var arr1 = ['a', 'b'];
-var arr2 = ['c'];
-var arr3 = ['d', 'e'];
-
-// ES5的合并数组
+// ES5 的合并数组
 arr1.concat(arr2, arr3);
 // [ 'a', 'b', 'c', 'd', 'e' ]
 
-// ES6的合并数组
+// ES6 的合并数组
 [...arr1, ...arr2, ...arr3]
 // [ 'a', 'b', 'c', 'd', 'e' ]
 ```
+
+不过，这两种方法都是浅拷贝，使用的时候需要注意。
+
+```javascript
+const a1 = [{ foo: 1 }];
+const a2 = [{ bar: 2 }];
+
+const a3 = a1.concat(a2);
+const a4 = [...a1, ...a2];
+
+a3[0] === a1[0] // true
+a4[0] === a1[0] // true
+```
+
+上面代码中，`a3`和`a4`是用两种不同方法合并而成的新数组，但是它们的成员都是对原数组成员的引用，这就是浅拷贝。如果修改了原数组的成员，会同步反映到新数组。
 
 **（3）与解构赋值结合**
 
