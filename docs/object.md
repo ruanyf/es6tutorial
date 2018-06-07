@@ -1426,8 +1426,6 @@ let newVersion = {
 ```javascript
 let aWithDefaults = { x: 1, y: 2, ...a };
 // 等同于
- even if property keys don’t clash, because objects record insertion order:
-
 let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
 // 等同于
 let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
@@ -1447,8 +1445,6 @@ const obj = {
 ```javascript
 {...{}, a: 1}
 // { a: 1 }
- even if property keys don’t clash, because objects record insertion order:
-
 ```
 
 如果扩展运算符的参数是`null`或`undefined`，这两个值会被忽略，不会报错。
