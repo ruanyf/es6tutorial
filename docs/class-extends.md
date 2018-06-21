@@ -713,7 +713,7 @@ function mix(...mixins) {
   class Mix {}
 
   for (let mixin of mixins) {
-    copyProperties(Mix, mixin); // 拷贝实例属性
+    copyProperties(Mix.prototype, new mixin()); // 拷贝实例属性
     copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
   }
 
