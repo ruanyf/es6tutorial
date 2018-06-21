@@ -601,7 +601,7 @@ b.set(a);
 const a = new Uint16Array(8);
 const b = new Uint16Array(10);
 
-b.set(a, 2)
+a.set(b, 2)
 ```
 
 上面代码的`b`数组比`a`数组多两个成员，所以从`b[2]`开始复制。
