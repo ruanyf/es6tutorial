@@ -643,7 +643,7 @@ export {users} from './users';
 
 ```javascript
 // script.js
-import {db, users} from './index';
+import {db, users} from './constants/index';
 ```
 
 ## import()
