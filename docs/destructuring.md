@@ -161,7 +161,8 @@ if ([1][0] === undefined) {
 let [x = 1, y = x] = [];     // x=1; y=1
 let [x = 1, y = x] = [2];    // x=2; y=2
 let [x = 1, y = x] = [1, 2]; // x=1; y=2
-let [x = y, y = 1] = [];     // ReferenceError: y is not defined
+let [x = y, y = 1] = [];     // ReferenceError: y is not defined. 因为let声明的变量具有暂时性死区性质(temporal dead zone),对比下面
+var [x = y, y = 1] = [];    //x=undefined; y=1. 由于变量hosting，所有在结构前x,y都已声明
 ```
 
 上面最后一个表达式之所以会报错，是因为`x`用`y`做默认值时，`y`还没有声明。
