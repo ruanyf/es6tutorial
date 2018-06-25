@@ -452,8 +452,6 @@ Object.create(A.prototype);
 B.prototype.__proto__ = A.prototype;
 ```
 
-### extends 的继承目标
-
 `extends`关键字后面可以跟多种类型的值。
 
 ```javascript
@@ -463,9 +461,7 @@ class B extends A {
 
 上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性（除了`Function.prototype`函数），因此`A`可以是任意函数。
 
-下面，讨论三种特殊情况。
-
-第一种特殊情况，子类继承`Object`类。
+下面，讨论两种情况。第一种，子类继承`Object`类。
 
 ```javascript
 class A extends Object {
@@ -477,7 +473,7 @@ A.prototype.__proto__ === Object.prototype // true
 
 这种情况下，`A`其实就是构造函数`Object`的复制，`A`的实例就是`Object`的实例。
 
-第二种特殊情况，不存在任何继承。
+第二种情况，不存在任何继承。
 
 ```javascript
 class A {
@@ -488,24 +484,6 @@ A.prototype.__proto__ === Object.prototype // true
 ```
 
 这种情况下，`A`作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
-
-第三种特殊情况，子类继承`null`。
-
-```javascript
-class A extends null {
-}
-
-A.__proto__ === Function.prototype // true
-A.prototype.__proto__ === undefined // true
-```
-
-这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回的对象不继承任何方法，所以它的`__proto__`指向`undefined`，即实质上执行了下面的代码。
-
-```javascript
-class C extends null {
-  constructor() { return Object.create(null); }
-}
-```
 
 ### 实例的 \_\_proto\_\_ 属性
 
@@ -714,7 +692,7 @@ function mix(...mixins) {
 
   for (let mixin of mixins) {
     copyProperties(Mix.prototype, mixin); // 拷贝实例属性
-    copyProperties(Mix.prototype, Object.getPrototypeOf(mixin)); // 拷贝原型属性
+    copyProperties(Mix.prototype, Reflect.getPrototypeOf(mixin)); // 拷贝原型属性
   }
 
   return Mix;
