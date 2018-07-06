@@ -485,7 +485,7 @@ A.prototype.__proto__ === Object.prototype // true
 
 这种情况下，`A`作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
 
-### 实例的 \_\_proto\_\_ 属性
+## 实例的 \_\_proto\_\_ 属性
 
 子类实例的`__proto__`属性的`__proto__`属性，指向父类实例的`__proto__`属性。也就是说，子类的原型的原型，是父类的原型。
 
