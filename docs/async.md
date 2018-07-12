@@ -722,9 +722,10 @@ async function f() {
 注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的 Promise 对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
 
 ```javascript
-const asyncGenObj = createAsyncIterable(['a', 'b']);
+const asyncIterable = createAsyncIterable(['a', 'b']);
+const asyncIterator = asyncIterable[Symbol.asyncIterator]();
 const [{value: v1}, {value: v2}] = await Promise.all([
-  asyncGenObj.next(), asyncGenObj.next()
+  asyncIterator.next(), asyncIterator.next()
 ]);
 
 console.log(v1, v2); // a b
