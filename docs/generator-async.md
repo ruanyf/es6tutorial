@@ -486,7 +486,7 @@ function run(fn) {
 
   function next(err, data) {
     var result = gen.next(data);
-    if (result.done) return;
+    if (result.done && result.value === undefined) return;
     result.value(next);
   }
 
