@@ -44,7 +44,7 @@ let cp = new ColorPoint(); // ReferenceError
 
 上面代码中，`ColorPoint`继承了父类`Point`，但是它的构造函数没有调用`super`方法，导致新建实例时报错。
 
-ES5 的继承，实质是先创造子类的实例对象`this`，然后再将父类的方法添加到`this`上面（`Parent.apply(this)`）。ES6 的继承机制完全不同，实质是先创造父类的实例对象`this`（所以必须先调用`super`方法），然后再用子类的构造函数修改`this`。
+ES5 的继承，实质是先创造子类的实例对象`this`，然后再将父类的方法添加到`this`上面（`Parent.apply(this)`）。ES6 的继承机制完全不同，实质是先将父类实例对象的属性和方法，加到`this`上面（所以必须先调用`super`方法），然后再用子类的构造函数修改`this`。
 
 如果子类没有定义`constructor`方法，这个方法会被默认添加，代码如下。也就是说，不管有没有显式定义，任何一个子类都有`constructor`方法。
 
@@ -60,7 +60,7 @@ class ColorPoint extends Point {
 }
 ```
 
-另一个需要注意的地方是，在子类的构造函数中，只有调用`super`之后，才可以使用`this`关键字，否则会报错。这是因为子类实例的构建，是基于对父类实例加工，只有`super`方法才能返回父类实例。
+另一个需要注意的地方是，在子类的构造函数中，只有调用`super`之后，才可以使用`this`关键字，否则会报错。这是因为子类实例的构建，基于父类实例，只有`super`方法才能调用父类实例。
 
 ```javascript
 class Point {
@@ -452,8 +452,6 @@ Object.create(A.prototype);
 B.prototype.__proto__ = A.prototype;
 ```
 
-### extends 的继承目标
-
 `extends`关键字后面可以跟多种类型的值。
 
 ```javascript
@@ -463,9 +461,7 @@ class B extends A {
 
 上面代码的`A`，只要是一个有`prototype`属性的函数，就能被`B`继承。由于函数都有`prototype`属性（除了`Function.prototype`函数），因此`A`可以是任意函数。
 
-下面，讨论三种特殊情况。
-
-第一种特殊情况，子类继承`Object`类。
+下面，讨论两种情况。第一种，子类继承`Object`类。
 
 ```javascript
 class A extends Object {
@@ -477,7 +473,7 @@ A.prototype.__proto__ === Object.prototype // true
 
 这种情况下，`A`其实就是构造函数`Object`的复制，`A`的实例就是`Object`的实例。
 
-第二种特殊情况，不存在任何继承。
+第二种情况，不存在任何继承。
 
 ```javascript
 class A {
@@ -488,24 +484,6 @@ A.prototype.__proto__ === Object.prototype // true
 ```
 
 这种情况下，`A`作为一个基类（即不存在任何继承），就是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回一个空对象（即`Object`实例），所以`A.prototype.__proto__`指向构造函数（`Object`）的`prototype`属性。
-
-第三种特殊情况，子类继承`null`。
-
-```javascript
-class A extends null {
-}
-
-A.__proto__ === Function.prototype // true
-A.prototype.__proto__ === undefined // true
-```
-
-这种情况与第二种情况非常像。`A`也是一个普通函数，所以直接继承`Function.prototype`。但是，`A`调用后返回的对象不继承任何方法，所以它的`__proto__`指向`undefined`，即实质上执行了下面的代码。
-
-```javascript
-class C extends null {
-  constructor() { return Object.create(null); }
-}
-```
 
 ### 实例的 \_\_proto\_\_ 属性
 
@@ -713,8 +691,8 @@ function mix(...mixins) {
   class Mix {}
 
   for (let mixin of mixins) {
-    copyProperties(Mix, mixin); // 拷贝实例属性
-    copyProperties(Mix.prototype, mixin.prototype); // 拷贝原型属性
+    copyProperties(Mix.prototype, mixin); // 拷贝实例属性
+    copyProperties(Mix.prototype, Reflect.getPrototypeOf(mixin)); // 拷贝原型属性
   }
 
   return Mix;

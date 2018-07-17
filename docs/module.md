@@ -453,7 +453,7 @@ export default 42;
 export 42;
 ```
 
-上面代码中，后一句报错是因为没有指定对外的接口，而前一句指定外对接口为`default`。
+上面代码中，后一句报错是因为没有指定对外的接口，而前一句指定对外接口为`default`。
 
 有了`export default`命令，输入模块时就非常直观了，以输入 lodash 模块为例。
 
@@ -643,7 +643,7 @@ export {users} from './users';
 
 ```javascript
 // script.js
-import {db, users} from './index';
+import {db, users} from './constants/index';
 ```
 
 ## import()
