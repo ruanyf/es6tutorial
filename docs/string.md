@@ -355,7 +355,7 @@ ES2017 引入了字符串补全长度的功能。如果某个字符串不够指�
 
 ## 模板字符串
 
-传统的 JavaScript 语言，输出模板通常是这样写的。
+JQuery框架
 
 ```javascript
 $('#result').append(
