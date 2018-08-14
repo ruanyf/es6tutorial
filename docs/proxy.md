@@ -634,6 +634,7 @@ new p() // 报错
 var handler = {
   deleteProperty (target, key) {
     invariant(key, 'delete');
+    delete target[key];
     return true;
   }
 };
