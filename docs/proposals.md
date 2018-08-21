@@ -570,11 +570,11 @@ JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BitInt �
 ```javascript
 BigInt(123) // 123n
 BigInt('123') // 123n
-BitInt(false) // 0n
-BitInt(true) // 1n
+BigInt(false) // 0n
+BigInt(true) // 1n
 ```
 
-`BitInt`构造函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
+`BigInt`构造函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
 
 ```javascript
 new BitInt() // TypeError
