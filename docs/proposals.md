@@ -565,7 +565,7 @@ typeof 123n // 'bigint'
 
 ### BigInt 对象
 
-JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BitInt 类型的数值。转换规则基本与`Number()`一致，将别的类型的值转为 BigInt。
+JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BigInt 类型的数值。转换规则基本与`Number()`一致，将别的类型的值转为 BigInt。
 
 ```javascript
 BigInt(123) // 123n
@@ -577,7 +577,7 @@ BigInt(true) // 1n
 `BigInt`构造函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
 
 ```javascript
-new BitInt() // TypeError
+new BigInt() // TypeError
 BigInt(undefined) //TypeError
 BigInt(null) // TypeError
 BigInt('123n') // SyntaxError
