@@ -374,6 +374,32 @@ class Foo {}
 
 上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
 
+## 属性声明提案
+
+现在有一个[提案](https://github.com/tc39/proposal-class-fields) ，允许直接将属性写在类中，而不是写在 `constructor` 函数中。
+这个提案目前到了 stage-3 阶段，Chrome 浏览器中已经支持。
+```javascript
+var count = 1;
+
+class Counter {
+
+  //属性声明，不会影响外部的变量
+  count = 0;
+  
+  add(){
+    this.count++;
+    return this.count;
+  }
+  
+  //可以使用括号语法
+  ["foo"] = "foo";
+  
+  //可以访问 this
+  bar = this.add();
+}
+```
+属性声明在某些情况下可以减少构造函数的复杂度，使逻辑更清晰，但相应的代价是无法访问到调用构造函数时传入的参数。
+
 ## 私有方法和私有属性
 
 ### 现有的方法
