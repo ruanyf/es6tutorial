@@ -445,7 +445,7 @@ export default class myClass{
 
 ### 私有属性的提案
 
-与私有方法一样，ES6 不支持私有属性。目前，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+目前，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
 
 ```javascript
 class Point {
@@ -473,7 +473,7 @@ class Point {
 }
 ```
 
-之所以要引入一个新的前缀`#`表示私有属性，而没有采用`private`关键字，是因为 JavaScript 是一门动态语言，使用独立的符号似乎是唯一的可靠方法，能够准确地区分一种属性是否为私有属性。另外，Ruby 语言使用`@`表示私有属性，ES6 没有用这个符号而使用`#`，是因为`@`已经被留给了 Decorator。
+之所以要引入一个新的前缀`#`表示私有属性，而没有采用`private`关键字，是因为 JavaScript 是一门动态语言，没有类型声明，使用独立的符号似乎是唯一的比较方便可靠的方法，能够准确地区分一种属性是否为私有属性。另外，Ruby 语言使用`@`表示私有属性，ES6 没有用这个符号而使用`#`，是因为`@`已经被留给了 Decorator。
 
 这种写法不仅可以写私有属性，还可以用来写私有方法。
 
@@ -508,6 +508,33 @@ class Counter {
 ```
 
 上面代码中，`#x`是一个私有属性，它的读写都通过`get #x()`和`set #x()`来完成。
+
+私有属性不限于从`this`引用，类的实例也可以引用私有属性。
+
+```javascript
+class Foo {
+  #privateValue = 42;
+  static getPrivateValue(foo) {
+    return foo.#privateValue;
+  }
+}
+
+Foo.getPrivateValue(new Foo()); // 42
+```
+
+上面代码允许从实例`foo`上面引用私有属性。
+
+但是，直接从实例上引用私有属性是不可以的，只能在类的定义中引用。
+
+```javascript
+class Foo {
+  #bar;
+}
+let foo = new Foo();
+foo.#bar; // 报错
+```
+
+上面代码直接从实例引用私有属性，导致报错。
 
 ## this 的指向
 

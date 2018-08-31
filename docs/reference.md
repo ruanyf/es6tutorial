@@ -198,6 +198,8 @@
 - Axel Rauschmayer, [Classes in ECMAScript 6 (final semantics)](http://www.2ality.com/2015/02/es6-classes-final.html): Class 语法的详细介绍和设计思想分析
 - Eric Faust, [ES6 In Depth: Subclassing](https://hacks.mozilla.org/2015/08/es6-in-depth-subclassing/): Class 语法的深入介绍
 - Nicolás Bevacqua, [Binding Methods to Class Instance Objects](https://ponyfoo.com/articles/binding-methods-to-class-instance-objects): 如何绑定类的实例中的 this
+- Jamie Kyle, [JavaScript's new #private class fields](https://jamie.build/javascripts-new-private-class-fields.html)：私有属性的介绍。
+
 
 ## Decorator
 
