@@ -79,7 +79,6 @@ const c = `foobar`;
 // good
 const a = 'foobar';
 const b = `foo${a}bar`;
-const c = 'foobar';
 ```
 
 ## 解构赋值
