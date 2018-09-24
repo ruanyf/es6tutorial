@@ -1022,7 +1022,7 @@ onmessage = function (ev) {
 
 线程之间的数据交换可以是各种格式，不仅仅是字符串，也可以是二进制数据。这种交换采用的是复制机制，即一个进程将需要分享的数据复制一份，通过`postMessage`方法交给另一个进程。如果数据量比较大，这种通信的效率显然比较低。很容易想到，这时可以留出一块内存区域，由主线程与 Worker 线程共享，两方都可以读写，那么就会大大提高效率，协作起来也会比较简单（不像`postMessage`那么麻烦）。
 
-ES2017 引入[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)，允许 Worker 线程与主线程共享同一块内存。`SharedArrayBuffer`的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享。
+ES2017 引入[`SharedArrayBuffer`](https://github.com/tc39/ecmascript_sharedmem/blob/master/TUTORIAL.md)，允许 Worker 线程与主线程共享同一块内存。`SharedArrayBuffer`的 API 与`ArrayBuffer`一模一样，唯一的区别是后者无法共享数据。
 
 ```javascript
 // 主线程
@@ -1157,42 +1157,137 @@ console.log(ia[42]);  // 314159
 
 上面代码中，主线程的`Atomics.store`向 42 号位置的赋值，一定是早于 37 位置的赋值。只要 37 号位置等于 163，Worker 线程就不会终止循环，而对 37 号位置和 42 号位置的取值，一定是在`Atomics.load`操作之后。
 
-**（2）Atomics.wait()，Atomics.wake()**
+下面是另一个例子。
+
+```javascript
+// 主线程
+const worker = new Worker('worker.js');
+const length = 10;
+const size = Int32Array.BYTES_PER_ELEMENT * length;
+// 新建一段共享内存
+const sharedBuffer = new SharedArrayBuffer(size);
+const sharedArray = new Int32Array(sharedBuffer);
+for (let i = 0; i < 10; i++) {
+  // 向共享内存写入 10 个整数
+  Atomics.store(sharedArray, i, 0);
+}
+worker.postMessage(sharedBuffer);
+```
+
+上面代码中，主线程用`Atomics.store()`方法写入数据。下面是 Worker 线程用`Atomics.load()`方法读取数据。
+
+```javascript
+// worker.js
+self.addEventListener('message', (event) => {
+  const sharedArray = new Int32Array(event.data);
+  for (let i = 0; i < 10; i++) {
+    const arrayValue = Atomics.load(sharedArray, i);
+    console.log(`The item at array index ${i} is ${arrayValue}`);
+  }
+}, false);
+```
+
+**（2）Atomics.exchange()**
+
+Worker 线程如果要写入数据，可以使用上面的`Atomics.store()`方法，也可以使用`Atomics.exchange()`方法。它们的区别是，`Atomics.store()`返回写入的值，而`Atomics.exchange()`返回被替换的值。
+
+```javascript
+// Worker 线程
+self.addEventListener('message', (event) => {
+  const sharedArray = new Int32Array(event.data);
+  for (let i = 0; i < 10; i++) {
+    if (i % 2 === 0) {
+      const storedValue = Atomics.store(sharedArray, i, 1);
+      console.log(`The item at array index ${i} is now ${storedValue}`);
+    } else {
+      const exchangedValue = Atomics.exchange(sharedArray, i, 2);
+      console.log(`The item at array index ${i} was ${exchangedValue}, now 2`);
+    }
+  }
+}, false);
+```
+
+上面代码将共享内存的偶数位置的值改成`1`，奇数位置的值改成`2`。
+
+**（3）Atomics.wait()，Atomics.wake()**
 
 使用`while`循环等待主线程的通知，不是很高效，如果用在主线程，就会造成卡顿，`Atomics`对象提供了`wait()`和`wake()`两个方法用于等待通知。这两个方法相当于锁内存，即在一个线程进行操作时，让其他线程休眠（建立锁），等到操作结束，再唤醒那些休眠的线程（解除锁）。
 
 ```javascript
-Atomics.wait(sharedArray, index, value, time)
+// Worker 线程
+self.addEventListener('message', (event) => {
+  const sharedArray = new Int32Array(event.data);
+  const arrayIndex = 0;
+  const expectedStoredValue = 50;
+  Atomics.wait(sharedArray, arrayIndex, expectedStoredValue);
+  console.log(Atomics.load(sharedArray, arrayIndex));
+}, false);
 ```
 
-`Atomics.wait`用于当`sharedArray[index]`不等于`value`，就返回`not-equal`，否则就进入休眠，只有使用`Atomics.wake()`或者`time`毫秒以后才能唤醒。被`Atomics.wake()`唤醒时，返回`ok`，超时唤醒时返回`timed-out`。
+上面代码中，`Atomics.wait()`方法等同于告诉 Worker 线程，只要满足给定条件（`sharedArray`的`0`号位置等于`50`），就在这一行 Worker 线程进入休眠。
+
+主线程一旦更改了指定位置的值，就可以唤醒 Worker 线程。
+
+```javascript
+// 主线程
+const newArrayValue = 100;
+Atomics.store(sharedArray, 0, newArrayValue);
+const arrayIndex = 0;
+const queuePos = 1;
+Atomics.wake(sharedArray, arrayIndex, queuePos);
+```
+
+上面代码中，`sharedArray`的`0`号位置改为`100`，然后就执行`Atomics.wake()`方法，唤醒在`sharedArray`的`0`号位置休眠队列里的一个线程。
+
+`Atomics.wait()`方法的使用格式如下。
+
+```javascript
+Atomics.wait(sharedArray, index, value, timeout)
+```
+
+它的四个参数含义如下。
+
+- sharedArray：共享内存的视图数组。
+- index：视图数据的位置（从0开始）。
+- value：该位置的预期值。一旦实际值等于预期值，就进入休眠。
+- timeout：整数，表示过了这个时间以后，就自动唤醒，单位毫秒。该参数可选，默认值是`Infinity`，即无限期的休眠，只有通过`Atomics.wake()`方法才能唤醒。
+
+`Atomics.wait()`的返回值是一个字符串，共有三种可能的值。如果`sharedArray[index]`不等于`value`，就返回字符串`not-equal`，否则就进入休眠。如果`Atomics.wake()`方法唤醒，就返回字符串`ok`；如果因为超时唤醒，就返回字符串`timed-out`。
+
+`Atomics.wake()`方法的使用格式如下。
 
 ```javascript
 Atomics.wake(sharedArray, index, count)
 ```
 
-`Atomics.wake`用于唤醒`count`数目在`sharedArray[index]`位置休眠的线程，让它继续往下运行。
+它的三个参数含义如下。
 
-下面请看一个例子。
+- sharedArray：共享内存的视图数组。
+- index：视图数据的位置（从0开始）。
+- count：需要唤醒的 Worker 线程的数量，默认为`Infinity`。
+
+`Atomics.wake()`方法一旦唤醒休眠的 Worker 线程，就会让它继续往下运行。
+
+请看一个例子。
 
 ```javascript
-// 线程一
+// 主线程
 console.log(ia[37]);  // 163
 Atomics.store(ia, 37, 123456);
 Atomics.wake(ia, 37, 1);
 
-// 线程二
+// Worker 线程
 Atomics.wait(ia, 37, 163);
 console.log(ia[37]);  // 123456
 ```
 
-上面代码中，共享内存视图`ia`的第 37 号位置，原来的值是`163`。进程二使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。进程一使用`Atomics.store()`方法，将`123456`放入`ia[37]`，然后使用`Atomics.wake()`方法将监视`ia[37]`的休眠线程唤醒。
+上面代码中，视图数组`ia`的第 37 号位置，原来的值是`163`。Worker 线程使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。主线程使用`Atomics.store()`方法，将`123456`写入`ia[37]`，然后使用`Atomics.wake()`方法唤醒 Worker 线程。
 
 另外，基于`wait`和`wake`这两个方法的锁内存实现，可以看 Lars T Hansen 的 [js-lock-and-condition](https://github.com/lars-t-hansen/js-lock-and-condition) 这个库。
 
-注意，浏览器的主线程有权“拒绝”休眠，这是为了防止用户失去响应。
+注意，浏览器的主线程不宜设置休眠，这会导致用户失去响应。而且，主线程实际上会拒绝进入休眠。
 
-**（3）运算方法**
+**（4）运算方法**
 
 共享内存上面的某些运算是不能被打断的，即不能在运算过程中，让其他线程改写内存上面的值。Atomics 对象提供了一些运算方法，防止数据被改写。
 
@@ -1226,12 +1321,11 @@ Atomics.xor(sharedArray, index, value)
 
 `Atomic.xor`用于将`vaule`与`sharedArray[index]`进行位运算`xor`，放入`sharedArray[index]`，并返回旧的值。
 
-**（4）其他方法**
+**（5）其他方法**
 
 `Atomics`对象还有以下方法。
 
 - `Atomics.compareExchange(sharedArray, index, oldval, newval)`：如果`sharedArray[index]`等于`oldval`，就写入`newval`，返回`oldval`。
-- `Atomics.exchange(sharedArray, index, value)`：设置`sharedArray[index]`的值，返回旧的值。
 - `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
 
 `Atomics.compareExchange`的一个用途是，从 SharedArrayBuffer 读取一个值，然后对该值进行某个操作，操作结束以后，检查一下 SharedArrayBuffer 里面原来那个值是否发生变化（即被其他线程改写过）。如果没有改写过，就将它写回原来的位置，否则读取新的值，再重头进行一次操作。
