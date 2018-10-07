@@ -210,10 +210,12 @@ getTitle('https://tc39.github.io/ecma262/').then(console.log)
 
 ### await 命令
 
-正常情况下，`await`命令后面是一个 Promise 对象。如果不是，会被转成一个立即`resolve`的 Promise 对象。
+正常情况下，`await`命令后面是一个 Promise 对象。如果不是，就返回对应的值。
 
 ```javascript
 async function f() {
+  // 等同于
+  // return 123;
   return await 123;
 }
 
@@ -221,7 +223,7 @@ f().then(v => console.log(v))
 // 123
 ```
 
-上面代码中，`await`命令的参数是数值`123`，它被转成 Promise 对象，并立即`resolve`。
+上面代码中，`await`命令的参数是数值`123`，这时等同于`return 123`。
 
 `await`命令后面的 Promise 对象如果变为`reject`状态，则`reject`的参数会被`catch`方法的回调函数接收到。
 
