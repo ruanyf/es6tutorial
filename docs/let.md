@@ -204,7 +204,7 @@ function func(arg) {
   let arg; // 报错
 }
 
-function func(arg) {
+function func() {
   {
     let arg; // 不报错
   }
