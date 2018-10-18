@@ -550,7 +550,7 @@ let re = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/u;
    S, // 原字符串 2015-01-02
    groups // 具名组构成的一个对象 {year, month, day}
  ) => {
- let {day, month, year} = args[args.length - 1];
+ let {day, month, year} = groups;
  return `${day}/${month}/${year}`;
 });
 ```
