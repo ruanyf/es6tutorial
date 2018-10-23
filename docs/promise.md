@@ -123,7 +123,7 @@ const getJSON = function(url) {
         return;
       }
       if (this.status === 200) {
-        resolve(this.response);
+        resolve(this.responseText);
       } else {
         reject(new Error(this.statusText));
       }
