@@ -236,28 +236,51 @@ ES6 规定，在子类普通方法中通过`super`调用父类的方法时，方
 ```javascript
 class A {
   constructor() {
-    this.x = 1;
+    this.x = 'x in A';
+    this.y = '哈哈哈，没想到吧，嘤嘤嘤'
   }
   print() {
-    console.log(this.x);
+    console.log(this);
+  }
+  static staticprint() {
+    console.log(this);
   }
 }
 
 class B extends A {
   constructor() {
-    super();
-    this.x = 2;
+    // super();
+    console.log('log super()')
+    console.log(super());
+    // { x: 'x in A', y: '哈哈哈，没想到吧，嘤嘤嘤' }
+    // 因为super()方法只能在constructor调用，且只能调用一次，所以只能这样打印着调用了。
+    this.x = 'x in B';
   }
   m() {
     super.print();
+    this.print()
   }
 }
 
 let b = new B();
-b.m() // 2
+b.m() 
+// { x: 'x in B', y: '哈哈哈，没想到吧，嘤嘤嘤' } 
+// { x: 'x in B', y: '哈哈哈，没想到吧，嘤嘤嘤' } 
+B.staticprint() 
+// [function B] B的构造函数
 ```
-
+=========================================================================
+原文：
 上面代码中，`super.print()`虽然调用的是`A.prototype.print()`，但是`A.prototype.print()`内部的`this`指向子类`B`的实例，导致输出的是`2`，而不是`1`。也就是说，实际上执行的是`super.print.call(this)`。
+
+修改：
+我推测在子类的构造函数中调用了一次super()后，父类的一个实例(我只能理解成一个隐式实例了)对象已经绑定到子类的this上了，此刻子类的super对象应该是前面说的那个隐式实例，其内部方法里的this也是子类的this，而不是父类的。
+
+您之前所说的x是2，不是1的真正原因是x的值从父类在子类中super()生成的隐式实例1被子类覆盖重写成了2，而不是说不能访问。'哈哈哈，没想到吧，嘤嘤嘤'在子类中并未修改，所以照常输出。
+
+综述，我觉得在子类中避免混淆，完全可以不用super，只用知道super()后，子类已经完成了父类的继承，子类中全部使用this即可，而且this可以重写从父类继承过来的属性/方法
+
+=========================================================================
 
 由于`this`指向子类实例，所以如果通过`super`对某个属性赋值，这时`super`就是`this`，赋值的属性会变成子类实例的属性。
 
