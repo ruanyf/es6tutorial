@@ -126,7 +126,7 @@ codePointLength(s) // 2
 有些 Unicode 字符的编码不同，但是字型很相近，比如，`\u004B`与`\u212A`都是大写的`K`。
 
 ```javascript
-/[a-z]/i.test('\u212A') // false
+/[a-z]/u.test('\u212A') // false
 /[a-z]/iu.test('\u212A') // true
 ```
 
