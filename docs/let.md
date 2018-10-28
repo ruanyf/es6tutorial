@@ -350,8 +350,8 @@ function f() { console.log('I am outside!'); }
 function f() { console.log('I am outside!'); }
 
 (function () {
-  function f() { console.log('I am inside!'); }
   if (false) {
+      function f() { console.log('I am inside!'); }
   }
   f();
 }());
