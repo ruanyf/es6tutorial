@@ -442,6 +442,24 @@ proxy.foo // "bar"
 
 上面代码中，`obj.foo`属性不可写，Proxy 对这个属性的`set`代理将不会生效。
 
+注意，严格模式下，`set`代理如果没有返回`true`，就会报错。
+
+```javascript
+'use strict';
+const handler = {
+  set: function(obj, prop, value, receiver) {
+    obj[prop] = receiver;
+    // 无论有没有下面这一行，都会报错
+    return false;
+  }
+};
+const proxy = new Proxy({}, handler);
+proxy.foo = 'bar';
+// TypeError: 'set' on proxy: trap returned falsish for property 'foo'
+```
+
+上面代码中，严格模式下，`set`代理返回`false`或者`undefined`，都会报错。
+
 ### apply()
 
 `apply`方法拦截函数的调用、`call`和`apply`操作。
