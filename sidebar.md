@@ -15,6 +15,7 @@
 1. [函数的扩展](#docs/function)
 1. [数组的扩展](#docs/array)
 1. [对象的扩展](#docs/object)
+1. [对象的新增方法](#docs/object-methods)
 1. [Symbol](#docs/symbol)
 1. [Set 和 Map 数据结构](#docs/set-map)
 1. [Proxy](#docs/proxy)
