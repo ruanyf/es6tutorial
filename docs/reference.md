@@ -103,6 +103,7 @@
 - Axel Rauschmayer, [Enumerability in ECMAScript 6](http://www.2ality.com/2015/10/enumerability-es6.html)
 - Axel Rauschmayer, [ES proposal: Object.getOwnPropertyDescriptors()](http://www.2ality.com/2016/02/object-getownpropertydescriptors.html)
 - TC39, [Object.getOwnPropertyDescriptors Proposal](https://github.com/tc39/proposal-object-getownpropertydescriptors)
+- David Titarenco, [How Spread Syntax Breaks Javascript](https://dvt.name/2018/06/02/spread-syntax-breaks-javascript/): 扩展运算符的一些不合理的地方
 
 ## Symbol
 

@@ -563,7 +563,15 @@ let n = { ...z };
 n // { a: 3, b: 4 }
 ```
 
-这等同于使用`Object.assign`方法。
+由于数组是特殊的对象，所以对象的扩展运算符也可以用于数组。
+
+```javascript
+let foo = { ...['a', 'b', 'c'] };
+foo
+// {0: "a", 1: "b", 2: "c"}
+```
+
+对象的扩展运算符等同于使用`Object.assign()`方法。
 
 ```javascript
 let aClone = { ...a };

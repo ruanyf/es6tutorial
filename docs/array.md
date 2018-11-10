@@ -58,6 +58,18 @@ const arr = [
 // [1]
 ```
 
+注意，扩展运算符如果放在括号中，JavaScript 引擎就会认为这是函数调用，否则就会报错。
+
+```javascript
+(...[1,2])
+// Uncaught SyntaxError: Unexpected number
+
+console.log((...[1,2]))
+// Uncaught SyntaxError: Unexpected number
+```
+
+上面两种情况都会报错，因为扩展运算符所在的括号不是函数调用，而`console.log(...[1, 2])`就不会报错，因为这时是函数调用。
+
 ### 替代函数的 apply 方法
 
 由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
