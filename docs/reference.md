@@ -73,6 +73,7 @@
 
 - Nicolas Bevacqua, [ES6 Number Improvements in Depth](http://ponyfoo.com/articles/es6-number-improvements-in-depth)
 - Axel Rauschmayer, [ES proposal: arbitrary precision integers](http://2ality.com/2017/03/es-integer.html)
+- Mathias Bynens, [BigInt: arbitrary-precision integers in JavaScript](https://developers.google.com/web/updates/2018/05/bigint)
 
 ## 数组
 
