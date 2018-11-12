@@ -70,7 +70,7 @@ ES6 从开始制定到最后发布，整整用了 15 年。
 
 ## 部署进度
 
-各大浏览器的最新版本，对 ES6 的支持可以查看[kangax.github.io/es5-compat-table/es6/](https://kangax.github.io/es5-compat-table/es6/)。随着时间的推移，支持度已经越来越高了，超过 90%的 ES6 语法特性都实现了。
+各大浏览器的最新版本，对 ES6 的支持可以查看[kangax.github.io/compat-table/es6/](https://kangax.github.io/compat-table/es6/)。随着时间的推移，支持度已经越来越高了，超过 90%的 ES6 语法特性都实现了。
 
 Node 是 JavaScript 的服务器运行环境（runtime）。它对 ES6 的支持度更高。除了那些默认打开的功能，还有一些语法功能已经实现了，但是默认没有打开。使用下面的命令，可以查看 Node 已经实现的 ES6 特性。
 
