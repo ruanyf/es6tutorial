@@ -700,7 +700,7 @@ g.next()        // { value: 1, done: false }
 g.return() // { value: undefined, done: true }
 ```
 
-如果 Generator 函数内部有`try...finally`代码块，那么`return`方法会推迟到`finally`代码块执行完再执行。
+如果 Generator 函数内部有`try...finally`代码块，且正在执行`try`代码块，那么`return`方法会推迟到`finally`代码块执行完再执行。
 
 ```javascript
 function* numbers () {
