@@ -941,7 +941,7 @@ Object.getOwnPropertyNames(p)
 
 上面代码中，`obj`对象的`a`属性是不可配置的，这时`ownKeys`方法返回的数组之中，必须包含`a`，否则会报错。
 
-另外，如果目标对象是不可扩展的（non-extensition），这时`ownKeys`方法返回的数组之中，必须包含原对象的所有属性，且不能包含多余的属性，否则报错。
+另外，如果目标对象是不可扩展的（non-extensible），这时`ownKeys`方法返回的数组之中，必须包含原对象的所有属性，且不能包含多余的属性，否则报错。
 
 ```javascript
 var obj = {
