@@ -642,6 +642,7 @@ var p = new Proxy(function() {}, {
 });
 
 new p() // 报错
+// Uncaught TypeError: 'construct' on proxy: trap returned non-object ('1')
 ```
 
 ### deleteProperty()
@@ -689,7 +690,7 @@ proxy.foo = 'bar' // 不会生效
 
 上面代码中，`defineProperty`方法返回`false`，导致添加新属性总是无效。
 
-注意，如果目标对象不可扩展（extensible），则`defineProperty`不能增加目标对象上不存在的属性，否则会报错。另外，如果目标对象的某个属性不可写（writable）或不可配置（configurable），则`defineProperty`方法不得改变这两个设置。
+注意，如果目标对象不可扩展（non-extensible），则`defineProperty`不能增加目标对象上不存在的属性，否则会报错。另外，如果目标对象的某个属性不可写（writable）或不可配置（configurable），则`defineProperty`方法不得改变这两个设置。
 
 ### getOwnPropertyDescriptor()
 
@@ -740,7 +741,7 @@ Object.getPrototypeOf(p) === proto // true
 
 上面代码中，`getPrototypeOf`方法拦截`Object.getPrototypeOf()`，返回`proto`对象。
 
-注意，`getPrototypeOf`方法的返回值必须是对象或者`null`，否则报错。另外，如果目标对象不可扩展（extensible）， `getPrototypeOf`方法必须返回目标对象的原型对象。
+注意，`getPrototypeOf`方法的返回值必须是对象或者`null`，否则报错。另外，如果目标对象不可扩展（non-extensible）， `getPrototypeOf`方法必须返回目标对象的原型对象。
 
 ### isExtensible()
 
@@ -778,7 +779,8 @@ var p = new Proxy({}, {
   }
 });
 
-Object.isExtensible(p) // 报错
+Object.isExtensible(p)
+// Uncaught TypeError: 'isExtensible' on proxy: trap result does not reflect extensibility of proxy target (which is 'true')
 ```
 
 ### ownKeys()
@@ -939,7 +941,7 @@ Object.getOwnPropertyNames(p)
 
 上面代码中，`obj`对象的`a`属性是不可配置的，这时`ownKeys`方法返回的数组之中，必须包含`a`，否则会报错。
 
-另外，如果目标对象是不可扩展的（non-extensition），这时`ownKeys`方法返回的数组之中，必须包含原对象的所有属性，且不能包含多余的属性，否则报错。
+另外，如果目标对象是不可扩展的（non-extensible），这时`ownKeys`方法返回的数组之中，必须包含原对象的所有属性，且不能包含多余的属性，否则报错。
 
 ```javascript
 var obj = {
@@ -967,13 +969,14 @@ Object.getOwnPropertyNames(p)
 这个方法有一个限制，只有目标对象不可扩展时（即`Object.isExtensible(proxy)`为`false`），`proxy.preventExtensions`才能返回`true`，否则会报错。
 
 ```javascript
-var p = new Proxy({}, {
+var proxy = new Proxy({}, {
   preventExtensions: function(target) {
     return true;
   }
 });
 
-Object.preventExtensions(p) // 报错
+Object.preventExtensions(proxy)
+// Uncaught TypeError: 'preventExtensions' on proxy: trap returned truish but the proxy target is extensible
 ```
 
 上面代码中，`proxy.preventExtensions`方法返回`true`，但这时`Object.isExtensible(proxy)`会返回`true`，因此报错。
@@ -981,7 +984,7 @@ Object.preventExtensions(p) // 报错
 为了防止出现这个问题，通常要在`proxy.preventExtensions`方法里面，调用一次`Object.preventExtensions`。
 
 ```javascript
-var p = new Proxy({}, {
+var proxy = new Proxy({}, {
   preventExtensions: function(target) {
     console.log('called');
     Object.preventExtensions(target);
@@ -989,9 +992,9 @@ var p = new Proxy({}, {
   }
 });
 
-Object.preventExtensions(p)
+Object.preventExtensions(proxy)
 // "called"
-// true
+// Proxy {}
 ```
 
 ### setPrototypeOf()
@@ -1015,7 +1018,7 @@ Object.setPrototypeOf(proxy, proto);
 
 上面代码中，只要修改`target`的原型对象，就会报错。
 
-注意，该方法只能返回布尔值，否则会被自动转为布尔值。另外，如果目标对象不可扩展（extensible），`setPrototypeOf`方法不得改变目标对象的原型。
+注意，该方法只能返回布尔值，否则会被自动转为布尔值。另外，如果目标对象不可扩展（non-extensible），`setPrototypeOf`方法不得改变目标对象的原型。
 
 ## Proxy.revocable()
 
