@@ -219,7 +219,7 @@ for (let x of set) {
 Set 结构的实例与数组一样，也拥有`forEach`方法，用于对每个成员执行某种操作，没有返回值。
 
 ```javascript
-set = new Set([1, 4, 9]);
+let set = new Set([1, 4, 9]);
 set.forEach((value, key) => console.log(key + ' : ' + value))
 // 1 : 1
 // 4 : 4
