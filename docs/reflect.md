@@ -42,7 +42,7 @@ Proxy(target, {
   set: function(target, name, value, receiver) {
     var success = Reflect.set(target,name, value, receiver);
     if (success) {
-      log('property ' + name + ' on ' + target + ' set to ' + value);
+      console.log('property ' + name + ' on ' + target + ' set to ' + value);
     }
     return success;
   }
@@ -186,7 +186,7 @@ myObject.foo // 4
 myReceiverObject.foo // 1
 ```
 
-注意，如果 Proxy 对象和 Reflect 对象联合使用，前者拦截赋值操作，后者完成赋值的默认行为，而且传入了`receiver`，那么`Reflect.set`会触发`Proxy.defineProperty`拦截。
+注意，如果 `Proxy`对象和 `Reflect`对象联合使用，前者拦截赋值操作，后者完成赋值的默认行为，而且传入了`receiver`，那么`Reflect.set`会触发`Proxy.defineProperty`拦截。
 
 ```javascript
 let p = {
@@ -210,7 +210,7 @@ obj.a = 'A';
 // defineProperty
 ```
 
-上面代码中，`Proxy.set`拦截里面使用了`Reflect.set`，而且传入了`receiver`，导致触发`Proxy.defineProperty`拦截。这是因为`Proxy.set`的`receiver`参数总是指向当前的 Proxy 实例（即上例的`obj`），而`Reflect.set`一旦传入`receiver`，就会将属性赋值到`receiver`上面（即`obj`），导致触发`defineProperty`拦截。如果`Reflect.set`没有传入`receiver`，那么就不会触发`defineProperty`拦截。
+上面代码中，`Proxy.set`拦截里面使用了`Reflect.set`，而且传入了`receiver`，导致触发`Proxy.defineProperty`拦截。这是因为`Proxy.set`的`receiver`参数总是指向当前的 `Proxy`实例（即上例的`obj`），而`Reflect.set`一旦传入`receiver`，就会将属性赋值到`receiver`上面（即`obj`），导致触发`defineProperty`拦截。如果`Reflect.set`没有传入`receiver`，那么就不会触发`defineProperty`拦截。
 
 ```javascript
 let p = {
