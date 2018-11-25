@@ -774,7 +774,7 @@ obj.bar() // bar
 class MyClass {}
 ```
 
-上面代码排除`了TExample`的`foo`方法和`bar`方法，为`baz`方法起了别名`exampleBaz`。
+上面代码排除了`TExample`的`foo`方法和`bar`方法，为`baz`方法起了别名`exampleBaz`。
 
 `as`方法则为上面的代码提供了另一种写法。
 
