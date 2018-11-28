@@ -544,7 +544,7 @@ const o = Object.setPrototypeOf({}, null);
 该方法等同于下面的函数。
 
 ```javascript
-function (obj, proto) {
+function setPrototypeOf(obj, proto) {
   obj.__proto__ = proto;
   return obj;
 }
