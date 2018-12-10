@@ -444,12 +444,14 @@ Object.setPrototypeOf(B, A);
 B.__proto__ = A;
 ```
 
-这两条继承链，可以这样理解：作为一个对象，子类（`B`）的原型（`__proto__`属性）是父类（`A`）；作为一个构造函数，子类（`B`）的原型对象（`prototype`属性）是父类的原型对象（`prototype`属性）的实例。
+这两条继承链，可以这样理解：作为一个对象，子类（`B`）的原型（`__proto__`属性）是父类（`A`）；作为一个构造函数，子类（`B`）的原型对象（`prototype`属性）是父类（A）的实例。
 
 ```javascript
 Object.create(A.prototype);
 // 等同于
 B.prototype.__proto__ = A.prototype;
+
+B.prototype instanceof A // true
 ```
 
 `extends`关键字后面可以跟多种类型的值。
