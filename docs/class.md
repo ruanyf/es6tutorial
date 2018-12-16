@@ -2,6 +2,8 @@
 
 ## 简介
 
+### 类的由来
+
 JavaScript 语言中，生成实例对象的传统方法是通过构造函数。下面是一个例子。
 
 ```javascript
@@ -24,7 +26,6 @@ ES6 提供了更接近传统语言的写法，引入了 Class（类）这个概�
 基本上，ES6 的`class`可以看作只是一个语法糖，它的绝大部分功能，ES5 都可以做到，新的`class`写法只是让对象原型的写法更加清晰、更像面向对象编程的语法而已。上面的代码用 ES6 的`class`改写，就是下面这样。
 
 ```javascript
-//定义类
 class Point {
   constructor(x, y) {
     this.x = x;
@@ -163,31 +164,7 @@ Object.getOwnPropertyNames(Point.prototype)
 
 上面代码采用 ES5 的写法，`toString`方法就是可枚举的。
 
-类的属性名，可以采用表达式。
-
-```javascript
-let methodName = 'getArea';
-
-class Square {
-  constructor(length) {
-    // ...
-  }
-
-  [methodName]() {
-    // ...
-  }
-}
-```
-
-上面代码中，`Square`类的方法名`getArea`，是从表达式得到的。
-
-## 严格模式
-
-类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。
-
-考虑到未来所有的代码，其实都是运行在模块之中，所以 ES6 实际上把整个语言升级到了严格模式。
-
-## constructor 方法
+### constructor 方法
 
 `constructor`方法是类的默认方法，通过`new`命令生成对象实例时，自动调用该方法。一个类必须有`constructor`方法，如果没有显式定义，一个空的`constructor`方法会被默认添加。
 
@@ -231,9 +208,9 @@ Foo()
 // TypeError: Class constructor Foo cannot be invoked without 'new'
 ```
 
-## 类的实例对象
+### 类的实例
 
-生成类的实例对象的写法，与 ES5 完全一样，也是使用`new`命令。前面说过，如果忘记加上`new`，像函数那样调用`Class`，将会报错。
+生成类的实例的写法，与 ES5 完全一样，也是使用`new`命令。前面说过，如果忘记加上`new`，像函数那样调用`Class`，将会报错。
 
 ```javascript
 class Point {
@@ -307,7 +284,27 @@ p3.printName() // "Oops"
 
 上面代码在`p1`的原型上添加了一个`printName`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变“类”的原始定义，影响到所有实例。
 
-## Class 表达式
+### 属性表达式
+
+类的属性名，可以采用表达式。
+
+```javascript
+let methodName = 'getArea';
+
+class Square {
+  constructor(length) {
+    // ...
+  }
+
+  [methodName]() {
+    // ...
+  }
+}
+```
+
+上面代码中，`Square`类的方法名`getArea`，是从表达式得到的。
+
+### Class 表达式
 
 与函数一样，类也可以使用表达式的形式定义。
 
@@ -353,7 +350,13 @@ person.sayName(); // "张三"
 
 上面代码中，`person`是一个立即执行的类的实例。
 
-## 不存在变量提升
+### 注意点
+
+**（1）严格模式**
+
+类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。考虑到未来所有的代码，其实都是运行在模块之中，所以 ES6 实际上把整个语言升级到了严格模式。
+
+**（2）不存在提升**
 
 类不存在变量提升（hoist），这一点与 ES5 完全不同。
 
@@ -373,6 +376,42 @@ class Foo {}
 ```
 
 上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
+
+**（3）name 属性**
+
+由于本质上，ES6 的类只是 ES5 的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
+
+```javascript
+class Point {}
+Point.name // "Point"
+```
+
+`name`属性总是返回紧跟在`class`关键字后面的类名。
+
+**（4）Generator 方法**
+
+如果某个方法之前加上星号（`*`），就表示该方法是一个 Generator 函数。
+
+```javascript
+class Foo {
+  constructor(...args) {
+    this.args = args;
+  }
+  * [Symbol.iterator]() {
+    for (let arg of this.args) {
+      yield arg;
+    }
+  }
+}
+
+for (let x of new Foo('hello', 'world')) {
+  console.log(x);
+}
+// hello
+// world
+```
+
+上面代码中，`Foo`类的`Symbol.iterator`方法前有一个星号，表示该方法是一个 Generator 函数。`Symbol.iterator`方法返回一个`Foo`类的默认遍历器，`for...of`循环会自动调用这个遍历器。
 
 ## 私有方法和私有属性
 
@@ -608,17 +647,6 @@ function selfish (target) {
 const logger = selfish(new Logger());
 ```
 
-## name 属性
-
-由于本质上，ES6 的类只是 ES5 的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
-
-```javascript
-class Point {}
-Point.name // "Point"
-```
-
-`name`属性总是返回紧跟在`class`关键字后面的类名。
-
 ## Class 的取值函数（getter）和存值函数（setter）
 
 与 ES5 一样，在“类”的内部可以使用`get`和`set`关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
@@ -673,31 +701,6 @@ var descriptor = Object.getOwnPropertyDescriptor(
 ```
 
 上面代码中，存值函数和取值函数是定义在`html`属性的描述对象上面，这与 ES5 完全一致。
-
-## Class 的 Generator 方法
-
-如果某个方法之前加上星号（`*`），就表示该方法是一个 Generator 函数。
-
-```javascript
-class Foo {
-  constructor(...args) {
-    this.args = args;
-  }
-  * [Symbol.iterator]() {
-    for (let arg of this.args) {
-      yield arg;
-    }
-  }
-}
-
-for (let x of new Foo('hello', 'world')) {
-  console.log(x);
-}
-// hello
-// world
-```
-
-上面代码中，`Foo`类的`Symbol.iterator`方法前有一个星号，表示该方法是一个 Generator 函数。`Symbol.iterator`方法返回一个`Foo`类的默认遍历器，`for...of`循环会自动调用这个遍历器。
 
 ## Class 的静态方法
 
