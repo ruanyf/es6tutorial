@@ -540,7 +540,7 @@ function selfish (target) {
 const logger = selfish(new Logger());
 ```
 
-## Class 的静态方法
+## 静态方法
 
 类相当于实例的原型，所有在类中定义的方法，都会被实例继承。如果在一个方法前，加上`static`关键字，就表示该方法不会被实例继承，而是直接通过类来调用，这就称为“静态方法”。
 
@@ -653,7 +653,7 @@ class IncreasingCounter {
 
 这种新写法的好处是，所有实例属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
 
-## Class 的静态属性
+## 静态属性
 
 静态属性指的是 Class 本身的属性，即`Class.propName`，而不是定义在实例对象（`this`）上的属性。
 
