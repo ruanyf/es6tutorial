@@ -31,7 +31,6 @@
 - Axel Rauschmayer, [Getting started with ECMAScript 6](http://www.2ality.com/2015/08/getting-started-es6.html): ES6 语法点的综合介绍
 - Toby Ho, [ES6 in io.js](http://davidwalsh.name/es6-io)
 - Guillermo Rauch, [ECMAScript 6](http://rauchg.com/2015/ecmascript-6/)
-- Charles King, [The power of ECMAScript 6](http://charlesbking.com/power_of_es6/#/)
 - Benjamin De Cock, [Frontend Guidelines](https://github.com/bendc/frontend-guidelines): ES6 最佳实践
 - Jani Hartikainen, [ES6: What are the benefits of the new features in practice?](http://codeutopia.net/blog/2015/01/06/es6-what-are-the-benefits-of-the-new-features-in-practice/)
 - kangax, [Javascript quiz. ES6 edition](http://perfectionkills.com/javascript-quiz-es6/): ES6 小测试
