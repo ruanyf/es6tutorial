@@ -251,7 +251,7 @@ getJSON("/post/1.json").then(
 
 ## Promise.prototype.catch()
 
-`Promise.prototype.catch`方法是`.then(null, rejection)`的别名，用于指定发生错误时的回调函数。
+`Promise.prototype.catch`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。
 
 ```javascript
 getJSON('/posts.json').then(function(posts) {
@@ -993,7 +993,7 @@ try {
 上面这样的写法就很笨拙了，这时就可以统一用`promise.catch()`捕获所有同步和异步的错误。
 
 ```javascript
-Promise.try(database.users.get({id: userId}))
+Promise.try(() => database.users.get({id: userId}))
   .then(...)
   .catch(...)
 ```
