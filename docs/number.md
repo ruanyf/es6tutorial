@@ -424,7 +424,7 @@ Math.cbrt = Math.cbrt || function(x) {
 
 ### Math.clz32()
 
-JavaScript 的整数使用 32 位二进制形式表示，`Math.clz32`方法返回一个数的 32 位无符号整数形式有多少个前导 0。
+`Math.clz32()`方法将参数转为 32 位无符号整数的形式，然后这个 32 位值里面有多少个前导 0。
 
 ```javascript
 Math.clz32(0) // 32
