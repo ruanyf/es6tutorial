@@ -455,15 +455,7 @@ obj.foo() // "world"
 
 ## 对象的扩展运算符
 
-《数组的扩展》一章中，已经介绍过扩展运算符（`...`）。
-
-```javascript
-const [a, ...b] = [1, 2, 3];
-a // 1
-b // [2, 3]
-```
-
-ES2018 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
+《数组的扩展》一章中，已经介绍过扩展运算符（`...`）。ES2018 将这个运算符[引入](https://github.com/sebmarkbage/ecmascript-rest-spread)了对象。
 
 ### 解构赋值
 
