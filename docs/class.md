@@ -617,7 +617,7 @@ Bar.classMethod() // "hello, too"
 
 ## 实例属性的新写法
 
-实例属性除了在`constructor()`方法里面定义，也可以直接写在类的最顶层。
+实例属性除了定义在`constructor()`方法里面的`this`上面，也可以定义在类的最顶层。
 
 ```javascript
 class IncreasingCounter {
@@ -634,7 +634,7 @@ class IncreasingCounter {
 }
 ```
 
-上面代码中，实例属性`this._count`定义在`constructor()`方法里面。另一种写法是，这个属性也可以定义在类的最顶层。
+上面代码中，实例属性`this._count`定义在`constructor()`方法里面。另一种写法是，这个属性也可以定义在类的最顶层，其他都不变。
 
 ```javascript
 class IncreasingCounter {
@@ -651,7 +651,20 @@ class IncreasingCounter {
 
 上面代码中，实例属性`_count`与取值函数`value()`和`increment()`方法，处于同一个层级。这时，不需要在实例属性前面加上`this`。
 
-这种新写法的好处是，所有实例属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
+这种新写法的好处是，所有实例对象自身的属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
+
+```javascript
+class foo {
+  bar = 'hello';
+  baz = 'world';
+
+  constructor() {
+    // ...
+  }
+}
+```
+
+上面的代码，一眼就能看出，`foo`类有两个实例属性，一目了然。另外，写起来也比较间洁。
 
 ## 静态属性
 
