@@ -75,15 +75,11 @@ ES6 从开始制定到最后发布，整整用了 15 年。
 Node 是 JavaScript 的服务器运行环境（runtime）。它对 ES6 的支持度更高。除了那些默认打开的功能，还有一些语法功能已经实现了，但是默认没有打开。使用下面的命令，可以查看 Node 已经实现的 ES6 特性。
 
 ```bash
+// Linux & Mac
 $ node --v8-options | grep harmony
-```
 
-上面命令的输出结果，会因为版本的不同而有所不同。
-
-如果是新手，使用的是windows环境下的node环境，想要查看 Node 已经实现的特性，代码如下：
-
-```bash
-node --V8-option | findstr harmony
+// Windows
+$ node --V8-option | findstr harmony
 ```
 
 我写了一个工具 [ES-Checker](https://github.com/ruanyf/es-checker)，用来检查各种运行环境对 ES6 的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的浏览器支持 ES6 的程度。运行下面的命令，可以查看你正在使用的 Node 环境对 ES6 的支持程度。
