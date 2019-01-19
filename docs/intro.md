@@ -79,7 +79,7 @@ Node 是 JavaScript 的服务器运行环境（runtime）。它对 ES6 的支持
 $ node --v8-options | grep harmony
 
 // Windows
-$ node --V8-option | findstr harmony
+$ node --v8-options | findstr harmony
 ```
 
 我写了一个工具 [ES-Checker](https://github.com/ruanyf/es-checker)，用来检查各种运行环境对 ES6 的支持情况。访问[ruanyf.github.io/es-checker](http://ruanyf.github.io/es-checker)，可以看到您的浏览器支持 ES6 的程度。运行下面的命令，可以查看你正在使用的 Node 环境对 ES6 的支持程度。
