@@ -831,4 +831,3 @@ Object.fromEntries(map)
 Object.fromEntries(new URLSearchParams('foo=bar&baz=qux'))
 // { foo: "bar", baz: "qux" }
 ```
-
