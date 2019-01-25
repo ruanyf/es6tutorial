@@ -7,7 +7,7 @@
 - [ECMAScript® 2017 Language Specification](https://tc39.github.io/ecma262/)：ECMAScript 2017 规格（草案）
 - [ECMAScript Current Proposals](https://github.com/tc39/ecma262): ECMAScript 当前的所有提案
 - [ECMAScript Active Proposals](https://github.com/tc39/proposals): 已经进入正式流程的提案
-- [ECMAscript proposals](https://github.com/hemanth/es-next)：从阶段 0 到阶段 4 的所有提案列表
+- [ECMAScript proposals](https://github.com/hemanth/es-next)：从阶段 0 到阶段 4 的所有提案列表
 - [TC39 meeting agendas](https://github.com/tc39/agendas): TC39 委员会历年的会议记录
 - [ECMAScript Daily](https://ecmascript-daily.github.io/): TC39 委员会的动态
 - [The TC39 Process](https://tc39.github.io/process-document/): 提案进入正式规格的流程
@@ -33,7 +33,7 @@
 - Guillermo Rauch, [ECMAScript 6](http://rauchg.com/2015/ecmascript-6/)
 - Benjamin De Cock, [Frontend Guidelines](https://github.com/bendc/frontend-guidelines): ES6 最佳实践
 - Jani Hartikainen, [ES6: What are the benefits of the new features in practice?](http://codeutopia.net/blog/2015/01/06/es6-what-are-the-benefits-of-the-new-features-in-practice/)
-- kangax, [Javascript quiz. ES6 edition](http://perfectionkills.com/javascript-quiz-es6/): ES6 小测试
+- kangax, [JavaScript quiz. ES6 edition](http://perfectionkills.com/javascript-quiz-es6/): ES6 小测试
 - Jeremy Fairbank, [HTML5DevConf ES7 and Beyond!](https://speakerdeck.com/jfairbank/html5devconf-es7-and-beyond): ES7 新增语法点介绍
 - Timothy Gu, [How to Read the ECMAScript Specification](https://timothygu.me/es-howto/): 如何读懂 ES6 规格
 
@@ -103,7 +103,7 @@
 - Axel Rauschmayer, [Enumerability in ECMAScript 6](http://www.2ality.com/2015/10/enumerability-es6.html)
 - Axel Rauschmayer, [ES proposal: Object.getOwnPropertyDescriptors()](http://www.2ality.com/2016/02/object-getownpropertydescriptors.html)
 - TC39, [Object.getOwnPropertyDescriptors Proposal](https://github.com/tc39/proposal-object-getownpropertydescriptors)
-- David Titarenco, [How Spread Syntax Breaks Javascript](https://dvt.name/2018/06/02/spread-syntax-breaks-javascript/): 扩展运算符的一些不合理的地方
+- David Titarenco, [How Spread Syntax Breaks JavaScript](https://dvt.name/2018/06/02/spread-syntax-breaks-javascript/): 扩展运算符的一些不合理的地方
 
 ## Symbol
 
@@ -172,7 +172,7 @@
 - Kyle Simpson, [ES6 Generators: Complete Series](http://davidwalsh.name/es6-generators): 由浅入深探讨 Generator 的系列文章，共四篇
 - Gajus Kuizinas, [The Definitive Guide to the JavaScript Generators](http://gajus.com/blog/2/the-definetive-guide-to-the-javascript-generators): 对 Generator 的综合介绍
 - Jan Krems, [Generators Are Like Arrays](https://gist.github.com/jkrems/04a2b34fb9893e4c2b5c): 讨论 Generator 可以被当作数据结构看待
-- Harold Cooper, [Coroutine Event Loops in Javascript](http://syzygy.st/javascript-coroutines/): Generator 用于实现状态机
+- Harold Cooper, [Coroutine Event Loops in JavaScript](http://syzygy.st/javascript-coroutines/): Generator 用于实现状态机
 - Ruslan Ismagilov, [learn-generators](https://github.com/isRuslan/learn-generators): 编程练习，共 6 道题
 - Steven Sanderson, [Experiments with Koa and JavaScript Generators](http://blog.stevensanderson.com/2013/12/21/experiments-with-koa-and-javascript-generators/): Generator 入门介绍，以 Koa 框架为例
 - Mahdi Dibaiee, [ES7 Array and Generator comprehensions](http://dibaiee.ir/es7-array-generator-comprehensions/)：ES7 的 Generator 推导
@@ -189,7 +189,7 @@
 - Daniel Brain, [Understand promises before you start using async/await](https://medium.com/@bluepnume/learn-about-promises-before-you-start-using-async-await-eb148164a9c8): 讨论 async/await 与 Promise 的关系
 - Jake Archibald, [Async functions - making promises friendly](https://developers.google.com/web/fundamentals/getting-started/primers/async-functions)
 - Axel Rauschmayer, [ES proposal: asynchronous iteration](http://www.2ality.com/2016/10/asynchronous-iteration.html): 异步遍历器的详细介绍
-- Dima Grossman, [How to write async await without try-catch blocks in Javascript](http://blog.grossman.io/how-to-write-async-await-without-try-catch-blocks-in-javascript/): 除了 try/catch 以外的 async 函数内部捕捉错误的方法
+- Dima Grossman, [How to write async await without try-catch blocks in JavaScript](http://blog.grossman.io/how-to-write-async-await-without-try-catch-blocks-in-javascript/): 除了 try/catch 以外的 async 函数内部捕捉错误的方法
 - Mostafa Gaafa, [6 Reasons Why JavaScript’s Async/Await Blows Promises Away](https://hackernoon.com/6-reasons-why-javascripts-async-await-blows-promises-away-tutorial-c7ec10518dd9): Async 函数的6个好处
 - Mathias Bynens, [Asynchronous stack traces: why await beats Promise#then()](https://mathiasbynens.be/notes/async-stack-traces): async 函数可以保留错误堆栈
 
@@ -253,7 +253,7 @@
 - Stoyan Stefanov, [Writing ES6 today with jstransform](http://www.phpied.com/writing-es6-today-with-jstransform/)
 - ES6 Module Loader, [ES6 Module Loader Polyfill](https://github.com/ModuleLoader/es6-module-loader): 在浏览器和 node.js 加载 ES6 模块的一个库，文档里对 ES6 模块有详细解释
 - Paul Miller, [es6-shim](https://github.com/paulmillr/es6-shim): 一个针对老式浏览器，模拟 ES6 部分功能的垫片库（shim）
-- army8735, [Javascript Downcast](https://github.com/army8735/jsdc): 国产的 ES6 到 ES5 的转码器
+- army8735, [JavaScript Downcast](https://github.com/army8735/jsdc): 国产的 ES6 到 ES5 的转码器
 - esnext, [ES6 Module Transpiler](https://github.com/esnext/es6-module-transpiler)：基于 node.js 的将 ES6 模块转为 ES5 代码的命令行工具
 - Sebastian McKenzie, [BabelJS](http://babeljs.io/): ES6 转译器
 - SystemJS, [SystemJS](https://github.com/systemjs/systemjs): 在浏览器中加载 AMD、CJS、ES6 模块的一个垫片库

@@ -803,7 +803,7 @@ jsx`
 `
 ```
 
-上面的代码通过`jsx`函数，将一个 DOM 字符串转为 React 对象。你可以在 Github 找到`jsx`函数的[具体实现](https://gist.github.com/lygaret/a68220defa69174bdec5)。
+上面的代码通过`jsx`函数，将一个 DOM 字符串转为 React 对象。你可以在 GitHub 找到`jsx`函数的[具体实现](https://gist.github.com/lygaret/a68220defa69174bdec5)。
 
 下面则是一个假想的例子，通过`java`函数，在 JavaScript 代码之中运行 Java 代码。
 

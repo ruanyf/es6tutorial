@@ -317,7 +317,7 @@ Object.getOwnPropertyDescriptor(obj, 'foo')
 //  }
 ```
 
-描述对象的`enumerable`属性，称为”可枚举性“，如果该属性为`false`，就表示某些操作会忽略当前属性。
+描述对象的`enumerable`属性，称为“可枚举性”，如果该属性为`false`，就表示某些操作会忽略当前属性。
 
 目前，有四个操作会忽略`enumerable`为`false`的属性。
 

@@ -37,7 +37,7 @@ var c = SIMD.Float32x4.add(a, b); // Float32x4[6, 8, 10, 12]
 SIMD 通常用于矢量运算。
 
 ```javascript
-v + w	= 〈v1, …, vn〉+ 〈w1, …, wn〉
+v + w = 〈v1, …, vn〉+ 〈w1, …, wn〉
       = 〈v1+w1, …, vn+wn〉
 ```
 
@@ -606,7 +606,7 @@ SIMD.Int32x4.or(a, b)
 // Int32x4[5, 7, 5, 13]
 ```
 
-`xor`方法接受两个 SIMD 值作为参数，返回两者对应的通道进行二进制”异或“运算（`^`）后得到的新的 SIMD 值。
+`xor`方法接受两个 SIMD 值作为参数，返回两者对应的通道进行二进制“异或”运算（`^`）后得到的新的 SIMD 值。
 
 ```javascript
 var a = SIMD.Int32x4(1, 2, 4, 8);
@@ -615,7 +615,7 @@ SIMD.Int32x4.xor(a, b)
 // Int32x4[4, 7, 1, 13]
 ```
 
-`not`方法接受一个 SIMD 值作为参数，返回每个通道进行二进制”否“运算（`~`）后得到的新的 SIMD 值。
+`not`方法接受一个 SIMD 值作为参数，返回每个通道进行二进制“否”运算（`~`）后得到的新的 SIMD 值。
 
 ```javascript
 var a = SIMD.Int32x4(1, 2, 4, 8);
