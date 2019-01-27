@@ -385,7 +385,7 @@ import * as baz from './a';
 // b.js
 module.exports = null;
 
-// es.js
+// es.mjs
 import foo from './b';
 // foo = null;
 
@@ -393,7 +393,7 @@ import * as bar from './b';
 // bar = { default:null };
 ```
 
-上面代码中，`es.js`采用第二种写法时，要通过`bar.default`这样的写法，才能拿到`module.exports`。
+上面代码中，`es.mjs`采用第二种写法时，要通过`bar.default`这样的写法，才能拿到`module.exports`。
 
 ```javascript
 // c.js
@@ -401,7 +401,7 @@ module.exports = function two() {
   return 2;
 };
 
-// es.js
+// es.mjs
 import foo from './c';
 foo(); // 2
 
@@ -466,7 +466,7 @@ console.log(es_namespace.default);
 下面是另一个例子。
 
 ```javascript
-// es.js
+// es.mjs
 export let foo = { bar:'my-default' };
 export { foo as bar };
 export function f() {};
@@ -673,7 +673,7 @@ export {foo};
 
 上面代码的第四行，改成了函数表达式，就不具有提升作用，执行就会报错。
 
-我们再来看 ES6 模块加载器[SystemJS](https://github.com/ModuleLoader/es6-module-loader/blob/master/docs/circular-references-bindings.md)给出的一个例子。
+我们再来看 ES6 模块加载器[SystemJS](https://github.com/ModuleLoader/es-module-loader/blob/v0.17.0/docs/circular-references-bindings.md#zebra-striping)给出的一个例子。
 
 ```javascript
 // even.js
