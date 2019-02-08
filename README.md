@@ -16,7 +16,6 @@
 - [京东](https://search.jd.com/Search?keyword=ES6%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8%20%E7%AC%AC3%E7%89%88&enc=utf-8&wq=ES6%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8%20%E7%AC%AC3%E7%89%88)
 - [当当](http://product.dangdang.com/25156888.html)
 - [亚马逊](https://www.amazon.cn/ES6%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8-%E9%98%AE%E4%B8%80%E5%B3%B0/dp/B0755547ZZ)
-hr-侯瑞
 
 ### 版权许可
 
