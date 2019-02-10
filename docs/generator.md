@@ -1005,6 +1005,12 @@ for(let x of iterTree(tree)) {
 // e
 ```
 
+由于扩展运算符`...`默认调用 Iterator 接口，所以上面这个函数也可以用于嵌套数组的平铺。
+
+```javascript
+[...iterTree(tree)] // ["a", "b", "c", "d", "e"]
+```
+
 下面是一个稍微复杂的例子，使用`yield*`语句遍历完全二叉树。
 
 ```javascript
