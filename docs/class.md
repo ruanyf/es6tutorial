@@ -975,7 +975,7 @@ class Rectangle {
 
 class Square extends Rectangle {
   constructor(length) {
-    super(length, length);
+    super(length, width);
   }
 }
 
