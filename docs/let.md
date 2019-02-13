@@ -201,14 +201,16 @@ function func() {
 
 ```javascript
 function func(arg) {
-  let arg; // 报错
+  let arg;
 }
+func() // 报错
 
 function func(arg) {
   {
-    let arg; // 不报错
+    let arg;
   }
 }
+func() // 不报错
 ```
 
 ## 块级作用域
