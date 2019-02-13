@@ -789,10 +789,10 @@ class MyClass {}
 
 目前，Babel 转码器已经支持 Decorator。
 
-首先，安装`babel-core`和`babel-plugin-transform-decorators`。由于后者包括在`babel-preset-stage-0`之中，所以改为安装`babel-preset-stage-0`亦可。
+首先，安装`@babel/core`和`@babel/plugin-transform-decorators`。由于后者包括在`@babel/preset-stage-0`之中，所以改为安装`@babel/preset-stage-0`亦可。
 
 ```bash
-$ npm install babel-core babel-plugin-transform-decorators
+$ npm install @babel/core @babel/plugin-transform-decorators
 ```
 
 然后，设置配置文件`.babelrc`。
