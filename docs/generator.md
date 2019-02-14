@@ -310,7 +310,7 @@ wrapped().next('hello!')
 
 ## for...of 循环
 
-`for...of`循环可以自动遍历 Generator 函数时生成的`Iterator`对象，且此时不再需要调用`next`方法。
+`for...of`循环可以自动遍历 Generator 函数运行时生成的`Iterator`对象，且此时不再需要调用`next`方法。
 
 ```javascript
 function* foo() {
