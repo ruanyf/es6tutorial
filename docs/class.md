@@ -488,7 +488,7 @@ const { printName } = logger;
 printName(); // TypeError: Cannot read property 'print' of undefined
 ```
 
-上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境，因为找不到`print`方法而导致报错。
+上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境（由于 class 内部是严格模式，所以 this 实际指向的是`undefined`），从而导致找不到`print`方法而报错。
 
 一个比较简单的解决方法是，在构造方法中绑定`this`，这样就不会找不到`print`方法了。
 
