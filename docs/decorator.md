@@ -789,26 +789,38 @@ class MyClass {}
 
 目前，Babel 转码器已经支持 Decorator。
 
-首先，安装`@babel/core`和`@babel/plugin-transform-decorators`。由于后者包括在`@babel/preset-stage-0`之中，所以改为安装`@babel/preset-stage-0`亦可。
+首先，安装`@babel/core`和`@babel/plugin-proposal-decorators`。由于后者包括在`@babel/preset-stage-0`之中，所以改为安装`@babel/preset-stage-0`亦可。
 
 ```bash
-$ npm install @babel/core @babel/plugin-transform-decorators
+$ npm install @babel/core @babel/plugin-proposal-decorators
 ```
 
 然后，设置配置文件`.babelrc`。
 
 ```javascript
 {
-  "plugins": ["transform-decorators"]
+  "plugins": ["@babel/plugin-proposal-decorators"]
 }
 ```
 
 这时，Babel 就可以对 Decorator 转码了。
 
+如果要使用 Decorator 的早期规格，必须将`legacy`属性设为`true`，默认为`false`。
+
+```javascript
+{
+  "plugins": [
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
+  ]
+}
+```
+
 脚本中打开的命令如下。
 
 ```javascript
-babel.transform("code", {plugins: ["transform-decorators"]})
+require("@babel/core").transform("code", {
+  plugins: ["@babel/plugin-proposal-decorators"]
+});
 ```
 
 Babel 的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选 Experimental，就能支持 Decorator 的在线转码。
