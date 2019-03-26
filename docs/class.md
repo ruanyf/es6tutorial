@@ -505,16 +505,17 @@ class Logger {
 另一种解决方法是使用箭头函数。
 
 ```javascript
-class Logger {
+class Obj {
   constructor() {
-    this.printName = (name = 'there') => {
-      this.print(`Hello ${name}`);
-    };
+    this.getThis = () => this;
   }
-
-  // ...
 }
+
+const myObj = new Obj();
+myObj.getThis() === myObj // true
 ```
+
+箭头函数内部的`this`总是指向定义时所在的对象。上面代码中，箭头函数位于构造函数内部，它的定义生效的时候，是在构造函数执行的时候。这时，箭头函数所在的运行环境，肯定是实例对象，所以`this`会总是指向实例对象。
 
 还有一种解决方法是使用`Proxy`，获取方法的时候，自动绑定`this`。
 
