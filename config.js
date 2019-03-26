@@ -24,3 +24,4 @@ function addConfig(obj, conf) {
   });
 }
 
+ditto.run();

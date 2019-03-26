@@ -15,6 +15,7 @@
 1. [函数的扩展](#docs/function)
 1. [数组的扩展](#docs/array)
 1. [对象的扩展](#docs/object)
+1. [对象的新增方法](#docs/object-methods)
 1. [Symbol](#docs/symbol)
 1. [Set 和 Map 数据结构](#docs/set-map)
 1. [Proxy](#docs/proxy)
@@ -26,12 +27,13 @@
 1. [async 函数](#docs/async)
 1. [Class 的基本语法](#docs/class)
 1. [Class 的继承](#docs/class-extends)
-1. [Decorator](#docs/decorator)
 1. [Module 的语法](#docs/module)
 1. [Module 的加载实现](#docs/module-loader)
 1. [编程风格](#docs/style)
 1. [读懂规格](#docs/spec)
 1. [ArrayBuffer](#docs/arraybuffer)
+1. [最新提案](#docs/proposals)
+1. [Decorator](#docs/decorator)
 1. [参考链接](#docs/reference)
 
 ## 其他

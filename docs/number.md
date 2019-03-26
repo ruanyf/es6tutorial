@@ -35,7 +35,7 @@ Number('0o10')  // 8
 
 ES6 在`Number`对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
 
-`Number.isFinite()`用来检查一个数值是否为有限的（finite）。
+`Number.isFinite()`用来检查一个数值是否为有限的（finite），即不是`Infinity`。
 
 ```javascript
 Number.isFinite(15); // true
@@ -48,22 +48,7 @@ Number.isFinite('15'); // false
 Number.isFinite(true); // false
 ```
 
-ES5 可以通过下面的代码，部署`Number.isFinite`方法。
-
-```javascript
-(function (global) {
-  var global_isFinite = global.isFinite;
-
-  Object.defineProperty(Number, 'isFinite', {
-    value: function isFinite(value) {
-      return typeof value === 'number' && global_isFinite(value);
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-```
+注意，如果参数类型不是数值，`Number.isFinite`一律返回`false`。
 
 `Number.isNaN()`用来检查一个值是否为`NaN`。
 
@@ -73,26 +58,11 @@ Number.isNaN(15) // false
 Number.isNaN('15') // false
 Number.isNaN(true) // false
 Number.isNaN(9/NaN) // true
-Number.isNaN('true'/0) // true
-Number.isNaN('true'/'true') // true
+Number.isNaN('true' / 0) // true
+Number.isNaN('true' / 'true') // true
 ```
 
-ES5 通过下面的代码，部署`Number.isNaN()`。
-
-```javascript
-(function (global) {
-  var global_isNaN = global.isNaN;
-
-  Object.defineProperty(Number, 'isNaN', {
-    value: function isNaN(value) {
-      return typeof value === 'number' && global_isNaN(value);
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
-```
+如果参数类型不是`NaN`，`Number.isNaN`一律返回`false`。
 
 它们与传统的全局方法`isFinite()`和`isNaN()`的区别在于，传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效，`Number.isFinite()`对于非数值一律返回`false`, `Number.isNaN()`只有对于`NaN`才返回`true`，非`NaN`一律返回`false`。
 
@@ -132,41 +102,53 @@ Number.parseFloat === parseFloat // true
 
 ## Number.isInteger()
 
-`Number.isInteger()`用来判断一个值是否为整数。需要注意的是，在 JavaScript 内部，整数和浮点数是同样的储存方法，所以3和3.0被视为同一个值。
+`Number.isInteger()`用来判断一个数值是否为整数。
+
+```javascript
+Number.isInteger(25) // true
+Number.isInteger(25.1) // false
+```
+
+JavaScript 内部，整数和浮点数采用的是同样的储存方法，所以 25  和 25.0 被视为同一个值。
 
 ```javascript
 Number.isInteger(25) // true
 Number.isInteger(25.0) // true
-Number.isInteger(25.1) // false
-Number.isInteger("15") // false
+```
+
+如果参数不是数值，`Number.isInteger`返回`false`。
+
+```javascript
+Number.isInteger() // false
+Number.isInteger(null) // false
+Number.isInteger('15') // false
 Number.isInteger(true) // false
 ```
 
-ES5 可以通过下面的代码，部署`Number.isInteger()`。
+注意，由于 JavaScript 采用 IEEE 754 标准，数值存储为64位双精度格式，数值精度最多可以达到 53 个二进制位（1 个隐藏位与 52 个有效位）。如果数值的精度超过这个限度，第54位及后面的位就会被丢弃，这种情况下，`Number.isInteger`可能会误判。
 
 ```javascript
-(function (global) {
-  var floor = Math.floor,
-    isFinite = global.isFinite;
-
-  Object.defineProperty(Number, 'isInteger', {
-    value: function isInteger(value) {
-      return typeof value === 'number' &&
-        isFinite(value) &&
-        floor(value) === value;
-    },
-    configurable: true,
-    enumerable: false,
-    writable: true
-  });
-})(this);
+Number.isInteger(3.0000000000000002) // true
 ```
+
+上面代码中，`Number.isInteger`的参数明明不是整数，但是会返回`true`。原因就是这个小数的精度达到了小数点后16个十进制位，转成二进制位超过了53个二进制位，导致最后的那个`2`被丢弃了。
+
+类似的情况还有，如果一个数值的绝对值小于`Number.MIN_VALUE`（5E-324），即小于 JavaScript 能够分辨的最小值，会被自动转为 0。这时，`Number.isInteger`也会误判。
+
+```javascript
+Number.isInteger(5E-324) // false
+Number.isInteger(5E-325) // true
+```
+
+上面代码中，`5E-325`由于值太小，会被自动转为0，因此返回`true`。
+
+总之，如果对数据精度的要求较高，不建议使用`Number.isInteger()`判断一个数值是否为整数。
 
 ## Number.EPSILON
 
-ES6 在`Number`对象上面，新增一个极小的常量`Number.EPSILON`。根据规格，它表示1与大于1的最小浮点数之间的差。
+ES6 在`Number`对象上面，新增一个极小的常量`Number.EPSILON`。根据规格，它表示 1 与大于 1 的最小浮点数之间的差。
 
-对于64位浮点数来说，大于1的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续51个零。这个值减去1之后，就等于2的-52次方。
+对于 64 位浮点数来说，大于 1 的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续 51 个零。这个值减去 1 之后，就等于 2 的 -52 次方。
 
 ```javascript
 Number.EPSILON === Math.pow(2, -52)
@@ -198,7 +180,7 @@ Number.EPSILON.toFixed(20)
 0.1 + 0.2 === 0.3 // false
 ```
 
-`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，误差范围设为2的-50次方（即`Number.EPSILON * Math.pow(2, 2)`），即如果两个浮点数的差小于这个值，我们就认为这两个浮点数相等。
+`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，误差范围设为 2 的-50 次方（即`Number.EPSILON * Math.pow(2, 2)`），即如果两个浮点数的差小于这个值，我们就认为这两个浮点数相等。
 
 ```javascript
 5.551115123125783e-17 < Number.EPSILON * Math.pow(2, 2)
@@ -235,9 +217,9 @@ Math.pow(2, 53) === Math.pow(2, 53) + 1
 // true
 ```
 
-上面代码中，超出2的53次方之后，一个数就不精确了。
+上面代码中，超出 2 的 53 次方之后，一个数就不精确了。
 
-ES6引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示这个范围的上下限。
+ES6 引入了`Number.MAX_SAFE_INTEGER`和`Number.MIN_SAFE_INTEGER`这两个常量，用来表示这个范围的上下限。
 
 ```javascript
 Number.MAX_SAFE_INTEGER === Math.pow(2, 53) - 1
@@ -251,7 +233,7 @@ Number.MIN_SAFE_INTEGER === -9007199254740991
 // true
 ```
 
-上面代码中，可以看到JavaScript能够精确表示的极限。
+上面代码中，可以看到 JavaScript 能够精确表示的极限。
 
 `Number.isSafeInteger()`则是用来判断一个整数是否落在这个范围之内。
 
@@ -326,9 +308,9 @@ trusty(1, 2, 3)
 // 3
 ```
 
-## Math对象的扩展
+## Math 对象的扩展
 
-ES6在Math对象上新增了17个与数学相关的方法。所有这些方法都是静态方法，只能在Math对象上调用。
+ES6 在 Math 对象上新增了 17 个与数学相关的方法。所有这些方法都是静态方法，只能在 Math 对象上调用。
 
 ### Math.trunc()
 
@@ -376,7 +358,7 @@ Math.trunc = Math.trunc || function(x) {
 
 - 参数为正数，返回`+1`；
 - 参数为负数，返回`-1`；
-- 参数为0，返回`0`；
+- 参数为 0，返回`0`；
 - 参数为-0，返回`-0`;
 - 其他值，返回`NaN`。
 
@@ -442,7 +424,7 @@ Math.cbrt = Math.cbrt || function(x) {
 
 ### Math.clz32()
 
-JavaScript的整数使用32位二进制形式表示，`Math.clz32`方法返回一个数的32位无符号整数形式有多少个前导0。
+`Math.clz32()`方法将参数转为 32 位无符号整数的形式，然后这个 32 位值里面有多少个前导 0。
 
 ```javascript
 Math.clz32(0) // 32
@@ -452,9 +434,9 @@ Math.clz32(0b01000000000000000000000000000000) // 1
 Math.clz32(0b00100000000000000000000000000000) // 2
 ```
 
-上面代码中，0的二进制形式全为0，所以有32个前导0；1的二进制形式是`0b1`，只占1位，所以32位之中有31个前导0；1000的二进制形式是`0b1111101000`，一共有10位，所以32位之中有22个前导0。
+上面代码中，0 的二进制形式全为 0，所以有 32 个前导 0；1 的二进制形式是`0b1`，只占 1 位，所以 32 位之中有 31 个前导 0；1000 的二进制形式是`0b1111101000`，一共有 10 位，所以 32 位之中有 22 个前导 0。
 
-`clz32`这个函数名就来自”count leading zero bits in 32-bit binary representations of a number“（计算32位整数的前导0）的缩写。
+`clz32`这个函数名就来自”count leading zero bits in 32-bit binary representation of a number“（计算一个数的 32 位二进制形式的前导 0 的个数）的缩写。
 
 左移运算符（`<<`）与`Math.clz32`方法直接相关。
 
@@ -488,7 +470,7 @@ Math.clz32(true) // 31
 
 ### Math.imul()
 
-`Math.imul`方法返回两个数以32位带符号整数形式相乘的结果，返回的也是一个32位的带符号整数。
+`Math.imul`方法返回两个数以 32 位带符号整数形式相乘的结果，返回的也是一个 32 位的带符号整数。
 
 ```javascript
 Math.imul(2, 4)   // 8
@@ -496,13 +478,13 @@ Math.imul(-1, 8)  // -8
 Math.imul(-2, -2) // 4
 ```
 
-如果只考虑最后32位，大多数情况下，`Math.imul(a, b)`与`a * b`的结果是相同的，即该方法等同于`(a * b)|0`的效果（超过32位的部分溢出）。之所以需要部署这个方法，是因为JavaScript有精度限制，超过2的53次方的值无法精确表示。这就是说，对于那些很大的数的乘法，低位数值往往都是不精确的，`Math.imul`方法可以返回正确的低位数值。
+如果只考虑最后 32 位，大多数情况下，`Math.imul(a, b)`与`a * b`的结果是相同的，即该方法等同于`(a * b)|0`的效果（超过 32 位的部分溢出）。之所以需要部署这个方法，是因为 JavaScript 有精度限制，超过 2 的 53 次方的值无法精确表示。这就是说，对于那些很大的数的乘法，低位数值往往都是不精确的，`Math.imul`方法可以返回正确的低位数值。
 
 ```javascript
 (0x7fffffff * 0x7fffffff)|0 // 0
 ```
 
-上面这个乘法算式，返回结果为0。但是由于这两个二进制数的最低位都是1，所以这个结果肯定是不正确的，因为根据二进制乘法，计算结果的二进制最低位应该也是1。这个错误就是因为它们的乘积超过了2的53次方，JavaScript无法保存额外的精度，就把低位的值都变成了0。`Math.imul`方法可以返回正确的值1。
+上面这个乘法算式，返回结果为 0。但是由于这两个二进制数的最低位都是 1，所以这个结果肯定是不正确的，因为根据二进制乘法，计算结果的二进制最低位应该也是 1。这个错误就是因为它们的乘积超过了 2 的 53 次方，JavaScript 无法保存额外的精度，就把低位的值都变成了 0。`Math.imul`方法可以返回正确的值 1。
 
 ```javascript
 Math.imul(0x7fffffff, 0x7fffffff) // 1
@@ -510,22 +492,53 @@ Math.imul(0x7fffffff, 0x7fffffff) // 1
 
 ### Math.fround()
 
-Math.fround方法返回一个数的单精度浮点数形式。
+`Math.fround`方法返回一个数的32位单精度浮点数形式。
+
+对于32位单精度格式来说，数值精度是24个二进制位（1 位隐藏位与 23 位有效位），所以对于 -2<sup>24</sup> 至 2<sup>24</sup> 之间的整数（不含两个端点），返回结果与参数本身一致。
 
 ```javascript
-Math.fround(0)     // 0
-Math.fround(1)     // 1
-Math.fround(1.337) // 1.3370000123977661
-Math.fround(1.5)   // 1.5
-Math.fround(NaN)   // NaN
+Math.fround(0)   // 0
+Math.fround(1)   // 1
+Math.fround(2 ** 24 - 1)   // 16777215
 ```
 
-对于整数来说，`Math.fround`方法返回结果不会有任何不同，区别主要是那些无法用64个二进制位精确表示的小数。这时，`Math.fround`方法会返回最接近这个小数的单精度浮点数。
+如果参数的绝对值大于 2<sup>24</sup>，返回的结果便开始丢失精度。
+
+```javascript
+Math.fround(2 ** 24)       // 16777216
+Math.fround(2 ** 24 + 1)   // 16777216
+```
+
+`Math.fround`方法的主要作用，是将64位双精度浮点数转为32位单精度浮点数。如果小数的精度超过24个二进制位，返回值就会不同于原值，否则返回值不变（即与64位双精度值一致）。
+
+```javascript
+// 未丢失有效精度
+Math.fround(1.125) // 1.125
+Math.fround(7.25)  // 7.25
+
+// 丢失精度
+Math.fround(0.3)   // 0.30000001192092896
+Math.fround(0.7)   // 0.699999988079071
+Math.fround(1.0000000123) // 1
+```
+
+对于 `NaN` 和 `Infinity`，此方法返回原值。对于其它类型的非数值，`Math.fround` 方法会先将其转为数值，再返回单精度浮点数。
+
+```javascript
+Math.fround(NaN)      // NaN
+Math.fround(Infinity) // Infinity
+
+Math.fround('5')      // 5
+Math.fround(true)     // 1
+Math.fround(null)     // 0
+Math.fround([])       // 0
+Math.fround({})       // NaN
+```
 
 对于没有部署这个方法的环境，可以用下面的代码模拟。
 
 ```javascript
-Math.fround = Math.fround || function(x) {
+Math.fround = Math.fround || function (x) {
   return new Float32Array([x])[0];
 };
 ```
@@ -544,17 +557,17 @@ Math.hypot(3, 4, '5');   // 7.0710678118654755
 Math.hypot(-3);          // 3
 ```
 
-上面代码中，3的平方加上4的平方，等于5的平方。
+上面代码中，3 的平方加上 4 的平方，等于 5 的平方。
 
-如果参数不是数值，`Math.hypot`方法会将其转为数值。只要有一个参数无法转为数值，就会返回NaN。
+如果参数不是数值，`Math.hypot`方法会将其转为数值。只要有一个参数无法转为数值，就会返回 NaN。
 
 ### 对数方法
 
-ES6新增了4个对数相关方法。
+ES6 新增了 4 个对数相关方法。
 
 **（1） Math.expm1()**
 
-`Math.expm1(x)`返回e<sup>x</sup> - 1，即`Math.exp(x) - 1`。
+`Math.expm1(x)`返回 e<sup>x</sup> - 1，即`Math.exp(x) - 1`。
 
 ```javascript
 Math.expm1(-1) // -0.6321205588285577
@@ -591,7 +604,7 @@ Math.log1p = Math.log1p || function(x) {
 
 **（3）Math.log10()**
 
-`Math.log10(x)`返回以10为底的`x`的对数。如果`x`小于0，则返回NaN。
+`Math.log10(x)`返回以 10 为底的`x`的对数。如果`x`小于 0，则返回 NaN。
 
 ```javascript
 Math.log10(2)      // 0.3010299956639812
@@ -611,7 +624,7 @@ Math.log10 = Math.log10 || function(x) {
 
 **（4）Math.log2()**
 
-`Math.log2(x)`返回以2为底的`x`的对数。如果`x`小于0，则返回NaN。
+`Math.log2(x)`返回以 2 为底的`x`的对数。如果`x`小于 0，则返回 NaN。
 
 ```javascript
 Math.log2(3)       // 1.584962500721156
@@ -633,7 +646,7 @@ Math.log2 = Math.log2 || function(x) {
 
 ### 双曲函数方法
 
-ES6新增了6个双曲函数方法。
+ES6 新增了 6 个双曲函数方法。
 
 - `Math.sinh(x)` 返回`x`的双曲正弦（hyperbolic sine）
 - `Math.cosh(x)` 返回`x`的双曲余弦（hyperbolic cosine）
@@ -641,38 +654,6 @@ ES6新增了6个双曲函数方法。
 - `Math.asinh(x)` 返回`x`的反双曲正弦（inverse hyperbolic sine）
 - `Math.acosh(x)` 返回`x`的反双曲余弦（inverse hyperbolic cosine）
 - `Math.atanh(x)` 返回`x`的反双曲正切（inverse hyperbolic tangent）
-
-## Math.signbit()
-
-`Math.sign()`用来判断一个值的正负，但是如果参数是`-0`，它会返回`-0`。
-
-```javascript
-Math.sign(-0) // -0
-```
-
-这导致对于判断符号位的正负，`Math.sign()`不是很有用。JavaScript 内部使用64位浮点数（国际标准IEEE 754）表示数值，IEEE 754规定第一位是符号位，`0`表示正数，`1`表示负数。所以会有两种零，`+0`是符号位为`0`时的零值，`-0`是符号位为`1`时的零值。实际编程中，判断一个值是`+0`还是`-0`非常麻烦，因为它们是相等的。
-
-```javascript
-+0 === -0 // true
-```
-
-目前，有一个[提案](http://jfbastien.github.io/papers/Math.signbit.html)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
-
-```javascript
-Math.signbit(2) //false
-Math.signbit(-2) //true
-Math.signbit(0) //false
-Math.signbit(-0) //true
-```
-
-可以看到，该方法正确返回了`-0`的符号位是设置了的。
-
-该方法的算法如下。
-
-- 如果参数是`NaN`，返回`false`
-- 如果参数是`-0`，返回`true`
-- 如果参数是负值，返回`true`
-- 其他情况返回`false`
 
 ## 指数运算符
 
@@ -682,6 +663,16 @@ ES2016 新增了一个指数运算符（`**`）。
 2 ** 2 // 4
 2 ** 3 // 8
 ```
+
+这个运算符的一个特点是右结合，而不是常见的左结合。多个指数运算符连用时，是从最右边开始计算的。
+
+```javascript
+// 相当于 2 ** (3 ** 2)
+2 ** 3 ** 2
+// 512
+```
+
+上面代码中，首先计算的是第二个指数运算符，而不是第一个。
 
 指数运算符可以与等号结合，形成一个新的赋值运算符（`**=`）。
 
@@ -695,7 +686,7 @@ b **= 3;
 // 等同于 b = b * b * b;
 ```
 
-注意，在 V8 引擎中，指数运算符与`Math.pow`的实现不相同，对于特别大的运算结果，两者会有细微的差异。
+注意，V8 引擎的指数运算符与`Math.pow`的实现不相同，对于特别大的运算结果，两者会有细微的差异。
 
 ```javascript
 Math.pow(99, 99)
@@ -706,89 +697,3 @@ Math.pow(99, 99)
 ```
 
 上面代码中，两个运算结果的最后一位有效数字是有差异的。
-
-## Integer 数据类型
-
-### 简介
-
-JavaScript 所有数字都保存成64位浮点数，这决定了整数的精确程度只能到53个二进制位。大于这个范围的整数，JavaScript 是无法精确表示的，这使得 JavaScript 不适合进行科学和金融方面的精确计算。
-
-现在有一个[提案](https://github.com/tc39/proposal-bigint)，引入了新的数据类型 Integer（整数），来解决这个问题。整数类型的数据只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
-
-为了与 Number 类型区别，Integer 类型的数据必须使用后缀`n`表示。
-
-```javascript
-1n + 2n // 3n
-```
-
-二进制、八进制、十六进制的表示法，都要加上后缀`n`。
-
-```javascript
-0b1101n // 二进制
-0o777n // 八进制
-0xFFn // 十六进制
-```
-
-`typeof`运算符对于 Integer 类型的数据返回`integer`。
-
-```javascript
-typeof 123n
-// 'integer'
-```
-
-JavaScript 原生提供`Integer`对象，用来生成 Integer 类型的数值。转换规则基本与`Number()`一致。
-
-```javascript
-Integer(123) // 123n
-Integer('123') // 123n
-Integer(false) // 0n
-Integer(true) // 1n
-```
-
-以下的用法会报错。
-
-```javascript
-new Integer() // TypeError
-Integer(undefined) //TypeError
-Integer(null) // TypeError
-Integer('123n') // SyntaxError
-Integer('abc') // SyntaxError
-```
-
-### 运算
-
-在数学运算方面，Integer 类型的`+`、`-`、`*`和`**`这四个二元运算符，与 Number 类型的行为一致。除法运算`/`会舍去小数部分，返回一个整数。
-
-```javascript
-9n / 5n
-// 1n
-```
-
-几乎所有的 Number 运算符都可以用在 Integer，但是有两个除外：不带符号的右移位运算符`>>>`和一元的求正运算符`+`，使用时会报错。前者是因为`>>>`要求最高位补0，但是 Integer 类型没有最高位，导致这个运算符无意义。后者是因为一元运算符`+`在 asm.js 里面总是返回 Number 类型或者报错。
-
-Integer 类型不能与 Number 类型进行混合运算。
-
-```javascript
-1n + 1
-// 报错
-```
-
-这是因为无论返回的是 Integer 或 Number，都会导致丢失信息。比如`(2n**53n + 1n) + 0.5`这个表达式，如果返回 Integer 类型，`0.5`这个小数部分会丢失；如果返回 Number 类型，会超过 53 位精确数字，精度下降。
-
-相等运算符（`==`）会改变数据类型，也是不允许混合使用。
-
-```javascript
-0n == 0
-// 报错 TypeError
-
-0n == false
-// 报错 TypeError
-```
-
-精确相等运算符（`===`）不会改变数据类型，因此可以混合使用。
-
-```javascript
-0n === 0
-// false
-```
-

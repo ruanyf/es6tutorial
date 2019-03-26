@@ -1,5 +1,7 @@
 # 修饰器
 
+[说明] Decorator 提案经过了大幅修改，目前还没有定案，不知道语法会不会再变。下面的内容完全依据以前的提案，已经有点过时了。等待定案以后，需要完全重写。
+
 ## 类的修饰
 
 许多面向对象的语言都有修饰器（Decorator）函数，用来修改类的行为。目前，有一个[提案](https://github.com/tc39/proposal-decorators)将这项功能，引入了 ECMAScript。
@@ -103,7 +105,7 @@ let obj = new MyClass();
 obj.foo() // 'foo'
 ```
 
-上面代码通过修饰器`mixins`，把`Foo`类的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
+上面代码通过修饰器`mixins`，把`Foo`对象的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
 
 ```javascript
 const Foo = {
@@ -148,7 +150,7 @@ class Person {
 
 上面代码中，修饰器`readonly`用来修饰“类”的`name`方法。
 
-此时，修饰器函数一共可以接受三个参数，第一个参数是所要修饰的目标对象，即类的实例（这不同于类的修饰，那种情况时`target`参数指的是类本身）；第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
+修饰器函数`readonly`一共可以接受三个参数。
 
 ```javascript
 function readonly(target, name, descriptor){
@@ -168,7 +170,9 @@ readonly(Person.prototype, 'name', descriptor);
 Object.defineProperty(Person.prototype, 'name', descriptor);
 ```
 
-上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。
+修饰器第一个参数是类的原型对象，上例是`Person.prototype`，修饰器的本意是要“修饰”类的实例，但是这个时候实例还没生成，所以只能去修饰原型（这不同于类的修饰，那种情况时`target`参数指的是类本身）；第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
+
+另外，上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。
 
 下面是另一个例子，修改属性描述对象的`enumerable`属性，使得该属性不可遍历。
 
@@ -198,8 +202,8 @@ function log(target, name, descriptor) {
   var oldValue = descriptor.value;
 
   descriptor.value = function() {
-    console.log(`Calling "${name}" with`, arguments);
-    return oldValue.apply(null, arguments);
+    console.log(`Calling ${name} with`, arguments);
+    return oldValue.apply(this, arguments);
   };
 
   return descriptor;
@@ -285,7 +289,7 @@ function foo() {
 }
 ```
 
-上面的代码，意图是执行后`counter`等于1，但是实际上结果是`counter`等于0。因为函数提升，使得实际执行的代码是下面这样。
+上面的代码，意图是执行后`counter`等于 1，但是实际上结果是`counter`等于 0。因为函数提升，使得实际执行的代码是下面这样。
 
 ```javascript
 @add
@@ -476,15 +480,23 @@ person.facepalmWithoutWarning();
 我们可以使用修饰器，使得对象的方法被调用时，自动发出一个事件。
 
 ```javascript
-import postal from "postal/lib/postal.lodash";
+const postal = require("postal/lib/postal.lodash");
 
 export default function publish(topic, channel) {
+  const channelName = channel || '/';
+  const msgChannel = postal.channel(channelName);
+  msgChannel.subscribe(topic, v => {
+    console.log('频道: ', channelName);
+    console.log('事件: ', topic);
+    console.log('数据: ', v);
+  });
+
   return function(target, name, descriptor) {
     const fn = descriptor.value;
 
     descriptor.value = function() {
       let value = fn.apply(this, arguments);
-      postal.channel(channel || target.channel || "/").publish(topic, value);
+      msgChannel.publish(topic, value);
     };
   };
 }
@@ -495,29 +507,37 @@ export default function publish(topic, channel) {
 它的用法如下。
 
 ```javascript
-import publish from "path/to/decorators/publish";
+// index.js
+import publish from './publish';
 
 class FooComponent {
-  @publish("foo.some.message", "component")
+  @publish('foo.some.message', 'component')
   someMethod() {
-    return {
-      my: "data"
-    };
+    return { my: 'data' };
   }
-  @publish("foo.some.other")
+  @publish('foo.some.other')
   anotherMethod() {
     // ...
   }
 }
+
+let foo = new FooComponent();
+
+foo.someMethod();
+foo.anotherMethod();
 ```
 
 以后，只要调用`someMethod`或者`anotherMethod`，就会自动发出一个事件。
 
-```javascript
-let foo = new FooComponent();
+```bash
+$ bash-node index.js
+频道:  component
+事件:  foo.some.message
+数据:  { my: 'data' }
 
-foo.someMethod() // 在"component"频道发布"foo.some.message"事件，附带的数据是{ my: "data" }
-foo.anotherMethod() // 在"/"频道发布"foo.some.other"事件，不附带数据
+频道:  /
+事件:  foo.some.other
+数据:  undefined
 ```
 
 ## Mixin
@@ -756,7 +776,7 @@ obj.bar() // bar
 class MyClass {}
 ```
 
-上面代码排除`了TExample`的`foo`方法和`bar`方法，为`baz`方法起了别名`exampleBaz`。
+上面代码排除了`TExample`的`foo`方法和`bar`方法，为`baz`方法起了别名`exampleBaz`。
 
 `as`方法则为上面的代码提供了另一种写法。
 
@@ -769,27 +789,38 @@ class MyClass {}
 
 目前，Babel 转码器已经支持 Decorator。
 
-首先，安装`babel-core`和`babel-plugin-transform-decorators`。由于后者包括在`babel-preset-stage-0`之中，所以改为安装`babel-preset-stage-0`亦可。
+首先，安装`@babel/core`和`@babel/plugin-proposal-decorators`。由于后者包括在`@babel/preset-stage-0`之中，所以改为安装`@babel/preset-stage-0`亦可。
 
 ```bash
-$ npm install babel-core babel-plugin-transform-decorators
+$ npm install @babel/core @babel/plugin-proposal-decorators
 ```
 
 然后，设置配置文件`.babelrc`。
 
 ```javascript
 {
-  "plugins": ["transform-decorators"]
+  "plugins": ["@babel/plugin-proposal-decorators"]
 }
 ```
 
 这时，Babel 就可以对 Decorator 转码了。
 
+如果要使用 Decorator 的早期规格，必须将`legacy`属性设为`true`，默认为`false`。
+
+```javascript
+{
+  "plugins": [
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
+  ]
+}
+```
+
 脚本中打开的命令如下。
 
 ```javascript
-babel.transform("code", {plugins: ["transform-decorators"]})
+require("@babel/core").transform("code", {
+  plugins: ["@babel/plugin-proposal-decorators"]
+});
 ```
 
 Babel 的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选 Experimental，就能支持 Decorator 的在线转码。
-

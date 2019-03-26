@@ -28,7 +28,7 @@ const gen = function* () {
 };
 ```
 
-写成`async`函数，就是下面这样。
+上面代码的函数`gen`可以写成`async`函数，就是下面这样。
 
 ```javascript
 const asyncReadFile = async function () {
@@ -59,7 +59,7 @@ asyncReadFile();
 
 （3）更广的适用性。
 
-`co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是Promise 对象和原始类型的值（数值、字符串和布尔值，但这时等同于同步操作）。
+`co`模块约定，`yield`命令后面只能是 Thunk 函数或 Promise 对象，而`async`函数的`await`命令后面，可以是 Promise 对象和原始类型的值（数值、字符串和布尔值，但这时会自动转成立即 resolved 的 Promise 对象）。
 
 （4）返回值是 Promise。
 
@@ -104,7 +104,7 @@ async function asyncPrint(value, ms) {
 asyncPrint('hello world', 50);
 ```
 
-上面代码指定50毫秒以后，输出`hello world`。
+上面代码指定 50 毫秒以后，输出`hello world`。
 
 由于`async`函数返回的是 Promise 对象，可以作为`await`命令的参数。所以，上面的例子也可以写成下面的形式。
 
@@ -210,10 +210,12 @@ getTitle('https://tc39.github.io/ecma262/').then(console.log)
 
 ### await 命令
 
-正常情况下，`await`命令后面是一个 Promise 对象。如果不是，会被转成一个立即`resolve`的 Promise 对象。
+正常情况下，`await`命令后面是一个 Promise 对象，返回该对象的结果。如果不是 Promise 对象，就直接返回对应的值。
 
 ```javascript
 async function f() {
+  // 等同于
+  // return 123;
   return await 123;
 }
 
@@ -221,7 +223,31 @@ f().then(v => console.log(v))
 // 123
 ```
 
-上面代码中，`await`命令的参数是数值`123`，它被转成 Promise 对象，并立即`resolve`。
+上面代码中，`await`命令的参数是数值`123`，这时等同于`return 123`。
+
+另一种情况是，`await`命令后面是一个`thenable`对象（即定义`then`方法的对象），那么`await`会将其等同于 Promise 对象。
+
+```javascript
+class Sleep {
+  constructor(timeout) {
+    this.timeout = timeout;
+  }
+  then(resolve, reject) {
+    const startTime = Date.now();
+    setTimeout(
+      () => resolve(Date.now() - startTime),
+      this.timeout
+    );
+  }
+}
+
+(async () => {
+  const actualTime = await new Sleep(1000);
+  console.log(actualTime);
+})();
+```
+
+上面代码中，`await`命令后面是一个`Sleep`对象的实例。这个实例不是 Promise 对象，但是因为定义了`then`方法，`await`会将其视为`Promise`处理。
 
 `await`命令后面的 Promise 对象如果变为`reject`状态，则`reject`的参数会被`catch`方法的回调函数接收到。
 
@@ -238,7 +264,7 @@ f()
 
 注意，上面代码中，`await`语句前面没有`return`，但是`reject`方法的参数依然传入了`catch`方法的回调函数。这里如果在`await`前面加上`return`，效果是一样的。
 
-只要一个`await`语句后面的 Promise 变为`reject`，那么整个`async`函数都会中断执行。
+任何一个`await`语句后面的 Promise 对象变为`reject`状态，那么整个`async`函数都会中断执行。
 
 ```javascript
 async function f() {
@@ -460,7 +486,7 @@ async function dbFuc(db) {
 }
 ```
 
-目前，[`@std/esm`](https://www.npmjs.com/package/@std/esm)模块加载器支持顶层`await`，即`await`命令可以不放在 async 函数里面，直接使用。
+目前，[`esm`](https://www.npmjs.com/package/esm)模块加载器支持顶层`await`，即`await`命令可以不放在 async 函数里面，直接使用。
 
 ```javascript
 // async 函数的写法
@@ -476,7 +502,28 @@ const res = await fetch('google.com');
 console.log(await res.text());
 ```
 
-上面代码中，第二种写法的脚本必须使用`@std/esm`加载器，才会生效。
+上面代码中，第二种写法的脚本必须使用`esm`加载器，才会生效。
+
+第四点，async 函数可以保留运行堆栈。
+
+```javascript
+const a = () => {
+  b().then(() => c());
+};
+```
+
+上面代码中，函数`a`内部运行了一个异步任务`b()`。当`b()`运行的时候，函数`a()`不会中断，而是继续执行。等到`b()`运行结束，可能`a()`早就运行结束了，`b()`所在的上下文环境已经消失了。如果`b()`或`c()`报错，错误堆栈将不包括`a()`。
+
+现在将这个例子改成`async`函数。
+
+```javascript
+const a = async () => {
+  await b();
+  c();
+};
+```
+
+上面代码中，`b()`运行的时候，`a()`是暂停执行，上下文环境都保存着。一旦`b()`或`c()`报错，错误堆栈将包括`a()`。
 
 ## async 函数的实现原理
 
@@ -505,7 +552,7 @@ function spawn(genF) {
   return new Promise(function(resolve, reject) {
     const gen = genF();
     function step(nextF) {
-      let next; 
+      let next;
       try {
         next = nextF();
       } catch(e) {
@@ -600,7 +647,7 @@ async function chainAnimationsAsync(elem, animations) {
 }
 ```
 
-可以看到Async函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将Generator写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用Generator写法，自动执行器需要用户自己提供。
+可以看到 Async 函数的实现最简洁，最符合语义，几乎没有语义不相关的代码。它将 Generator 写法中的自动执行器，改在语言层面提供，不暴露给用户，因此代码量最少。如果使用 Generator 写法，自动执行器需要用户自己提供。
 
 ## 实例：按顺序完成异步操作
 
@@ -636,7 +683,7 @@ async function logInOrder(urls) {
 }
 ```
 
-上面代码确实大大简化，问题是所有远程操作都是继发。只有前一个URL返回结果，才会去读取下一个URL，这样做效率很差，非常浪费时间。我们需要的是并发发出远程请求。
+上面代码确实大大简化，问题是所有远程操作都是继发。只有前一个 URL 返回结果，才会去读取下一个 URL，这样做效率很差，非常浪费时间。我们需要的是并发发出远程请求。
 
 ```javascript
 async function logInOrder(urls) {
@@ -661,7 +708,7 @@ async function logInOrder(urls) {
 
 这里隐含着一个规定，`next`方法必须是同步的，只要调用就必须立刻返回值。也就是说，一旦执行`next`方法，就必须同步地得到`value`和`done`这两个属性。如果遍历指针正好指向同步操作，当然没有问题，但对于异步操作，就不太合适了。目前的解决方法是，Generator 函数里面的异步操作，返回一个 Thunk 函数或者 Promise 对象，即`value`属性是一个 Thunk 函数或者 Promise 对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
 
-目前，有一个[提案](https://github.com/tc39/proposal-async-iteration)，为异步操作提供原生的遍历器接口，即`value`和`done`这两个属性都是异步产生，这称为”异步遍历器“（Async Iterator）。
+ES2018 [引入](https://github.com/tc39/proposal-async-iteration)了“异步遍历器”（Async Iterator），为异步操作提供原生的遍历器接口，即`value`和`done`这两个属性都是异步产生。
 
 ### 异步遍历的接口
 
@@ -719,12 +766,13 @@ async function f() {
 
 上面代码中，`next`方法用`await`处理以后，就不必使用`then`方法了。整个流程已经很接近同步处理了。
 
-注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的Promise对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
+注意，异步遍历器的`next`方法是可以连续调用的，不必等到上一步产生的 Promise 对象`resolve`以后再调用。这种情况下，`next`方法会累积起来，自动按照每一步的顺序运行下去。下面是一个例子，把所有的`next`方法放在`Promise.all`方法里面。
 
 ```javascript
-const asyncGenObj = createAsyncIterable(['a', 'b']);
+const asyncIterable = createAsyncIterable(['a', 'b']);
+const asyncIterator = asyncIterable[Symbol.asyncIterator]();
 const [{value: v1}, {value: v2}] = await Promise.all([
-  asyncGenObj.next(), asyncGenObj.next()
+  asyncIterator.next(), asyncIterator.next()
 ]);
 
 console.log(v1, v2); // a b
@@ -733,10 +781,14 @@ console.log(v1, v2); // a b
 另一种用法是一次性调用所有的`next`方法，然后`await`最后一步操作。
 
 ```javascript
-const writer = openFile('someFile.txt');
-writer.next('hello');
-writer.next('world');
-await writer.return();
+async function runner() {
+  const writer = openFile('someFile.txt');
+  writer.next('hello');
+  writer.next('world');
+  await writer.return();
+}
+
+runner();
 ```
 
 ### for await...of
@@ -753,7 +805,7 @@ async function f() {
 // b
 ```
 
-上面代码中，`createAsyncIterable()`返回一个异步遍历器，`for...of`循环自动调用这个遍历器的`next`方法，会得到一个Promise对象。`await`用来处理这个Promise对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
+上面代码中，`createAsyncIterable()`返回一个拥有异步遍历器接口的对象，`for...of`循环自动调用这个对象的异步遍历器的`next`方法，会得到一个 Promise 对象。`await`用来处理这个 Promise 对象，一旦`resolve`，就把得到的值（`x`）传入`for...of`的循环体。
 
 `for await...of`循环的一个用途，是部署了 asyncIterable 操作的异步接口，可以直接放入这个循环。
 
@@ -793,6 +845,37 @@ async function () {
 })();
 // a
 // b
+```
+
+Node v10 支持异步遍历器，Stream 就部署了这个接口。下面是读取文件的传统写法与异步遍历器写法的差异。
+
+```javascript
+// 传统写法
+function main(inputFilePath) {
+  const readStream = fs.createReadStream(
+    inputFilePath,
+    { encoding: 'utf8', highWaterMark: 1024 }
+  );
+  readStream.on('data', (chunk) => {
+    console.log('>>> '+chunk);
+  });
+  readStream.on('end', () => {
+    console.log('### DONE ###');
+  });
+}
+
+// 异步遍历器写法
+async function main(inputFilePath) {
+  const readStream = fs.createReadStream(
+    inputFilePath,
+    { encoding: 'utf8', highWaterMark: 1024 }
+  );
+
+  for await (const chunk of readStream) {
+    console.log('>>> '+chunk);
+  }
+  console.log('### DONE ###');
+}
 ```
 
 ### 异步 Generator 函数
@@ -836,7 +919,7 @@ async function* map(iterable, func) {
 }
 ```
 
-上面代码中，可以看到有了异步遍历器以后，同步 Generator 函数和异步 Generator 函数的写法基本上是一致的。
+上面代码中，`map`是一个 Generator 函数，第一个参数是可遍历对象`iterable`，第二个参数是一个回调函数`func`。`map`的作用是将`iterable`每一步返回的值，使用`func`进行处理。上面有两个版本的`map`，前一个处理同步遍历器，后一个处理异步遍历器，可以看到两个版本的写法基本上是一致的。
 
 下面是另一个异步 Generator 函数的例子。
 
@@ -854,7 +937,7 @@ async function* readLines(path) {
 }
 ```
 
-上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回 Promise 对象。凡是使用`yield`关键字的地方，就是`next`方法的停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是与同步 Generator 函数一致的。
+上面代码中，异步操作前面使用`await`关键字标明，即`await`后面的操作，应该返回 Promise 对象。凡是使用`yield`关键字的地方，就是`next`方法停下来的地方，它后面的表达式的值（即`await file.readLine()`的值），会作为`next()`返回对象的`value`属性，这一点是与同步 Generator 函数一致的。
 
 异步 Generator 函数内部，能够同时使用`await`和`yield`命令。可以这样理解，`await`命令用于将外部操作产生的值输入函数内部，`yield`命令用于将函数内部的值输出。
 
@@ -878,45 +961,53 @@ async function* prefixLines(asyncIterable) {
 }
 ```
 
-异步 Generator 函数的返回值是一个异步 Iterator，即每次调用它的`next`方法，会返回一个 Promise 对象，也就是说，跟在`yield`命令后面的，应该是一个 Promise 对象。
+异步 Generator 函数的返回值是一个异步 Iterator，即每次调用它的`next`方法，会返回一个 Promise 对象，也就是说，跟在`yield`命令后面的，应该是一个 Promise 对象。如果像上面那个例子那样，`yield`命令后面是一个字符串，会被自动包装成一个 Promise 对象。
 
 ```javascript
+function fetchRandom() {
+  const url = 'https://www.random.org/decimal-fractions/'
+    + '?num=1&dec=10&col=1&format=plain&rnd=new';
+  return fetch(url);
+}
+
 async function* asyncGenerator() {
   console.log('Start');
-  const result = await doSomethingAsync(); // (A)
-  yield 'Result: '+ result; // (B)
+  const result = await fetchRandom(); // (A)
+  yield 'Result: ' + await result.text(); // (B)
   console.log('Done');
 }
 
 const ag = asyncGenerator();
-ag.next().then({value, done} => {
-  // ...
+ag.next().then(({value, done}) => {
+  console.log(value);
 })
 ```
 
-上面代码中，`ag`是`asyncGenerator`函数返回的异步 Iterator 对象。调用`ag.next()`以后，`asyncGenerator`函数内部的执行顺序如下。
+上面代码中，`ag`是`asyncGenerator`函数返回的异步遍历器对象。调用`ag.next()`以后，上面代码的执行顺序如下。
 
-1. 打印出`Start`。
-2. `await`命令返回一个 Promise 对象，但是程序不会停在这里，继续往下执行。
-3. 程序在`B`处暂停执行，`yield`命令立刻返回一个 Promise 对象，该对象就是`ag.next()`的返回值。
-4. `A`处`await`命令后面的那个 Promise 对象 resolved，产生的值放入`result`变量。
-5. `B`处的 Promise 对象 resolved，`then`方法指定的回调函数开始执行，该函数的参数是一个对象，`value`的值是表达式`'Result： ' + result`的值，`done`属性的值是`false`。
+1. `ag.next()`立刻返回一个 Promise 对象。
+1. `asyncGenerator`函数开始执行，打印出`Start`。
+1. `await`命令返回一个 Promise 对象，`asyncGenerator`函数停在这里。
+1. A 处变成 fulfilled 状态，产生的值放入`result`变量，`asyncGenerator`函数继续往下执行。
+1. 函数在 B 处的`yield`暂停执行，一旦`yield`命令取到值，`ag.next()`返回的那个 Promise 对象变成 fulfilled 状态。
+1. `ag.next()`后面的`then`方法指定的回调函数开始执行。该回调函数的参数是一个对象`{value, done}`，其中`value`的值是`yield`命令后面的那个表达式的值，`done`的值是`false`。
 
 A 和 B 两行的作用类似于下面的代码。
 
 ```javascript
 return new Promise((resolve, reject) => {
-  doSomethingAsync()
+  fetchRandom()
+  .then(result => result.text())
   .then(result => {
      resolve({
-       value: 'Result: '+result,
+       value: 'Result: ' + result,
        done: false,
      });
   });
 });
 ```
 
-如果异步 Generator 函数抛出错误，会被 Promise 对象`reject`，然后抛出的错误被`catch`方法捕获。
+如果异步 Generator 函数抛出错误，会导致 Promise 对象的状态变为`reject`，然后抛出的错误被`catch`方法捕获。
 
 ```javascript
 async function* asyncGenerator() {
@@ -988,7 +1079,7 @@ async function* createAsyncIterable(syncIterable) {
 
 上面代码中，由于没有异步操作，所以也就没有使用`await`关键字。
 
-### yield* 语句
+### yield\* 语句
 
 `yield*`语句也可以跟一个异步遍历器。
 
@@ -1018,4 +1109,3 @@ async function* gen2() {
 // a
 // b
 ```
-

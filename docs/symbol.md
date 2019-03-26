@@ -163,13 +163,15 @@ let obj = {
 Symbol 类型还可以用于定义一组常量，保证这组常量的值都是不相等的。
 
 ```javascript
+const log = {};
+
 log.levels = {
   DEBUG: Symbol('debug'),
   INFO: Symbol('info'),
   WARN: Symbol('warn')
 };
-log(log.levels.DEBUG, 'debug message');
-log(log.levels.INFO, 'info message');
+console.log(log.levels.DEBUG, 'debug message');
+console.log(log.levels.INFO, 'info message');
 ```
 
 下面是另外一个例子。
@@ -247,7 +249,7 @@ const shapeType = {
 };
 ```
 
-上面代码中，除了将`shapeType.triangle`的值设为一个Symbol，其他地方都不用修改。
+上面代码中，除了将`shapeType.triangle`的值设为一个 Symbol，其他地方都不用修改。
 
 ## 属性名的遍历
 
@@ -293,7 +295,7 @@ Object.getOwnPropertySymbols(obj)
 
 上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
 
-另一个新的API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+另一个新的 API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
 
 ```javascript
 let obj = {
@@ -341,7 +343,7 @@ Object.getOwnPropertySymbols(x) // [Symbol(size)]
 
 ## Symbol.for()，Symbol.keyFor()
 
-有时，我们希望重新使用同一个Symbol值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的Symbol值。如果有，就返回这个Symbol值，否则就新建并返回一个以该字符串为名称的Symbol值。
+有时，我们希望重新使用同一个 Symbol 值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。
 
 ```javascript
 let s1 = Symbol.for('foo');
@@ -352,7 +354,7 @@ s1 === s2 // true
 
 上面代码中，`s1`和`s2`都是 Symbol 值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
 
-`Symbol.for()`与`Symbol()`这两种写法，都会生成新的Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30次，会返回30个不同的Symbol值。
+`Symbol.for()`与`Symbol()`这两种写法，都会生成新的 Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30 次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30 次，会返回 30 个不同的 Symbol 值。
 
 ```javascript
 Symbol.for("bar") === Symbol.for("bar")
@@ -374,9 +376,9 @@ let s2 = Symbol("foo");
 Symbol.keyFor(s2) // undefined
 ```
 
-上面代码中，变量`s2`属于未登记的Symbol值，所以返回`undefined`。
+上面代码中，变量`s2`属于未登记的 Symbol 值，所以返回`undefined`。
 
-需要注意的是，`Symbol.for`为Symbol值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。
+需要注意的是，`Symbol.for`为 Symbol 值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。
 
 ```javascript
 iframe = document.createElement('iframe');
@@ -391,9 +393,9 @@ iframe.contentWindow.Symbol.for('foo') === Symbol.for('foo')
 
 ## 实例：模块的 Singleton 模式
 
-Singleton模式指的是调用一个类，任何时候返回的都是同一个实例。
+Singleton 模式指的是调用一个类，任何时候返回的都是同一个实例。
 
-对于Node来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
+对于 Node 来说，模块文件可以看成是一个类。怎么保证每次执行这个模块文件，返回的都是同一个实例呢？
 
 很容易想到，可以把实例放到顶层对象`global`。
 
@@ -422,13 +424,15 @@ console.log(a.foo);
 但是，这里有一个问题，全局变量`global._foo`是可写的，任何文件都可以修改。
 
 ```javascript
+global._foo = { foo: 'world' };
+
 const a = require('./mod.js');
-global._foo = 123;
+console.log(a.foo);
 ```
 
-上面的代码，会使得别的脚本加载`mod.js`都失真。
+上面的代码，会使得加载`mod.js`的脚本都失真。
 
-为了防止这种情况出现，我们就可以使用Symbol。
+为了防止这种情况出现，我们就可以使用 Symbol。
 
 ```javascript
 // mod.js
@@ -448,8 +452,9 @@ module.exports = global[FOO_KEY];
 上面代码中，可以保证`global[FOO_KEY]`不会被无意间覆盖，但还是可以被改写。
 
 ```javascript
+global[Symbol.for('foo')] = { foo: 'world' };
+
 const a = require('./mod.js');
-global[Symbol.for('foo')] = 123;
 ```
 
 如果键名使用`Symbol`方法生成，那么外部将无法引用这个值，当然也就无法改写。
@@ -461,11 +466,11 @@ const FOO_KEY = Symbol('foo');
 // 后面代码相同 ……
 ```
 
-上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然Node会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是完全可靠。
+上面代码将导致其他脚本都无法引用`FOO_KEY`。但这样也有一个问题，就是如果多次执行这个脚本，每次得到的`FOO_KEY`都是不一样的。虽然 Node 会将脚本的执行结果缓存，一般情况下，不会多次执行同一个脚本，但是用户可以手动清除缓存，所以也不是绝对可靠。
 
-## 内置的Symbol值
+## 内置的 Symbol 值
 
-除了定义自己使用的Symbol值以外，ES6还提供了11个内置的Symbol值，指向语言内部使用的方法。
+除了定义自己使用的 Symbol 值以外，ES6 还提供了 11 个内置的 Symbol 值，指向语言内部使用的方法。
 
 ### Symbol.hasInstance
 
@@ -491,6 +496,13 @@ class Even {
     return Number(obj) % 2 === 0;
   }
 }
+
+// 等同于
+const Even = {
+  [Symbol.hasInstance](obj) {
+    return Number(obj) % 2 === 0;
+  }
+};
 
 1 instanceof Even // false
 2 instanceof Even // true
@@ -556,18 +568,31 @@ a2[1] = 6;
 
 ### Symbol.species
 
-对象的`Symbol.species`属性，指向当前对象的构造函数。创造实例时，默认会调用这个方法，即使用这个属性返回的函数当作构造函数，来创造新的实例对象。
+对象的`Symbol.species`属性，指向一个构造函数。创建衍生对象时，会使用该属性。
 
 ```javascript
 class MyArray extends Array {
-  // 覆盖父类 Array 的构造函数
+}
+
+const a = new MyArray(1, 2, 3);
+const b = a.map(x => x);
+const c = a.filter(x => x > 1);
+
+b instanceof MyArray // true
+c instanceof MyArray // true
+```
+
+上面代码中，子类`MyArray`继承了父类`Array`，`a`是`MyArray`的实例，`b`和`c`是`a`的衍生对象。你可能会认为，`b`和`c`都是调用数组方法生成的，所以应该是数组（`Array`的实例），但实际上它们也是`MyArray`的实例。
+
+`Symbol.species`属性就是为了解决这个问题而提供的。现在，我们可以为`MyArray`设置`Symbol.species`属性。
+
+```javascript
+class MyArray extends Array {
   static get [Symbol.species]() { return Array; }
 }
 ```
 
-上面代码中，子类`MyArray`继承了父类`Array`。创建`MyArray`的实例对象时，本来会调用它自己的构造函数（本例中被省略了），但是由于定义了`Symbol.species`属性，所以会使用这个属性返回的的函数，创建`MyArray`的实例。
-
-这个例子也说明，定义`Symbol.species`属性要采用`get`读取器。默认的`Symbol.species`属性等同于下面的写法。
+上面代码中，由于定义了`Symbol.species`属性，创建衍生对象时就会使用这个属性返回的函数，作为构造函数。这个例子也说明，定义`Symbol.species`属性要采用`get`取值器。默认的`Symbol.species`属性等同于下面的写法。
 
 ```javascript
 static get [Symbol.species]() {
@@ -575,20 +600,41 @@ static get [Symbol.species]() {
 }
 ```
 
-下面是一个例子。
+现在，再来看前面的例子。
 
 ```javascript
 class MyArray extends Array {
   static get [Symbol.species]() { return Array; }
 }
-let a = new MyArray(1,2,3);
-let mapped = a.map(x => x * x);
 
-mapped instanceof MyArray // false
-mapped instanceof Array // true
+const a = new MyArray();
+const b = a.map(x => x);
+
+b instanceof MyArray // false
+b instanceof Array // true
 ```
 
-上面代码中，由于构造函数被替换成了`Array`。所以，`mapped`对象不是`MyArray`的实例，而是`Array`的实例。
+上面代码中，`a.map(x => x)`生成的衍生对象，就不是`MyArray`的实例，而直接就是`Array`的实例。
+
+再看一个例子。
+
+```javascript
+class T1 extends Promise {
+}
+
+class T2 extends Promise {
+  static get [Symbol.species]() {
+    return Promise;
+  }
+}
+
+new T1(r => r()).then(v => v) instanceof T1 // true
+new T2(r => r()).then(v => v) instanceof T2 // false
+```
+
+上面代码中，`T2`定义了`Symbol.species`属性，`T1`没有。结果就导致了创建衍生对象时（`then`方法），`T1`调用的是自身的构造方法，而`T2`调用的是`Promise`的构造方法。
+
+总之，`Symbol.species`的作用在于，实例对象在运行过程中，需要再次调用自身的构造函数时，会调用该属性指定的构造函数。它主要的用途是，有些类库是在基类的基础上修改的，那么子类使用继承的方法时，作者可能希望返回基类的实例，而不是子类的实例。
 
 ### Symbol.match
 
@@ -705,7 +751,7 @@ myIterable[Symbol.iterator] = function* () {
 [...myIterable] // [1, 2, 3]
 ```
 
-对象进行`for...of`循环时，会调用`Symbol.iterator`方法，返回该对象的默认遍历器，详细介绍参见《Iterator和for...of循环》一章。
+对象进行`for...of`循环时，会调用`Symbol.iterator`方法，返回该对象的默认遍历器，详细介绍参见《Iterator 和 for...of 循环》一章。
 
 ```javascript
 class Collection {
@@ -780,11 +826,11 @@ let x = new Collection();
 Object.prototype.toString.call(x) // "[object xxx]"
 ```
 
-ES6新增内置对象的`Symbol.toStringTag`属性值如下。
+ES6 新增内置对象的`Symbol.toStringTag`属性值如下。
 
 - `JSON[Symbol.toStringTag]`：'JSON'
 - `Math[Symbol.toStringTag]`：'Math'
-- Module对象`M[Symbol.toStringTag]`：'Module'
+- Module 对象`M[Symbol.toStringTag]`：'Module'
 - `ArrayBuffer.prototype[Symbol.toStringTag]`：'ArrayBuffer'
 - `DataView.prototype[Symbol.toStringTag]`：'DataView'
 - `Map.prototype[Symbol.toStringTag]`：'Map'
@@ -820,7 +866,7 @@ Object.keys(Array.prototype[Symbol.unscopables])
 // ['copyWithin', 'entries', 'fill', 'find', 'findIndex', 'includes', 'keys']
 ```
 
-上面代码说明，数组有7个属性，会被`with`命令排除。
+上面代码说明，数组有 7 个属性，会被`with`命令排除。
 
 ```javascript
 // 没有 unscopables 时
