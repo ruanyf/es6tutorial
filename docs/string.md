@@ -497,19 +497,14 @@ console.log(tmpl(data));
 // </table>
 ```
 
-如果需要引用模板字符串本身，在需要时执行，可以像下面这样写。
+如果需要引用模板字符串本身，在需要时执行，可以写成函数。
 
 ```javascript
-// 写法一
-let str = 'return ' + '`Hello ${name}!`';
-let func = new Function('name', str);
-func('Jack') // "Hello Jack!"
-
-// 写法二
-let str = '(name) => `Hello ${name}!`';
-let func = eval.call(null, str);
+let func = (name) => `Hello ${name}!`;
 func('Jack') // "Hello Jack!"
 ```
+
+上面代码中，模板字符串写成了一个函数的返回值。执行这个函数，就相当于执行这个模板字符串了。
 
 ## 实例：模板编译
 
