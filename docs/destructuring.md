@@ -168,10 +168,12 @@ let [x = y, y = 1] = [];     // ReferenceError: y is not defined
 
 ## 对象的解构赋值
 
+### 简介
+
 解构不仅可以用于数组，还可以用于对象。
 
 ```javascript
-let { foo, bar } = { foo: "aaa", bar: "bbb" };
+let { foo, bar } = { foo: 'aaa', bar: 'bbb' };
 foo // "aaa"
 bar // "bbb"
 ```
@@ -179,15 +181,37 @@ bar // "bbb"
 对象的解构与数组有一个重要的不同。数组的元素是按次序排列的，变量的取值由它的位置决定；而对象的属性没有次序，变量必须与属性同名，才能取到正确的值。
 
 ```javascript
-let { bar, foo } = { foo: "aaa", bar: "bbb" };
+let { bar, foo } = { foo: 'aaa', bar: 'bbb' };
 foo // "aaa"
 bar // "bbb"
 
-let { baz } = { foo: "aaa", bar: "bbb" };
+let { baz } = { foo: 'aaa', bar: 'bbb' };
 baz // undefined
 ```
 
 上面代码的第一个例子，等号左边的两个变量的次序，与等号右边两个同名属性的次序不一致，但是对取值完全没有影响。第二个例子的变量没有对应的同名属性，导致取不到值，最后等于`undefined`。
+
+如果解构失败，变量的值等于`undefined`。
+
+```javascript
+let {foo} = {bar: 'baz'};
+foo // undefined
+```
+
+上面代码中，等号右边的对象没有`foo`属性，所以变量`foo`取不到值，所以等于`undefined`。
+
+对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
+
+```javascript
+// 例一
+let { log, sin, cos } = Math;
+
+// 例二
+const { log } = console;
+log('hello') // hello
+```
+
+上面代码的例一将`Math`对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。例二将`console.log`赋值到`log`变量。
 
 如果变量名与属性名不一致，必须写成下面这样。
 
@@ -204,13 +228,13 @@ l // 'world'
 这实际上说明，对象的解构赋值是下面形式的简写（参见《对象的扩展》一章）。
 
 ```javascript
-let { foo: foo, bar: bar } = { foo: "aaa", bar: "bbb" };
+let { foo: foo, bar: bar } = { foo: 'aaa', bar: 'bbb' };
 ```
 
 也就是说，对象的解构赋值的内部机制，是先找到同名属性，然后再赋给对应的变量。真正被赋值的是后者，而不是前者。
 
 ```javascript
-let { foo: baz } = { foo: "aaa", bar: "bbb" };
+let { foo: baz } = { foo: 'aaa', bar: 'bbb' };
 baz // "aaa"
 foo // error: foo is not defined
 ```
@@ -280,6 +304,30 @@ obj // {prop:123}
 arr // [true]
 ```
 
+如果解构模式是嵌套的对象，而且子对象所在的父属性不存在，那么将会报错。
+
+```javascript
+// 报错
+let {foo: {bar}} = {baz: 'baz'};
+```
+
+上面代码中，等号左边对象的`foo`属性，对应一个子对象。该子对象的`bar`属性，解构时会报错。原因很简单，因为`foo`这时等于`undefined`，再取子属性就会报错。
+
+注意，对象的解构赋值可以取到继承的属性。
+
+```javascript
+const obj1 = {};
+const obj2 = { foo: 'bar' };
+Object.setPrototypeOf(obj1, obj2);
+
+const { foo } = obj1;
+foo // "bar"
+```
+
+上面代码中，对象`obj1`的原型对象是`obj2`。`foo`属性不是`obj1`自身的属性，而是继承自`obj2`的属性，解构赋值可以取到这个属性。
+
+### 默认值
+
 对象的解构也可以指定默认值。
 
 ```javascript
@@ -312,28 +360,9 @@ x // null
 
 上面代码中，属性`x`等于`null`，因为`null`与`undefined`不严格相等，所以是个有效的赋值，导致默认值`3`不会生效。
 
-如果解构失败，变量的值等于`undefined`。
+### 注意点
 
-```javascript
-let {foo} = {bar: 'baz'};
-foo // undefined
-```
-
-如果解构模式是嵌套的对象，而且子对象所在的父属性不存在，那么将会报错。
-
-```javascript
-// 报错
-let {foo: {bar}} = {baz: 'baz'};
-```
-
-上面代码中，等号左边对象的`foo`属性，对应一个子对象。该子对象的`bar`属性，解构时会报错。原因很简单，因为`foo`这时等于`undefined`，再取子属性就会报错，请看下面的代码。
-
-```javascript
-let _tmp = {baz: 'baz'};
-_tmp.foo.bar // 报错
-```
-
-如果要将一个已经声明的变量用于解构赋值，必须非常小心。
+（1）如果要将一个已经声明的变量用于解构赋值，必须非常小心。
 
 ```javascript
 // 错误的写法
@@ -352,7 +381,7 @@ let x;
 
 上面代码将整个解构赋值语句，放在一个圆括号里面，就可以正确执行。关于圆括号与解构赋值的关系，参见下文。
 
-解构赋值允许等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
+（2）解构赋值允许等号左边的模式之中，不放置任何变量名。因此，可以写出非常古怪的赋值表达式。
 
 ```javascript
 ({} = [true, false]);
@@ -362,15 +391,7 @@ let x;
 
 上面的表达式虽然毫无意义，但是语法是合法的，可以执行。
 
-对象的解构赋值，可以很方便地将现有对象的方法，赋值到某个变量。
-
-```javascript
-let { log, sin, cos } = Math;
-```
-
-上面代码将`Math`对象的对数、正弦、余弦三个方法，赋值到对应的变量上，使用起来就会方便很多。
-
-由于数组本质是特殊的对象，因此可以对数组进行对象属性的解构。
+（3）由于数组本质是特殊的对象，因此可以对数组进行对象属性的解构。
 
 ```javascript
 let arr = [1, 2, 3];
