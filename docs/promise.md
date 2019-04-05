@@ -759,9 +759,9 @@ p.then(function (s){
 
 **（4）不带有任何参数**
 
-`Promise.resolve`方法允许调用时不带参数，直接返回一个`resolved`状态的 Promise 对象。
+`Promise.resolve()`方法允许调用时不带参数，直接返回一个`resolved`状态的 Promise 对象。
 
-所以，如果希望得到一个 Promise 对象，比较方便的方法就是直接调用`Promise.resolve`方法。
+所以，如果希望得到一个 Promise 对象，比较方便的方法就是直接调用`Promise.resolve()`方法。
 
 ```javascript
 const p = Promise.resolve();
@@ -773,7 +773,7 @@ p.then(function () {
 
 上面代码的变量`p`就是一个 Promise 对象。
 
-需要注意的是，立即`resolve`的 Promise 对象，是在本轮“事件循环”（event loop）的结束时，而不是在下一轮“事件循环”的开始时。
+需要注意的是，立即`resolve()`的 Promise 对象，是在本轮“事件循环”（event loop）的结束时执行，而不是在下一轮“事件循环”的开始时。
 
 ```javascript
 setTimeout(function () {
