@@ -473,8 +473,8 @@ z // { a: 3, b: 4 }
 由于解构赋值要求等号右边是一个对象，所以如果等号右边是`undefined`或`null`，就会报错，因为它们无法转为对象。
 
 ```javascript
-let { x, y, ...z } = null; // 运行时错误
-let { x, y, ...z } = undefined; // 运行时错误
+let { ...z } = null; // 运行时错误
+let { ...z } = undefined; // 运行时错误
 ```
 
 解构赋值必须是最后一个参数，否则会报错。
