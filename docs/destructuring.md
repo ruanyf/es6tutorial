@@ -170,7 +170,7 @@ let [x = y, y = 1] = [];     // ReferenceError: y is not defined
 
 ### 简介
 
-解构不仅可以用于数组，还可以用于对象。
+解构不仅可以用于数组，还可以用于对象。需要注意的是，对象的解构赋值只是一种浅拷贝。
 
 ```javascript
 let { foo, bar } = { foo: 'aaa', bar: 'bbb' };
