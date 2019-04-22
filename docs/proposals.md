@@ -236,7 +236,12 @@ JavaScript 字符串允许直接输入字符，以及输入字符的转义形式
 
 这个规定本身没有问题，麻烦在于 JSON 格式允许字符串里面直接使用 U+2028（行分隔符）和 U+2029（段分隔符）。这样一来，服务器输出的 JSON 被`JSON.parse`解析，就有可能直接报错。
 
-JSON 格式已经冻结（RFC 7159），没法修改了。为了消除这个报错，现在有一个[提案](https://github.com/tc39/proposal-json-superset)，允许 JavaScript 字符串直接输入 U+2028（行分隔符）和 U+2029（段分隔符）。
+```javascript
+const json = '"\u2028"';
+JSON.parse(json); // 可能报错
+```
+
+JSON 格式已经冻结（RFC 7159），没法修改了。为了消除这个报错，[ES2019](https://github.com/tc39/proposal-json-superset) 允许 JavaScript 字符串直接输入 U+2028（行分隔符）和 U+2029（段分隔符）。
 
 ```javascript
 const PS = eval("'\u2029'");
