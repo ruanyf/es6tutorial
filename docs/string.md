@@ -83,6 +83,60 @@ for (let i of text) {
 
 上面代码中，字符串`text`只有一个字符，但是`for`循环会认为它包含两个字符（都不可打印），而`for...of`循环会正确识别出这一个字符。
 
+## 直接输入 U+2028 和 U+2029
+
+JavaScript 字符串允许直接输入字符，以及输入字符的转义形式。举例来说，“中”的 Unicode 码点是 U+4e2d，你可以直接在字符串里面输入这个汉字，也可以输入它的转义形式`\u4e2d`，两者是等价的。
+
+```javascript
+'中' === '\u4e2d' // true
+```
+
+但是，JavaScript 规定有5个字符，不能在字符串里面直接使用，只能使用转义形式。
+
+- U+005C：反斜杠（reverse solidus)
+- U+000D：回车（carriage return）
+- U+2028：行分隔符（line separator）
+- U+2029：段分隔符（paragraph separator）
+- U+000A：换行符（line feed）
+
+举例来说，字符串里面不能直接包含反斜杠，一定要转义写成`\\`或者`\u005c`。
+
+这个规定本身没有问题，麻烦在于 JSON 格式允许字符串里面直接使用 U+2028（行分隔符）和 U+2029（段分隔符）。这样一来，服务器输出的 JSON 被`JSON.parse`解析，就有可能直接报错。
+
+```javascript
+const json = '"\u2028"';
+JSON.parse(json); // 可能报错
+```
+
+JSON 格式已经冻结（RFC 7159），没法修改了。为了消除这个报错，[ES2019](https://github.com/tc39/proposal-json-superset) 允许 JavaScript 字符串直接输入 U+2028（行分隔符）和 U+2029（段分隔符）。
+
+```javascript
+const PS = eval("'\u2029'");
+```
+
+根据这个提案，上面的代码不会报错。
+
+注意，模板字符串现在就允许直接输入这两个字符。另外，正则表达式依然不允许直接输入这两个字符，这是没有问题的，因为 JSON 本来就不允许直接包含正则表达式。
+
+## JSON.stringify() 的改造
+
+根据标准，JSON 数据必须是 UTF-8 编码。但是，现在的`JSON.stringify()`方法有可能返回不符合 UTF-8 标准的字符串。
+
+具体来说，UTF-8 标准规定，`0xD800`到`0xDFFF`之间的码点，不能单独使用，必须配对使用。比如，`\uD834\uDF06`是两个码点，但是必须放在一起配对使用，代表字符`𝌆`。这是为了表示码点大于`0xFFFF`的字符的一种变通方法。单独使用`\uD834`和`\uDFO6`这两个码点是不合法的，或者颠倒顺序也不行，因为`\uDF06\uD834`并没有对应的字符。
+
+`JSON.stringify()`的问题在于，它可能返回`0xD800`到`0xDFFF`之间的单个码点。
+
+```javascript
+JSON.stringify('\u{D834}') // "\u{D834}"
+```
+
+为了确保返回的是合法的 UTF-8 字符，[ES2019](https://github.com/tc39/proposal-well-formed-stringify) 改变了`JSON.stringify()`的行为。如果遇到`0xD800`到`0xDFFF`之间的单个码点，或者不存在的配对形式，它会返回转义字符串，留给应用自己决定下一步的处理。
+
+```javascript
+JSON.stringify('\u{D834}') // ""\\uD834""
+JSON.stringify('\uDF06\uD834') // ""\\udf06\\ud834""
+```
+
 ## 模板字符串
 
 传统的 JavaScript 语言，输出模板通常是这样写的（下面使用了 jQuery 的方法）。
