@@ -164,7 +164,7 @@ Reflect.set(myObject, 'foo', 2);
 myObject.foo // 2
 
 Reflect.set(myObject, 'bar', 3)
-myObject.foo // 3
+myObject.bar // 3
 ```
 
 如果`name`属性设置了赋值函数，则赋值函数的`this`绑定`receiver`。
