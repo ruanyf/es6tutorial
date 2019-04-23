@@ -99,6 +99,33 @@ Number(sym) // TypeError
 sym + 2 // TypeError
 ```
 
+## Symbol.prototype.description
+
+创建 Symbol 的时候，可以添加一个描述。
+
+```javascript
+const sym = Symbol('foo');
+```
+
+上面代码中，`sym`的描述就是字符串`foo`。
+
+但是，读取这个描述需要将 Symbol 显式转为字符串，即下面的写法。
+
+```javascript
+const sym = Symbol('foo');
+
+String(sym) // "Symbol(foo)"
+sym.toString // "Symbol(foo)"
+```
+
+上面的用法不是很方便。[ES2019](https://github.com/tc39/proposal-Symbol-description) 提供了一个实例属性`description`，直接返回 Symbol 的描述。
+
+```javascript
+const sym = Symbol('foo');
+
+sym.description // "foo"
+```
+
 ## 作为属性名的 Symbol
 
 由于每一个 Symbol 值都是不相等的，这意味着 Symbol 值可以作为标识符，用于对象的属性名，就能保证不会出现同名的属性。这对于一个对象由多个模块构成的情况非常有用，能防止某一个键被不小心改写或覆盖。
