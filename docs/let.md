@@ -591,9 +591,9 @@ window.b // undefined
 
 上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
 
-## global 对象
+## globalThis 对象
 
-ES5 的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
+JavaScript 语言存在一个顶层对象，它提供全局环境（即全局作用域），所有代码都是在这个环境中运行。但是，顶层对象在各种实现里面是不统一的。
 
 - 浏览器里面，顶层对象是`window`，但 Node 和 Web Worker 没有`window`。
 - 浏览器和 Web Worker 里面，`self`也指向顶层对象，但是 Node 没有`self`。
@@ -626,27 +626,7 @@ var getGlobal = function () {
 };
 ```
 
-现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`global`作为顶层对象。也就是说，在所有环境下，`global`都是存在的，都可以从它拿到顶层对象。
+现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`globalThis`作为顶层对象。也就是说，任何环境下，`globalThis`都是存在的，都可以从它拿到顶层对象，指向全局环境下的`this`。
 
-垫片库[`system.global`](https://github.com/ljharb/System.global)模拟了这个提案，可以在所有环境拿到`global`。
+垫片库[`global-this`](https://github.com/ungap/global-this)模拟了这个提案，可以在所有环境拿到`globalThis`。
 
-```javascript
-// CommonJS 的写法
-require('system.global/shim')();
-
-// ES6 模块的写法
-import shim from 'system.global/shim'; shim();
-```
-
-上面代码可以保证各种环境里面，`global`对象都是存在的。
-
-```javascript
-// CommonJS 的写法
-var global = require('system.global')();
-
-// ES6 模块的写法
-import getGlobal from 'system.global';
-const global = getGlobal();
-```
-
-上面代码将顶层对象放入变量`global`。

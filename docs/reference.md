@@ -45,6 +45,7 @@
 - Nicolas Bevacqua, [ES6 Let, Const and the “Temporal Dead Zone” (TDZ) in Depth](http://ponyfoo.com/articles/es6-let-const-and-temporal-dead-zone-in-depth)
 - acorn, [Function statements in strict mode](https://github.com/ternjs/acorn/issues/118): 块级作用域对严格模式的函数声明的影响
 - Axel Rauschmayer, [ES proposal: global](http://www.2ality.com/2016/09/global.html): 顶层对象`global`
+- Mathias Bynens, [A horrifying `globalThis` polyfill in universal JavaScript](https://mathiasbynens.be/notes/globalthis)：如何写 globalThis 的垫片库
 
 ## 解构赋值
 
