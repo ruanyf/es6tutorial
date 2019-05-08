@@ -256,7 +256,7 @@ var myObject = {
 Reflect.has(myObject, 'foo') // true
 ```
 
-如果第一个参数不是对象，`Reflect.has`和`in`运算符都会报错。
+如果第一个参数不是对象，`Reflect.has`方法会报错。
 
 ### Reflect.deleteProperty(obj, name)
 
