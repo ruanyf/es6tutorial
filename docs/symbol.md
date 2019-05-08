@@ -115,7 +115,7 @@ const sym = Symbol('foo');
 const sym = Symbol('foo');
 
 String(sym) // "Symbol(foo)"
-sym.toString // "Symbol(foo)"
+sym.toString() // "Symbol(foo)"
 ```
 
 上面的用法不是很方便。[ES2019](https://github.com/tc39/proposal-Symbol-description) 提供了一个实例属性`description`，直接返回 Symbol 的描述。
