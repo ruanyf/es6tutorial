@@ -10,6 +10,7 @@
 1. [let 和 const 命令](#docs/let)
 1. [变量的解构赋值](#docs/destructuring)
 1. [字符串的扩展](#docs/string)
+1. [字符串的新增方法](#docs/string-methods)
 1. [正则的扩展](#docs/regex)
 1. [数值的扩展](#docs/number)
 1. [函数的扩展](#docs/function)

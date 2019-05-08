@@ -764,7 +764,7 @@ gen.return(2); // Object {value: 2, done: true}
 
 ## yield\* 表达式
 
-如果在 Generator 函数内部，调用另一个 Generator 函数，默认情况下是没有效果的。
+如果在 Generator 函数内部，调用另一个 Generator 函数。需要在前者的函数体内部，自己手动完成遍历。
 
 ```javascript
 function* foo() {
@@ -774,20 +774,25 @@ function* foo() {
 
 function* bar() {
   yield 'x';
-  foo();
+  // 手动遍历 foo()
+  for (let i of foo()) {
+    console.log(i);
+  }
   yield 'y';
 }
 
 for (let v of bar()){
   console.log(v);
 }
-// "x"
-// "y"
+// x
+// a
+// b
+// y
 ```
 
-上面代码中，`foo`和`bar`都是 Generator 函数，在`bar`里面调用`foo`，是不会有效果的。
+上面代码中，`foo`和`bar`都是 Generator 函数，在`bar`里面调用`foo`，就需要手动遍历`foo`。如果有多个 Generator 函数嵌套，写起来就非常麻烦。
 
-这个就需要用到`yield*`表达式，用来在一个 Generator 函数里面执行另一个 Generator 函数。
+ES6 提供了`yield*`表达式，作为解决办法，用来在一个 Generator 函数里面执行另一个 Generator 函数。
 
 ```javascript
 function* bar() {

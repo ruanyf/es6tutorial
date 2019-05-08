@@ -290,17 +290,13 @@ function f1() {
 ES6 允许块级作用域的任意嵌套。
 
 ```javascript
-{{{{{let insane = 'Hello World'}}}}};
-```
-
-上面代码使用了一个五层的块级作用域。外层作用域无法读取内层作用域的变量。
-
-```javascript
 {{{{
   {let insane = 'Hello World'}
   console.log(insane); // 报错
 }}}};
 ```
+
+上面代码使用了一个五层的块级作用域，每一层都是一个单独的作用域。第四层作用域无法读取第五层作用域的内部变量。
 
 内层作用域可以定义外层作用域的同名变量。
 
@@ -382,16 +378,6 @@ function f() { console.log('I am outside!'); }
 
 ES6 就完全不一样了，理论上会得到“I am outside!”。因为块级作用域内声明的函数类似于`let`，对作用域之外没有影响。但是，如果你真的在 ES6 浏览器中运行一下上面的代码，是会报错的，这是为什么呢？
 
-原来，如果改变了块级作用域内声明的函数的处理规则，显然会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6 在[附录 B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
-
-- 允许在块级作用域内声明函数。
-- 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
-- 同时，函数声明还会提升到所在的块级作用域的头部。
-
-注意，上面三条规则只对 ES6 的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
-
-根据这三条规则，在浏览器的 ES6 环境中，块级作用域内声明的函数，行为类似于`var`声明的变量。
-
 ```javascript
 // 浏览器的 ES6 环境
 function f() { console.log('I am outside!'); }
@@ -407,7 +393,17 @@ function f() { console.log('I am outside!'); }
 // Uncaught TypeError: f is not a function
 ```
 
-上面的代码在符合 ES6 的浏览器中，都会报错，因为实际运行的是下面的代码。
+上面的代码在 ES6 浏览器中，都会报错。
+
+原来，如果改变了块级作用域内声明的函数的处理规则，显然会对老代码产生很大影响。为了减轻因此产生的不兼容问题，ES6 在[附录 B](http://www.ecma-international.org/ecma-262/6.0/index.html#sec-block-level-function-declarations-web-legacy-compatibility-semantics)里面规定，浏览器的实现可以不遵守上面的规定，有自己的[行为方式](http://stackoverflow.com/questions/31419897/what-are-the-precise-semantics-of-block-level-functions-in-es6)。
+
+- 允许在块级作用域内声明函数。
+- 函数声明类似于`var`，即会提升到全局作用域或函数作用域的头部。
+- 同时，函数声明还会提升到所在的块级作用域的头部。
+
+注意，上面三条规则只对 ES6 的浏览器实现有效，其他环境的实现不用遵守，还是将块级作用域的函数声明当作`let`处理。
+
+根据这三条规则，浏览器的 ES6 环境中，块级作用域内声明的函数，行为类似于`var`声明的变量。上面的例子实际运行的代码如下。
 
 ```javascript
 // 浏览器的 ES6 环境
@@ -426,7 +422,7 @@ function f() { console.log('I am outside!'); }
 考虑到环境导致的行为差异太大，应该避免在块级作用域内声明函数。如果确实需要，也应该写成函数表达式，而不是函数声明语句。
 
 ```javascript
-// 函数声明语句
+// 块级作用域内部的函数声明语句，建议不要使用
 {
   let a = 'secret';
   function f() {
@@ -434,7 +430,7 @@ function f() { console.log('I am outside!'); }
   }
 }
 
-// 函数表达式
+// 块级作用域内部，优先使用函数表达式
 {
   let a = 'secret';
   let f = function () {
@@ -443,7 +439,21 @@ function f() { console.log('I am outside!'); }
 }
 ```
 
-另外，还有一个需要注意的地方。ES6 的块级作用域允许声明函数的规则，只在使用大括号的情况下成立，如果没有使用大括号，就会报错。
+另外，还有一个需要注意的地方。ES6 的块级作用域必须有大括号，如果没有大括号，JavaScript 引擎就认为不存在块级作用域。
+
+```javascript
+// 第一种写法，报错
+if (true) let x = 1;
+
+// 第二种写法，不报错
+if (true) {
+  let x = 1;
+}
+```
+
+上面代码中，第一种写法没有大括号，所以不存在块级作用域，而`let`只能出现在当前作用域的顶层，所以报错。第二种写法有大括号，所以块级作用域成立。
+
+函数声明也是如此，严格模式下，函数只能声明在当前作用域的顶层。
 
 ```javascript
 // 不报错
@@ -602,9 +612,9 @@ window.b // undefined
 
 上面代码中，全局变量`a`由`var`命令声明，所以它是顶层对象的属性；全局变量`b`由`let`命令声明，所以它不是顶层对象的属性，返回`undefined`。
 
-## global 对象
+## globalThis 对象
 
-ES5 的顶层对象，本身也是一个问题，因为它在各种实现里面是不统一的。
+JavaScript 语言存在一个顶层对象，它提供全局环境（即全局作用域），所有代码都是在这个环境中运行。但是，顶层对象在各种实现里面是不统一的。
 
 - 浏览器里面，顶层对象是`window`，但 Node 和 Web Worker 没有`window`。
 - 浏览器和 Web Worker 里面，`self`也指向顶层对象，但是 Node 没有`self`。
@@ -637,27 +647,7 @@ var getGlobal = function () {
 };
 ```
 
-现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`global`作为顶层对象。也就是说，在所有环境下，`global`都是存在的，都可以从它拿到顶层对象。
+现在有一个[提案](https://github.com/tc39/proposal-global)，在语言标准的层面，引入`globalThis`作为顶层对象。也就是说，任何环境下，`globalThis`都是存在的，都可以从它拿到顶层对象，指向全局环境下的`this`。
 
-垫片库[`system.global`](https://github.com/ljharb/System.global)模拟了这个提案，可以在所有环境拿到`global`。
+垫片库[`global-this`](https://github.com/ungap/global-this)模拟了这个提案，可以在所有环境拿到`globalThis`。
 
-```javascript
-// CommonJS 的写法
-require('system.global/shim')();
-
-// ES6 模块的写法
-import shim from 'system.global/shim'; shim();
-```
-
-上面代码可以保证各种环境里面，`global`对象都是存在的。
-
-```javascript
-// CommonJS 的写法
-var global = require('system.global')();
-
-// ES6 模块的写法
-import getGlobal from 'system.global';
-const global = getGlobal();
-```
-
-上面代码将顶层对象放入变量`global`。
