@@ -466,6 +466,7 @@ someAsyncThing().then(function() {
   console.log('carry on');
 });
 // oh no [ReferenceError: x is not defined]
+// carry on
 ```
 
 上面代码中，`catch`方法抛出一个错误，因为后面没有别的`catch`方法了，导致这个错误不会被捕获，也不会传递到外层。如果改写一下，结果就不一样了。
