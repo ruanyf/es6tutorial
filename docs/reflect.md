@@ -511,6 +511,8 @@ Reflect.ownKeys(myObject)
 // ['foo', 'bar', Symbol(baz), Symbol(bing)]
 ```
 
+如果第一个参数不是对象，`Reflect.ownKeys`方法会报错。
+
 ## 实例：使用 Proxy 实现观察者模式
 
 观察者模式（Observer mode）指的是函数自动观察数据对象，一旦对象有变化，函数就会自动执行。
