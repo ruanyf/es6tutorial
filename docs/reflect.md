@@ -256,7 +256,7 @@ var myObject = {
 Reflect.has(myObject, 'foo') // true
 ```
 
-如果第一个参数不是对象，`Reflect.has`和`in`运算符都会报错。
+如果第一个参数不是对象，`Reflect.has`方法会报错。
 
 ### Reflect.deleteProperty(obj, name)
 
@@ -273,6 +273,7 @@ Reflect.deleteProperty(myObj, 'foo');
 ```
 
 该方法返回一个布尔值。如果删除成功，或者被删除的属性不存在，返回`true`；删除失败，被删除的属性依然存在，返回`false`。
+如果第一个参数不是对象，`Reflect.deleteProperty`方法会报错。
 
 ### Reflect.construct(target, args)
 
@@ -289,6 +290,8 @@ const instance = new Greeting('张三');
 // Reflect.construct 的写法
 const instance = Reflect.construct(Greeting, ['张三']);
 ```
+
+如果第一个参数不是函数，`Reflect.construct`方法会报错。
 
 ### Reflect.getPrototypeOf(obj)
 
@@ -507,6 +510,8 @@ Object.getOwnPropertySymbols(myObject)
 Reflect.ownKeys(myObject)
 // ['foo', 'bar', Symbol(baz), Symbol(bing)]
 ```
+
+如果第一个参数不是对象，`Reflect.ownKeys`方法会报错。
 
 ## 实例：使用 Proxy 实现观察者模式
 
