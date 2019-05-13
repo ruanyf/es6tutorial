@@ -238,14 +238,6 @@ getJSON("/post/1.json").then(function(post) {
 
 上面代码中，第一个`then`方法指定的回调函数，返回的是另一个`Promise`对象。这时，第二个`then`方法指定的回调函数，就会等待这个新的`Promise`对象状态发生变化。如果变为`resolved`，就调用`funcA`，如果状态变为`rejected`，就调用`funcB`。
 
-当采用链式的`then`语法时，`then`方法指定的回调函数的返回结果将会影响后续`then`方法的行为：
-1.当回调函数返回一个值，`then`方法返回的`Promise`对象进入`resolved`状态，并将返回值作为下一个`then`方法回调函数的参数；
-2.当回调函数没有返回，`then`方法返回的`Promise`对象进入`resolved`状态，并传入`undefined`作为下一个`then`方法回调函数的参数；
-3.当回调函数抛出一个错误，`then`方法返回的`Promise`对象进入`rejected`状态，并将抛出的错误作为下一个`then`方法回调函数的参数；
-4.当回调函数返回一个进入`resolved`状态的`Promise`对象，则`then`方法返回的`Promise`对象就是该返回值对象，下一个`then`方法中的`resolve`回调函数将被调用；
-5.当回调函数返回一个进入`rejected`状态的`Promise`对象，则`then`方法返回的`Promise`对象就是该返回值对象，下一个`then`方法中的`reject`回调函数将被调用；
-6.当回调函数返回一个处于`pending`状态的`Promise`对象，则`then`方法返回的`Promise`对象就是该返回值对象，并且后续的回调函数处理会在异步操作完成后按序执行；
-
 如果采用箭头函数，上面的代码可以写得更简洁。
 
 ```javascript
