@@ -69,6 +69,23 @@ timeout(100).then((value) => {
 ```
 
 上面代码中，`timeout`方法返回一个`Promise`实例，表示一段时间以后才会发生的结果。过了指定的时间（`ms`参数）以后，`Promise`实例的状态变为`resolved`，就会触发`then`方法绑定的回调函数。
+``` 
+function timeout(ms) {
+    return new Promise((resolve, reject) => {
+        setTimeout(resolve, ms, 'done');
+    });
+}
+
+timeout(100).then( function ( value1, value2 ) {
+    console.log(value1);
+    console.log(value2);
+}.bind( this, "outValue" ) );
+//输出
+Promise {<pending>}
+outValue
+done
+```
+bind绑定传进去的值会变成回调的第一个参数， resolve的结果在第二个参数里
 
 Promise 新建后就会立即执行。
 
