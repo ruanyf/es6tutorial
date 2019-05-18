@@ -424,7 +424,7 @@ Math.cbrt = Math.cbrt || function(x) {
 
 ### Math.clz32()
 
-`Math.clz32()`方法将参数转为 32 位无符号整数的形式，然后这个 32 位值里面有多少个前导 0。
+`Math.clz32()`方法将参数转为 32 位无符号整数的形式，然后返回这个 32 位值里面有多少个前导 0。
 
 ```javascript
 Math.clz32(0) // 32
