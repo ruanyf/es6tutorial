@@ -60,7 +60,7 @@ String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
 作为函数，`String.raw()`的代码实现基本如下。
 
 ```javascript
-String.raw = function (strings, ...values) {
+String.raw = (strings, ...values) => {
   let output = '';
   let index;
   for (index = 0; index < values.length; index++) {

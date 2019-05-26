@@ -837,7 +837,7 @@ let xhr = new XMLHttpRequest();
 xhr.open('GET', someUrl);
 xhr.responseType = 'arraybuffer';
 
-xhr.onload = function () {
+xhr.onload = () => {
   let arrayBuffer = xhr.response;
   // ···
 };
@@ -848,7 +848,7 @@ xhr.send();
 如果知道传回来的是 32 位整数，可以像下面这样处理。
 
 ```javascript
-xhr.onreadystatechange = function () {
+xhr.onreadystatechange = () => {
   if (req.readyState === 4 ) {
     const arrayResponse = xhr.response;
     const dataView = new DataView(arrayResponse);
@@ -897,14 +897,14 @@ let socket = new WebSocket('ws://127.0.0.1:8081');
 socket.binaryType = 'arraybuffer';
 
 // Wait until socket is open
-socket.addEventListener('open', function (event) {
+socket.addEventListener('open', event => {
   // Send binary data
   const typedArray = new Uint8Array(4);
   socket.send(typedArray.buffer);
 });
 
 // Receive binary data
-socket.addEventListener('message', function (event) {
+socket.addEventListener('message', event => {
   const arrayBuffer = event.data;
   // ···
 });
@@ -916,10 +916,10 @@ Fetch API 取回的数据，就是`ArrayBuffer`对象。
 
 ```javascript
 fetch(url)
-.then(function(response){
+.then(response => {
   return response.arrayBuffer()
 })
-.then(function(arrayBuffer){
+.then(arrayBuffer => {
   // ...
 });
 ```
@@ -933,7 +933,7 @@ const fileInput = document.getElementById('fileInput');
 const file = fileInput.files[0];
 const reader = new FileReader();
 reader.readAsArrayBuffer(file);
-reader.onload = function () {
+reader.onload = () => {
   const arrayBuffer = reader.result;
   // ···
 };
@@ -1009,7 +1009,7 @@ const w = new Worker('myworker.js');
 ```javascript
 // 主线程
 w.postMessage('hi');
-w.onmessage = function (ev) {
+w.onmessage = ev => {
   console.log(ev.data);
 }
 ```
@@ -1020,7 +1020,7 @@ Worker 线程也是通过监听`message`事件，来获取主线程发来的消�
 
 ```javascript
 // Worker 线程
-onmessage = function (ev) {
+onmessage = ev => {
   console.log(ev.data);
   postMessage('ho');
 }
@@ -1049,7 +1049,7 @@ Worker 线程从事件的`data`属性上面取到数据。
 
 ```javascript
 // Worker 线程
-onmessage = function (ev) {
+onmessage = ev => {
   // 主线程共享的数据，就是 1KB 的共享内存
   const sharedBuffer = ev.data;
 
@@ -1087,7 +1087,7 @@ Worker 线程收到数据后的处理如下。
 ```javascript
 // Worker 线程
 let ia;
-onmessage = function (ev) {
+onmessage = ev => {
   ia = ev.data;
   console.log(ia.length); // 100000
   console.log(ia[37]); // 输出 163，因为这是第38个质数
