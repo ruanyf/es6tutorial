@@ -123,6 +123,16 @@ for (let ch of s) {
 // 61
 ```
 
+或者使用 `Spread` 展开运算
+
+```javascript
+let arr = [...'𠮷a']; // arr.length === 2
+arr.forEach(ch => console.log(ch.codePointAt(0).toString(16)));
+// 20bb7
+// 61
+```
+
+
 `codePointAt()`方法是测试一个字符由两个字节还是由四个字节组成的最简单方法。
 
 ```javascript
