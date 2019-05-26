@@ -448,12 +448,9 @@ Float64Array.BYTES_PER_ELEMENT // 8
 
 ### ArrayBuffer 与字符串的互相转换
 
-`ArrayBuffer` 和字符串相互转换， 使用原生 `TextEncoder` `TextDecoder` 类方法转换任何字符集字符串  
-outputEncoding 输出编码一般保持默认值（utf-8），可选值见文档：
-- https://encoding.spec.whatwg.org
-- https://nodejs.org/api/util.html#util_whatwg_supported_encodings
+`ArrayBuffer` 和字符串的相互转换，使用原生 `TextEncoder` 和 `TextDecoder` 方法。为了便于说明用法，下面的代码都按照 TypeScript 的用法，给出了类型签名。
 
-```ts
+```javascript
 /**
  * Convert ArrayBuffer/TypedArray to String via TextDecoder
  *
@@ -484,6 +481,8 @@ function str2Uint8Array(input: string): Uint8Array {
   return view
 }
 ```
+
+上面代码中，`ab2str()`的第二个参数`outputEncoding`给出了输出编码的编码，一般保持默认值（`utf-8`），其他可选值参见[官方文档](https://encoding.spec.whatwg.org)或 [Node.js 文档](https://nodejs.org/api/util.html#util_whatwg_supported_encodings)。
 
 ### 溢出
 
