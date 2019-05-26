@@ -34,11 +34,11 @@
 
 很多浏览器操作的 API，用到了二进制数组操作二进制数据，下面是其中的几个。
 
-- File API
-- XMLHttpRequest
-- Fetch API
-- Canvas
-- WebSockets
+- [Canvas](#canvas)
+- [Fetch API](#fetch-api)
+- [File API](#file-api)
+- [WebSockets](#websocket)
+- [XMLHttpRequest](#ajax)
 
 ## ArrayBuffer 对象
 
@@ -579,7 +579,7 @@ v3.byteOffset // 2
 
 ### TypedArray.prototype.length
 
-`length`属性表示 TypedArray 数组含有多少个成员。注意将`byteLength`属性和`length`属性区分，前者是字节长度，后者是成员长度。
+`length`属性表示 `TypedArray` 数组含有多少个成员。注意将 `length` 属性和 `byteLength` 属性区分，前者是成员长度，后者是字节长度。
 
 ```javascript
 const a = new Int16Array(8);
