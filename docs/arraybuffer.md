@@ -34,11 +34,11 @@
 
 很多浏览器操作的 API，用到了二进制数组操作二进制数据，下面是其中的几个。
 
-- File API
-- XMLHttpRequest
-- Fetch API
-- Canvas
-- WebSockets
+- [File API](#file-api)
+- [XMLHttpRequest](#ajax)
+- [Fetch API](#fetch-api)
+- [Canvas](#canvas)
+- [WebSockets](#websocket)
 
 ## ArrayBuffer 对象
 
