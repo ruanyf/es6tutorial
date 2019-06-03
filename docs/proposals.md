@@ -57,9 +57,9 @@ return (
     {
       do {
         if (loggedIn) {
-          <LogoutButton />
-        } else {
           <LoginButton />
+        } else {
+          <LogoutButton />
         }
       }
     }
