@@ -26,6 +26,7 @@
 1. [Generator 函数的语法](#docs/generator)
 1. [Generator 函数的异步应用](#docs/generator-async)
 1. [async 函数](#docs/async)
+1. [异步遍历器](#docs/async-iterator)
 1. [Class 的基本语法](#docs/class)
 1. [Class 的继承](#docs/class-extends)
 1. [Module 的语法](#docs/module)
