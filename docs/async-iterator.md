@@ -43,7 +43,7 @@ function idMaker() {
 }
 ```
 
-上面代码中，`next()`方法返回的是一个 Promise 对象，这样就不行，不符合 Iterator 协议。也就是说，Iterator 协议里面`next()`方法只能包含同步操作。
+上面代码中，`next()`方法返回的是一个 Promise 对象，这样就不行，不符合 Iterator 协议，只要代码里面包含异步操作都不行。也就是说，Iterator 协议里面`next()`方法只能包含同步操作。
 
 目前的解决方法是，将异步操作包装成 Thunk 函数或者 Promise 对象，即`next()`方法返回值的`value`属性是一个 Thunk 函数或者 Promise 对象，等待以后返回真正的值，而`done`属性则还是同步产生的。
 
