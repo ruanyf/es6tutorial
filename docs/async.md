@@ -253,8 +253,8 @@ class Sleep {
 这个例子还演示了如何实现休眠效果。JavaScript 一直没有休眠的语法，但是借助`await`命令就可以让程序停顿指定的时间。下面给出了一个简化的`sleep`实现。
 
 ```javascript
-async function sleep(interval) {
-  await new Promise(resolve => {
+function sleep(interval) {
+  return new Promise(resolve => {
     setTimeout(resolve, interval);
   })
 }
