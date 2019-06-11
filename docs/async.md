@@ -254,15 +254,20 @@ class Sleep {
 
 ```javascript
 async function sleep(interval) {
-  return new Promise(resolve => {
+  await new Promise(resolve => {
     setTimeout(resolve, interval);
   })
 }
 
 // 用法
-sleep(1000).then(
-  () => console.log('done')
-);
+async function one2FiveInAsync() {
+  for(let i = 1; i <= 5; i++) {
+    console.log(i);
+    await sleep(1000);
+  }
+}
+
+one2FiveInAsync();
 ```
 
 `await`命令后面的 Promise 对象如果变为`reject`状态，则`reject`的参数会被`catch`方法的回调函数接收到。
