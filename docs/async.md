@@ -242,12 +242,28 @@ class Sleep {
 }
 
 (async () => {
-  const actualTime = await new Sleep(1000);
-  console.log(actualTime);
+  const sleepTime = await new Sleep(1000);
+  console.log(sleepTime);
 })();
+// 1000
 ```
 
 上面代码中，`await`命令后面是一个`Sleep`对象的实例。这个实例不是 Promise 对象，但是因为定义了`then`方法，`await`会将其视为`Promise`处理。
+
+这个例子还演示了如何实现休眠效果。JavaScript 一直没有休眠的语法，但是借助`await`命令就可以让程序停顿指定的时间。下面给出了一个简化的`sleep`实现。
+
+```javascript
+async function sleep(interval) {
+  return new Promise(resolve => {
+    setTimeout(resolve, interval);
+  })
+}
+
+// 用法
+sleep(1000).then(
+  () => console.log('done')
+);
+```
 
 `await`命令后面的 Promise 对象如果变为`reject`状态，则`reject`的参数会被`catch`方法的回调函数接收到。
 
