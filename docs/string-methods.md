@@ -43,6 +43,8 @@ String.raw`Hi\u000A!`;
 ```javascript
 String.raw`Hi\\n`
 // 返回 "Hi\\\\n"
+
+String.raw`Hi\\n` === "Hi\\\\n" // true
 ```
 
 `String.raw()`方法可以作为处理模板字符串的基本方法，它会将所有变量替换，而且对斜杠进行转义，方便下一步作为字符串来使用。
