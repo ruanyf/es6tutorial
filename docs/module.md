@@ -89,7 +89,7 @@ var firstName = 'Michael';
 var lastName = 'Jackson';
 var year = 1958;
 
-export {firstName, lastName, year};
+export { firstName, lastName, year };
 ```
 
 上面代码在`export`命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在`var`语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
@@ -190,7 +190,7 @@ foo()
 
 ```javascript
 // main.js
-import {firstName, lastName, year} from './profile.js';
+import { firstName, lastName, year } from './profile.js';
 
 function setName(element) {
   element.textContent = firstName + ' ' + lastName;

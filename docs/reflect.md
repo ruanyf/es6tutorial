@@ -40,7 +40,7 @@ Reflect.has(Object, 'assign') // true
 ```javascript
 Proxy(target, {
   set: function(target, name, value, receiver) {
-    var success = Reflect.set(target,name, value, receiver);
+    var success = Reflect.set(target, name, value, receiver);
     if (success) {
       console.log('property ' + name + ' on ' + target + ' set to ' + value);
     }

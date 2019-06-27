@@ -32,6 +32,7 @@
 1. [Module 的加载实现](#docs/module-loader)
 1. [编程风格](#docs/style)
 1. [读懂规格](#docs/spec)
+1. [异步遍历器](#docs/async-iterator)
 1. [ArrayBuffer](#docs/arraybuffer)
 1. [最新提案](#docs/proposals)
 1. [Decorator](#docs/decorator)

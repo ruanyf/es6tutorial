@@ -43,6 +43,8 @@ String.raw`Hi\u000A!`;
 ```javascript
 String.raw`Hi\\n`
 // 返回 "Hi\\\\n"
+
+String.raw`Hi\\n` === "Hi\\\\n" // true
 ```
 
 `String.raw()`方法可以作为处理模板字符串的基本方法，它会将所有变量替换，而且对斜杠进行转义，方便下一步作为字符串来使用。
@@ -119,6 +121,17 @@ let s = '𠮷a';
 for (let ch of s) {
   console.log(ch.codePointAt(0).toString(16));
 }
+// 20bb7
+// 61
+```
+
+另一种方法也可以，使用扩展运算符（`...`）进行展开运算。
+
+```javascript
+let arr = [...'𠮷a']; // arr.length === 2
+arr.forEach(
+  ch => console.log(ch.codePointAt(0).toString(16))
+);
 // 20bb7
 // 61
 ```
