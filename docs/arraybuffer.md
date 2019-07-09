@@ -85,8 +85,8 @@ x1[0] // 2
 const typedArray = new Uint8Array([0,1,2]);
 typedArray.length // 3
 
-typedArray[0] = 5;
-typedArray // [5, 1, 2]
+typedArray[0] = 0;
+typedArray // [0, 1, 2]
 ```
 
 上面代码使用`TypedArray`视图的`Uint8Array`构造函数，新建一个不带符号的 8 位整数视图。可以看到，`Uint8Array`直接使用普通数组作为参数，对底层内存的赋值同时完成。
