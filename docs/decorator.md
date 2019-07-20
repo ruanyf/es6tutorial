@@ -1,10 +1,27 @@
-# 修饰器
+# 装饰器
 
 [说明] Decorator 提案经过了大幅修改，目前还没有定案，不知道语法会不会再变。下面的内容完全依据以前的提案，已经有点过时了。等待定案以后，需要完全重写。
 
-## 类的修饰
+装饰器（Decorator）是一种与类（class）相关的语法，用来注释或修改类和类方法。许多面向对象的语言都有这项功能，目前有一个[提案](https://github.com/tc39/proposal-decorators)将其引入了 ECMAScript。
 
-许多面向对象的语言都有修饰器（Decorator）函数，用来修改类的行为。目前，有一个[提案](https://github.com/tc39/proposal-decorators)将这项功能，引入了 ECMAScript。
+装饰器是一种函数，写成`@ + 函数名`。它可以放在类和类方法的定义前面。
+
+```javascript
+@frozen class Foo {
+  @configurable(false)
+  @enumerable(true)
+  method() {}
+
+  @throttle(500)
+  expensiveMethod() {}
+}
+```
+
+上面代码一共使用了四个装饰器，一个用在类本身，另外三个用在类方法。它们不仅增加了代码的可读性，清晰地表达了意图，而且提供一种方便的手段，增加和修改类的功能。
+
+## 类的装饰
+
+装饰器可以用来装饰整个类。
 
 ```javascript
 @testable
@@ -19,9 +36,9 @@ function testable(target) {
 MyTestableClass.isTestable // true
 ```
 
-上面代码中，`@testable`就是一个修饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。`testable`函数的参数`target`是`MyTestableClass`类本身。
+上面代码中，`@testable`就是一个装饰器。它修改了`MyTestableClass`这个类的行为，为它加上了静态属性`isTestable`。`testable`函数的参数`target`是`MyTestableClass`类本身。
 
-基本上，修饰器的行为就是下面这样。
+基本上，装饰器的行为就是下面这样。
 
 ```javascript
 @decorator
@@ -33,7 +50,7 @@ class A {}
 A = decorator(A) || A;
 ```
 
-也就是说，修饰器是一个对类进行处理的函数。修饰器函数的第一个参数，就是所要修饰的目标类。
+也就是说，装饰器是一个对类进行处理的函数。装饰器函数的第一个参数，就是所要修饰的目标类。
 
 ```javascript
 function testable(target) {
@@ -43,7 +60,7 @@ function testable(target) {
 
 上面代码中，`testable`函数的参数`target`，就是会被修饰的类。
 
-如果觉得一个参数不够用，可以在修饰器外面再封装一层函数。
+如果觉得一个参数不够用，可以在装饰器外面再封装一层函数。
 
 ```javascript
 function testable(isTestable) {
@@ -61,9 +78,9 @@ class MyClass {}
 MyClass.isTestable // false
 ```
 
-上面代码中，修饰器`testable`可以接受参数，这就等于可以修改修饰器的行为。
+上面代码中，装饰器`testable`可以接受参数，这就等于可以修改装饰器的行为。
 
-注意，修饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，修饰器能在编译阶段运行代码。也就是说，修饰器本质就是编译时执行的函数。
+注意，装饰器对类的行为的改变，是代码编译时发生的，而不是在运行时。这意味着，装饰器能在编译阶段运行代码。也就是说，装饰器本质就是编译时执行的函数。
 
 前面的例子是为类添加一个静态属性，如果想添加实例属性，可以通过目标类的`prototype`对象操作。
 
@@ -79,7 +96,7 @@ let obj = new MyTestableClass();
 obj.isTestable // true
 ```
 
-上面代码中，修饰器函数`testable`是在目标类的`prototype`对象上添加属性，因此就可以在实例上调用。
+上面代码中，装饰器函数`testable`是在目标类的`prototype`对象上添加属性，因此就可以在实例上调用。
 
 下面是另外一个例子。
 
@@ -105,7 +122,7 @@ let obj = new MyClass();
 obj.foo() // 'foo'
 ```
 
-上面代码通过修饰器`mixins`，把`Foo`对象的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
+上面代码通过装饰器`mixins`，把`Foo`对象的方法添加到了`MyClass`的实例上面。可以用`Object.assign()`模拟这个功能。
 
 ```javascript
 const Foo = {
@@ -139,7 +156,7 @@ export default class MyReactComponent extends React.Component {}
 
 ## 方法的修饰
 
-修饰器不仅可以修饰类，还可以修饰类的属性。
+装饰器不仅可以修饰类，还可以修饰类的属性。
 
 ```javascript
 class Person {
@@ -148,9 +165,9 @@ class Person {
 }
 ```
 
-上面代码中，修饰器`readonly`用来修饰“类”的`name`方法。
+上面代码中，装饰器`readonly`用来修饰“类”的`name`方法。
 
-修饰器函数`readonly`一共可以接受三个参数。
+装饰器函数`readonly`一共可以接受三个参数。
 
 ```javascript
 function readonly(target, name, descriptor){
@@ -170,9 +187,9 @@ readonly(Person.prototype, 'name', descriptor);
 Object.defineProperty(Person.prototype, 'name', descriptor);
 ```
 
-修饰器第一个参数是类的原型对象，上例是`Person.prototype`，修饰器的本意是要“修饰”类的实例，但是这个时候实例还没生成，所以只能去修饰原型（这不同于类的修饰，那种情况时`target`参数指的是类本身）；第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
+装饰器第一个参数是类的原型对象，上例是`Person.prototype`，装饰器的本意是要“修饰”类的实例，但是这个时候实例还没生成，所以只能去修饰原型（这不同于类的修饰，那种情况时`target`参数指的是类本身）；第二个参数是所要修饰的属性名，第三个参数是该属性的描述对象。
 
-另外，上面代码说明，修饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。
+另外，上面代码说明，装饰器（readonly）会修改属性的描述对象（descriptor），然后被修改的描述对象再用来定义属性。
 
 下面是另一个例子，修改属性描述对象的`enumerable`属性，使得该属性不可遍历。
 
@@ -188,7 +205,7 @@ function nonenumerable(target, name, descriptor) {
 }
 ```
 
-下面的`@log`修饰器，可以起到输出日志的作用。
+下面的`@log`装饰器，可以起到输出日志的作用。
 
 ```javascript
 class Math {
@@ -215,9 +232,9 @@ const math = new Math();
 math.add(2, 4);
 ```
 
-上面代码中，`@log`修饰器的作用就是在执行原始的操作之前，执行一次`console.log`，从而达到输出日志的目的。
+上面代码中，`@log`装饰器的作用就是在执行原始的操作之前，执行一次`console.log`，从而达到输出日志的目的。
 
-修饰器有注释的作用。
+装饰器有注释的作用。
 
 ```javascript
 @testable
@@ -250,7 +267,7 @@ export class MyComponent {
 }
 ```
 
-如果同一个方法有多个修饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
+如果同一个方法有多个装饰器，会像剥洋葱一样，先从外到内进入，然后由内向外执行。
 
 ```javascript
 function dec(id){
@@ -269,13 +286,13 @@ class Example {
 // executed 1
 ```
 
-上面代码中，外层修饰器`@dec(1)`先进入，但是内层修饰器`@dec(2)`先执行。
+上面代码中，外层装饰器`@dec(1)`先进入，但是内层装饰器`@dec(2)`先执行。
 
-除了注释，修饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是 JavaScript 代码静态分析的重要工具。
+除了注释，装饰器还能用来类型检查。所以，对于类来说，这项功能相当有用。从长期来看，它将是 JavaScript 代码静态分析的重要工具。
 
-## 为什么修饰器不能用于函数？
+## 为什么装饰器不能用于函数？
 
-修饰器只能用于类和类的方法，不能用于函数，因为存在函数提升。
+装饰器只能用于类和类的方法，不能用于函数，因为存在函数提升。
 
 ```javascript
 var counter = 0;
@@ -328,7 +345,7 @@ function foo() {
 readOnly = require("some-decorator");
 ```
 
-总之，由于存在函数提升，使得修饰器不能用于函数。类是不会提升的，所以就没有这方面的问题。
+总之，由于存在函数提升，使得装饰器不能用于函数。类是不会提升的，所以就没有这方面的问题。
 
 另一方面，如果一定要修饰函数，可以采用高阶函数的形式直接执行。
 
@@ -351,11 +368,11 @@ const wrapped = loggingDecorator(doSomething);
 
 ## core-decorators.js
 
-[core-decorators.js](https://github.com/jayphelps/core-decorators.js)是一个第三方模块，提供了几个常见的修饰器，通过它可以更好地理解修饰器。
+[core-decorators.js](https://github.com/jayphelps/core-decorators.js)是一个第三方模块，提供了几个常见的装饰器，通过它可以更好地理解装饰器。
 
 **（1）@autobind**
 
-`autobind`修饰器使得方法中的`this`对象，绑定原始对象。
+`autobind`装饰器使得方法中的`this`对象，绑定原始对象。
 
 ```javascript
 import { autobind } from 'core-decorators';
@@ -376,7 +393,7 @@ getPerson() === person;
 
 **（2）@readonly**
 
-`readonly`修饰器使得属性或方法不可写。
+`readonly`装饰器使得属性或方法不可写。
 
 ```javascript
 import { readonly } from 'core-decorators';
@@ -393,7 +410,7 @@ dinner.entree = 'salmon';
 
 **（3）@override**
 
-`override`修饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
+`override`装饰器检查子类的方法，是否正确覆盖了父类的同名方法，如果不正确会报错。
 
 ```javascript
 import { override } from 'core-decorators';
@@ -421,7 +438,7 @@ class Child extends Parent {
 
 **（4）@deprecate (别名@deprecated)**
 
-`deprecate`或`deprecated`修饰器在控制台显示一条警告，表示该方法将废除。
+`deprecate`或`deprecated`装饰器在控制台显示一条警告，表示该方法将废除。
 
 ```javascript
 import { deprecate } from 'core-decorators';
@@ -454,7 +471,7 @@ person.facepalmHarder();
 
 **（5）@suppressWarnings**
 
-`suppressWarnings`修饰器抑制`deprecated`修饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
+`suppressWarnings`装饰器抑制`deprecated`装饰器导致的`console.warn()`调用。但是，异步代码发出的调用除外。
 
 ```javascript
 import { suppressWarnings } from 'core-decorators';
@@ -475,9 +492,9 @@ person.facepalmWithoutWarning();
 // no warning is logged
 ```
 
-## 使用修饰器实现自动发布事件
+## 使用装饰器实现自动发布事件
 
-我们可以使用修饰器，使得对象的方法被调用时，自动发出一个事件。
+我们可以使用装饰器，使得对象的方法被调用时，自动发出一个事件。
 
 ```javascript
 const postal = require("postal/lib/postal.lodash");
@@ -502,7 +519,7 @@ export default function publish(topic, channel) {
 }
 ```
 
-上面代码定义了一个名为`publish`的修饰器，它通过改写`descriptor.value`，使得原方法被调用时，会自动发出一个事件。它使用的事件“发布/订阅”库是[Postal.js](https://github.com/postaljs/postal.js)。
+上面代码定义了一个名为`publish`的装饰器，它通过改写`descriptor.value`，使得原方法被调用时，会自动发出一个事件。它使用的事件“发布/订阅”库是[Postal.js](https://github.com/postaljs/postal.js)。
 
 它的用法如下。
 
@@ -542,7 +559,7 @@ $ bash-node index.js
 
 ## Mixin
 
-在修饰器的基础上，可以实现`Mixin`模式。所谓`Mixin`模式，就是对象继承的一种替代方案，中文译为“混入”（mix in），意为在一个对象之中混入另外一个对象的方法。
+在装饰器的基础上，可以实现`Mixin`模式。所谓`Mixin`模式，就是对象继承的一种替代方案，中文译为“混入”（mix in），意为在一个对象之中混入另外一个对象的方法。
 
 请看下面的例子。
 
@@ -561,7 +578,7 @@ obj.foo() // 'foo'
 
 上面代码之中，对象`Foo`有一个`foo`方法，通过`Object.assign`方法，可以将`foo`方法“混入”`MyClass`类，导致`MyClass`的实例`obj`对象都具有`foo`方法。这就是“混入”模式的一个简单实现。
 
-下面，我们部署一个通用脚本`mixins.js`，将 Mixin 写成一个修饰器。
+下面，我们部署一个通用脚本`mixins.js`，将 Mixin 写成一个装饰器。
 
 ```javascript
 export function mixins(...list) {
@@ -571,7 +588,7 @@ export function mixins(...list) {
 }
 ```
 
-然后，就可以使用上面这个修饰器，为类“混入”各种方法。
+然后，就可以使用上面这个装饰器，为类“混入”各种方法。
 
 ```javascript
 import { mixins } from './mixins';
@@ -587,7 +604,7 @@ let obj = new MyClass();
 obj.foo() // "foo"
 ```
 
-通过`mixins`这个修饰器，实现了在`MyClass`类上面“混入”`Foo`对象的`foo`方法。
+通过`mixins`这个装饰器，实现了在`MyClass`类上面“混入”`Foo`对象的`foo`方法。
 
 不过，上面的方法会改写`MyClass`类的`prototype`对象，如果不喜欢这一点，也可以通过类的继承实现 Mixin。
 
@@ -671,9 +688,9 @@ new C().foo()
 
 ## Trait
 
-Trait 也是一种修饰器，效果与 Mixin 类似，但是提供更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等等。
+Trait 也是一种装饰器，效果与 Mixin 类似，但是提供更多功能，比如防止同名方法的冲突、排除混入某些方法、为混入的方法起别名等等。
 
-下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的`traits`修饰器，不仅可以接受对象，还可以接受 ES6 类作为参数。
+下面采用[traits-decorator](https://github.com/CocktailJS/traits-decorator)这个第三方模块作为例子。这个模块提供的`traits`装饰器，不仅可以接受对象，还可以接受 ES6 类作为参数。
 
 ```javascript
 import { traits } from 'traits-decorator';
@@ -694,7 +711,7 @@ obj.foo() // foo
 obj.bar() // bar
 ```
 
-上面代码中，通过`traits`修饰器，在`MyClass`类上面“混入”了`TFoo`类的`foo`方法和`TBar`对象的`bar`方法。
+上面代码中，通过`traits`装饰器，在`MyClass`类上面“混入”了`TFoo`类的`foo`方法和`TBar`对象的`bar`方法。
 
 Trait 不允许“混入”同名方法。
 
@@ -718,7 +735,7 @@ class MyClass { }
 // Error: Method named: foo is defined twice.
 ```
 
-上面代码中，`TFoo`和`TBar`都有`foo`方法，结果`traits`修饰器报错。
+上面代码中，`TFoo`和`TBar`都有`foo`方法，结果`traits`装饰器报错。
 
 一种解决方法是排除`TBar`的`foo`方法。
 
@@ -785,42 +802,3 @@ class MyClass {}
 class MyClass {}
 ```
 
-## Babel 转码器的支持
-
-目前，Babel 转码器已经支持 Decorator。
-
-首先，安装`@babel/core`和`@babel/plugin-proposal-decorators`。由于后者包括在`@babel/preset-stage-0`之中，所以改为安装`@babel/preset-stage-0`亦可。
-
-```bash
-$ npm install @babel/core @babel/plugin-proposal-decorators
-```
-
-然后，设置配置文件`.babelrc`。
-
-```javascript
-{
-  "plugins": ["@babel/plugin-proposal-decorators"]
-}
-```
-
-这时，Babel 就可以对 Decorator 转码了。
-
-如果要使用 Decorator 的早期规格，必须将`legacy`属性设为`true`，默认为`false`。
-
-```javascript
-{
-  "plugins": [
-    ["@babel/plugin-proposal-decorators", { "legacy": true }]
-  ]
-}
-```
-
-脚本中打开的命令如下。
-
-```javascript
-require("@babel/core").transform("code", {
-  plugins: ["@babel/plugin-proposal-decorators"]
-});
-```
-
-Babel 的官方网站提供一个[在线转码器](https://babeljs.io/repl/)，只要勾选 Experimental，就能支持 Decorator 的在线转码。
