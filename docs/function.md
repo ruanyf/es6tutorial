@@ -1312,3 +1312,52 @@ clownsEverywhere(
 ```
 
 这样的规定也使得，函数参数与数组和对象的尾逗号规则，保持一致了。
+
+## Function.prototype.toString()
+
+[ES2019](https://github.com/tc39/Function-prototype-toString-revision) 对函数实例的`toString()`方法做出了修改。
+
+`toString()`方法返回函数代码本身，以前会省略注释和空格。
+
+```javascript
+function /* foo comment */ foo () {}
+
+foo.toString()
+// function foo() {}
+```
+
+上面代码中，函数`foo`的原始代码包含注释，函数名`foo`和圆括号之间有空格，但是`toString()`方法都把它们省略了。
+
+修改后的`toString()`方法，明确要求返回一模一样的原始代码。
+
+```javascript
+function /* foo comment */ foo () {}
+
+foo.toString()
+// "function /* foo comment */ foo () {}"
+```
+
+## catch 命令的参数省略
+
+JavaScript 语言的`try...catch`结构，以前明确要求`catch`命令后面必须跟参数，接受`try`代码块抛出的错误对象。
+
+```javascript
+try {
+  // ...
+} catch (err) {
+  // 处理错误
+}
+```
+
+上面代码中，`catch`命令后面带有参数`err`。
+
+很多时候，`catch`代码块可能用不到这个参数。但是，为了保证语法正确，还是必须写。[ES2019](https://github.com/tc39/proposal-optional-catch-binding) 做出了改变，允许`catch`语句省略参数。
+
+```javascript
+try {
+  // ...
+} catch {
+  // ...
+}
+```
+
