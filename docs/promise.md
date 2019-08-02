@@ -229,14 +229,14 @@ getJSON("/posts.json").then(function(json) {
 ```javascript
 getJSON("/post/1.json").then(function(post) {
   return getJSON(post.commentURL);
-}).then(function funcA(comments) {
+}).then(function (comments) {
   console.log("resolved: ", comments);
-}, function funcB(err){
+}, function (err){
   console.log("rejected: ", err);
 });
 ```
 
-上面代码中，第一个`then`方法指定的回调函数，返回的是另一个`Promise`对象。这时，第二个`then`方法指定的回调函数，就会等待这个新的`Promise`对象状态发生变化。如果变为`resolved`，就调用`funcA`，如果状态变为`rejected`，就调用`funcB`。
+上面代码中，第一个`then`方法指定的回调函数，返回的是另一个`Promise`对象。这时，第二个`then`方法指定的回调函数，就会等待这个新的`Promise`对象状态发生变化。如果变为`resolved`，就调用第一个回调函数，如果状态变为`rejected`，就调用第二个回调函数。
 
 如果采用箭头函数，上面的代码可以写得更简洁。
 
