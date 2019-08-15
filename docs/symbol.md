@@ -159,8 +159,8 @@ const mySymbol = Symbol();
 const a = {};
 
 a.mySymbol = 'Hello!';
-a[mySymbol] // undefined
-a['mySymbol'] // "Hello!"
+a[mySymbol] // "Hello!"
+a['mySymbol'] // undefined
 ```
 
 上面代码中，因为点运算符后面总是字符串，所以不会读取`mySymbol`作为标识名所指代的那个值，导致`a`的属性名实际上是一个字符串，而不是一个 Symbol 值。
