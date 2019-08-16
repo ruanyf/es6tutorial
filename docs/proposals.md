@@ -129,21 +129,29 @@ const firstName = (message
   && message.body.user.firstName) || 'default';
 ```
 
+或者使用三元运算符`?:`，判断一个对象是否存在。
+
+```javascript
+const fooInput = myForm.querySelector('input[name=foo]')
+const fooValue = fooInput ? fooInput.value : undefined
+```
+
 这样的层层判断非常麻烦，因此现在有一个[提案](https://github.com/tc39/proposal-optional-chaining)，引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
 
 ```javascript
 const firstName = message?.body?.user?.firstName || 'default';
+const fooValue = myForm.querySelector('input[name=foo]')?.value
 ```
 
-上面代码有三个`?.`运算符，直接在链式调用的时候判断，左侧的对象是否为`null`或`undefined`。如果是的，就不再往下运算，而是返回`undefined`。
+上面代码使用了`?.`运算符，直接在链式调用的时候判断，左侧的对象是否为`null`或`undefined`。如果是的，就不再往下运算，而是返回`undefined`。
 
-链判断运算符号有三种用法。
+链判断运算符有三种用法。
 
-- `obj?.prop` // 读取对象属性
+- `obj?.prop` // 对象属性
 - `obj?.[expr]` // 同上
 - `func?.(...args)` // 函数或对象方法的调用
 
-下面是判断函数是否存在的例子。
+下面是判断对象方法是否存在，如果存在就立即执行的例子。
 
 ```javascript
 iterator.return?.()
@@ -151,7 +159,18 @@ iterator.return?.()
 
 上面代码中，`iterator.return`如果有定义，就会调用该方法，否则直接返回`undefined`。
 
-下面是更多的例子。
+对于那些可能没有实现的方法，这个运算符尤其有用。
+
+```javascript
+if (myForm.checkValidity?.() === false) {
+  // 表单校验失败
+  return;
+}
+```
+
+上面代码中，老式浏览器的表单可能没有`checkValidity`这个方法，这时`?.`运算符就会返回`undefined`，判断语句就变成了`undefined === false`，所以就会跳过下面的代码。
+
+下面是这个运算符常见的使用形式，以及不使用该运算符时的等价形式。
 
 ```javascript
 a?.b
@@ -170,6 +189,8 @@ a?.()
 // 等同于
 a == null ? undefined : a()
 ```
+
+上面代码中，特别注意后两种形式，如果`a?.b()`里面的`a.b`不是函数，不可调用，那么`a?.b()`是会报错的。`a?.()`也是如此，如果`a`不是`null`或`undefined`，但也不是函数，那么`a?.()`会报错。
 
 使用这个运算符，有几个注意点。
 
@@ -193,28 +214,70 @@ a == null ? undefined : delete a.b
 
 上面代码中，如果`a`是`undefined`或`null`，会直接返回`undefined`，而不会进行`delete`运算。
 
-（3）报错场合
-
-以下写法是禁止，会报错。
+（3）括号不改变运算顺序
 
 ```javascript
-// 构造函数判断
+(a?.b).c
+// 等价于
+(a == null ? undefined : a.b).c
+```
+
+上面代码中，`?.`对圆括号没有影响，不管`a`对象是否存在，圆括号后面的`.c`总是会执行。
+
+一般来说，使用`?.`运算符的场合，不应该使用圆括号。
+
+（4）报错场合
+
+以下写法是禁止的，会报错。
+
+```javascript
+// 构造函数
 new a?.()
-
-// 运算符右侧是模板字符串
-a?.`{b}`
-
-// 链判断运算符前后有构造函数或模板字符串
 new a?.b()
+
+// 链判断运算符的右侧有模板字符串
+a?.`{b}`
 a?.b`{c}`
+
+// 链判断运算符的左侧是 super
+super?.()
+super?.foo
 
 // 链运算符用于赋值运算符左侧
 a?.b = c
 ```
 
-（4）右侧不得为十进制数值
+（5）右侧不得为十进制数值
 
 为了保证兼容以前的代码，允许`foo?.3:0`被解析成`foo ? .3 : 0`，因此规定如果`?.`后面紧跟一个十进制数字，那么`?.`不再被看成是一个完整的运算符，而会按照三元运算符进行处理，也就是说，那个小数点会归属于后面的十进制数字，形成一个小数。
+
+## Null 判断运算符
+
+读取对象属性的时候，如果某个属性的值是`null`或`undefined`，有时候需要为它们指定默认值。常见做法是通过`||`运算符指定默认值。
+
+```javascript
+const headerText = response.settings.headerText || 'Hello, world!';
+const animationDuration = response.settings.animationDuration || 300;
+const showSplashScreen = response.settings.showSplashScreen || true;
+```
+
+上面的三行代码都通过`||`运算符指定默认值，但是这样写是错的。开发者的原意是，只要属性的值为`null`或`undefined`，默认值就会生效，但是属性的值如果为空字符串或`false`或`0`，默认值也会生效。
+
+为了避免这种情况，现在有一个[提案](https://github.com/tc39/proposal-nullish-coalescing)，引入了一个新的 Null 判断运算符`??`。它的行为类似`||`，但是只有运算符左侧的值为`null`或`undefined`时，才会返回右侧的值。
+
+```javascript
+const headerText = response.settings.headerText ?? 'Hello, world!';
+const animationDuration = response.settings.animationDuration ?? 300;
+const showSplashScreen = response.settings.showSplashScreen ?? true;
+```
+
+上面代码中，默认值只有在属性值为`null`或`undefined`时，才会生效。
+
+这个运算符可以跟链判断运算符`?.`配合使用。
+
+```javascript
+const animationDuration = response.settings?.animationDuration ?? 300;
+```
 
 ## 函数的部分执行
 
