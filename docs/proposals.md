@@ -957,3 +957,101 @@ class FakeWindow extends Realm {
 
 上面代码中，`FakeWindow`模拟了一个假的顶层对象`window`。
 
+## `#!`命令
+
+Unix 的命令行脚本都支持`#!`命令，又称为 Shebang 或 Hashbang。这个命令放在脚本的第一行，用来指定脚本的执行器。
+
+比如 Bash 脚本的第一行。
+
+```bash
+#!/bin/sh
+```
+
+Python 脚本的第一行。
+
+```python
+#!/usr/bin/env python
+```
+
+现在有一个[提案](https://github.com/tc39/proposal-hashbang)，为 JavaScript 脚本引入了`#!`命令，写在脚本文件或者模块文件的第一行。
+
+```javascript
+// 写在脚本文件第一行
+#!/usr/bin/env node
+'use strict';
+console.log(1);
+
+// 写在模块文件第一行
+#!/usr/bin/env node
+export {};
+console.log(1);
+```
+
+有了这一行以后，Unix 命令行就可以直接执行脚本。
+
+```bash
+# 以前执行脚本的方式
+$ node hello.js
+
+# hashbang 的方式
+$ hello.js
+```
+
+对于 JavaScript 引擎来说，会把`#!`理解成注释，忽略掉这一行。
+
+## import.meta
+
+加载 JavaScript 脚本的时候，有时候需要知道脚本的元信息。Node.js 提供了两个特殊变量`__filename`和`__dirname`，用来获取脚本的文件名和所在路径。
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+const bytes = fs.readFileSync(path.resolve(__dirname, 'data.bin'));
+```
+
+上面代码中，`__dirname`用于加载与脚本同一个目录的数据文件`data.bin`。
+
+但是，浏览器没有这两个特殊变量。如果需要知道脚本的元信息，就只有手动提供。
+
+```html
+<script data-option="value" src="library.js"></script>
+```
+
+上面这一行 HTML 代码加载 JavaScript 脚本，使用`data-`属性放入元信息。如果脚本内部要获知元信息，可以像下面这样写。
+
+```javascript
+const theOption = document.currentScript.dataset.option;
+```
+
+上面代码中，`document.currentScript`属性可以拿到当前脚本的 DOM 节点。
+
+由于 Node.js 和浏览器做法的不统一，现在有一个[提案](https://github.com/tc39/proposal-import-meta)，提出统一使用`import.meta`属性在脚本内部获取元信息。这个属性返回一个对象，该对象的各种属性就是当前运行的脚本的元信息。具体包含哪些属性，标准没有规定，由各个运行环境自行决定。
+
+一般来说，浏览器的`import.meta`至少会有两个属性。
+
+- `import.meta.url`：脚本的 URL。
+- `import.meta.scriptElement`：加载脚本的那个`<script>`的 DOM 节点，用来替代`document.currentScript`。
+
+```html
+<script type="module" src="path/to/hamster-displayer.js" data-size="500"></script>
+```
+
+上面这行代码加载的脚本内部，就可以使用`import.meta`获取元信息。
+
+```javascript
+(async () => {
+  const response = await fetch(new URL("../hamsters.jpg", import.meta.url));
+  const blob = await response.blob();
+
+  const size = import.meta.scriptElement.dataset.size || 300;
+
+  const image = new Image();
+  image.src = URL.createObjectURL(blob);
+  image.width = image.height = size;
+
+  document.body.appendChild(image);
+})();
+```
+
+上面代码中，`import.meta`用来获取所加载的图片的尺寸。
+
