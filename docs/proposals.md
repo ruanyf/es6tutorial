@@ -899,7 +899,7 @@ globalTwo.evaluate('1 + 2') // 3
 
 上面代码中，Realm 生成的顶层对象的`evaluate()`方法，可以运行代码。
 
-下面的代码可以证明，Realm 顶层对象与原始对层对象是两个对象。
+下面的代码可以证明，Realm 顶层对象与原始顶层对象是两个对象。
 
 ```javascript
 let a1 = globalOne.evaluate('[1,2,3]');
