@@ -865,3 +865,193 @@ getPlayers()
 ::forEach(x => console.log(x));
 ```
 
+## Realm API
+
+[Realm API](https://github.com/tc39/proposal-realms) 提供沙箱功能（sandbox），允许隔离代码，防止那些被隔离的代码拿到全局对象。
+
+以前，经常使用`<iframe>`作为沙箱。
+
+```javascript
+const globalOne = window;
+let iframe = document.createElement('iframe');
+document.body.appendChild(iframe);
+const globalTwo = iframe.contentWindow;
+```
+
+上面代码中，`<iframe>`的全局对象是独立的（`iframe.contentWindow`）。Realm API 可以取代这个功能。
+
+```javascript
+const globalOne = window;
+const globalTwo = new Realm().global;
+```
+
+上面代码中，`Realm API`单独提供了一个全局对象`new Realm().global`。
+
+Realm API 提供一个`Realm()`构造函数，用来生成一个 Realm 对象。该对象的`global`属性指向一个新的顶层对象，这个顶层对象跟原始的顶层对象类似。
+
+```javascript
+const globalOne = window;
+const globalTwo = new Realm().global;
+
+globalOne.evaluate('1 + 2') // 3
+globalTwo.evaluate('1 + 2') // 3
+```
+
+上面代码中，Realm 生成的顶层对象的`evaluate()`方法，可以运行代码。
+
+下面的代码可以证明，Realm 顶层对象与原始顶层对象是两个对象。
+
+```javascript
+let a1 = globalOne.evaluate('[1,2,3]');
+let a2 = globalTwo.evaluate('[1,2,3]');
+a1.prototype === a2.prototype; // false
+a1 instanceof globalTwo.Array; // false
+a2 instanceof globalOne.Array; // false
+```
+
+上面代码中，Realm 沙箱里面的数组的原型对象，跟原始环境里面的数组是不一样的。
+
+Realm 沙箱里面只能运行 ECMAScript 语法提供的 API，不能运行宿主环境提供的 API。
+
+```javascript
+globalTwo.evaluate('console.log(1)')
+// throw an error: console is undefined
+```
+
+上面代码中，Realm 沙箱里面没有`console`对象，导致报错。因为`console`不是语法标准，是宿主环境提供的。
+
+如果要解决这个问题，可以使用下面的代码。
+
+```javascript
+globalTwo.console = globalOne.console;
+```
+
+`Realm()`构造函数可以接受一个参数对象，该参数对象的`intrinsics`属性可以指定 Realm 沙箱继承原始顶层对象的方法。
+
+```javascript
+const r1 = new Realm();
+r1.global === this;
+r1.global.JSON === JSON; // false
+
+const r2 = new Realm({ intrinsics: 'inherit' });
+r2.global === this; // false
+r2.global.JSON === JSON; // true
+```
+
+上面代码中，正常情况下，沙箱的`JSON`方法不同于原始的`JSON`对象。但是，`Realm()`构造函数接受`{ intrinsics: 'inherit' }`作为参数以后，就会继承原始顶层对象的方法。
+
+用户可以自己定义`Realm`的子类，用来定制自己的沙箱。
+
+```javascript
+class FakeWindow extends Realm {
+  init() {
+    super.init();
+    let global = this.global;
+
+    global.document = new FakeDocument(...);
+    global.alert = new Proxy(fakeAlert, { ... });
+    // ...
+  }
+}
+```
+
+上面代码中，`FakeWindow`模拟了一个假的顶层对象`window`。
+
+## `#!`命令
+
+Unix 的命令行脚本都支持`#!`命令，又称为 Shebang 或 Hashbang。这个命令放在脚本的第一行，用来指定脚本的执行器。
+
+比如 Bash 脚本的第一行。
+
+```bash
+#!/bin/sh
+```
+
+Python 脚本的第一行。
+
+```python
+#!/usr/bin/env python
+```
+
+现在有一个[提案](https://github.com/tc39/proposal-hashbang)，为 JavaScript 脚本引入了`#!`命令，写在脚本文件或者模块文件的第一行。
+
+```javascript
+// 写在脚本文件第一行
+#!/usr/bin/env node
+'use strict';
+console.log(1);
+
+// 写在模块文件第一行
+#!/usr/bin/env node
+export {};
+console.log(1);
+```
+
+有了这一行以后，Unix 命令行就可以直接执行脚本。
+
+```bash
+# 以前执行脚本的方式
+$ node hello.js
+
+# hashbang 的方式
+$ hello.js
+```
+
+对于 JavaScript 引擎来说，会把`#!`理解成注释，忽略掉这一行。
+
+## import.meta
+
+加载 JavaScript 脚本的时候，有时候需要知道脚本的元信息。Node.js 提供了两个特殊变量`__filename`和`__dirname`，用来获取脚本的文件名和所在路径。
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+const bytes = fs.readFileSync(path.resolve(__dirname, 'data.bin'));
+```
+
+上面代码中，`__dirname`用于加载与脚本同一个目录的数据文件`data.bin`。
+
+但是，浏览器没有这两个特殊变量。如果需要知道脚本的元信息，就只有手动提供。
+
+```html
+<script data-option="value" src="library.js"></script>
+```
+
+上面这一行 HTML 代码加载 JavaScript 脚本，使用`data-`属性放入元信息。如果脚本内部要获知元信息，可以像下面这样写。
+
+```javascript
+const theOption = document.currentScript.dataset.option;
+```
+
+上面代码中，`document.currentScript`属性可以拿到当前脚本的 DOM 节点。
+
+由于 Node.js 和浏览器做法的不统一，现在有一个[提案](https://github.com/tc39/proposal-import-meta)，提出统一使用`import.meta`属性在脚本内部获取元信息。这个属性返回一个对象，该对象的各种属性就是当前运行的脚本的元信息。具体包含哪些属性，标准没有规定，由各个运行环境自行决定。
+
+一般来说，浏览器的`import.meta`至少会有两个属性。
+
+- `import.meta.url`：脚本的 URL。
+- `import.meta.scriptElement`：加载脚本的那个`<script>`的 DOM 节点，用来替代`document.currentScript`。
+
+```html
+<script type="module" src="path/to/hamster-displayer.js" data-size="500"></script>
+```
+
+上面这行代码加载的脚本内部，就可以使用`import.meta`获取元信息。
+
+```javascript
+(async () => {
+  const response = await fetch(new URL("../hamsters.jpg", import.meta.url));
+  const blob = await response.blob();
+
+  const size = import.meta.scriptElement.dataset.size || 300;
+
+  const image = new Image();
+  image.src = URL.createObjectURL(blob);
+  image.width = image.height = size;
+
+  document.body.appendChild(image);
+})();
+```
+
+上面代码中，`import.meta`用来获取所加载的图片的尺寸。
+
