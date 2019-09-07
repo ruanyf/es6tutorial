@@ -207,6 +207,23 @@ function li_create_linkage(li_tag, header_level) {
   });
 }
 
+function create_banner(element) {
+  var styleStr = [
+    'margin: 1em 0',
+    'padding: 1em',
+    'background-color: #c4e0e1',
+    'border-radius: 5px',
+    'font-size: 90%'
+  ].join(';');
+
+  var text = '<a href="">Vue 实战教程</a> ' +
+    '深入学习一线大厂必备 Vue 技能。VIP 教程限时免费领取。' +
+    '<a href="">⇐ 立即查看</a>';
+
+  var banner = $('<div style="' + styleStr + '">' + text + '</div>')
+    .insertAfter(element);
+}
+
 function create_page_anchors() {
   // create page anchors by matching li's to headers
   // if there is a match, create click listeners
@@ -243,6 +260,9 @@ function create_page_anchors() {
         .insertAfter('#content h1')
         .addClass('content-toc')
         .attr('id', 'content-toc');
+
+      create_banner(ul_tag);
+
       for (var j = 0; j < headers.length; j++) {
         var li_tag = $('<li></li>').html('<a href="#' + location.hash.split('#')[1] + '#' + headers[j] + '">' + headers[j] + '</a>');
         ul_tag.append(li_tag);
