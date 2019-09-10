@@ -1131,7 +1131,7 @@ service.employees().then(json => {
 function createWebService(baseUrl) {
   return new Proxy({}, {
     get(target, propKey, receiver) {
-      return () => httpGet(baseUrl+'/' + propKey);
+      return () => httpGet(baseUrl + '/' + propKey);
     }
   });
 }
