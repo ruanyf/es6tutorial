@@ -354,7 +354,7 @@ const ws = new WeakSet(b);
 // Uncaught TypeError: Invalid value used in weak set(…)
 ```
 
-上面代码中，数组`b`的成员不是对象，加入 WeaKSet 就会报错。
+上面代码中，数组`b`的成员不是对象，加入 WeakSet 就会报错。
 
 WeakSet 结构有以下三个方法。
 
