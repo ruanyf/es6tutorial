@@ -132,6 +132,15 @@ codePointLength(s) // 2
 
 上面代码中，不加`u`修饰符，就无法识别非规范的`K`字符。
 
+**（6）转义**
+
+在没有`u`修饰符的情况下，正则中没有定义的转义（如`/\,/`）相当于没有转义（`/,/`）；而在`u`模式下，这会报错。
+
+```javascript
+/\,/ // /\,/
+/\,/u // Uncaught SyntaxError: Invalid regular expression: /\,/: Invalid escape
+```
+
 ## RegExp.prototype.unicode 属性
 
 正则实例对象新增`unicode`属性，表示是否设置了`u`修饰符。
