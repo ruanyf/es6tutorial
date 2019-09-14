@@ -342,7 +342,8 @@ var {x: y = 3} = {};
 y // 3
 
 var {x: y = 3} = {x: 5};
-y // 5
+x // 5
+y // 3
 
 var { message: msg = 'Something went wrong' } = {};
 msg // "Something went wrong"
