@@ -134,12 +134,14 @@ codePointLength(s) // 2
 
 **（6）转义**
 
-在没有`u`修饰符的情况下，正则中没有定义的转义（如`/\,/`）相当于没有转义（`/,/`）；而在`u`模式下，这会报错。
+没有`u`修饰符的情况下，正则中没有定义的转义（如逗号的转义`\,`）无效，而在`u`模式会报错。
 
 ```javascript
 /\,/ // /\,/
-/\,/u // Uncaught SyntaxError: Invalid regular expression: /\,/: Invalid escape
+/\,/u // 报错
 ```
+
+上面代码中，没有`u`修饰符时，逗号前面的反斜杠是无效的，加了`u`修饰符就报错。
 
 ## RegExp.prototype.unicode 属性
 
