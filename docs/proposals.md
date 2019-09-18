@@ -273,10 +273,58 @@ const showSplashScreen = response.settings.showSplashScreen ?? true;
 
 上面代码中，默认值只有在属性值为`null`或`undefined`时，才会生效。
 
-这个运算符可以跟链判断运算符`?.`配合使用。
+这个运算符的一个目的，就是跟链判断运算符`?.`配合使用，为`null`或`undefined`的值设置默认值。
 
 ```javascript
 const animationDuration = response.settings?.animationDuration ?? 300;
+```
+
+上面代码中，`response.settings`如果是`null`或`undefined`，就会返回默认值300。
+
+这个运算符很适合判断函数参数是否赋值。
+
+```javascript
+function Component(props) {
+  const enable = props.enabled ?? true;
+  // …
+}
+```
+
+上面代码判断`props`参数的`enabled`属性是否赋值，等同于下面的写法。
+
+```javascript
+function Component(props) {
+  const {
+    enabled: enable = true,
+  } = props;
+  // …
+}
+```
+
+`??`有一个运算优先级问题，它与`&&`和`||`的优先级孰高孰低。现在的规则是，如果多个逻辑运算符一起使用，必须用括号表明优先级，否则会报错。
+
+```javascript
+// 报错
+lhs && middle ?? rhs
+lhs ?? middle && rhs
+lhs || middle ?? rhs
+lhs ?? middle || rhs
+```
+
+上面四个表达式都会报错，必须加入表明优先级的括号。
+
+```javascript
+(lhs && middle) ?? rhs;
+lhs && (middle ?? rhs);
+
+(lhs ?? middle) && rhs;
+lhs ?? (middle && rhs);
+
+(lhs || middle) ?? rhs;
+lhs || (middle ?? rhs);
+
+(lhs ?? middle) || rhs;
+lhs ?? (middle || rhs);
 ```
 
 ## 函数的部分执行
