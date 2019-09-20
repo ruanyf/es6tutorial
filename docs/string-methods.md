@@ -31,11 +31,11 @@ String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
 ES6 还为原生的 String 对象，提供了一个`raw()`方法。该方法返回一个斜杠都被转义（即斜杠前面再加一个斜杠）的字符串，往往用于模板字符串的处理方法。
 
 ```javascript
-String.raw`Hi\n${2+3}!`;
-// 返回 "Hi\\n5!"
+String.raw`Hi\n${2+3}!`
+// 实际返回 "Hi\\n5!"，显示的是转义后的结果 "Hi\n5!"
 
 String.raw`Hi\u000A!`;
-// 返回 "Hi\\u000A!"
+// 实际返回 "Hi\\u000A!"，显示的是转义后的结果 "Hi\u000A!"
 ```
 
 如果原字符串的斜杠已经转义，那么`String.raw()`会进行再次转义。
