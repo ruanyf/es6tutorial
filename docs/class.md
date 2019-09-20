@@ -945,7 +945,7 @@ function Person(name) {
 }
 
 var person = new Person('张三'); // 正确
-var notAPerson = Person.call(person, '张三');  // 报错
+var notAPerson = Person('张三');  // 报错
 ```
 
 上面代码确保构造函数只能通过`new`命令调用。
