@@ -694,11 +694,14 @@ BigInt(1.5) // RangeError
 BigInt('1.5') // SyntaxError
 ```
 
-BigInt 对象继承了 Object 提供的实例方法。
+BigInt 对象继承了 Object 对象的两个实例方法。
 
-- `BigInt.prototype.toLocaleString()`
 - `BigInt.prototype.toString()`
 - `BigInt.prototype.valueOf()`
+
+它还继承了 Number 对象的一个实例方法。
+
+- `BigInt.prototype.toLocaleString()`
 
 此外，还提供了三个静态方法。
 
