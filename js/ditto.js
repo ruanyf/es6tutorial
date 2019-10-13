@@ -220,6 +220,7 @@ function create_banner(element) {
     'background-color: #c4e0e1',
     'border-radius: 5px',
     'font-size: 75%',
+    'width: 210px',
     'color: #333333'
   ].join(';');
 
