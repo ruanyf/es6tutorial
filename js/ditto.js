@@ -95,6 +95,8 @@ function init_sidebar_section() {
             }
             location.hash = menu[i + 1];
         });
+        create_banner($(ditto.sidebar_id).find('p:nth-child(3)').first());
+
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
@@ -208,19 +210,24 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
+  // 2019年11月20日
+  var deadline = new Date(2019, 10, 20);
+  if (deadline - (new Date()) < 0) return;
+
   var styleStr = [
     'margin: 1em 0',
     'padding: 1em',
     'background-color: #c4e0e1',
     'border-radius: 5px',
-    'font-size: 90%'
+    'font-size: 75%',
+    'color: #333333'
   ].join(';');
 
-  var text = '<a href="">Vue 实战教程</a> ' +
-    '深入学习一线大厂必备 Vue 技能。VIP 教程限时免费领取。' +
-    '<a href="">⇐ 立即查看</a>';
+  var text = '<span style="color: #4682BE;">ES6 实战教程</span> ' +
+    '深入学习一线大厂必备 ES6 技能。VIP 教程限时免费领取。' +
+    '<span style="color: #4682BE;">⇐ 立即查看</span>';
 
-  var banner = $('<div style="' + styleStr + '">' + text + '</div>')
+  var banner = $('<a href="http://www.mawen.co/question/405" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
@@ -261,7 +268,7 @@ function create_page_anchors() {
         .addClass('content-toc')
         .attr('id', 'content-toc');
 
-      create_banner(ul_tag);
+      // create_banner(ul_tag);
 
       for (var j = 0; j < headers.length; j++) {
         var li_tag = $('<li></li>').html('<a href="#' + location.hash.split('#')[1] + '#' + headers[j] + '">' + headers[j] + '</a>');
