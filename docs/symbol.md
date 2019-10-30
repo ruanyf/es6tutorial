@@ -370,7 +370,7 @@ Object.getOwnPropertySymbols(x) // [Symbol(size)]
 
 ## Symbol.for()，Symbol.keyFor()
 
-有时，我们希望重新使用同一个 Symbol 值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建一个以该字符串为名称注册到全局的 Symbol 值然后返回。
+有时，我们希望重新使用同一个 Symbol 值，`Symbol.for()`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建一个以该字符串为名称的 Symbol 值，并将其注册到全局。
 
 ```javascript
 let s1 = Symbol.for('foo');
@@ -393,7 +393,7 @@ Symbol("bar") === Symbol("bar")
 
 上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
 
-`Symbol.keyFor`方法返回一个已登记的 Symbol 类型值的`key`。
+`Symbol.keyFor()`方法返回一个已登记的 Symbol 类型值的`key`。
 
 ```javascript
 let s1 = Symbol.for("foo");
@@ -405,7 +405,21 @@ Symbol.keyFor(s2) // undefined
 
 上面代码中，变量`s2`属于未登记的 Symbol 值，所以返回`undefined`。
 
-需要注意的是，`Symbol.for`为 Symbol 值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。
+注意，`Symbol.for()`为 Symbol 值登记的名字，是全局环境的，不管有没有在全局环境运行。
+
+```javascript
+function foo() {
+  return Symbol.for('bar');
+}
+
+const x = foo();
+const y = Symbol.for('bar');
+console.log(x === y); // true
+```
+
+上面代码中，`Symbol.for('bar')`是函数内部运行的，但是生成的 Symbol 值是登记在全局环境的。所以，第二次运行`Symbol.for('bar')`可以取到这个 Symbol 值。
+
+`Symbol.for()`的这个全局登记特性，可以用在不同的 iframe 或 service worker 中取到同一个值。
 
 ```javascript
 iframe = document.createElement('iframe');
