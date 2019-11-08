@@ -280,9 +280,9 @@ const shapeType = {
 
 ## 属性名的遍历
 
-Symbol 作为属性名，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols`方法，可以获取指定对象的所有 Symbol 属性名。
+Symbol 作为属性名，遍历对象的时候，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。
 
-`Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols()`方法，可以获取指定对象的所有 Symbol 属性名。该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
 
 ```javascript
 const obj = {};
@@ -298,31 +298,27 @@ objectSymbols
 // [Symbol(a), Symbol(b)]
 ```
 
-下面是另一个例子，`Object.getOwnPropertySymbols`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
+上面代码是`Object.getOwnPropertySymbols()`方法的示例，可以获取所有 Symbol 属性名。
+
+下面是另一个例子，`Object.getOwnPropertySymbols()`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
 
 ```javascript
 const obj = {};
+const foo = Symbol('foo');
 
-let foo = Symbol("foo");
-
-Object.defineProperty(obj, foo, {
-  value: "foobar",
-});
+obj[foo] = 'bar';
 
 for (let i in obj) {
   console.log(i); // 无输出
 }
 
-Object.getOwnPropertyNames(obj)
-// []
-
-Object.getOwnPropertySymbols(obj)
-// [Symbol(foo)]
+Object.getOwnPropertyNames(obj) // []
+Object.getOwnPropertySymbols(obj) // [Symbol(foo)]
 ```
 
-上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
+上面代码中，使用`for...in`循环和`Object.getOwnPropertyNames()`方法都得不到 Symbol 键名，需要使用`Object.getOwnPropertySymbols()`方法。
 
-另一个新的 API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+另一个新的 API，`Reflect.ownKeys()`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
 
 ```javascript
 let obj = {
@@ -335,7 +331,7 @@ Reflect.ownKeys(obj)
 //  ["enum", "nonEnum", Symbol(my_key)]
 ```
 
-由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
+由于以 Symbol 值作为键名，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
 
 ```javascript
 let size = Symbol('size');
