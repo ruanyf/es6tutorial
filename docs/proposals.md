@@ -664,6 +664,26 @@ BigInt 可以使用负号（`-`），但是不能使用正号（`+`），因为�
 +42n // 报错
 ```
 
+JavaScript 以前不能计算70的阶乘（即`70!`），因为超出了可以表示的精度。
+
+```javascript
+let p = 1;
+for (let i = 1; i <= 70; i++) {
+  p *= i;
+}
+console.log(p); // 1.197857166996989e+100
+```
+
+现在支持大整数了，就可以算了，浏览器的开发者工具运行下面代码，就OK。
+
+```javascript
+let p = 1n;
+for (let i = 1n; i <= 70n; i++) {
+  p *= i;
+}
+console.log(p); // 11978571...00000000n
+```
+
 ### BigInt 对象
 
 JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BigInt 类型的数值。转换规则基本与`Number()`一致，将其他类型的值转为 BigInt。
