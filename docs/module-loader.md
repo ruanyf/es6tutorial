@@ -72,6 +72,15 @@ ES6 模块也允许内嵌在网页中，语法行为与加载外部脚本完全�
 </script>
 ```
 
+举例来说，jQuery 就支持模块加载。
+
+```html
+<script type="module">
+  import $ from "./jquery/src/jquery.js";
+  $('#message').text('Hi from jQuery!');
+</script>
+```
+
 对于外部的模块脚本（上例是`foo.js`），有几点需要注意。
 
 - 代码是在模块作用域之中运行，而不是在全局作用域运行。模块内部的顶层变量，外部不可见。
