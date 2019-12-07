@@ -716,7 +716,7 @@ const fooInput = myForm.querySelector('input[name=foo]')
 const fooValue = fooInput ? fooInput.value : undefined
 ```
 
-这样的层层判断非常麻烦，因此 [ECMAScript2020](https://github.com/tc39/proposal-optional-chaining) 引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
+这样的层层判断非常麻烦，因此 [ES2020](https://github.com/tc39/proposal-optional-chaining) 引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
 
 ```javascript
 const firstName = message?.body?.user?.firstName || 'default';
@@ -843,7 +843,7 @@ const showSplashScreen = response.settings.showSplashScreen || true;
 
 上面的三行代码都通过`||`运算符指定默认值，但是这样写是错的。开发者的原意是，只要属性的值为`null`或`undefined`，默认值就会生效，但是属性的值如果为空字符串或`false`或`0`，默认值也会生效。
 
-为了避免这种情况，[ECMAScript2020](https://github.com/tc39/proposal-nullish-coalescing) 引入了一个新的 Null 判断运算符`??`。它的行为类似`||`，但是只有运算符左侧的值为`null`或`undefined`时，才会返回右侧的值。
+为了避免这种情况，[ES2020](https://github.com/tc39/proposal-nullish-coalescing) 引入了一个新的 Null 判断运算符`??`。它的行为类似`||`，但是只有运算符左侧的值为`null`或`undefined`时，才会返回右侧的值。
 
 ```javascript
 const headerText = response.settings.headerText ?? 'Hello, world!';
