@@ -794,7 +794,7 @@ a == null ? undefined : delete a.b
 
 上面代码中，如果`a`是`undefined`或`null`，会直接返回`undefined`，而不会进行`delete`运算。
 
-（3）括号不改变运算顺序
+（3）不改变括号的运算顺序
 
 ```javascript
 (a?.b).c
