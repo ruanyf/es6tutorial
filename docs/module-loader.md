@@ -1,6 +1,6 @@
 # Module 的加载实现
 
-上一章介绍了模块的语法，本章介绍如何在浏览器和 Node 之中加载 ES6 模块，以及实际开发中经常遇到的一些问题（比如循环加载）。
+上一章介绍了模块的语法，本章介绍如何在浏览器和 Node.js 之中加载 ES6 模块，以及实际开发中经常遇到的一些问题（比如循环加载）。
 
 ## 浏览器加载
 
@@ -108,7 +108,7 @@ const isNotModuleScript = this !== undefined;
 
 ## ES6 模块与 CommonJS 模块的差异
 
-讨论 Node 加载 ES6 模块之前，必须了解 ES6 模块与 CommonJS 模块完全不同。
+讨论 Node.js 加载 ES6 模块之前，必须了解 ES6 模块与 CommonJS 模块完全不同。
 
 它们有两个重大差异。
 
@@ -271,48 +271,292 @@ $ babel-node main.js
 
 这就证明了`x.js`和`y.js`加载的都是`C`的同一个实例。
 
-## Node 加载
+## Node.js 加载
 
 ### 概述
 
-Node 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块格式，与 ES6 模块格式是不兼容的。目前的解决方案是，将两者分开，ES6 模块和 CommonJS 采用各自的加载方案。
+Node.js 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块格式，与 ES6 模块格式是不兼容的。目前的解决方案是，将两者分开，ES6 模块和 CommonJS 采用各自的加载方案。从 v13.2 版本开始，Node.js 已经默认打开了 ES6 模块支持。
 
-Node 要求 ES6 模块采用`.mjs`后缀文件名。也就是说，只要脚本文件里面使用`import`或者`export`命令，那么就必须采用`.mjs`后缀名。`require`命令不能加载`.mjs`文件，会报错，只有`import`命令才可以加载`.mjs`文件。反过来，`.mjs`文件里面也不能使用`require`命令，必须使用`import`。
+Node.js 要求 ES6 模块采用`.mjs`后缀文件名。也就是说，只要脚本文件里面使用`import`或者`export`命令，那么就必须采用`.mjs`后缀名。Node.js 遇到`.mjs`文件，就认为它是 ES6 模块，默认启用严格模式，不必在每个模块文件顶部指定`"use strict"`。
 
-目前，这项功能还在试验阶段。安装 Node v8.5.0 或以上版本，要用`--experimental-modules`参数才能打开该功能。
-
-```bash
-$ node --experimental-modules my-app.mjs
-```
-
-为了与浏览器的`import`加载规则相同，Node 的`.mjs`文件支持 URL 路径。
+如果不希望将后缀名改成`.mjs`，可以在项目的`package.json`文件中，指定`type`字段为`module`。
 
 ```javascript
-import './foo?query=1'; // 加载 ./foo 传入参数 ?query=1
+{
+   "type": "module"
+}
+```
+
+一旦设置了以后，该目录里面的 JS 脚本，就被解释用 ES6 模块。
+
+```bash
+# 解释成 ES6 模块
+$ node my-app.js
+```
+
+如果这时还要使用 CommonJS 模块，那么需要将 CommonJS 脚本的后缀名都改成`.cjs`。如果没有`type`字段，或者`type`字段为`commonjs`，则`.js`脚本会被解释成 CommonJS 模块。
+
+总结为一句话：`.mjs`文件总是以 ES6 模块加载，`.cjs`文件总是以 CommonJS 模块加载，`.js`文件的加载取决于`package.json`里面`type`字段的设置。
+
+注意，ES6 模块与 CommonJS 模块尽量不要混用。`require`命令不能加载`.mjs`文件，会报错，只有`import`命令才可以加载`.mjs`文件。反过来，`.mjs`文件里面也不能使用`require`命令，必须使用`import`。
+
+### main 字段
+
+`package.json`文件有两个字段可以指定模块的入口文件：`main`和`exports`。比较简单的模块，可以只使用`main`字段，指定模块加载的入口文件。
+
+```javascript
+// ./node_modules/es-module-package/package.json
+{
+  "type": "module",
+  "main": "./src/index.js"
+}
+```
+
+上面代码指定项目的入口脚本为`./src/index.js`，它的格式为 ES6 模块。如果没有`type`字段，`index.js`就会被解释为 CommonJS 模块。
+
+然后，`import`命令就可以加载这个模块。
+
+```javascript
+// ./my-app.mjs
+
+import { something } from 'es-module-package';
+// 实际加载的是 ./node_modules/es-module-package/src/index.js
+```
+
+上面代码中，运行该脚本以后，Node.js 就会到`./node_modules`目录下面，寻找`es-module-package`模块，然后根据该模块`package.json`的`main`字段去执行入口文件。
+
+这时，如果用 CommonJS 模块的`require()`命令去加载`es-module-package`模块会报错，因为 CommonJS 模块不能处理`export`命令。
+
+### exports 字段
+
+`exports`字段的优先级高于`main`字段。它有多种用法。
+
+（1）子目录别名
+
+`package.json`文件的`exports`字段可以指定脚本或子目录的别名。
+
+```javascript
+// ./node_modules/es-module-package/package.json
+{
+  "exports": {
+    "./submodule": "./src/submodule.js"
+  }
+}
+```
+
+上面的代码指定`src/submodule.js`别名为`submodule`，然后就可以从别名加载这个文件。
+
+```javascript
+import submodule from 'es-module-package/submodule';
+// 加载 ./node_modules/es-module-package/src/submodule.js
+```
+
+下面是子目录别名的例子。
+
+```javascript
+// ./node_modules/es-module-package/package.json
+{
+  "exports": {
+    "./features/": "./src/features/"
+  }
+}
+
+import feature from 'es-module-package/features/x.js';
+// 加载 ./node_modules/es-module-package/src/features/x.js
+```
+
+如果没有指定别名，就不能用“模块+脚本名”这种形式加载脚本。
+
+```javascript
+// 报错
+import submodule from 'es-module-package/private-module.js';
+
+// 不报错
+import submodule from './node_modules/es-module-package/private-module.js';
+```
+
+（2）main 的别名
+
+`exports`字段的别名如果是`.`，就代表模块的主入口，优先级高于`main`字段，并且可以直接简写成`exports`字段的值。
+
+```javascript
+{
+  "exports": {
+    ".": "./main.js"
+  }
+}
+
+// 等同于
+{
+  "exports": "./main.js"
+}
+```
+
+由于`exports`字段只有支持 ES6 的 Node.js 才认识，所以可以用来兼容旧版本的 Node.js。
+
+```javascript
+{
+  "main": "./main-legacy.cjs",
+  "exports": {
+    ".": "./main-modern.cjs"
+  }
+}
+```
+
+上面代码中，老版本的 Node.js （不支持 ES6 模块）的入口文件是`main-legacy.cjs`，新版本的 Node.js 的入口文件是`main-modern.cjs`。
+
+**（3）条件加载**
+
+利用`.`这个别名，可以为 ES6 模块和 CommonJS 指定不同的入口。目前，这个功能需要在 Node.js 运行的时候，打开`--experimental-conditional-exports`标志。
+
+```javascript
+{
+  "type": "module",
+  "exports": {
+    ".": {
+      "require": "./main.cjs",
+      "default": "./main.js"
+    }
+  }
+}
+```
+
+上面代码中，别名`.`的`require`条件指定`require()`命令的入口文件（即 CommonJS 的入口），`default`条件指定其他情况的入口（即 ES6 的入口）。
+
+上面的写法可以简写如下。
+
+```javascript
+{
+  "exports": {
+    "require": "./main.cjs",
+    "default": "./main.js"
+  }
+}
+```
+
+注意，如果同时还有其他别名，就不能采用简写，否则或报错。
+
+```javascript
+{
+  // 报错
+  "exports": {
+    "./feature": "./lib/feature.js",
+    "require": "./main.cjs",
+    "default": "./main.js"
+  }
+}
+```
+
+### ES6 模块加载 CommonJS 模块
+
+目前，一个模块同时支持 ES6 和 CommonJS 两种格式的常见方法是，`package.json`文件的`main`字段指定 CommonJS 入口，给 Node.js 使用；`module`字段指定 ES6 模块入口，给打包工具使用，因为 Node.js 不认识`module`字段。
+
+有了上一节的条件加载以后，Node.js 本身就可以同时处理两种模块。
+
+```javascript
+// ./node_modules/pkg/package.json
+{
+  "type": "module",
+  "main": "./index.cjs",
+  "exports": {
+    "require": "./index.cjs",
+    "default": "./wrapper.mjs"
+  }
+}
+```
+
+上面代码指定了 CommonJS 入口文件`index.cjs`，下面是这个文件的代码。
+
+```javascript
+// ./node_modules/pkg/index.cjs
+exports.name = 'value';
+```
+
+然后，ES6 模块可以加载这个文件。
+
+```javascript
+// ./node_modules/pkg/wrapper.mjs
+import cjsModule from './index.cjs';
+export const name = cjsModule.name;
+```
+
+注意，`import`命令加载 CommonJS 模块，只能整体加载，不能只加载单一的输出项。
+
+```javascript
+// 正确
+import packageMain from 'commonjs-package';
+
+// 报错
+import { method } from 'commonjs-package';
+```
+
+还有一种变通的加载方法，就是使用 Node.js 内置的`module.createRequire()`方法。
+
+```javascript
+// cjs.cjs
+module.exports = 'cjs';
+
+// esm.mjs
+import { createRequire } from 'module';
+
+const require = createRequire(import.meta.url);
+
+const cjs = require('./cjs.cjs');
+cjs === 'cjs'; // true
+```
+
+上面代码中，ES6 模块通过`module.createRequire()`方法可以加载 CommonJS 模块
+
+### CommonJS 模块加载 ES6 模块
+
+CommonJS 的`require`命令不能加载 ES6 模块，会报错，只能使用`import()`这个方法加载。
+
+```javascript
+(async () => {
+  await import('./my-app.mjs');
+})();
+```
+
+上面代码可以在 CommonJS 模块中运行。
+
+### Node.js 的内置模块
+
+Node.js 的内置模块可以整体加载，也可以加载指定的输出项。
+
+```javascript
+// 整体加载
+import EventEmitter from 'events';
+const e = new EventEmitter();
+
+// 加载指定的输出项
+import { readFile } from 'fs';
+readFile('./foo.txt', (err, source) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.log(source);
+  }
+});
+```
+
+### 加载路径
+
+ES6 模块的加载路径必须给出脚本的完整路径，不能省略脚本的后缀名。`import`命令和`package.json`文件的`main`字段如果省略脚本的后缀名，会报错。
+
+```javascript
+// ES6 模块中将报错
+import { something } from './index';
+```
+
+为了与浏览器的`import`加载规则相同，Node.js 的`.mjs`文件支持 URL 路径。
+
+```javascript
+import './foo.mjs?query=1'; // 加载 ./foo 传入参数 ?query=1
 ```
 
 上面代码中，脚本路径带有参数`?query=1`，Node 会按 URL 规则解读。同一个脚本只要参数不同，就会被加载多次，并且保存成不同的缓存。由于这个原因，只要文件名中含有`:`、`%`、`#`、`?`等特殊字符，最好对这些字符进行转义。
 
-目前，Node 的`import`命令只支持加载本地模块（`file:`协议），不支持加载远程模块。
-
-如果模块名不含路径，那么`import`命令会去`node_modules`目录寻找这个模块。
-
-```javascript
-import 'baz';
-import 'abc/123';
-```
-
-如果模块名包含路径，那么`import`命令会按照路径去寻找这个名字的脚本文件。
-
-```javascript
-import 'file:///etc/config/app.json';
-import './foo';
-import './foo?search';
-import '../bar';
-import '/baz';
-```
-
-如果脚本文件省略了后缀名，比如`import './foo'`，Node 会依次尝试四个后缀名：`./foo.mjs`、`./foo.js`、`./foo.json`、`./foo.node`。如果这些脚本文件都不存在，Node 就会去加载`./foo/package.json`的`main`字段指定的脚本。如果`./foo/package.json`不存在或者没有`main`字段，那么就会依次加载`./foo/index.mjs`、`./foo/index.js`、`./foo/index.json`、`./foo/index.node`。如果以上四个文件还是都不存在，就会抛出错误。
+目前，Node.js 的`import`命令只支持加载本地模块（`file:`协议）和`data:`协议，不支持加载远程模块。另外，脚本路径只支持相对路径，不支持绝对路径（即以`/`或`//`开头的路径）。
 
 最后，Node 的`import`命令是异步加载，这一点与浏览器的处理方法相同。
 
@@ -330,166 +574,6 @@ ES6 模块应该是通用的，同一个模块不用修改，就可以用在浏�
 - `exports`
 - `__filename`
 - `__dirname`
-
-如果你一定要使用这些变量，有一个变通方法，就是写一个 CommonJS 模块输出这些变量，然后再用 ES6 模块加载这个 CommonJS 模块。但是这样一来，该 ES6 模块就不能直接用于浏览器环境了，所以不推荐这样做。
-
-```javascript
-// expose.js
-module.exports = {__dirname};
-
-// use.mjs
-import expose from './expose.js';
-const {__dirname} = expose;
-```
-
-上面代码中，`expose.js`是一个 CommonJS 模块，输出变量`__dirname`，该变量在 ES6 模块之中不存在。ES6 模块加载`expose.js`，就可以得到`__dirname`。
-
-### ES6 模块加载 CommonJS 模块
-
-CommonJS 模块的输出都定义在`module.exports`这个属性上面。Node 的`import`命令加载 CommonJS 模块，Node 会自动将`module.exports`属性，当作模块的默认输出，即等同于`export default xxx`。
-
-下面是一个 CommonJS 模块。
-
-```javascript
-// a.js
-module.exports = {
-  foo: 'hello',
-  bar: 'world'
-};
-
-// 等同于
-export default {
-  foo: 'hello',
-  bar: 'world'
-};
-```
-
-`import`命令加载上面的模块，`module.exports`会被视为默认输出，即`import`命令实际上输入的是这样一个对象`{ default: module.exports }`。
-
-所以，一共有三种写法，可以拿到 CommonJS 模块的`module.exports`。
-
-```javascript
-// 写法一
-import baz from './a';
-// baz = {foo: 'hello', bar: 'world'};
-
-// 写法二
-import {default as baz} from './a';
-// baz = {foo: 'hello', bar: 'world'};
-
-// 写法三
-import * as baz from './a';
-// baz = {
-//   get default() {return module.exports;},
-//   get foo() {return this.default.foo}.bind(baz),
-//   get bar() {return this.default.bar}.bind(baz)
-// }
-```
-
-上面代码的第三种写法，可以通过`baz.default`拿到`module.exports`。`foo`属性和`bar`属性就是可以通过这种方法拿到了`module.exports`。
-
-下面是一些例子。
-
-```javascript
-// b.js
-module.exports = null;
-
-// es.js
-import foo from './b';
-// foo = null;
-
-import * as bar from './b';
-// bar = { default:null };
-```
-
-上面代码中，`es.js`采用第二种写法时，要通过`bar.default`这样的写法，才能拿到`module.exports`。
-
-```javascript
-// c.js
-module.exports = function two() {
-  return 2;
-};
-
-// es.js
-import foo from './c';
-foo(); // 2
-
-import * as bar from './c';
-bar.default(); // 2
-bar(); // throws, bar is not a function
-```
-
-上面代码中，`bar`本身是一个对象，不能当作函数调用，只能通过`bar.default`调用。
-
-CommonJS 模块的输出缓存机制，在 ES6 加载方式下依然有效。
-
-```javascript
-// foo.js
-module.exports = 123;
-setTimeout(_ => module.exports = null);
-```
-
-上面代码中，对于加载`foo.js`的脚本，`module.exports`将一直是`123`，而不会变成`null`。
-
-由于 ES6 模块是编译时确定输出接口，CommonJS 模块是运行时确定输出接口，所以采用`import`命令加载 CommonJS 模块时，不允许采用下面的写法。
-
-```javascript
-// 不正确
-import { readFile } from 'fs';
-```
-
-上面的写法不正确，因为`fs`是 CommonJS 格式，只有在运行时才能确定`readFile`接口，而`import`命令要求编译时就确定这个接口。解决方法就是改为整体输入。
-
-```javascript
-// 正确的写法一
-import * as express from 'express';
-const app = express.default();
-
-// 正确的写法二
-import express from 'express';
-const app = express();
-```
-
-### CommonJS 模块加载 ES6 模块
-
-CommonJS 模块加载 ES6 模块，不能使用`require`命令，而要使用`import()`函数。ES6 模块的所有输出接口，会成为输入对象的属性。
-
-```javascript
-// es.mjs
-let foo = { bar: 'my-default' };
-export default foo;
-
-// cjs.js
-const es_namespace = await import('./es.mjs');
-// es_namespace = {
-//   get default() {
-//     ...
-//   }
-// }
-console.log(es_namespace.default);
-// { bar:'my-default' }
-```
-
-上面代码中，`default`接口变成了`es_namespace.default`属性。
-
-下面是另一个例子。
-
-```javascript
-// es.js
-export let foo = { bar:'my-default' };
-export { foo as bar };
-export function f() {};
-export class c {};
-
-// cjs.js
-const es_namespace = await import('./es');
-// es_namespace = {
-//   get foo() {return foo;}
-//   get bar() {return foo;}
-//   get f() {return f;}
-//   get c() {return c;}
-// }
-```
 
 ## 循环加载
 
