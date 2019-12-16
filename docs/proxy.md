@@ -8,13 +8,13 @@ Proxy 可以理解成，在目标对象之前架设一层“拦截”，外界�
 
 ```javascript
 var obj = new Proxy({}, {
-  get: function (target, key, receiver) {
-    console.log(`getting ${key}!`);
-    return Reflect.get(target, key, receiver);
+  get: function (target, propKey, receiver) {
+    console.log(`getting ${propKey}!`);
+    return Reflect.get(target, propKey, receiver);
   },
-  set: function (target, key, value, receiver) {
-    console.log(`setting ${key}!`);
-    return Reflect.set(target, key, value, receiver);
+  set: function (target, propKey, value, receiver) {
+    console.log(`setting ${propKey}!`);
+    return Reflect.set(target, propKey, value, receiver);
   }
 });
 ```
@@ -44,7 +44,7 @@ Proxy 对象的所有用法，都是上面这种形式，不同的只是`handler
 
 ```javascript
 var proxy = new Proxy({}, {
-  get: function(target, property) {
+  get: function(target, propKey) {
     return 35;
   }
 });
@@ -80,7 +80,7 @@ Proxy 实例也可以作为其他对象的原型对象。
 
 ```javascript
 var proxy = new Proxy({}, {
-  get: function(target, property) {
+  get: function(target, propKey) {
     return 35;
   }
 });
@@ -155,11 +155,11 @@ var person = {
 };
 
 var proxy = new Proxy(person, {
-  get: function(target, property) {
-    if (property in target) {
-      return target[property];
+  get: function(target, propKey) {
+    if (propKey in target) {
+      return target[propKey];
     } else {
-      throw new ReferenceError("Property \"" + property + "\" does not exist.");
+      throw new ReferenceError("Prop name \"" + propKey + "\" does not exist.");
     }
   }
 });
@@ -281,7 +281,7 @@ document.body.appendChild(el);
 
 ```javascript
 const proxy = new Proxy({}, {
-  get: function(target, property, receiver) {
+  get: function(target, key, receiver) {
     return receiver;
   }
 });
@@ -292,7 +292,7 @@ proxy.getReceiver === proxy // true
 
 ```javascript
 const proxy = new Proxy({}, {
-  get: function(target, property, receiver) {
+  get: function(target, key, receiver) {
     return receiver;
   }
 });
