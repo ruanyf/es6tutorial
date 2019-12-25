@@ -603,57 +603,32 @@ $ hello.js
 
 ## import.meta
 
-加载 JavaScript 脚本的时候，有时候需要知道脚本的元信息。Node.js 提供了两个特殊变量`__filename`和`__dirname`，用来获取脚本的文件名和所在路径。
+开发者使用一个模块时，有时需要知道模板本身的一些信息（比如模块的路径）。现在有一个[提案](https://github.com/tc39/proposal-import-meta)，为 import 命令添加了一个元属性`import.beta`，返回当前模块的元信息。
+
+`import.meta`只能在模块内部使用，如果在模块外部使用会报错。
+
+这个属性返回一个对象，该对象的各种属性就是当前运行的脚本的元信息。具体包含哪些属性，标准没有规定，由各个运行环境自行决定。一般来说，`import.meta`至少会有下面两个属性。
+
+**（1）import.meta.url**
+
+`import.meta.url`返回当前模块的 URL 路径。举例来说，当前模块主文件的路径是`https://foo.com/main.js`，`import.meta.url`就返回这个路径。如果模块里面还有一个数据文件`data.txt`，那么就可以用下面的代码，获取这个数据文件的路径。
 
 ```javascript
-const fs = require('fs');
-const path = require('path');
-const bytes = fs.readFileSync(path.resolve(__dirname, 'data.bin'));
+new URL('data.txt', import.meta.url)
 ```
 
-上面代码中，`__dirname`用于加载与脚本同一个目录的数据文件`data.bin`。
+注意，Node.js 环境中，`import.meta.url`返回的总是本地路径，即是`file:URL`协议的字符串，比如`file:///home/user/foo.js`。
 
-但是，浏览器没有这两个特殊变量。如果需要知道脚本的元信息，就只有手动提供。
+**（2）import.meta.scriptElement**
 
-```html
-<script data-option="value" src="library.js"></script>
-```
-
-上面这一行 HTML 代码加载 JavaScript 脚本，使用`data-`属性放入元信息。如果脚本内部要获知元信息，可以像下面这样写。
+`import.meta.scriptElement`是浏览器特有的元属性，返回加载模块的那个`<script>`元素，相当于`document.currentScript`属性。
 
 ```javascript
-const theOption = document.currentScript.dataset.option;
+// HTML 代码为
+// <script type="module" src="my-module.js" data-foo="abc"></script>
+
+// my-module.js 内部执行下面的代码
+import.meta.scriptElement.dataset.foo
+// "abc"
 ```
-
-上面代码中，`document.currentScript`属性可以拿到当前脚本的 DOM 节点。
-
-由于 Node.js 和浏览器做法的不统一，现在有一个[提案](https://github.com/tc39/proposal-import-meta)，提出统一使用`import.meta`属性在脚本内部获取元信息。这个属性返回一个对象，该对象的各种属性就是当前运行的脚本的元信息。具体包含哪些属性，标准没有规定，由各个运行环境自行决定。
-
-一般来说，浏览器的`import.meta`至少会有两个属性。
-
-- `import.meta.url`：脚本的 URL。
-- `import.meta.scriptElement`：加载脚本的那个`<script>`的 DOM 节点，用来替代`document.currentScript`。
-
-```html
-<script type="module" src="path/to/hamster-displayer.js" data-size="500"></script>
-```
-
-上面这行代码加载的脚本内部，就可以使用`import.meta`获取元信息。
-
-```javascript
-(async () => {
-  const response = await fetch(new URL("../hamsters.jpg", import.meta.url));
-  const blob = await response.blob();
-
-  const size = import.meta.scriptElement.dataset.size || 300;
-
-  const image = new Image();
-  image.src = URL.createObjectURL(blob);
-  image.width = image.height = size;
-
-  document.body.appendChild(image);
-})();
-```
-
-上面代码中，`import.meta`用来获取所加载的图片的尺寸。
 
