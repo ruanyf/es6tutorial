@@ -560,7 +560,7 @@ var p = new Proxy(obj, {
 
 值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，还是继承的属性。
 
-另外，虽然`for...in`循环也用到了`in`运算符，但是`has`拦截对`for...in`循环不生效。
+另外，虽然`for...in`循环也用到了`in`运算符，但是`has`拦截对`for...in`循环不生效，因为`for...in`循环中读取属性执行的是get操作。
 
 ```javascript
 let stu1 = {name: '张三', score: 59};
@@ -573,6 +573,14 @@ let handler = {
       return false;
     }
     return prop in target;
+  },
+  get(target, prop) {
+    if (prop === 'score' && target[prop] < 60) {
+      console.log(`在get中出现的，${target.name} 不及格`);
+      return target[prop];
+    } else {
+      return target[prop]
+    }
   }
 }
 
@@ -590,6 +598,7 @@ for (let a in oproxy1) {
   console.log(oproxy1[a]);
 }
 // 张三
+// 在get中出现的，张三 不及格
 // 59
 
 for (let b in oproxy2) {
@@ -599,7 +608,7 @@ for (let b in oproxy2) {
 // 99
 ```
 
-上面代码中，`has`拦截只对`in`运算符生效，对`for...in`循环不生效，导致不符合要求的属性没有被`for...in`循环所排除。
+上面代码中，`has`拦截只对`in`运算符生效，对`for...in`循环不生效，导致不符合要求的属性没有被`for...in`循环所排除，因为此处的oproxy2[b]，执行的是get命令，会被get所拦截。
 
 ### construct()
 
