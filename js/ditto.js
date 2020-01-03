@@ -316,6 +316,14 @@ function show_loading() {
   return loading;
 }
 
+function statistics() {
+  var _hmt = _hmt || [];
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?519d72adb78a0bf66de7bae18e994322";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+}
+
 function router() { 
   var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
@@ -414,6 +422,8 @@ function router() {
     } else {
       $('#pagedown').css('display', 'inline-block');
     }
+
+    statistics();
 
     (function() {
       var $w = $(window);
