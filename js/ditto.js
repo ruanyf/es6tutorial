@@ -355,6 +355,9 @@ function router() {
 
   // otherwise get the markdown and render it
   var loading = show_loading();
+
+  statistics();
+
   $.get(path, function(data) {
     $(ditto.error_id).hide();
     $(ditto.content_id).html(marked(data) + disqusCode);
@@ -422,8 +425,6 @@ function router() {
     } else {
       $('#pagedown').css('display', 'inline-block');
     }
-
-    statistics();
 
     (function() {
       var $w = $(window);
