@@ -421,7 +421,7 @@ div.innerHTML = parse({ supplies: [ "broom", "mop", "cleaner" ] });
 ```javascript
 alert`123`
 // 等同于
-alert(123)
+alert([123])
 ```
 
 标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的就是函数，紧跟在后面的模板字符串就是它的参数。
