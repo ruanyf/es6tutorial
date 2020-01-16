@@ -419,9 +419,9 @@ div.innerHTML = parse({ supplies: [ "broom", "mop", "cleaner" ] });
 模板字符串的功能，不仅仅是上面这些。它可以紧跟在一个函数名后面，该函数将被调用来处理这个模板字符串。这被称为“标签模板”功能（tagged template）。
 
 ```javascript
-alert`123`
+alert`hello`
 // 等同于
-alert([123])
+alert(['hello'])
 ```
 
 标签模板其实不是模板，而是函数调用的一种特殊形式。“标签”指的就是函数，紧跟在后面的模板字符串就是它的参数。
