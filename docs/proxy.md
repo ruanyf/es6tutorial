@@ -613,7 +613,7 @@ var handler = {
 };
 ```
 
-`construct`方法可以接受两个参数。
+`construct`方法可以接受三个参数。
 
 - `target`：目标对象
 - `args`：构造函数的参数对象
