@@ -190,10 +190,10 @@ function func() {
   var a = 1;
 }
 
-// 报错
+// 不报错
 function func() {
   let a = 10;
-  let a = 1;
+  let b = 1;
 }
 ```
 
