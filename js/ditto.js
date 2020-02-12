@@ -225,11 +225,11 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '<span style="color: #4682BE;">《ES6 实战教程》</span> ' +
-    '深入学习一线大厂必备 ES6 技能。VIP 教程限时免费领取。' +
-    '<span style="color: #4682BE;"> ⇐ 立即查看</span>';
+  var text = '【开课吧】' +
+    '拿不到 Offer 退全款，廖雪峰的' +
+    '<span style="color: #4682BE;">《Web 全栈架构师》</span>开班了！';
 
-  var banner = $('<a href="http://www.mawen.co/question/405" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://datayi.cn/w/noqwyzdR" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
