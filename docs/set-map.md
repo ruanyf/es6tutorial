@@ -833,6 +833,15 @@ strMapToObj(myMap)
 
 **（4）对象转为 Map**
 
+对象转为 Map 可以通过`Object.entries()`。
+
+```javascript
+let obj = {"a":1, "b":2};
+let map = new Map(Object.entries(obj));
+```
+
+此外，也可以自己实现一个转换函数。
+
 ```javascript
 function objToStrMap(obj) {
   let strMap = new Map();
