@@ -197,7 +197,7 @@ function f(x = 1, y) {
 }
 
 f() // [1, undefined]
-f(2) // [2, undefined])
+f(2) // [2, undefined]
 f(, 1) // 报错
 f(undefined, 1) // [1, 1]
 
