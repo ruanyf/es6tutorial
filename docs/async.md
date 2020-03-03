@@ -482,6 +482,21 @@ async function dbFuc(db) {
 }
 ```
 
+另一种方法是使用数组的`reduce`方法。
+
+```javascript
+async function dbFuc(db) {
+  let docs = [{}, {}, {}];
+
+  await docs.reduce(async (_, doc) => {
+    await _;
+    await db.post(doc);
+  }, undefined);
+}
+```
+
+上面例子中，`reduce`方法的第一个参数是`async`函数，导致该函数的第一个参数是前一步操作返回的 Promise 对象，所以必须使用`await`等待它操作结束。另外，`reduce`方法返回的是`docs`数组最后一个成员的`async`函数的执行结果，也是一个 Promise 对象，导致在它前面也必须加上`await`。
+
 如果确实希望多个请求并发执行，可以使用`Promise.all`方法。当三个请求都会`resolved`时，下面两种写法效果相同。
 
 ```javascript
@@ -716,7 +731,7 @@ const data = await fetch('https://api.example.com');
 
 上面代码中，`await`命令独立使用，没有放在 async 函数里面，就会报错。
 
-目前，有一个[语法提案](https://github.com/tc39/proposal-top-level-await)，允许在模块的顶层独立使用`await`命令。这个提案的目的，是借用`await`解决模块异步加载的问题。
+目前，有一个[语法提案](https://github.com/tc39/proposal-top-level-await)，允许在模块的顶层独立使用`await`命令，使得上面那行代码不会报错了。这个提案的目的，是借用`await`解决模块异步加载的问题。
 
 ```javascript
 // awaiting.js
@@ -737,7 +752,7 @@ export { output };
 ```javascript
 // awaiting.js
 let output;
-(async function main() {
+(async function1 main() {
   const dynamic = await import(someMission);
   const data = await fetch(url);
   output = someProcess(dynamic.default, data);
