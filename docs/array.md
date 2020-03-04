@@ -20,7 +20,7 @@ console.log(1, ...[2, 3, 4], 5)
 该运算符主要用于函数调用。
 
 ```javascript
-function push(array, ...items) {
+function push(array, items) {
   array.push(...items);
 }
 
