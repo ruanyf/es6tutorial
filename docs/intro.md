@@ -223,49 +223,6 @@ $ node index.js
 
 需要注意的是，`@babel/register`只会对`require`命令加载的文件转码，而不会对当前文件转码。另外，由于它是实时转码，所以只适合在开发环境使用。
 
-### babel API
-
-如果某些代码需要调用 Babel 的 API 进行转码，就要使用`@babel/core`模块。
-
-```javascript
-var babel = require('@babel/core');
-
-// 字符串转码
-babel.transform('code();', options);
-// => { code, map, ast }
-
-// 文件转码（异步）
-babel.transformFile('filename.js', options, function(err, result) {
-  result; // => { code, map, ast }
-});
-
-// 文件转码（同步）
-babel.transformFileSync('filename.js', options);
-// => { code, map, ast }
-
-// Babel AST转码
-babel.transformFromAst(ast, code, options);
-// => { code, map, ast }
-```
-
-配置对象`options`，可以参看官方文档[http://babeljs.io/docs/usage/options/](http://babeljs.io/docs/usage/options/)。
-
-下面是一个例子。
-
-```javascript
-var es6Code = 'let x = n => n + 1';
-var es5Code = require('@babel/core')
-  .transform(es6Code, {
-    presets: ['@babel/env']
-  })
-  .code;
-
-console.log(es5Code);
-// '"use strict";\n\nvar x = function x(n) {\n  return n + 1;\n};'
-```
-
-上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的 ES6 代码，第二个参数是转换的配置对象。
-
 ### polyfill
 
 Babel 默认只转换新的 JavaScript 句法（syntax），而不转换新的 API，比如`Iterator`、`Generator`、`Set`、`Map`、`Proxy`、`Reflect`、`Symbol`、`Promise`等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）都不会转码。
@@ -287,8 +244,6 @@ import 'regenerator-runtime/runtime';
 require('core-js');
 require('regenerator-runtime/runtime);
 ```
-
-`@babel/polyfill` 在7.4.0后被废弃，如果选择`core-js`和`regenerator-runtime`则不必再引入`@babel/polyfill`，二者会冲突。
 
 Babel 默认不转码的 API 非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[definitions.js](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/runtime-corejs3-definitions.js)文件。
 
