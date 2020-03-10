@@ -266,25 +266,29 @@ console.log(es5Code);
 
 上面代码中，`transform`方法的第一个参数是一个字符串，表示需要被转换的 ES6 代码，第二个参数是转换的配置对象。
 
-### @babel/polyfill
+### polyfill
 
 Babel 默认只转换新的 JavaScript 句法（syntax），而不转换新的 API，比如`Iterator`、`Generator`、`Set`、`Map`、`Proxy`、`Reflect`、`Symbol`、`Promise`等全局对象，以及一些定义在全局对象上的方法（比如`Object.assign`）都不会转码。
 
-举例来说，ES6 在`Array`对象上新增了`Array.from`方法。Babel 就不会转码这个方法。如果想让这个方法运行，必须使用`babel-polyfill`，为当前环境提供一个垫片。
+举例来说，ES6 在`Array`对象上新增了`Array.from`方法。Babel 就不会转码这个方法。如果想让这个方法运行，可以使用`core-js`和`regenerator-runtime`(后者提供generator函数的转码)，为当前环境提供一个垫片。
 
 安装命令如下。
 
 ```bash
-$ npm install --save-dev @babel/polyfill
+$ npm install --save-dev core-js regenerator-runtime
 ```
 
-然后，在脚本头部，加入如下一行代码。
+然后，在脚本头部，加入如下两行代码。
 
 ```javascript
-import '@babel/polyfill';
+import 'core-js';
+import 'regenerator-runtime/runtime';
 // 或者
-require('@babel/polyfill');
+require('core-js');
+require('regenerator-runtime/runtime);
 ```
+
+`@babel/polyfill` 在7.4.0后被废弃，如果选择`core-js`和`regenerator-runtime`则不必再引入`@babel/polyfill`，二者会冲突。
 
 Babel 默认不转码的 API 非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[definitions.js](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/runtime-corejs3-definitions.js)文件。
 
