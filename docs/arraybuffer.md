@@ -730,7 +730,7 @@ struct someStruct {
 `DataView`视图本身也是构造函数，接受一个`ArrayBuffer`对象作为参数，生成视图。
 
 ```javascript
-DataView(ArrayBuffer buffer [, 字节起始位置 [, 长度]]);
+new DataView(ArrayBuffer buffer [, 字节起始位置 [, 长度]]);
 ```
 
 下面是一个例子。
