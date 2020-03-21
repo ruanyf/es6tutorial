@@ -649,7 +649,7 @@ result.indices.groups // { Z: [ 4, 6 ] }
 
 上面例子中，`exec()`方法返回结果的`indices.groups`属性是一个对象，提供具名组匹配`Z`的开始位置和结束位置。
 
-如果如何获取成功组匹配，`indices`属性数组的对应成员则为`undefined`，`indices.groups`属性对象的对应成员也是`undefined`。
+如果获取组匹配不成功，`indices`属性数组的对应成员则为`undefined`，`indices.groups`属性对象的对应成员也是`undefined`。
 
 ```javascript
 const text = 'zabbcdef';
