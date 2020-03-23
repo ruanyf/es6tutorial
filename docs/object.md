@@ -693,24 +693,16 @@ const obj = {
 扩展运算符的参数对象之中，如果有取值函数`get`，这个函数是会执行的。
 
 ```javascript
-// 并不会抛出错误，因为 x 属性只是被定义，但没执行
-let aWithXGetter = {
-  ...a,
+let a = {
   get x() {
     throw new Error('not throw yet');
   }
-};
+}
 
-// 会抛出错误，因为 x 属性被执行了
-let runtimeError = {
-  ...a,
-  ...{
-    get x() {
-      throw new Error('throw now');
-    }
-  }
-};
+let aWithXGetter = { ...a }; // 报错
 ```
+
+上面例子中，取值函数`get`在扩展`a`对象时会自动执行，导致报错。
 
 ## 链判断运算符
 
