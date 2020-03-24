@@ -210,8 +210,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2020年3月22日
-  var deadline = new Date(2020, 2, 22);
+  // 2020年4月25日
+  var deadline = new Date(2020, 3, 25);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -225,11 +225,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【课程学习】' +
-    '拿不到 Offer 退全款，廖雪峰的' +
-    '<span style="color: #4682BE;">《Web 全栈架构师》</span>开班了！';
+  var text = '【课程】' +
+    '开始学习<span style="color: #4682BE;">《ES6 实战教程》</span>，一线大厂前端必备技能。';
 
-  var banner = $('<a href="https://datayi.cn/w/noqwyzdR" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://datayi.cn/w/1P6jEmmP" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
