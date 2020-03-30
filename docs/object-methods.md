@@ -478,7 +478,7 @@ JavaScript 语言的对象继承是通过原型链实现的。ES6 提供了更�
 
 ### `__proto__`属性
 
-`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
+`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的原型对象（prototype）。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
 // es5 的写法
@@ -533,7 +533,7 @@ Object.getPrototypeOf({ __proto__: null })
 
 ### Object.setPrototypeOf()
 
-`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象，返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的原型对象（prototype），返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
 
 ```javascript
 // 格式
