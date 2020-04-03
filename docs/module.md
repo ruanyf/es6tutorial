@@ -540,20 +540,20 @@ export default es6;
 export { default as es6 } from './someModule';
 ```
 
-下面三种`import`语句，没有对应的复合写法。
+ES2020 之前，有一种`import`语句，没有对应的复合写法。
 
 ```javascript
 import * as someIdentifier from "someModule";
-import someIdentifier from "someModule";
-import someIdentifier, { namedIdentifier } from "someModule";
 ```
 
-为了做到形式的对称，现在有[提案](https://github.com/leebyron/ecmascript-export-default-from)，提出补上这三种复合写法。
+[ES2020](https://github.com/tc39/proposal-export-ns-from)补上了这个写法。
 
 ```javascript
-export * as someIdentifier from "someModule";
-export someIdentifier from "someModule";
-export someIdentifier, { namedIdentifier } from "someModule";
+export * as ns from "mod";
+
+// 等同于
+import * as ns from "mod";
+export {ns};
 ```
 
 ## 模块的继承
