@@ -6,7 +6,7 @@
 
 （1） 将`Object`对象的一些明显属于语言内部的方法（比如`Object.defineProperty`），放到`Reflect`对象上。现阶段，某些方法同时在`Object`和`Reflect`对象上部署，未来的新方法将只部署在`Reflect`对象上。也就是说，从`Reflect`对象上可以拿到语言内部的方法。
 
-（2） 修改某些`Object`方法的返回结果，让其变得更合理。比如，`Object.defineProperty(obj, name, desc)`在无法定义属性时，会抛出一个错误，而`Reflect.defineProperty(obj, name, desc)`则会返回`false`。
+（2） 修改某些`Object`方法的返回结果，让其变得更合理。比如，`Object.defineProperty(obj, name, desc)`在无法定义属性时，会抛出一个异常，而`Reflect.defineProperty(obj, name, desc)`则会返回`false`。
 
 ```javascript
 // 老写法
@@ -400,7 +400,7 @@ Reflect.defineProperty(MyDate, 'now', {
 });
 ```
 
-如果`Reflect.defineProperty`的第一个参数不是对象，就会抛出错误，比如`Reflect.defineProperty(1, 'foo')`。
+如果`Reflect.defineProperty`的第一个参数不是对象，就会抛出异常，比如`Reflect.defineProperty(1, 'foo')`。
 
 这个方法可以与`Proxy.defineProperty`配合使用。
 
@@ -438,7 +438,7 @@ var theDescriptor = Object.getOwnPropertyDescriptor(myObject, 'hidden');
 var theDescriptor = Reflect.getOwnPropertyDescriptor(myObject, 'hidden');
 ```
 
-`Reflect.getOwnPropertyDescriptor`和`Object.getOwnPropertyDescriptor`的一个区别是，如果第一个参数不是对象，`Object.getOwnPropertyDescriptor(1, 'foo')`不报错，返回`undefined`，而`Reflect.getOwnPropertyDescriptor(1, 'foo')`会抛出错误，表示参数非法。
+`Reflect.getOwnPropertyDescriptor`和`Object.getOwnPropertyDescriptor`的一个区别是，如果第一个参数不是对象，`Object.getOwnPropertyDescriptor(1, 'foo')`不报错，返回`undefined`，而`Reflect.getOwnPropertyDescriptor(1, 'foo')`会抛出异常，表示参数非法。
 
 ### Reflect.isExtensible (target)
 

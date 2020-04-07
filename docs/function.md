@@ -368,7 +368,7 @@ x // 1
 
 ### 应用
 
-利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个错误。
+利用参数默认值，可以指定某一个参数不得省略，如果省略就抛出一个异常。
 
 ```javascript
 function throwIfMissing() {
@@ -383,7 +383,7 @@ foo()
 // Error: Missing parameter
 ```
 
-上面代码的`foo`函数，如果调用的时候没有参数，就会调用默认值`throwIfMissing`函数，从而抛出一个错误。
+上面代码的`foo`函数，如果调用的时候没有参数，就会调用默认值`throwIfMissing`函数，从而抛出一个异常。
 
 从上面代码还可以看到，参数`mustBeProvided`的默认值等于`throwIfMissing`函数的运行结果（注意函数名`throwIfMissing`之后有一对圆括号），这表明参数的默认值不是在定义时执行，而是在运行时执行。如果参数已经赋值，默认值中的函数就不会运行。
 
@@ -710,7 +710,7 @@ headAndTail(1, 2, 3, 4, 5)
 
 （1）函数体内的`this`对象，就是定义时所在的对象，而不是使用时所在的对象。
 
-（2）不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个错误。
+（2）不可以当作构造函数，也就是说，不可以使用`new`命令，否则会抛出一个异常。
 
 （3）不可以使用`arguments`对象，该对象在函数体内不存在。如果要用，可以用 rest 参数代替。
 
@@ -1053,7 +1053,7 @@ function addOne(a){
 
 函数调用自身，称为递归。如果尾调用自身，就称为尾递归。
 
-递归非常耗费内存，因为需要同时保存成千上百个调用帧，很容易发生“栈溢出”错误（stack overflow）。但对于尾递归来说，由于只存在一个调用帧，所以永远不会发生“栈溢出”错误。
+递归非常耗费内存，因为需要同时保存成千上百个调用帧，很容易发生“栈溢出”异常（stack overflow）。但对于尾递归来说，由于只存在一个调用帧，所以永远不会发生“栈溢出”异常。
 
 ```javascript
 function factorial(n) {
@@ -1341,17 +1341,17 @@ foo.toString()
 
 ## catch 命令的参数省略
 
-JavaScript 语言的`try...catch`结构，以前明确要求`catch`命令后面必须跟参数，接受`try`代码块抛出的错误对象。
+JavaScript 语言的`try...catch`结构，以前明确要求`catch`命令后面必须跟参数，接受`try`代码块抛出的异常对象。
 
 ```javascript
 try {
   // ...
-} catch (err) {
-  // 处理错误
+} catch (exception) {
+  // 处理异常
 }
 ```
 
-上面代码中，`catch`命令后面带有参数`err`。
+上面代码中，`catch`命令后面带有参数`exception`。
 
 很多时候，`catch`代码块可能用不到这个参数。但是，为了保证语法正确，还是必须写。[ES2019](https://github.com/tc39/proposal-optional-catch-binding) 做出了改变，允许`catch`语句省略参数。
 

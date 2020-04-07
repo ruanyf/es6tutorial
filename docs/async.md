@@ -157,7 +157,7 @@ const foo = async () => {};
 
 ## 语法
 
-`async`函数的语法规则总体上比较简单，难点是错误处理机制。
+`async`函数的语法规则总体上比较简单，难点是异常处理机制。
 
 ### 返回 Promise 对象
 
@@ -176,7 +176,7 @@ f().then(v => console.log(v))
 
 上面代码中，函数`f`内部`return`命令返回的值，会被`then`方法回调函数接收到。
 
-`async`函数内部抛出错误，会导致返回的 Promise 对象变为`reject`状态。抛出的错误对象会被`catch`方法回调函数接收到。
+`async`函数内部抛出异常，会导致返回的 Promise 对象变为`reject`状态。抛出的异常对象会被`catch`方法回调函数接收到。
 
 ```javascript
 async function f() {
@@ -192,7 +192,7 @@ f().then(
 
 ### Promise 对象的状态变化
 
-`async`函数返回的 Promise 对象，必须等到内部所有`await`命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到`return`语句或者抛出错误。也就是说，只有`async`函数内部的异步操作执行完，才会执行`then`方法指定的回调函数。
+`async`函数返回的 Promise 对象，必须等到内部所有`await`命令后面的 Promise 对象执行完，才会发生状态改变，除非遇到`return`语句或者抛出异常。也就是说，只有`async`函数内部的异步操作执行完，才会执行`then`方法指定的回调函数。
 
 下面是一个例子。
 
@@ -312,7 +312,7 @@ f()
 // hello world
 ```
 
-另一种方法是`await`后面的 Promise 对象再跟一个`catch`方法，处理前面可能出现的错误。
+另一种方法是`await`后面的 Promise 对象再跟一个`catch`方法，处理前面可能出现的异常。
 
 ```javascript
 async function f() {
@@ -327,7 +327,7 @@ f()
 // hello world
 ```
 
-### 错误处理
+### 异常处理
 
 如果`await`后面的异步操作出错，那么等同于`async`函数返回的 Promise 对象被`reject`。
 
@@ -344,7 +344,7 @@ f()
 // Error：出错了
 ```
 
-上面代码中，`async`函数`f`执行后，`await`后面的 Promise 对象会抛出一个错误对象，导致`catch`方法的回调函数被调用，它的参数就是抛出的错误对象。具体的执行机制，可以参考后文的“async 函数的实现原理”。
+上面代码中，`async`函数`f`执行后，`await`后面的 Promise 对象会抛出一个异常对象，导致`catch`方法的回调函数被调用，它的参数就是抛出的异常对象。具体的执行机制，可以参考后文的“async 函数的实现原理”。
 
 防止出错的方法，也是将其放在`try...catch`代码块之中。
 
@@ -530,7 +530,7 @@ const a = () => {
 };
 ```
 
-上面代码中，函数`a`内部运行了一个异步任务`b()`。当`b()`运行的时候，函数`a()`不会中断，而是继续执行。等到`b()`运行结束，可能`a()`早就运行结束了，`b()`所在的上下文环境已经消失了。如果`b()`或`c()`报错，错误堆栈将不包括`a()`。
+上面代码中，函数`a`内部运行了一个异步任务`b()`。当`b()`运行的时候，函数`a()`不会中断，而是继续执行。等到`b()`运行结束，可能`a()`早就运行结束了，`b()`所在的上下文环境已经消失了。如果`b()`或`c()`报错，异常堆栈将不包括`a()`。
 
 现在将这个例子改成`async`函数。
 
@@ -541,7 +541,7 @@ const a = async () => {
 };
 ```
 
-上面代码中，`b()`运行的时候，`a()`是暂停执行，上下文环境都保存着。一旦`b()`或`c()`报错，错误堆栈将包括`a()`。
+上面代码中，`b()`运行的时候，`a()`是暂停执行，上下文环境都保存着。一旦`b()`或`c()`报错，异常堆栈将包括`a()`。
 
 ## async 函数的实现原理
 
@@ -615,9 +615,9 @@ function chainAnimationsPromise(elem, animations) {
     });
   }
 
-  // 返回一个部署了错误捕捉机制的Promise
+  // 返回一个部署了异常捕捉机制的Promise
   return p.catch(function(e) {
-    /* 忽略错误，继续执行 */
+    /* 忽略异常，继续执行 */
   }).then(function() {
     return ret;
   });
@@ -639,7 +639,7 @@ function chainAnimationsGenerator(elem, animations) {
         ret = yield anim(elem);
       }
     } catch(e) {
-      /* 忽略错误，继续执行 */
+      /* 忽略异常，继续执行 */
     }
     return ret;
   });
@@ -659,7 +659,7 @@ async function chainAnimationsAsync(elem, animations) {
       ret = await anim(elem);
     }
   } catch(e) {
-    /* 忽略错误，继续执行 */
+    /* 忽略异常，继续执行 */
   }
   return ret;
 }

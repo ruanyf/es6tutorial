@@ -165,10 +165,10 @@ var proxy = new Proxy(person, {
 });
 
 proxy.name // "张三"
-proxy.age // 抛出一个错误
+proxy.age // 抛出一个异常
 ```
 
-上面代码表示，如果访问目标对象不存在的属性，会抛出一个错误。如果没有这个拦截函数，访问不存在的属性，只会返回`undefined`。
+上面代码表示，如果访问目标对象不存在的属性，会抛出一个异常。如果没有这个拦截函数，访问不存在的属性，只会返回`undefined`。
 
 `get`方法可以继承。
 
@@ -356,7 +356,7 @@ person.age = 'young' // 报错
 person.age = 300 // 报错
 ```
 
-上面代码中，由于设置了存值函数`set`，任何不符合要求的`age`属性赋值，都会抛出一个错误，这是数据验证的一种实现方法。利用`set`方法，还可以数据绑定，即每当对象发生变化时，会自动更新 DOM。
+上面代码中，由于设置了存值函数`set`，任何不符合要求的`age`属性赋值，都会抛出一个异常，这是数据验证的一种实现方法。利用`set`方法，还可以数据绑定，即每当对象发生变化时，会自动更新 DOM。
 
 有时，我们会在对象上面设置内部属性，属性名的第一个字符使用下划线开头，表示这些属性不应该被外部使用。结合`get`和`set`方法，就可以做到防止这些内部属性被外部读写。
 
@@ -645,7 +645,7 @@ new p() // 报错
 
 ### deleteProperty()
 
-`deleteProperty`方法用于拦截`delete`操作，如果这个方法抛出错误或者返回`false`，当前属性就无法被`delete`命令删除。
+`deleteProperty`方法用于拦截`delete`操作，如果这个方法抛出异常或者返回`false`，当前属性就无法被`delete`命令删除。
 
 ```javascript
 var handler = {
@@ -762,7 +762,7 @@ Object.isExtensible(p)
 
 注意，该方法只能返回布尔值，否则返回值会被自动转为布尔值。
 
-这个方法有一个强限制，它的返回值必须与目标对象的`isExtensible`属性保持一致，否则就会抛出错误。
+这个方法有一个强限制，它的返回值必须与目标对象的`isExtensible`属性保持一致，否则就会抛出异常。
 
 ```javascript
 Object.isExtensible(proxy) === Object.isExtensible(target)
@@ -1035,7 +1035,7 @@ revoke();
 proxy.foo // TypeError: Revoked
 ```
 
-`Proxy.revocable`方法返回一个对象，该对象的`proxy`属性是`Proxy`实例，`revoke`属性是一个函数，可以取消`Proxy`实例。上面代码中，当执行`revoke`函数之后，再访问`Proxy`实例，就会抛出一个错误。
+`Proxy.revocable`方法返回一个对象，该对象的`proxy`属性是`Proxy`实例，`revoke`属性是一个函数，可以取消`Proxy`实例。上面代码中，当执行`revoke`函数之后，再访问`Proxy`实例，就会抛出一个异常。
 
 `Proxy.revocable`的一个使用场景是，目标对象不允许直接访问，必须通过代理访问，一旦访问结束，就收回代理权，不允许再次访问。
 

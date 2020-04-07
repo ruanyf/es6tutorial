@@ -71,7 +71,7 @@ return (
 
 ## throw 表达式
 
-JavaScript 语法规定`throw`是一个命令，用来抛出错误，不能用于表达式之中。
+JavaScript 语法规定`throw`是一个命令，用来抛出异常，不能用于表达式之中。
 
 ```javascript
 // 报错

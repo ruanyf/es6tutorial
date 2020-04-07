@@ -370,7 +370,7 @@ return new Promise((resolve, reject) => {
 });
 ```
 
-如果异步 Generator 函数抛出错误，会导致 Promise 对象的状态变为`reject`，然后抛出的错误被`catch`方法捕获。
+如果异步 Generator 函数抛出异常，会导致 Promise 对象的状态变为`reject`，然后抛出的异常被`catch`方法捕获。
 
 ```javascript
 async function* asyncGenerator() {

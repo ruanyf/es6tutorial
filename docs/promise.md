@@ -16,7 +16,7 @@ Promise 是异步编程的一种解决方案，比传统的解决方案——回
 
 有了`Promise`对象，就可以将异步操作以同步操作的流程表达出来，避免了层层嵌套的回调函数。此外，`Promise`对象提供统一的接口，使得控制异步操作更加容易。
 
-`Promise`也有一些缺点。首先，无法取消`Promise`，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，`Promise`内部抛出的错误，不会反应到外部。第三，当处于`pending`状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
+`Promise`也有一些缺点。首先，无法取消`Promise`，一旦新建它就会立即执行，无法中途取消。其次，如果不设置回调函数，`Promise`内部抛出的异常，不会反应到外部。第三，当处于`pending`状态时，无法得知目前进展到哪一个阶段（刚刚开始还是即将完成）。
 
 如果某些事件不断地反复发生，一般来说，使用 [Stream](https://nodejs.org/api/stream.html) 模式是比部署`Promise`更好的选择。
 
@@ -40,7 +40,7 @@ const promise = new Promise(function(resolve, reject) {
 
 `Promise`构造函数接受一个函数作为参数，该函数的两个参数分别是`resolve`和`reject`。它们是两个函数，由 JavaScript 引擎提供，不用自己部署。
 
-`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的错误，作为参数传递出去。
+`resolve`函数的作用是，将`Promise`对象的状态从“未完成”变为“成功”（即从 pending 变为 resolved），在异步操作成功时调用，并将异步操作的结果，作为参数传递出去；`reject`函数的作用是，将`Promise`对象的状态从“未完成”变为“失败”（即从 pending 变为 rejected），在异步操作失败时调用，并将异步操作报出的异常，作为参数传递出去。
 
 `Promise`实例生成以后，可以用`then`方法分别指定`resolved`状态和`rejected`状态的回调函数。
 
@@ -149,7 +149,7 @@ getJSON("/posts.json").then(function(json) {
 
 上面代码中，`getJSON`是对 XMLHttpRequest 对象的封装，用于发出一个针对 JSON 数据的 HTTP 请求，并且返回一个`Promise`对象。需要注意的是，在`getJSON`内部，`resolve`函数和`reject`函数调用时，都带有参数。
 
-如果调用`resolve`函数和`reject`函数时带有参数，那么它们的参数会被传递给回调函数。`reject`函数的参数通常是`Error`对象的实例，表示抛出的错误；`resolve`函数的参数除了正常的值以外，还可能是另一个 Promise 实例，比如像下面这样。
+如果调用`resolve`函数和`reject`函数时带有参数，那么它们的参数会被传递给回调函数。`reject`函数的参数通常是`Error`对象的实例，表示抛出的异常；`resolve`函数的参数除了正常的值以外，还可能是另一个 Promise 实例，比如像下面这样。
 
 ```javascript
 const p1 = new Promise(function (resolve, reject) {
@@ -251,18 +251,18 @@ getJSON("/post/1.json").then(
 
 ## Promise.prototype.catch()
 
-`Promise.prototype.catch()`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生错误时的回调函数。
+`Promise.prototype.catch()`方法是`.then(null, rejection)`或`.then(undefined, rejection)`的别名，用于指定发生异常时的回调函数。
 
 ```javascript
 getJSON('/posts.json').then(function(posts) {
   // ...
-}).catch(function(error) {
-  // 处理 getJSON 和 前一个回调函数运行时发生的错误
-  console.log('发生错误！', error);
+}).catch(function(ex) {
+  // 处理 getJSON 和 前一个回调函数运行时发生的异常
+  console.log('发生异常！', ex);
 });
 ```
 
-上面代码中，`getJSON()`方法返回一个 Promise 对象，如果该对象状态变为`resolved`，则会调用`then()`方法指定的回调函数；如果异步操作抛出错误，状态就会变为`rejected`，就会调用`catch()`方法指定的回调函数，处理这个错误。另外，`then()`方法指定的回调函数，如果运行中抛出错误，也会被`catch()`方法捕获。
+上面代码中，`getJSON()`方法返回一个 Promise 对象，如果该对象状态变为`resolved`，则会调用`then()`方法指定的回调函数；如果异步操作抛出异常，状态就会变为`rejected`，就会调用`catch()`方法指定的回调函数，处理这个异常。另外，`then()`方法指定的回调函数，如果运行中抛出异常，也会被`catch()`方法捕获。
 
 ```javascript
 p.then((val) => console.log('fulfilled:', val))
@@ -285,7 +285,7 @@ promise.catch(function(error) {
 // Error: test
 ```
 
-上面代码中，`promise`抛出一个错误，就被`catch()`方法指定的回调函数捕获。注意，上面的写法与下面两种写法是等价的。
+上面代码中，`promise`抛出一个异常，就被`catch()`方法指定的回调函数捕获。注意，上面的写法与下面两种写法是等价的。
 
 ```javascript
 // 写法一
@@ -309,9 +309,9 @@ promise.catch(function(error) {
 });
 ```
 
-比较上面两种写法，可以发现`reject()`方法的作用，等同于抛出错误。
+比较上面两种写法，可以发现`reject()`方法的作用，等同于抛出异常。
 
-如果 Promise 状态已经变成`resolved`，再抛出错误是无效的。
+如果 Promise 状态已经变成`resolved`，再抛出异常是无效的。
 
 ```javascript
 const promise = new Promise(function(resolve, reject) {
@@ -324,9 +324,9 @@ promise
 // ok
 ```
 
-上面代码中，Promise 在`resolve`语句后面，再抛出错误，不会被捕获，等于没有抛出。因为 Promise 的状态一旦改变，就永久保持该状态，不会再变了。
+上面代码中，Promise 在`resolve`语句后面，再抛出异常，不会被捕获，等于没有抛出。因为 Promise 的状态一旦改变，就永久保持该状态，不会再变了。
 
-Promise 对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，错误总是会被下一个`catch`语句捕获。
+Promise 对象的异常具有“冒泡”性质，会一直向后传递，直到被捕获为止。也就是说，异常总是会被下一个`catch`语句捕获。
 
 ```javascript
 getJSON('/post/1.json').then(function(post) {
@@ -334,11 +334,11 @@ getJSON('/post/1.json').then(function(post) {
 }).then(function(comments) {
   // some code
 }).catch(function(error) {
-  // 处理前面三个Promise产生的错误
+  // 处理前面三个Promise产生的异常
 });
 ```
 
-上面代码中，一共有三个 Promise 对象：一个由`getJSON()`产生，两个由`then()`产生。它们之中任何一个抛出的错误，都会被最后一个`catch()`捕获。
+上面代码中，一共有三个 Promise 对象：一个由`getJSON()`产生，两个由`then()`产生。它们之中任何一个抛出的异常，都会被最后一个`catch()`捕获。
 
 一般来说，不要在`then()`方法里面定义 Reject 状态的回调函数（即`then`的第二个参数），总是使用`catch`方法。
 
@@ -361,9 +361,9 @@ promise
   });
 ```
 
-上面代码中，第二种写法要好于第一种写法，理由是第二种写法可以捕获前面`then`方法执行中的错误，也更接近同步的写法（`try/catch`）。因此，建议总是使用`catch()`方法，而不使用`then()`方法的第二个参数。
+上面代码中，第二种写法要好于第一种写法，理由是第二种写法可以捕获前面`then`方法执行中的异常，也更接近同步的写法（`try/catch`）。因此，建议总是使用`catch()`方法，而不使用`then()`方法的第二个参数。
 
-跟传统的`try/catch`代码块不同的是，如果没有使用`catch()`方法指定错误处理的回调函数，Promise 对象抛出的错误不会传递到外层代码，即不会有任何反应。
+跟传统的`try/catch`代码块不同的是，如果没有使用`catch()`方法指定异常处理的回调函数，Promise 对象抛出的异常不会传递到外层代码，即不会有任何反应。
 
 ```javascript
 const someAsyncThing = function() {
@@ -382,9 +382,9 @@ setTimeout(() => { console.log(123) }, 2000);
 // 123
 ```
 
-上面代码中，`someAsyncThing()`函数产生的 Promise 对象，内部有语法错误。浏览器运行到这一行，会打印出错误提示`ReferenceError: x is not defined`，但是不会退出进程、终止脚本执行，2 秒之后还是会输出`123`。这就是说，Promise 内部的错误不会影响到 Promise 外部的代码，通俗的说法就是“Promise 会吃掉错误”。
+上面代码中，`someAsyncThing()`函数产生的 Promise 对象，内部有语法错误。浏览器运行到这一行，会打印出错误提示`ReferenceError: x is not defined`，但是不会退出进程、终止脚本执行，2 秒之后还是会输出`123`。这就是说，Promise 内部的异常不会影响到 Promise 外部的代码，通俗的说法就是“Promise 会吃掉异常”。
 
-这个脚本放在服务器执行，退出码就是`0`（即表示执行成功）。不过，Node.js 有一个`unhandledRejection`事件，专门监听未捕获的`reject`错误，上面的脚本会触发这个事件的监听函数，可以在监听函数里面抛出错误。
+这个脚本放在服务器执行，退出码就是`0`（即表示执行成功）。不过，Node.js 有一个`unhandledRejection`事件，专门监听未捕获的`reject`异常，上面的脚本会触发这个事件的监听函数，可以在监听函数里面抛出异常。
 
 ```javascript
 process.on('unhandledRejection', function (err, p) {
@@ -392,9 +392,9 @@ process.on('unhandledRejection', function (err, p) {
 });
 ```
 
-上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是错误对象，第二个是报错的 Promise 实例，它可以用来了解发生错误的环境信息。
+上面代码中，`unhandledRejection`事件的监听函数有两个参数，第一个是异常对象，第二个是报错的 Promise 实例，它可以用来了解发生异常的环境信息。
 
-注意，Node 有计划在未来废除`unhandledRejection`事件。如果 Promise 内部有未捕获的错误，会直接终止进程，并且进程的退出码不为 0。
+注意，Node 有计划在未来废除`unhandledRejection`事件。如果 Promise 内部有未捕获的异常，会直接终止进程，并且进程的退出码不为 0。
 
 再看下面的例子。
 
@@ -408,9 +408,9 @@ promise.then(function (value) { console.log(value) });
 // Uncaught Error: test
 ```
 
-上面代码中，Promise 指定在下一轮“事件循环”再抛出错误。到了那个时候，Promise 的运行已经结束了，所以这个错误是在 Promise 函数体外抛出的，会冒泡到最外层，成了未捕获的错误。
+上面代码中，Promise 指定在下一轮“事件循环”再抛出异常。到了那个时候，Promise 的运行已经结束了，所以这个异常是在 Promise 函数体外抛出的，会冒泡到最外层，成了未捕获的异常。
 
-一般总是建议，Promise 对象后面要跟`catch()`方法，这样可以处理 Promise 内部发生的错误。`catch()`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then()`方法。
+一般总是建议，Promise 对象后面要跟`catch()`方法，这样可以处理 Promise 内部发生的异常。`catch()`方法返回的还是一个 Promise 对象，因此后面还可以接着调用`then()`方法。
 
 ```javascript
 const someAsyncThing = function() {
@@ -446,7 +446,7 @@ Promise.resolve()
 
 上面的代码因为没有报错，跳过了`catch()`方法，直接执行后面的`then()`方法。此时，要是`then()`方法里面报错，就与前面的`catch()`无关了。
 
-`catch()`方法之中，还能再抛出错误。
+`catch()`方法之中，还能再抛出异常。
 
 ```javascript
 const someAsyncThing = function() {
@@ -468,7 +468,7 @@ someAsyncThing().then(function() {
 // oh no [ReferenceError: x is not defined]
 ```
 
-上面代码中，`catch()`方法抛出一个错误，因为后面没有别的`catch()`方法了，导致这个错误不会被捕获，也不会传递到外层。如果改写一下，结果就不一样了。
+上面代码中，`catch()`方法抛出一个异常，因为后面没有别的`catch()`方法了，导致这个异常不会被捕获，也不会传递到外层。如果改写一下，结果就不一样了。
 
 ```javascript
 someAsyncThing().then(function() {
@@ -484,7 +484,7 @@ someAsyncThing().then(function() {
 // carry on [ReferenceError: y is not defined]
 ```
 
-上面代码中，第二个`catch()`方法用来捕获前一个`catch()`方法抛出的错误。
+上面代码中，第二个`catch()`方法用来捕获前一个`catch()`方法抛出的异常。
 
 ## Promise.prototype.finally()
 
@@ -503,7 +503,7 @@ promise
 
 ```javascript
 server.listen(port)
-  .then(function () {
+  .then(function() {
     // ...
   })
   .finally(server.stop);
@@ -776,9 +776,9 @@ try {
 }
 ```
 
-上面代码中，`Promise.any()`方法的参数数组包含三个 Promise 操作。其中只要有一个变成`fulfilled`，`Promise.any()`返回的 Promise 对象就变成`fulfilled`。如果所有三个操作都变成`rejected`，那么`await`命令就会抛出错误。
+上面代码中，`Promise.any()`方法的参数数组包含三个 Promise 操作。其中只要有一个变成`fulfilled`，`Promise.any()`返回的 Promise 对象就变成`fulfilled`。如果所有三个操作都变成`rejected`，那么`await`命令就会抛出异常。
 
-`Promise.any()`抛出的错误，不是一个一般的错误，而是一个 AggregateError 实例。它相当于一个数组，每个成员对应一个被`rejected`的操作所抛出的错误。下面是 AggregateError 的实现示例。
+`Promise.any()`抛出的异常，不是一个一般的异常，而是一个 AggregateError 实例。它相当于一个数组，每个成员对应一个被`rejected`的操作所抛出的异常。下面是 AggregateError 的实现示例。
 
 ```javascript
 new AggregateError() extends Array -> AggregateError
@@ -789,7 +789,7 @@ err.push(new Error("second error"));
 throw err;
 ```
 
-捕捉错误时，如果不用`try...catch`结构和 await 命令，可以像下面这样写。
+捕捉异常时，如果不用`try...catch`结构和 await 命令，可以像下面这样写。
 
 ```javascript
 Promise.any(promises).then(
@@ -1017,7 +1017,7 @@ run(g);
 
 ## Promise.try()
 
-实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。一般就会采用下面的写法。
+实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的异常。一般就会采用下面的写法。
 
 ```javascript
 Promise.resolve().then(f)
@@ -1052,7 +1052,7 @@ console.log('next');
 .then(...)
 ```
 
-需要注意的是，`async () => f()`会吃掉`f()`抛出的错误。所以，如果想捕获错误，要使用`promise.catch`方法。
+需要注意的是，`async () => f()`会吃掉`f()`抛出的异常。所以，如果想捕获异常，要使用`promise.catch`方法。
 
 ```javascript
 (async () => f())()
@@ -1099,7 +1099,7 @@ function getUsername(userId) {
 }
 ```
 
-上面代码中，`database.users.get()`返回一个 Promise 对象，如果抛出异步错误，可以用`catch`方法捕获，就像下面这样写。
+上面代码中，`database.users.get()`返回一个 Promise 对象，如果抛出异步异常，可以用`catch`方法捕获，就像下面这样写。
 
 ```javascript
 database.users.get({id: userId})
@@ -1107,7 +1107,7 @@ database.users.get({id: userId})
 .catch(...)
 ```
 
-但是`database.users.get()`可能还会抛出同步错误（比如数据库连接错误，具体要看实现方法），这时你就不得不用`try...catch`去捕获。
+但是`database.users.get()`可能还会抛出同步异常（比如数据库连接错误，具体要看实现方法），这时你就不得不用`try...catch`去捕获。
 
 ```javascript
 try {
@@ -1119,7 +1119,7 @@ try {
 }
 ```
 
-上面这样的写法就很笨拙了，这时就可以统一用`promise.catch()`捕获所有同步和异步的错误。
+上面这样的写法就很笨拙了，这时就可以统一用`promise.catch()`捕获所有同步和异步的异常。
 
 ```javascript
 Promise.try(() => database.users.get({id: userId}))
