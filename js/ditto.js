@@ -228,7 +228,7 @@ function create_banner(element) {
   var text = '【免费课程】' +
     '开始学习<span style="color: #4682BE;">《ES6 实战教程》</span>，一线大厂前端必备技能。';
 
-  var banner = $('<a href="https://datayi.cn/w/1P6jEmmP" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://datayi.cn/w/a9BLv2LP" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
