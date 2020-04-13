@@ -596,7 +596,7 @@ console.log(1);
 $ node hello.js
 
 # hashbang 的方式
-$ hello.js
+$ ./hello.js
 ```
 
 对于 JavaScript 引擎来说，会把`#!`理解成注释，忽略掉这一行。
