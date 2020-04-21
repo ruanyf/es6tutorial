@@ -330,7 +330,7 @@ Object.getOwnPropertyDescriptor(obj, 'foo')
 
 - `for...in`循环：只遍历对象自身的和继承的可枚举的属性。
 - `Object.keys()`：返回对象自身的所有可枚举的属性的键名。
-- `JSON.stringify()`：只串行化对象自身的可枚举的属性。
+- `JSON.stringify()`：字串行化对象自身的可枚举的属性。
 - `Object.assign()`： 忽略`enumerable`为`false`的属性，只拷贝对象自身的可枚举的属性。
 
 这四个操作之中，前三个是 ES5 就有的，最后一个`Object.assign()`是 ES6 新增的。其中，只有`for...in`会返回继承的属性，其他三个方法都会忽略继承的属性，只处理对象自身的属性。实际上，引入“可枚举”（`enumerable`）这个概念的最初目的，就是让某些属性可以规避掉`for...in`操作，不然所有内部属性和方法都会被遍历到。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过“可枚举性”，从而避免被`for...in`遍历到。
