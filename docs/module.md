@@ -10,7 +10,7 @@ ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模�
 
 ```javascript
 // CommonJS模块
-let { stat, exists, readFile } = require('fs');
+let { stat, exists, readfile } = require('fs');
 
 // 等同于
 let _fs = require('fs');
