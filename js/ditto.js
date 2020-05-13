@@ -210,8 +210,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2020年4月25日
-  var deadline = new Date(2020, 3, 25);
+  // 2020年8月15日
+  var deadline = new Date(2020, 7, 15);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
