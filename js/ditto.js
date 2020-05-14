@@ -178,7 +178,7 @@ function replace_symbols(text) {
   // replace symbols with underscore
   return text
     .replace(/, /g, ',')
-    .replace(/[&\/\\#,.+=$~%'":*?<>{}\ \]\[]/g, "-")
+    .replace(/[&\!\/\\#,.+=$~%'":*?<>{}\ \]\[]/g, "-")
     .replace(/[()]/g, '');
 }
 
