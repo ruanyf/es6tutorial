@@ -225,7 +225,7 @@ f().then(v => console.log(v))
 
 上面代码中，`await`命令的参数是数值`123`，这时等同于`return 123`。
 
-另一种情况是，`await`命令后面是一个`thenable`对象（即定义`then`方法的对象），那么`await`会将其等同于 Promise 对象。
+另一种情况是，`await`命令后面是一个`thenable`对象（即定义了`then`方法的对象），那么`await`会将其等同于 Promise 对象。
 
 ```javascript
 class Sleep {

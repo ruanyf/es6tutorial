@@ -281,7 +281,7 @@ let union = new Set([...a, ...b]);
 let intersect = new Set([...a].filter(x => b.has(x)));
 // set {2, 3}
 
-// 差集
+// （a 相对于 b 的）差集
 let difference = new Set([...a].filter(x => !b.has(x)));
 // Set {1}
 ```
