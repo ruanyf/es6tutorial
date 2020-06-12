@@ -690,8 +690,6 @@ matches
 
 ```javascript
 const string = 'test1test2test3';
-
-// g 修饰符加不加都可以
 const regex = /t(e)(st(\d?))/g;
 
 for (const match of string.matchAll(regex)) {
@@ -707,9 +705,10 @@ for (const match of string.matchAll(regex)) {
 遍历器转为数组是非常简单的，使用`...`运算符和`Array.from()`方法就可以了。
 
 ```javascript
-// 转为数组方法一
+// 转为数组的方法一
 [...string.matchAll(regex)]
 
-// 转为数组方法二
+// 转为数组的方法二
 Array.from(string.matchAll(regex))
 ```
+
