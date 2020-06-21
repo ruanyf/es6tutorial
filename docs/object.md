@@ -709,18 +709,26 @@ let aWithXGetter = { ...a }; // 报错
 编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
 
 ```javascript
+// 错误的写法
+const  firstName = message.body.user.firstName;
+
+// 正确的写法
 const firstName = (message
   && message.body
   && message.body.user
   && message.body.user.firstName) || 'default';
 ```
 
-或者使用三元运算符`?:`，判断一个对象是否存在。
+上面例子中，`firstName`属性在对象的第四层，所以需要判断四次，每一层是否有值。
+
+三元运算符`?:`也常用于判断对象是否存在。
 
 ```javascript
 const fooInput = myForm.querySelector('input[name=foo]')
 const fooValue = fooInput ? fooInput.value : undefined
 ```
+
+上面例子中，必须先判断`fooInput`是否存在，才能读取`fooInput.value`。
 
 这样的层层判断非常麻烦，因此 [ES2020](https://github.com/tc39/proposal-optional-chaining) 引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
 
@@ -731,19 +739,13 @@ const fooValue = myForm.querySelector('input[name=foo]')?.value
 
 上面代码使用了`?.`运算符，直接在链式调用的时候判断，左侧的对象是否为`null`或`undefined`。如果是的，就不再往下运算，而是返回`undefined`。
 
-链判断运算符有三种用法。
-
-- `obj?.prop` // 对象属性
-- `obj?.[expr]` // 同上
-- `func?.(...args)` // 函数或对象方法的调用
-
 下面是判断对象方法是否存在，如果存在就立即执行的例子。
 
 ```javascript
 iterator.return?.()
 ```
 
-上面代码中，`iterator.return`如果有定义，就会调用该方法，否则直接返回`undefined`。
+上面代码中，`iterator.return`如果有定义，就会调用该方法，否则`iterator.return`直接返回`undefined`，不再执行`?.`后面的部分。
 
 对于那些可能没有实现的方法，这个运算符尤其有用。
 
@@ -756,7 +758,21 @@ if (myForm.checkValidity?.() === false) {
 
 上面代码中，老式浏览器的表单可能没有`checkValidity`这个方法，这时`?.`运算符就会返回`undefined`，判断语句就变成了`undefined === false`，所以就会跳过下面的代码。
 
-下面是这个运算符常见的使用形式，以及不使用该运算符时的等价形式。
+链判断运算符有三种用法。
+
+- `obj?.prop` // 对象属性
+- `obj?.[expr]` // 同上
+- `func?.(...args)` // 函数或对象方法的调用
+
+下面是`obj?.[expr]`用法的一个例子。
+
+```bash
+let hex = "#C0FFEE".match(/#([A-Z]+)/i)?.[1];
+```
+
+上面例子中，字符串的`match()`方法，如果没有发现匹配会返回`null`，如果发现匹配会返回一个数组，`?.`运算符起到了判断作用。
+
+下面是`?.`运算符常见形式，以及不使用该运算符时的等价形式。
 
 ```javascript
 a?.b
@@ -781,6 +797,8 @@ a == null ? undefined : a()
 使用这个运算符，有几个注意点。
 
 （1）短路机制
+
+`?.`运算符相当于一种短路机制，只要不满足条件，就不再往下执行。
 
 ```javascript
 a?.[++x]
@@ -859,7 +877,7 @@ const animationDuration = response.settings.animationDuration ?? 300;
 const showSplashScreen = response.settings.showSplashScreen ?? true;
 ```
 
-上面代码中，默认值只有在属性值为`null`或`undefined`时，才会生效。
+上面代码中，默认值只有在左侧属性值为`null`或`undefined`时，才会生效。
 
 这个运算符的一个目的，就是跟链判断运算符`?.`配合使用，为`null`或`undefined`的值设置默认值。
 
