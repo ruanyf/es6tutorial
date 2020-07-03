@@ -335,6 +335,36 @@ Object.getOwnPropertyDescriptor(obj, 'foo')
 
 这四个操作之中，前三个是 ES5 就有的，最后一个`Object.assign()`是 ES6 新增的。其中，只有`for...in`会返回继承的属性，其他三个方法都会忽略继承的属性，只处理对象自身的属性。实际上，引入“可枚举”（`enumerable`）这个概念的最初目的，就是让某些属性可以规避掉`for...in`操作，不然所有内部属性和方法都会被遍历到。比如，对象原型的`toString`方法，以及数组的`length`属性，就通过“可枚举性”，从而避免被`for...in`遍历到。
 
+ ######################################################################
+```
+class ClassA2{
+  name = 'lisi'
+  age = 23
+
+}
+
+class ClassB2 extends ClassA2{
+  grade='23'
+
+}
+
+for(let item in new ClassB2()){
+ console.log(item)
+}
+ name
+ age
+grade
+
+Object.keys(new ClassB2())
+(3) ["name", "age", "grade"
+```
+阮老师，这里的CalssB2继承了ClassA,为什么Object.keys也是返回了继承的属性呢？
+#######################################################################
+
+
+
+
+
 ```javascript
 Object.getOwnPropertyDescriptor(Object.prototype, 'toString').enumerable
 // false
