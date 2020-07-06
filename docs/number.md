@@ -700,7 +700,7 @@ Math.pow(2, 53) === Math.pow(2, 53) + 1 // true
 Math.pow(2, 1024) // Infinity
 ```
 
-[ES2020](https://github.com/tc39/proposal-bigint) 引入了一种新的数据类型 BigInt（大整数），来解决这个问题。BigInt 只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
+[ES2020](https://github.com/tc39/proposal-bigint) 引入了一种新的数据类型 BigInt（大整数），来解决这个问题，这是 ECMAScript 的第八种数据类型。BigInt 只用来表示整数，没有位数的限制，任何位数的整数都可以精确表示。
 
 ```javascript
 const a = 2172141653n;
