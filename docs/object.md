@@ -896,7 +896,7 @@ function Component(props) {
 }
 ```
 
-上面代码判断`props`参数的`enabled`属性是否赋值，等同于下面的写法。
+上面代码判断`props`参数的`enabled`属性是否赋值，基本等同于下面的写法。
 
 ```javascript
 function Component(props) {
