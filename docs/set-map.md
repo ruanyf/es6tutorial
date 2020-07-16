@@ -520,6 +520,10 @@ const map = new Map();
 
 map.set(['a'], 555);
 map.get(['a']) // undefined
+map.set(Symbol('foo'),'hello);
+map.get(Symbol('foo'));// undefined
+map.set(Symbol.for('foo'),'hello);
+map.get(Symbol.for('foo'));// 'hello'
 ```
 
 上面代码的`set`和`get`方法，表面是针对同一个键，但实际上这是两个不同的数组实例，内存地址是不一样的，因此`get`方法无法读取该键，返回`undefined`。
