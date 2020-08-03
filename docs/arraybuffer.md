@@ -701,7 +701,7 @@ Int16Array.from(Int8Array.of(127, 126, 125), x => 2 * x)
 const buffer = new ArrayBuffer(24);
 
 const idView = new Uint32Array(buffer, 0, 1);
-const usernameView = new Uint8Array(buffer, 4, 16);
+const usernameView = new Uint8Array(buffer, 4, 19);
 const amountDueView = new Float32Array(buffer, 20, 1);
 ```
 
