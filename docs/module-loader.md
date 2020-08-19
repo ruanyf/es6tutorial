@@ -110,10 +110,11 @@ const isNotModuleScript = this !== undefined;
 
 讨论 Node.js 加载 ES6 模块之前，必须了解 ES6 模块与 CommonJS 模块完全不同。
 
-它们有两个重大差异。
+它们有三个重大差异。
 
 - CommonJS 模块输出的是一个值的拷贝，ES6 模块输出的是值的引用。
 - CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+- CommonJS 模块的`require()`是同步加载模块，ES6 模块的`import`命令是异步加载，有一个独立模块依赖的解析阶段。
 
 第二个差异是因为 CommonJS 加载的是一个对象（即`module.exports`属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
 
@@ -271,11 +272,15 @@ $ babel-node main.js
 
 这就证明了`x.js`和`y.js`加载的都是`C`的同一个实例。
 
-## Node.js 加载
+## Node.js 的模块加载方法
 
 ### 概述
 
-Node.js 对 ES6 模块的处理比较麻烦，因为它有自己的 CommonJS 模块格式，与 ES6 模块格式是不兼容的。目前的解决方案是，将两者分开，ES6 模块和 CommonJS 采用各自的加载方案。从 v13.2 版本开始，Node.js 已经默认打开了 ES6 模块支持。
+JavaScript 现在有两种模块。一种是 ES6 模块，简称 ESM；另一种是 CommonJS 模块，简称 CJS。
+
+CommonJS 模块是 Node.js 专用的，与 ES6 模块不兼容。语法上面，两者最明显的差异是，CommonJS 模块使用`require()`和`module.exports`，ES6 模块使用`import`和`export`。
+
+它们采用不同的加载方案。从 Node.js v13.2 版本开始，Node.js 已经默认打开了 ES6 模块支持。
 
 Node.js 要求 ES6 模块采用`.mjs`后缀文件名。也就是说，只要脚本文件里面使用`import`或者`export`命令，那么就必须采用`.mjs`后缀名。Node.js 遇到`.mjs`文件，就认为它是 ES6 模块，默认启用严格模式，不必在每个模块文件顶部指定`"use strict"`。
 
@@ -300,7 +305,7 @@ $ node my-app.js
 
 注意，ES6 模块与 CommonJS 模块尽量不要混用。`require`命令不能加载`.mjs`文件，会报错，只有`import`命令才可以加载`.mjs`文件。反过来，`.mjs`文件里面也不能使用`require`命令，必须使用`import`。
 
-### main 字段
+### package.json 的 main 字段
 
 `package.json`文件有两个字段可以指定模块的入口文件：`main`和`exports`。比较简单的模块，可以只使用`main`字段，指定模块加载的入口文件。
 
@@ -327,7 +332,7 @@ import { something } from 'es-module-package';
 
 这时，如果用 CommonJS 模块的`require()`命令去加载`es-module-package`模块会报错，因为 CommonJS 模块不能处理`export`命令。
 
-### exports 字段
+### package.json 的 exports 字段
 
 `exports`字段的优先级高于`main`字段。它有多种用法。
 
@@ -427,7 +432,7 @@ import submodule from './node_modules/es-module-package/private-module.js';
 
 ```javascript
 {
-  "exports": {
+  "exports": {package.json 的
     "require": "./main.cjs",
     "default": "./main.js"
   }
@@ -447,40 +452,23 @@ import submodule from './node_modules/es-module-package/private-module.js';
 }
 ```
 
+### CommonJS 模块加载 ES6 模块
+
+CommonJS 的`require()`命令不能加载 ES6 模块，会报错，只能使用`import()`这个方法加载。
+
+```javascript
+(async () => {
+  await import('./my-app.mjs');
+})();
+```
+
+上面代码可以在 CommonJS 模块中运行。
+
+`require()`不支持 ES6 模块的一个原因是，它是同步加载，而 ES6 模块内部可以使用顶层`await`命令，导致无法被同步加载。
+
 ### ES6 模块加载 CommonJS 模块
 
-目前，一个模块同时支持 ES6 和 CommonJS 两种格式的常见方法是，`package.json`文件的`main`字段指定 CommonJS 入口，给 Node.js 使用；`module`字段指定 ES6 模块入口，给打包工具使用，因为 Node.js 不认识`module`字段。
-
-有了上一节的条件加载以后，Node.js 本身就可以同时处理两种模块。
-
-```javascript
-// ./node_modules/pkg/package.json
-{
-  "type": "module",
-  "main": "./index.cjs",
-  "exports": {
-    "require": "./index.cjs",
-    "default": "./wrapper.mjs"
-  }
-}
-```
-
-上面代码指定了 CommonJS 入口文件`index.cjs`，下面是这个文件的代码。
-
-```javascript
-// ./node_modules/pkg/index.cjs
-exports.name = 'value';
-```
-
-然后，ES6 模块可以加载这个文件。
-
-```javascript
-// ./node_modules/pkg/wrapper.mjs
-import cjsModule from './index.cjs';
-export const name = cjsModule.name;
-```
-
-注意，`import`命令加载 CommonJS 模块，只能整体加载，不能只加载单一的输出项。
+ES6 模块的`import`命令可以加载 CommonJS 模块，但是只能整体加载，不能只加载单一的输出项。
 
 ```javascript
 // 正确
@@ -488,6 +476,15 @@ import packageMain from 'commonjs-package';
 
 // 报错
 import { method } from 'commonjs-package';
+```
+
+这是因为 ES6 模块需要支持静态代码分析，而 CommonJS 模块的输出接口是`module.exports`，无法被静态分析，所以只能整体加载。
+
+加载单一的输出项，可以写成下面这样。
+
+```bash
+import packageMain from 'commonjs-package';
+const { method } = packageMain;:w
 ```
 
 还有一种变通的加载方法，就是使用 Node.js 内置的`module.createRequire()`方法。
@@ -505,19 +502,33 @@ const cjs = require('./cjs.cjs');
 cjs === 'cjs'; // true
 ```
 
-上面代码中，ES6 模块通过`module.createRequire()`方法可以加载 CommonJS 模块
+上面代码中，ES6 模块通过`module.createRequire()`方法可以加载 CommonJS 模块。但是，这种写法等于将 ES6 和 CommonJS 混在一起了，所以不建议使用。
 
-### CommonJS 模块加载 ES6 模块
+## 同时支持两种格式的模块
 
-CommonJS 的`require`命令不能加载 ES6 模块，会报错，只能使用`import()`这个方法加载。
+一个模块同时要支持 CommonJS 和 ES6 两种格式，也很容易。
+
+如果原始模块是 ES6 格式，那么需要给出一个整体输出接口，比如`export default obj`，使得 CommonJS 可以用`import()`进行加载。
+
+如果原始模块是 CommonJS 格式，那么可以加一个包装层。
 
 ```javascript
-(async () => {
-  await import('./my-app.mjs');
-})();
+import cjsModule from '../index.js';
+export const foo = cjsModule.foo; 
 ```
 
-上面代码可以在 CommonJS 模块中运行。
+上面代码先整体输入 CommonJS 模块，然后再根据需要输出具名接口。最后，可以将它放在一个子目录，再放一个单独的`package.json`文件，指明`{ module: "type" }`。
+
+另一种做法是在`package.json`文件的`exports`字段，指明两种格式模块各自的加载入口。
+
+```bash
+"exports"：{ 
+    "require": "./index.js"，
+    "import": "./esm/wrapper.js" 
+}
+```
+
+上面代码指定`require()`和`import`，加载该模块会自动切换到不一样的入口文件。
 
 ### Node.js 的内置模块
 
@@ -558,11 +569,9 @@ import './foo.mjs?query=1'; // 加载 ./foo 传入参数 ?query=1
 
 目前，Node.js 的`import`命令只支持加载本地模块（`file:`协议）和`data:`协议，不支持加载远程模块。另外，脚本路径只支持相对路径，不支持绝对路径（即以`/`或`//`开头的路径）。
 
-最后，Node 的`import`命令是异步加载，这一点与浏览器的处理方法相同。
-
 ### 内部变量
 
-ES6 模块应该是通用的，同一个模块不用修改，就可以用在浏览器环境和服务器环境。为了达到这个目标，Node 规定 ES6 模块之中不能使用 CommonJS 模块的特有的一些内部变量。
+ES6 模块应该是通用的，同一个模块不用修改，就可以用在浏览器环境和服务器环境。为了达到这个目标，Node.js 规定 ES6 模块之中不能使用 CommonJS 模块的特有的一些内部变量。
 
 首先，就是`this`关键字。ES6 模块之中，顶层的`this`指向`undefined`；CommonJS 模块的顶层`this`指向当前模块，这是两者的一个重大差异。
 

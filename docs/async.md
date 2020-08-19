@@ -833,6 +833,8 @@ setTimeout(() => console.log(outputPlusValue(100), 1000);
 
 这时，模块的加载会等待依赖模块（上例是`awaiting.js`）的异步操作完成，才执行后面的代码，有点像暂停在那里。所以，它总是会得到正确的`output`，不会因为加载时机的不同，而得到不一样的值。
 
+注意，顶层`await`只能用在 ES6 模块，不能用在 CommonJS 模块。这是因为 CommonJS 模块的`require()`是同步加载，如果有顶层`await`，就没法处理加载了。
+
 下面是顶层`await`的一些使用场景。
 
 ```javascript
