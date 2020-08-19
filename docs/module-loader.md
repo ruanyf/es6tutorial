@@ -504,7 +504,7 @@ cjs === 'cjs'; // true
 
 上面代码中，ES6 模块通过`module.createRequire()`方法可以加载 CommonJS 模块。但是，这种写法等于将 ES6 和 CommonJS 混在一起了，所以不建议使用。
 
-## 同时支持两种格式的模块
+### 同时支持两种格式的模块
 
 一个模块同时要支持 CommonJS 和 ES6 两种格式，也很容易。
 
