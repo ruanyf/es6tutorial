@@ -478,7 +478,7 @@ import packageMain from 'commonjs-package';
 import { method } from 'commonjs-package';
 ```
 
-这是因为 ES6 模块需要支持静态代码分析，而 CommonJS 模块的输出接口是`module.exports`，无法被静态分析，所以只能整体加载。
+这是因为 ES6 模块需要支持静态代码分析，而 CommonJS 模块的输出接口是`module.exports`，是一个对象，无法被静态分析，所以只能整体加载。
 
 加载单一的输出项，可以写成下面这样。
 
@@ -514,17 +514,19 @@ cjs === 'cjs'; // true
 
 ```javascript
 import cjsModule from '../index.js';
-export const foo = cjsModule.foo; 
+export const foo = cjsModule.foo;
 ```
 
-上面代码先整体输入 CommonJS 模块，然后再根据需要输出具名接口。最后，可以将它放在一个子目录，再放一个单独的`package.json`文件，指明`{ module: "type" }`。
+上面代码先整体输入 CommonJS 模块，然后再根据需要输出具名接口。
+
+你可以把这个文件的后缀名改为`.mjs`，或者将它放在一个子目录，再在这个子目录里面放一个单独的`package.json`文件，指明`{ module: "type" }`。
 
 另一种做法是在`package.json`文件的`exports`字段，指明两种格式模块各自的加载入口。
 
 ```bash
-"exports"：{ 
-    "require": "./index.js"，
-    "import": "./esm/wrapper.js" 
+"exports"：{
+  "require": "./index.js"，
+  "import": "./esm/wrapper.js"
 }
 ```
 
