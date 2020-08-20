@@ -484,7 +484,7 @@ import { method } from 'commonjs-package';
 
 ```javascript
 import packageMain from 'commonjs-package';
-const { method } = packageMain;:w
+const { method } = packageMain;
 ```
 
 还有一种变通的加载方法，就是使用 Node.js 内置的`module.createRequire()`方法。
