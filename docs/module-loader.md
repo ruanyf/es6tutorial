@@ -482,7 +482,7 @@ import { method } from 'commonjs-package';
 
 加载单一的输出项，可以写成下面这样。
 
-```bash
+```javascript
 import packageMain from 'commonjs-package';
 const { method } = packageMain;:w
 ```
@@ -523,7 +523,7 @@ export const foo = cjsModule.foo;
 
 另一种做法是在`package.json`文件的`exports`字段，指明两种格式模块各自的加载入口。
 
-```bash
+```javascript
 "exports"：{
   "require": "./index.js"，
   "import": "./esm/wrapper.js"
