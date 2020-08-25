@@ -142,11 +142,11 @@ function searchbar_listener(event) {
 function init_theme_button() {
     $(ditto.theme_id).show();
     // 默认主题
-    var currfontColor = localStorage.getItem('fontColor') || '#0d141e';
-    var currbgColor = localStorage.getItem('bgColor') || '#ffffff';
+    var currFontColor = localStorage.getItem('fontColor') || '#0d141e';
+    var currBgColor = localStorage.getItem('bgColor') || '#ffffff';
     $('body').css({
-        color: currfontColor,
-        backgroundColor: currbgColor
+        color: currFontColor,
+        backgroundColor: currBgColor
     })
     $(ditto.theme_id).on('click', changeTheme);
 }
