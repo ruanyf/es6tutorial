@@ -4,6 +4,7 @@ var ditto = {
     sidebar_id: "#sidebar",
     edit_id: "#edit",
     back_to_top_id: "#back_to_top",
+    theme_id: "#theme",
     loading_id: "#loading",
     error_id: "#error",
 
@@ -11,6 +12,7 @@ var ditto = {
     sidebar: true,
     edit_button: true,
     back_to_top_button: true,
+    theme_button: true,
     save_progress: true, // 保存阅读进度
     search_bar: true,
 
@@ -57,6 +59,10 @@ function initialize() {
 
   if (ditto.edit_button) {
     init_edit_button();
+  }
+    
+  if (ditto.theme_button) {
+        init_theme_button();
   }
 
   // page router
@@ -133,10 +139,37 @@ function searchbar_listener(event) {
   */
 }
 
+function init_theme_button() {
+    $(ditto.theme_id).show();
+    // 默认主题
+    var currFontColor = localStorage.getItem('fontColor') || '#0d141e';
+    var currBgColor = localStorage.getItem('bgColor') || '#ffffff';
+    $('body').css({
+        color: currFontColor,
+        backgroundColor: currBgColor
+    })
+    $(ditto.theme_id).on('click', changeTheme);
+}
 
 function init_back_to_top_button() {
   $(ditto.back_to_top_id).show();
   $(ditto.back_to_top_id).on('click', goTop);
+}
+
+// 改变主题
+function changeTheme() {
+    var fontColor = localStorage.getItem('fontColor') || '#0d141e';
+    var bgColor = localStorage.getItem('bgColor') || '#ffffff';
+    var fontColors = ['#0d141e', '#020000', '#020702', '#d0d3d8'];
+    var bgColors = ['#ffffff', '#f6f0da', '#c0edc6', '#1f2022'];
+    var currIndex = bgColors.indexOf(bgColor);
+    var nextIndex = (currIndex + 1) >= bgColors.length ? 0 : currIndex + 1;
+    $('body').css({
+        color: fontColors[nextIndex],
+        backgroundColor: bgColors[nextIndex],
+    });
+    localStorage.setItem('fontColor', fontColors[nextIndex]);
+    localStorage.setItem('bgColor', bgColors[nextIndex]);
 }
 
 function goTop(e) {
