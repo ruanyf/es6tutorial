@@ -519,7 +519,7 @@ export const foo = cjsModule.foo;
 
 上面代码先整体输入 CommonJS 模块，然后再根据需要输出具名接口。
 
-你可以把这个文件的后缀名改为`.mjs`，或者将它放在一个子目录，再在这个子目录里面放一个单独的`package.json`文件，指明`{ module: "type" }`。
+你可以把这个文件的后缀名改为`.mjs`，或者将它放在一个子目录，再在这个子目录里面放一个单独的`package.json`文件，指明`{ type: "module" }`。
 
 另一种做法是在`package.json`文件的`exports`字段，指明两种格式模块各自的加载入口。
 
