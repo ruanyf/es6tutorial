@@ -885,7 +885,7 @@ const showSplashScreen = response.settings.showSplashScreen ?? true;
 const animationDuration = response.settings?.animationDuration ?? 300;
 ```
 
-上面代码中，`response.settings`如果是`null`或`undefined`，就会返回默认值300。
+上面代码中，如果`response.settings`是`null`或`undefined`，或者`response.settings.animationDuration`是`null`或`undefined`，就会返回默认值300。也就是说，这一行代码包括了两级属性的判断。
 
 这个运算符很适合判断函数参数是否赋值。
 
