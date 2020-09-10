@@ -432,7 +432,7 @@ import submodule from './node_modules/es-module-package/private-module.js';
 
 ```javascript
 {
-  "exports": {package.json 的
+  "exports": {
     "require": "./main.cjs",
     "default": "./main.js"
   }
