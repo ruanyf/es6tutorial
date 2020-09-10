@@ -836,7 +836,7 @@ Promise.resolve('foo')
 new Promise(resolve => resolve('foo'))
 ```
 
-`Promise.resolve`方法的参数分成四种情况。
+`Promise.resolve()`方法的参数分成四种情况。
 
 **（1）参数是一个 Promise 实例**
 
@@ -854,7 +854,7 @@ let thenable = {
 };
 ```
 
-`Promise.resolve`方法会将这个对象转为 Promise 对象，然后就立即执行`thenable`对象的`then`方法。
+`Promise.resolve()`方法会将这个对象转为 Promise 对象，然后就立即执行`thenable`对象的`then()`方法。
 
 ```javascript
 let thenable = {
@@ -864,27 +864,27 @@ let thenable = {
 };
 
 let p1 = Promise.resolve(thenable);
-p1.then(function(value) {
+p1.then(function (value) {
   console.log(value);  // 42
 });
 ```
 
-上面代码中，`thenable`对象的`then`方法执行后，对象`p1`的状态就变为`resolved`，从而立即执行最后那个`then`方法指定的回调函数，输出 42。
+上面代码中，`thenable`对象的`then()`方法执行后，对象`p1`的状态就变为`resolved`，从而立即执行最后那个`then()`方法指定的回调函数，输出42。
 
-**（3）参数不是具有`then`方法的对象，或根本就不是对象**
+**（3）参数不是具有`then()`方法的对象，或根本就不是对象**
 
-如果参数是一个原始值，或者是一个不具有`then`方法的对象，则`Promise.resolve`方法返回一个新的 Promise 对象，状态为`resolved`。
+如果参数是一个原始值，或者是一个不具有`then()`方法的对象，则`Promise.resolve()`方法返回一个新的 Promise 对象，状态为`resolved`。
 
 ```javascript
 const p = Promise.resolve('Hello');
 
-p.then(function (s){
+p.then(function (s) {
   console.log(s)
 });
 // Hello
 ```
 
-上面代码生成一个新的 Promise 对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是字符串对象不具有 then 方法），返回 Promise 实例的状态从一生成就是`resolved`，所以回调函数会立即执行。`Promise.resolve`方法的参数，会同时传给回调函数。
+上面代码生成一个新的 Promise 对象的实例`p`。由于字符串`Hello`不属于异步操作（判断方法是字符串对象不具有 then 方法），返回 Promise 实例的状态从一生成就是`resolved`，所以回调函数会立即执行。`Promise.resolve()`方法的参数，会同时传给回调函数。
 
 **（4）不带有任何参数**
 
@@ -939,23 +939,17 @@ p.then(null, function (s) {
 
 上面代码生成一个 Promise 对象的实例`p`，状态为`rejected`，回调函数会立即执行。
 
-注意，`Promise.reject()`方法的参数，会原封不动地作为`reject`的理由，变成后续方法的参数。这一点与`Promise.resolve`方法不一致。
+`Promise.reject()`方法的参数，会原封不动地作为`reject`的理由，变成后续方法的参数。
 
 ```javascript
-const thenable = {
-  then(resolve, reject) {
-    reject('出错了');
-  }
-};
-
-Promise.reject(thenable)
+Promise.reject('出错了')
 .catch(e => {
-  console.log(e === thenable)
+  console.log(e === '出错了')
 })
 // true
 ```
 
-上面代码中，`Promise.reject`方法的参数是一个`thenable`对象，执行以后，后面`catch`方法的参数不是`reject`抛出的“出错了”这个字符串，而是`thenable`对象。
+上面代码中，`Promise.reject()`方法的参数是一个字符串，后面`catch()`方法的参数`e`就是这个字符串。
 
 ## 应用
 
