@@ -184,10 +184,10 @@ async function f() {
 }
 
 f().then(
-  v => console.log(v),
-  e => console.log(e)
+  v => console.log(‘resolve’,v),
+  e => console.log('reject',e)
 )
-// Error: 出错了
+//reject Error: 出错了
 ```
 
 ### Promise 对象的状态变化
