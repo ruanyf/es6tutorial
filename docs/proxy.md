@@ -601,7 +601,7 @@ for (let b in oproxy2) {
 
 ### construct()
 
-`construct`方法用于拦截`new`命令，下面是拦截对象的写法。
+`construct()`方法用于拦截`new`命令，下面是拦截对象的写法。
 
 ```javascript
 var handler = {
@@ -611,11 +611,11 @@ var handler = {
 };
 ```
 
-`construct`方法可以接受三个参数。
+`construct()`方法可以接受三个参数。
 
-- `target`：目标对象
-- `args`：构造函数的参数对象
-- `newTarget`：创造实例对象时，`new`命令作用的构造函数（下面例子的`p`）
+- `target`：目标对象。
+- `args`：构造函数的参数数组。
+- `newTarget`：创造实例对象时，`new`命令作用的构造函数（下面例子的`p`）。
 
 ```javascript
 var p = new Proxy(function () {}, {
@@ -630,7 +630,7 @@ var p = new Proxy(function () {}, {
 // 10
 ```
 
-`construct`方法返回的必须是一个对象，否则会报错。
+`construct()`方法返回的必须是一个对象，否则会报错。
 
 ```javascript
 var p = new Proxy(function() {}, {
