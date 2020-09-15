@@ -184,8 +184,8 @@ async function f() {
 }
 
 f().then(
-  v => console.log(‘resolve’,v),
-  e => console.log('reject',e)
+  v => console.log('resolve', v),
+  e => console.log('reject', e)
 )
 //reject Error: 出错了
 ```
