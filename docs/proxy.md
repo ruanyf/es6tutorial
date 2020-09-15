@@ -643,6 +643,18 @@ new p() // 报错
 // Uncaught TypeError: 'construct' on proxy: trap returned non-object ('1')
 ```
 
+`construct()`方法中的`this`指向的是handler  
+```
+var handler = {
+  construct: function(target, args) {
+    console.log(this ===  handler);
+    return new target(...args);
+  }
+}
+var p = new Proxy(function() {}, handler);
+new p() // true
+```
+
 ### deleteProperty()
 
 `deleteProperty`方法用于拦截`delete`操作，如果这个方法抛出错误或者返回`false`，当前属性就无法被`delete`命令删除。
