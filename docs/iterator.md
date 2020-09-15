@@ -441,7 +441,7 @@ str // "hi"
 
 ## Iterator 接口与 Generator 函数
 
-`Symbol.iterator`方法的最简单实现，还是使用下一章要介绍的 Generator 函数。
+`Symbol.iterator()`方法的最简单实现，还是使用下一章要介绍的 Generator 函数。
 
 ```javascript
 let myIterable = {
@@ -450,7 +450,7 @@ let myIterable = {
     yield 2;
     yield 3;
   }
-}
+};
 [...myIterable] // [1, 2, 3]
 
 // 或者采用下面的简洁写法
@@ -469,13 +469,13 @@ for (let x of obj) {
 // "world"
 ```
 
-上面代码中，`Symbol.iterator`方法几乎不用部署任何代码，只要用 yield 命令给出每一步的返回值即可。
+上面代码中，`Symbol.iterator()`方法几乎不用部署任何代码，只要用 yield 命令给出每一步的返回值即可。
 
 ## 遍历器对象的 return()，throw()
 
-遍历器对象除了具有`next`方法，还可以具有`return`方法和`throw`方法。如果你自己写遍历器对象生成函数，那么`next`方法是必须部署的，`return`方法和`throw`方法是否部署是可选的。
+遍历器对象除了具有`next()`方法，还可以具有`return()`方法和`throw()`方法。如果你自己写遍历器对象生成函数，那么`next()`方法是必须部署的，`return()`方法和`throw()`方法是否部署是可选的。
 
-`return`方法的使用场合是，如果`for...of`循环提前退出（通常是因为出错，或者有`break`语句），就会调用`return`方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署`return`方法。
+`return()`方法的使用场合是，如果`for...of`循环提前退出（通常是因为出错，或者有`break`语句），就会调用`return()`方法。如果一个对象在完成遍历前，需要清理或释放资源，就可以部署`return()`方法。
 
 ```javascript
 function readLinesSync(file) {
@@ -495,7 +495,7 @@ function readLinesSync(file) {
 }
 ```
 
-上面代码中，函数`readLinesSync`接受一个文件对象作为参数，返回一个遍历器对象，其中除了`next`方法，还部署了`return`方法。下面的两种情况，都会触发执行`return`方法。
+上面代码中，函数`readLinesSync`接受一个文件对象作为参数，返回一个遍历器对象，其中除了`next()`方法，还部署了`return()`方法。下面的两种情况，都会触发执行`return()`方法。
 
 ```javascript
 // 情况一
@@ -511,11 +511,11 @@ for (let line of readLinesSync(fileName)) {
 }
 ```
 
-上面代码中，情况一输出文件的第一行以后，就会执行`return`方法，关闭这个文件；情况二会在执行`return`方法关闭文件之后，再抛出错误。
+上面代码中，情况一输出文件的第一行以后，就会执行`return()`方法，关闭这个文件；情况二会在执行`return()`方法关闭文件之后，再抛出错误。
 
-注意，`return`方法必须返回一个对象，这是 Generator 规格决定的。
+注意，`return()`方法必须返回一个对象，这是 Generator 语法决定的。
 
-`throw`方法主要是配合 Generator 函数使用，一般的遍历器对象用不到这个方法。请参阅《Generator 函数》一章。
+`throw()`方法主要是配合 Generator 函数使用，一般的遍历器对象用不到这个方法。请参阅《Generator 函数》一章。
 
 ## for...of 循环
 
