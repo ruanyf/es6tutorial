@@ -517,11 +517,11 @@ Reflect.apply(proxy, null, [9, 10]) // 38
 
 ### has()
 
-`has`方法用来拦截`HasProperty`操作，即判断对象是否具有某个属性时，这个方法会生效。典型的操作就是`in`运算符。
+`has()`方法用来拦截`HasProperty`操作，即判断对象是否具有某个属性时，这个方法会生效。典型的操作就是`in`运算符。
 
-`has`方法可以接受两个参数，分别是目标对象、需查询的属性名。
+`has()`方法可以接受两个参数，分别是目标对象、需查询的属性名。
 
-下面的例子使用`has`方法隐藏某些属性，不被`in`运算符发现。
+下面的例子使用`has()`方法隐藏某些属性，不被`in`运算符发现。
 
 ```javascript
 var handler = {
@@ -537,9 +537,9 @@ var proxy = new Proxy(target, handler);
 '_prop' in proxy // false
 ```
 
-上面代码中，如果原对象的属性名的第一个字符是下划线，`proxy.has`就会返回`false`，从而不会被`in`运算符发现。
+上面代码中，如果原对象的属性名的第一个字符是下划线，`proxy.has()`就会返回`false`，从而不会被`in`运算符发现。
 
-如果原对象不可配置或者禁止扩展，这时`has`拦截会报错。
+如果原对象不可配置或者禁止扩展，这时`has()`拦截会报错。
 
 ```javascript
 var obj = { a: 10 };
@@ -554,11 +554,11 @@ var p = new Proxy(obj, {
 'a' in p // TypeError is thrown
 ```
 
-上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。也就是说，如果某个属性不可配置（或者目标对象不可扩展），则`has`方法就不得“隐藏”（即返回`false`）目标对象的该属性。
+上面代码中，`obj`对象禁止扩展，结果使用`has`拦截就会报错。也就是说，如果某个属性不可配置（或者目标对象不可扩展），则`has()`方法就不得“隐藏”（即返回`false`）目标对象的该属性。
 
-值得注意的是，`has`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has`方法不判断一个属性是对象自身的属性，还是继承的属性。
+值得注意的是，`has()`方法拦截的是`HasProperty`操作，而不是`HasOwnProperty`操作，即`has()`方法不判断一个属性是对象自身的属性，还是继承的属性。
 
-另外，虽然`for...in`循环也用到了`in`运算符，但是`has`拦截对`for...in`循环不生效。
+另外，虽然`for...in`循环也用到了`in`运算符，但是`has()`拦截对`for...in`循环不生效。
 
 ```javascript
 let stu1 = {name: '张三', score: 59};
@@ -597,14 +597,14 @@ for (let b in oproxy2) {
 // 99
 ```
 
-上面代码中，`has`拦截只对`in`运算符生效，对`for...in`循环不生效，导致不符合要求的属性没有被`for...in`循环所排除。
+上面代码中，`has()`拦截只对`in`运算符生效，对`for...in`循环不生效，导致不符合要求的属性没有被`for...in`循环所排除。
 
 ### construct()
 
 `construct()`方法用于拦截`new`命令，下面是拦截对象的写法。
 
 ```javascript
-var handler = {
+const handler = {
   construct (target, args, newTarget) {
     return new target(...args);
   }
@@ -618,7 +618,7 @@ var handler = {
 - `newTarget`：创造实例对象时，`new`命令作用的构造函数（下面例子的`p`）。
 
 ```javascript
-var p = new Proxy(function () {}, {
+const p = new Proxy(function () {}, {
   construct: function(target, args) {
     console.log('called: ' + args.join(', '));
     return { value: args[0] * 10 };
@@ -633,7 +633,7 @@ var p = new Proxy(function () {}, {
 `construct()`方法返回的必须是一个对象，否则会报错。
 
 ```javascript
-var p = new Proxy(function() {}, {
+const p = new Proxy(function() {}, {
   construct: function(target, argumentsList) {
     return 1;
   }
@@ -643,15 +643,32 @@ new p() // 报错
 // Uncaught TypeError: 'construct' on proxy: trap returned non-object ('1')
 ```
 
-`construct()`方法中的`this`指向的是handler  
+另外，由于`construct()`拦截的是构造函数，所以它的目标对象必须是函数，否则就会报错。
+
+```javascript
+const p = new Proxy({}, {
+  construct: function(target, argumentsList) {
+    return {};
+  }
+});
+
+new p() // 报错
+// Uncaught TypeError: p is not a constructor
 ```
-var handler = {
+
+上面例子中，拦截的目标对象不是一个函数，而是一个对象（`new Proxy()`的第一个参数），导致报错。
+
+注意，`construct()`方法中的`this`指向的是`handler`，而不是实例对象。
+
+```javascript
+const handler = {
   construct: function(target, args) {
     console.log(this ===  handler);
     return new target(...args);
   }
 }
-var p = new Proxy(function() {}, handler);
+
+let p = new Proxy(function () {}, handler);
 new p() // true
 ```
 
