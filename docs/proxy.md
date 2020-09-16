@@ -643,6 +643,18 @@ new p() // 报错
 // Uncaught TypeError: 'construct' on proxy: trap returned non-object ('1')
 ```
 
+`construct()`方法中的`this`指向的是handler  
+```
+var handler = {
+  construct: function(target, args) {
+    console.log(this ===  handler);
+    return new target(...args);
+  }
+}
+var p = new Proxy(function() {}, handler);
+new p() // true
+```
+
 ### deleteProperty()
 
 `deleteProperty`方法用于拦截`delete`操作，如果这个方法抛出错误或者返回`false`，当前属性就无法被`delete`命令删除。
@@ -1041,6 +1053,8 @@ proxy.foo // TypeError: Revoked
 
 ## this 问题
 
+正常情况下，Proxy代理的钩子函数中的`this`指向的是Proxy代理实例（construct钩子函数除外，该钩子函数中`this`指向的是handler)  
+  
 虽然 Proxy 可以代理针对目标对象的访问，但它不是目标对象的透明代理，即不做任何拦截的情况下，也无法保证与目标对象的行为一致。主要原因就是在 Proxy 代理的情况下，目标对象内部的`this`关键字会指向 Proxy 代理。
 
 ```javascript
