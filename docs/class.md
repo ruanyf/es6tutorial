@@ -850,7 +850,7 @@ class Foo {
     this.#b = b;
   }
   #sum() {
-    return #a + #b;
+    return this.#a + this.#b;
   }
   printSum() {
     console.log(this.#sum());
