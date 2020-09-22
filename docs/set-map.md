@@ -1087,6 +1087,8 @@ undefined
 
 上面代码中，只要外部的引用消失，WeakMap 内部的引用，就会自动被垃圾回收清除。由此可见，有了 WeakMap 的帮助，解决内存泄漏就会简单很多。
 
+Chrome 浏览器的 Dev Tools 的 Memory 面板，有一个垃圾桶的按钮，可以强制垃圾回收（garbage collect）。这个按钮也能用来观察 WeakMap 里面的引用是否消失。
+
 ### WeakMap 的用途
 
 前文说过，WeakMap 应用的典型场合就是 DOM 节点作为键名。下面是一个例子。
@@ -1137,3 +1139,4 @@ c.dec()
 ```
 
 上面代码中，`Countdown`类的两个内部属性`_counter`和`_action`，是实例的弱引用，所以如果删除实例，它们也就随之消失，不会造成内存泄漏。
+
