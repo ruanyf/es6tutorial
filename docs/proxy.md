@@ -1070,8 +1070,139 @@ proxy.foo // TypeError: Revoked
 
 ## this 问题
 
-正常情况下，Proxy代理的钩子函数中的`this`指向的是Proxy代理实例（construct钩子函数除外，该钩子函数中`this`指向的是handler)  
-  
+正常情况下，Proxy代理的钩子函数中的`this`指向的都是`handler`参数。如下示例：  
+```javascript
+const handler = {
+  // 多种拦截方式钩子函数内部this指向
+  get: function (target, key, receiver) {
+    console.log('getFn', this, this === handler) // 字符串 handler参数对象 true
+    return 'Hello, ' + key;
+  },
+  set: function () {
+    console.log('setFn', this, this === handler) // 字符串 handler参数对象 true
+  },
+
+  apply: function (target, thisBinding, args) {
+    console.log('applyFn', this, this === handler) // 字符串 handler参数对象 true
+    return args[0];
+  },
+
+  has: function (target, key) {
+    console.log('hasFn', this, this === handler) // 字符串 handler参数对象 true
+    if (key[0] === '_') {
+      return false;
+    }
+    return key in target;
+  },
+
+  construct: function (target, args) {
+    console.log('constructFn', this, this === handler) // 字符串 handler参数对象 true
+    return { value: args[1] };
+  },
+
+  deleteProperty(target, key) {
+    console.log('deletePropertyFn', this, this === handler) // 字符串 handler参数对象 true
+    delete target[key];
+    return true;
+  },
+
+  defineProperty(target, key, descriptor) {
+    console.log('definePropertyFn', this, this === handler) // 字符串 handler参数对象 true
+    return Object.defineProperty(target, key, descriptor)
+  },
+
+  getOwnPropertyDescriptor(target, key) {
+    console.log('getOwnPropertyDescriptorFn', this, this === handler) // 字符串 handler参数对象 true
+    return Object.getOwnPropertyDescriptor(target, key);
+  },
+
+  getPrototypeOf(target) {
+    console.log('getPrototypeOfFn', this, this === handler) // 字符串 handler参数对象 true
+    return null;
+  },
+
+  isExtensible: function (target) {
+    console.log('isExtensibleFn', this, this === handler) // 字符串 handler参数对象 true
+    return true;
+  },
+
+  ownKeys(target) {
+    console.log('ownKeysFn', this, this === handler) // 字符串 handler参数对象 true
+    return ['caller', 'arguments', 'prototype', 'targetName']; // 这几个属性是不可配置的，这时ownKeys()方法返回的数组之中，必须包含他们，否则会报错Uncaught TypeError: 'ownKeys' on proxy: trap result did not include ...
+  },
+
+  preventExtensions(target) {
+    console.log('preventExtensionsFn', this, this === handler) // 字符串 handler参数对象 true
+    Object.preventExtensions(target)
+    return true;
+  },
+
+  setPrototypeOf(target, proto) {
+    console.log('setPrototypeOfFn', this, this === handler) // 字符串 handler参数对象 true
+    return true;
+  }
+};
+let target = function targetFn(x, y, z) {
+  return x + y;
+},
+  proxy = new Proxy(target, handler);
+
+
+proxy.foo
+proxy.foo = 'newFoo'
+proxy('无调用者，apply钩子函数内部的第二个参数thisBinding指undefined')
+'_prop' in proxy
+new proxy(1, 2)
+delete proxy.foo
+Object.defineProperty(proxy, 'targetName', {
+  value: '函数名称'
+})
+Object.getOwnPropertyDescriptor(proxy, 'baz')
+Object.getPrototypeOf(proxy)
+Object.isExtensible(proxy)
+Object.getOwnPropertyNames(proxy)
+Object.preventExtensions(proxy)
+
+target = {
+  name: 123
+}
+proxy = new Proxy(target, handler);
+Object.setPrototypeOf(proxy, {
+  name: 123456
+});
+```
+但如果把钩子函数写成箭头函数，那么函数内部`this`就指向上一层父级作用域的this了：
+```javascript
+// 钩子函数为箭头函数的情况下，this指向情况(以get函数为例)：
+const obj1 = {
+    name: 'obj1',
+    proxy: fatherFn
+}
+const obj2 = {
+    name: 'obj2'
+}
+function fatherFn(thisTarget) {
+    const handler = {
+      get: (target, key,receiver) => {
+        console.log('getFn', this, this === thisTarget) // 'getFn' <thisTarget对象> true
+        return 'Hello, ' + key;
+      }
+    };
+
+    const proxy = new Proxy(function(x, y,z) {
+      return x + y;
+    }, handler);
+
+    proxy.foo
+}
+// this指向window
+fatherFn(window)
+// this指向obj
+obj1.proxy(obj1)
+// this指向obj2
+obj1.proxy.call(obj2, obj2)
+```
+
 虽然 Proxy 可以代理针对目标对象的访问，但它不是目标对象的透明代理，即不做任何拦截的情况下，也无法保证与目标对象的行为一致。主要原因就是在 Proxy 代理的情况下，目标对象内部的`this`关键字会指向 Proxy 代理。
 
 ```javascript
