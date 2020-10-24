@@ -663,7 +663,7 @@ new p() // 报错
 ```javascript
 const handler = {
   construct: function(target, args) {
-    console.log(this ===  handler);
+    console.log(this === handler);
     return new target(...args);
   }
 }
@@ -1070,8 +1070,6 @@ proxy.foo // TypeError: Revoked
 
 ## this 问题
 
-正常情况下，Proxy代理的钩子函数中的`this`指向的是Proxy代理实例（construct钩子函数除外，该钩子函数中`this`指向的是handler)  
-  
 虽然 Proxy 可以代理针对目标对象的访问，但它不是目标对象的透明代理，即不做任何拦截的情况下，也无法保证与目标对象的行为一致。主要原因就是在 Proxy 代理的情况下，目标对象内部的`this`关键字会指向 Proxy 代理。
 
 ```javascript
@@ -1088,7 +1086,7 @@ target.m() // false
 proxy.m()  // true
 ```
 
-上面代码中，一旦`proxy`代理`target.m`，后者内部的`this`就是指向`proxy`，而不是`target`。
+上面代码中，一旦`proxy`代理`target`，`target.m()`内部的`this`就是指向`proxy`，而不是`target`。
 
 下面是一个例子，由于`this`指向的变化，导致 Proxy 无法代理目标对象。
 
@@ -1140,6 +1138,33 @@ const proxy = new Proxy(target, handler);
 
 proxy.getDate() // 1
 ```
+
+另外，Proxy 拦截函数内部的`this`，指向的是`handler`对象。
+
+```javascript
+const handler = {
+  get: function (target, key, receiver) {
+    console.log(this === handler);
+    return 'Hello, ' + key;
+  },
+  set: function (target, key, value) {
+    console.log(this === handler);
+    target[key] = value;
+    return true;
+  }
+};
+
+const proxy = new Proxy({}, handler);
+
+proxy.foo
+// true
+// Hello, foo
+
+proxy.foo = 1
+// true
+```
+
+上面例子中，`get()`和`set()`拦截函数内部的`this`，指向的都是`handler`对象。
 
 ## 实例：Web 服务的客户端
 
