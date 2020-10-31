@@ -1141,14 +1141,14 @@ Atomics.add(ia, 112, 1); // 正确
 
 `store()`方法用来向共享内存写入数据，`load()`方法用来从共享内存读出数据。比起直接的读写操作，它们的好处是保证了读写操作的原子性。
 
-此外，它们还用来解决一个问题：多个线程使用共享内存的某个位置作为开关（flag），一旦该位置的值变了，就执行特定操作。这时，必须保证该位置的赋值操作，一定是在它前面的所有可能会改写内存的操作结束后执行；而该位置的取值操作，一定是在它后面所有可能会读取该位置的操作开始之前执行。`store`方法和`load`方法就能做到这一点，编译器不会为了优化，而打乱机器指令的执行顺序。
+此外，它们还用来解决一个问题：多个线程使用共享内存的某个位置作为开关（flag），一旦该位置的值变了，就执行特定操作。这时，必须保证该位置的赋值操作，一定是在它前面的所有可能会改写内存的操作结束后执行；而该位置的取值操作，一定是在它后面所有可能会读取该位置的操作开始之前执行。`store()`方法和`load()`方法就能做到这一点，编译器不会为了优化，而打乱机器指令的执行顺序。
 
 ```javascript
-Atomics.load(array, index)
-Atomics.store(array, index, value)
+Atomics.load(typedArray, index)
+Atomics.store(typedArray, index, value)
 ```
 
-`store`方法接受三个参数：SharedBuffer 的视图、位置索引和值，返回`sharedArray[index]`的值。`load`方法只接受两个参数：SharedBuffer 的视图和位置索引，也是返回`sharedArray[index]`的值。
+`store`方法接受三个参数：SharedArrayBuffer 的视图、位置索引和值，返回`sharedArrayBuffer[index]`的值。`load`方法只接受两个参数：SharedArrayBuffer 的视图和位置索引，也是返回`sharedArrayBuffer[index]`的值。
 
 ```javascript
 // 主线程 main.js

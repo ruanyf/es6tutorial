@@ -752,7 +752,7 @@ export { output };
 ```javascript
 // awaiting.js
 let output;
-(async function1 main() {
+(async function main() {
   const dynamic = await import(someMission);
   const data = await fetch(url);
   output = someProcess(dynamic.default, data);

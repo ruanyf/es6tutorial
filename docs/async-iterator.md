@@ -63,9 +63,9 @@ function idMaker() {
 
 const it = idMaker();
 
+it.next().value.then(o => console.log(o)) // 0
 it.next().value.then(o => console.log(o)) // 1
 it.next().value.then(o => console.log(o)) // 2
-it.next().value.then(o => console.log(o)) // 3
 // ...
 ```
 

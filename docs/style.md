@@ -497,7 +497,7 @@ $ npm i -g eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
 `index.js`文件的代码如下。
 
 ```javascript
-var unusued = 'I have no purpose!';
+var unused = 'I have no purpose!';
 
 function greet() {
     var message = 'Hello, World!';
@@ -513,7 +513,7 @@ greet();
 $ eslint index.js
 index.js
   1:1  error  Unexpected var, use let or const instead          no-var
-  1:5  error  unusued is defined but never used                 no-unused-vars
+  1:5  error  unused is defined but never used                 no-unused-vars
   4:5  error  Expected indentation of 2 characters but found 4  indent
   4:5  error  Unexpected var, use let or const instead          no-var
   5:5  error  Expected indentation of 2 characters but found 4  indent
@@ -522,3 +522,4 @@ index.js
 ```
 
 上面代码说明，原文件有五个错误，其中两个是不应该使用`var`命令，而要使用`let`或`const`；一个是定义了变量，却没有使用；另外两个是行首缩进为 4 个空格，而不是规定的 2 个空格。
+
