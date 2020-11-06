@@ -1148,7 +1148,7 @@ Atomics.load(typedArray, index)
 Atomics.store(typedArray, index, value)
 ```
 
-`store`方法接受三个参数：SharedArrayBuffer 的视图、位置索引和值，返回`sharedArrayBuffer[index]`的值。`load`方法只接受两个参数：SharedArrayBuffer 的视图和位置索引，也是返回`sharedArrayBuffer[index]`的值。
+`store()`方法接受三个参数：`typedArray`对象（SharedArrayBuffer 的视图）、位置索引和值，返回`typedArray[index]`的值。`load()`方法只接受两个参数：`typedArray`对象（SharedArrayBuffer 的视图）和位置索引，也是返回`typedArray[index]`的值。
 
 ```javascript
 // 主线程 main.js
@@ -1161,7 +1161,7 @@ console.log(ia[37]);  // 123456
 console.log(ia[42]);  // 314159
 ```
 
-上面代码中，主线程的`Atomics.store`向 42 号位置的赋值，一定是早于 37 位置的赋值。只要 37 号位置等于 163，Worker 线程就不会终止循环，而对 37 号位置和 42 号位置的取值，一定是在`Atomics.load`操作之后。
+上面代码中，主线程的`Atomics.store()`向 42 号位置的赋值，一定是早于 37 位置的赋值。只要 37 号位置等于 163，Worker 线程就不会终止循环，而对 37 号位置和 42 号位置的取值，一定是在`Atomics.load()`操作之后。
 
 下面是另一个例子。
 
