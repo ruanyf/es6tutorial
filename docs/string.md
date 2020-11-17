@@ -505,10 +505,11 @@ function passthru(literals) {
   let i = 0;
 
   while (i < literals.length) {
-    result += literals[i++];
+    result += literals[i];
     if (i < arguments.length) {
       result += arguments[i];
     }
+    i++
   }
 
   return result;
