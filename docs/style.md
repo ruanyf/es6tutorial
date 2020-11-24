@@ -471,17 +471,17 @@ export default StyleGuide;
 
 ESLint 是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。
 
-首先，安装 ESLint。
+首先，在项目的根目录安装 ESLint。
 
 ```bash
-$ npm i -g eslint
+$ npm install --save-dev eslint
 ```
 
 然后，安装 Airbnb 语法规则，以及 import、a11y、react 插件。
 
 ```bash
-$ npm i -g eslint-config-airbnb
-$ npm i -g eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+$ npm install --save-dev eslint-config-airbnb
+$ npm install --save-dev eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
 ```
 
 最后，在项目的根目录下新建一个`.eslintrc`文件，配置 ESLint。
@@ -501,7 +501,7 @@ var unused = 'I have no purpose!';
 
 function greet() {
     var message = 'Hello, World!';
-    alert(message);
+    console.log(message);
 }
 
 greet();
@@ -510,7 +510,7 @@ greet();
 使用 ESLint 检查这个文件，就会报出错误。
 
 ```bash
-$ eslint index.js
+$ npx eslint index.js
 index.js
   1:1  error  Unexpected var, use let or const instead          no-var
   1:5  error  unused is defined but never used                 no-unused-vars
