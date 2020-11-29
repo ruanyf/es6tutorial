@@ -497,7 +497,7 @@ async function dbFuc(db) {
 
 上面例子中，`reduce()`方法的第一个参数是`async`函数，导致该函数的第一个参数是前一步操作返回的 Promise 对象，所以必须使用`await`等待它操作结束。另外，`reduce()`方法返回的是`docs`数组最后一个成员的`async`函数的执行结果，也是一个 Promise 对象，导致在它前面也必须加上`await`。
 
-这个例子的`reduce()`的第二个参数是`undefined`，并且第一个参数函数里面没有`return`语句，原因是这个例子没有用到累积变量，而且每一轮`async`函数不管有没有`return`语句，总是返回一个 Promise 对象。换句话说，这里的`reduce()`方法不是为了求值，而是为了遍历操作。
+上面的`reduce()`的参数函数里面没有`return`语句，原因是这个函数的主要目的是`db.post()`操作，不是返回值。而且`async`函数不管有没有`return`语句，总是返回一个 Promise 对象，所以这里的`return`是不必要的。
 
 如果确实希望多个请求并发执行，可以使用`Promise.all`方法。当三个请求都会`resolved`时，下面两种写法效果相同。
 
