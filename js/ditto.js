@@ -261,7 +261,7 @@ function create_banner(element) {
   var text = '【免费课程】' +
     '<span style="color: #4682BE;">《Vue进阶攻略》</span>领取，Vue 3.0 新知识点讲解。';
 
-  var banner = $('<a href="https://datayi.cn/w/a9BLv2LP" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://datayi.cn/w/4PK5pQJ9" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
