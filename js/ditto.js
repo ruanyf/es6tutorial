@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2020年11月1日
-  var deadline = new Date(2020, 10, 1);
+  // 2021年1月1日
+  var deadline = new Date(2021, 0, 1);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -259,7 +259,7 @@ function create_banner(element) {
   ].join(';');
 
   var text = '【免费课程】' +
-    '开始学习<span style="color: #4682BE;">《ES6 实战教程》</span>，一线大厂前端必备技能。';
+    '<span style="color: #4682BE;">《Vue进阶攻略》</span>领取，Vue 3.0 新知识点讲解。';
 
   var banner = $('<a href="https://datayi.cn/w/a9BLv2LP" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
