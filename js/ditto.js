@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2021年1月1日
-  var deadline = new Date(2021, 0, 1);
+  // 2021年2月3日
+  var deadline = new Date(2021, 1, 3);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
