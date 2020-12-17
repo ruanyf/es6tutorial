@@ -393,6 +393,8 @@ iterator.next() // { value: undefined, done: true }
 - Map(), Set(), WeakMap(), WeakSet()（比如`new Map([['a',1],['b',2]])`）
 - Promise.all()
 - Promise.race()
+- Promise.allSettled()
+- Promise.any()
 
 ## 字符串的 Iterator 接口
 
