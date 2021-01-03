@@ -928,7 +928,7 @@ wm2.get(k2) // "bar"
 
 `WeakMap`与`Map`的区别有两点。
 
-首先，`WeakMap`只接受对象作为键名（`null`除外），不接受其他类型的值作为键名。
+首先，`WeakMap`只接受对象作为键名（`null`也不能作为键名），不接受其他类型的值作为键名。
 
 ```javascript
 const map = new WeakMap();
