@@ -38,7 +38,7 @@ new RegExp(/abc/ig, 'i').flags
 
 ## 字符串的正则方法
 
-字符串对象共有 4 个方法，可以使用正则表达式：`match()`、`replace()`、`search()`和`split()`。
+ES6 出现之前，字符串对象共有 4 个方法，可以使用正则表达式：`match()`、`replace()`、`search()`和`split()`。
 
 ES6 将这 4 个方法，在语言内部全部调用`RegExp`的实例方法，从而做到所有与正则相关的方法，全都定义在`RegExp`对象上。
 
@@ -507,9 +507,9 @@ ES2018 引入了[具名组匹配](https://github.com/tc39/proposal-regexp-named-
 const RE_DATE = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
 
 const matchObj = RE_DATE.exec('1999-12-31');
-const year = matchObj.groups.year; // 1999
-const month = matchObj.groups.month; // 12
-const day = matchObj.groups.day; // 31
+const year = matchObj.groups.year; // "1999"
+const month = matchObj.groups.month; // "12"
+const day = matchObj.groups.day; // "31"
 ```
 
 上面代码中，“具名组匹配”在圆括号内部，模式的头部添加“问号 + 尖括号 + 组名”（`?<year>`），然后就可以在`exec`方法返回结果的`groups`属性上引用该组名。同时，数字序号（`matchObj[1]`）依然有效。
