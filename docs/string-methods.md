@@ -31,11 +31,11 @@ String.fromCodePoint(0x78, 0x1f680, 0x79) === 'x\uD83D\uDE80y'
 ES6 还为原生的 String 对象，提供了一个`raw()`方法。该方法返回一个斜杠都被转义（即斜杠前面再加一个斜杠）的字符串，往往用于模板字符串的处理方法。
 
 ```javascript
-String.raw`Hi\n${2+3}!`;
-// 返回 "Hi\\n5!"
+String.raw`Hi\n${2+3}!`
+// 实际返回 "Hi\\n5!"，显示的是转义后的结果 "Hi\n5!"
 
 String.raw`Hi\u000A!`;
-// 返回 "Hi\\u000A!"
+// 实际返回 "Hi\\u000A!"，显示的是转义后的结果 "Hi\u000A!"
 ```
 
 如果原字符串的斜杠已经转义，那么`String.raw()`会进行再次转义。
@@ -43,19 +43,21 @@ String.raw`Hi\u000A!`;
 ```javascript
 String.raw`Hi\\n`
 // 返回 "Hi\\\\n"
+
+String.raw`Hi\\n` === "Hi\\\\n" // true
 ```
 
 `String.raw()`方法可以作为处理模板字符串的基本方法，它会将所有变量替换，而且对斜杠进行转义，方便下一步作为字符串来使用。
 
-`String.raw()`方法也可以作为正常的函数使用。这时，它的第一个参数，应该是一个具有`raw`属性的对象，且`raw`属性的值应该是一个数组。
+`String.raw()`本质上是一个正常的函数，只是专用于模板字符串的标签函数。如果写成正常函数的形式，它的第一个参数，应该是一个具有`raw`属性的对象，且`raw`属性的值应该是一个数组，对应模板字符串解析后的值。
 
 ```javascript
-String.raw({ raw: 'test' }, 0, 1, 2);
-// 't0e1s2t'
-
+// `foo${1 + 2}bar`
 // 等同于
-String.raw({ raw: ['t','e','s','t'] }, 0, 1, 2);
+String.raw({ raw: ['foo', 'bar'] }, 1 + 2) // "foo3bar"
 ```
+
+上面代码中，`String.raw()`方法的第一个参数是一个对象，它的`raw`属性等同于原始的模板字符串解析后得到的数组。
 
 作为函数，`String.raw()`的代码实现基本如下。
 
@@ -119,6 +121,17 @@ let s = '𠮷a';
 for (let ch of s) {
   console.log(ch.codePointAt(0).toString(16));
 }
+// 20bb7
+// 61
+```
+
+另一种方法也可以，使用扩展运算符（`...`）进行展开运算。
+
+```javascript
+let arr = [...'𠮷a']; // arr.length === 2
+arr.forEach(
+  ch => console.log(ch.codePointAt(0).toString(16))
+);
 // 20bb7
 // 61
 ```
@@ -315,4 +328,112 @@ s.trimEnd() // "  abc"
 ## 实例方法：matchAll()
 
 `matchAll()`方法返回一个正则表达式在当前字符串的所有匹配，详见《正则的扩展》的一章。
+
+## 实例方法：replaceAll()
+
+历史上，字符串的实例方法`replace()`只能替换第一个匹配。
+
+```javascript
+'aabbcc'.replace('b', '_')
+// 'aa_bcc'
+```
+
+上面例子中，`replace()`只将第一个`b`替换成了下划线。
+
+如果要替换所有的匹配，不得不使用正则表达式的`g`修饰符。
+
+```javascript
+'aabbcc'.replace(/b/g, '_')
+// 'aa__cc'
+```
+
+正则表达式毕竟不是那么方便和直观，[ES2021](https://github.com/tc39/proposal-string-replaceall) 引入了`replaceAll()`方法，可以一次性替换所有匹配。
+
+```javascript
+'aabbcc'.replaceAll('b', '_')
+// 'aa__cc'
+```
+
+它的用法与`replace()`相同，返回一个新字符串，不会改变原字符串。
+
+```javascript
+String.prototype.replaceAll(searchValue, replacement)
+```
+
+上面代码中，`searchValue`是搜索模式，可以是一个字符串，也可以是一个全局的正则表达式（带有`g`修饰符）。
+
+如果`searchValue`是一个不带有`g`修饰符的正则表达式，`replaceAll()`会报错。这一点跟`replace()`不同。
+
+```javascript
+// 不报错
+'aabbcc'.replace(/b/, '_')
+
+// 报错
+'aabbcc'.replaceAll(/b/, '_')
+```
+
+上面例子中，`/b/`不带有`g`修饰符，会导致`replaceAll()`报错。
+
+`replaceAll()`的第二个参数`replacement`是一个字符串，表示替换的文本，其中可以使用一些特殊字符串。
+
+- `$&`：匹配的子字符串。
+- `` $` ``：匹配结果前面的文本。
+- `$'`：匹配结果后面的文本。
+- `$n`：匹配成功的第`n`组内容，`n`是从1开始的自然数。这个参数生效的前提是，第一个参数必须是正则表达式。
+- `$$`：指代美元符号`$`。
+
+下面是一些例子。
+
+```javascript
+// $& 表示匹配的字符串，即`b`本身
+// 所以返回结果与原字符串一致
+'abbc'.replaceAll('b', '$&')
+// 'abbc'
+
+// $` 表示匹配结果之前的字符串
+// 对于第一个`b`，$` 指代`a`
+// 对于第二个`b`，$` 指代`ab`
+'abbc'.replaceAll('b', '$`')
+// 'aaabc'
+
+// $' 表示匹配结果之后的字符串
+// 对于第一个`b`，$' 指代`bc`
+// 对于第二个`b`，$' 指代`c`
+'abbc'.replaceAll('b', `$'`)
+// 'abccc'
+
+// $1 表示正则表达式的第一个组匹配，指代`ab`
+// $2 表示正则表达式的第二个组匹配，指代`bc`
+'abbc'.replaceAll(/(ab)(bc)/g, '$2$1')
+// 'bcab'
+
+// $$ 指代 $
+'abc'.replaceAll('b', '$$')
+// 'a$c'
+```
+
+`replaceAll()`的第二个参数`replacement`除了为字符串，也可以是一个函数，该函数的返回值将替换掉第一个参数`searchValue`匹配的文本。
+
+```javascript
+'aabbcc'.replaceAll('b', () => '_')
+// 'aa__cc'
+```
+
+上面例子中，`replaceAll()`的第二个参数是一个函数，该函数的返回值会替换掉所有`b`的匹配。
+
+这个替换函数可以接受多个参数。第一个参数是捕捉到的匹配内容，第二个参数捕捉到是组匹配（有多少个组匹配，就有多少个对应的参数）。此外，最后还可以添加两个参数，倒数第二个参数是捕捉到的内容在整个字符串中的位置，最后一个参数是原字符串。
+
+```javascript
+const str = '123abc456';
+const regex = /(\d+)([a-z]+)(\d+)/g;
+
+function replacer(match, p1, p2, p3, offset, string) {
+  return [p1, p2, p3].join(' - ');
+}
+
+str.replaceAll(regex, replacer)
+// 123 - abc - 456
+```
+
+上面例子中，正则表达式有三个组匹配，所以`replacer()`函数的第一个参数`match`是捕捉到的匹配内容（即字符串`123abc456`），后面三个参数`p1`、`p2`、`p3`则依次为三个组匹配。
 

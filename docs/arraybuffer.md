@@ -34,11 +34,11 @@
 
 很多浏览器操作的 API，用到了二进制数组操作二进制数据，下面是其中的几个。
 
-- File API
-- XMLHttpRequest
-- Fetch API
-- Canvas
-- WebSockets
+- [Canvas](#canvas)
+- [Fetch API](#fetch-api)
+- [File API](#file-api)
+- [WebSockets](#websocket)
+- [XMLHttpRequest](#ajax)
 
 ## ArrayBuffer 对象
 
@@ -448,36 +448,41 @@ Float64Array.BYTES_PER_ELEMENT // 8
 
 ### ArrayBuffer 与字符串的互相转换
 
-`ArrayBuffer`转为字符串，或者字符串转为`ArrayBuffer`，有一个前提，即字符串的编码方法是确定的。假定字符串采用 UTF-16 编码（JavaScript 的内部编码方式），可以自己编写转换函数。
+`ArrayBuffer` 和字符串的相互转换，使用原生 `TextEncoder` 和 `TextDecoder` 方法。为了便于说明用法，下面的代码都按照 TypeScript 的用法，给出了类型签名。
 
 ```javascript
-// ArrayBuffer 转为字符串，参数为 ArrayBuffer 对象
-function ab2str(buf) {
-  // 注意，如果是大型二进制数组，为了避免溢出，
-  // 必须一个一个字符地转
-  if (buf && buf.byteLength < 1024) {
-    return String.fromCharCode.apply(null, new Uint16Array(buf));
-  }
-
-  const bufView = new Uint16Array(buf);
-  const len =  bufView.length;
-  const bstr = new Array(len);
-  for (let i = 0; i < len; i++) {
-    bstr[i] = String.fromCharCode.call(null, bufView[i]);
-  }
-  return bstr.join('');
+/**
+ * Convert ArrayBuffer/TypedArray to String via TextDecoder
+ *
+ * @see https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder
+ */
+function ab2str(
+  input: ArrayBuffer | Uint8Array | Int8Array | Uint16Array | Int16Array | Uint32Array | Int32Array,
+  outputEncoding: string = 'utf8',
+): string {
+  const decoder = new TextDecoder(outputEncoding)
+  return decoder.decode(input)
 }
 
-// 字符串转为 ArrayBuffer 对象，参数为字符串
-function str2ab(str) {
-  const buf = new ArrayBuffer(str.length * 2); // 每个字符占用2个字节
-  const bufView = new Uint16Array(buf);
-  for (let i = 0, strLen = str.length; i < strLen; i++) {
-    bufView[i] = str.charCodeAt(i);
-  }
-  return buf;
+/**
+ * Convert String to ArrayBuffer via TextEncoder
+ *
+ * @see https://developer.mozilla.org/zh-CN/docs/Web/API/TextEncoder
+ */
+function str2ab(input: string): ArrayBuffer {
+  const view = str2Uint8Array(input)
+  return view.buffer
+}
+
+/** Convert String to Uint8Array */
+function str2Uint8Array(input: string): Uint8Array {
+  const encoder = new TextEncoder()
+  const view = encoder.encode(input)
+  return view
 }
 ```
+
+上面代码中，`ab2str()`的第二个参数`outputEncoding`给出了输出编码的编码，一般保持默认值（`utf-8`），其他可选值参见[官方文档](https://encoding.spec.whatwg.org)或 [Node.js 文档](https://nodejs.org/api/util.html#util_whatwg_supported_encodings)。
 
 ### 溢出
 
@@ -574,7 +579,7 @@ v3.byteOffset // 2
 
 ### TypedArray.prototype.length
 
-`length`属性表示 TypedArray 数组含有多少个成员。注意将`byteLength`属性和`length`属性区分，前者是字节长度，后者是成员长度。
+`length`属性表示 `TypedArray` 数组含有多少个成员。注意将 `length` 属性和 `byteLength` 属性区分，前者是成员长度，后者是字节长度。
 
 ```javascript
 const a = new Int16Array(8);
@@ -725,7 +730,7 @@ struct someStruct {
 `DataView`视图本身也是构造函数，接受一个`ArrayBuffer`对象作为参数，生成视图。
 
 ```javascript
-DataView(ArrayBuffer buffer [, 字节起始位置 [, 长度]]);
+new DataView(ArrayBuffer buffer [, 字节起始位置 [, 长度]]);
 ```
 
 下面是一个例子。
@@ -1136,14 +1141,14 @@ Atomics.add(ia, 112, 1); // 正确
 
 `store()`方法用来向共享内存写入数据，`load()`方法用来从共享内存读出数据。比起直接的读写操作，它们的好处是保证了读写操作的原子性。
 
-此外，它们还用来解决一个问题：多个线程使用共享内存的某个位置作为开关（flag），一旦该位置的值变了，就执行特定操作。这时，必须保证该位置的赋值操作，一定是在它前面的所有可能会改写内存的操作结束后执行；而该位置的取值操作，一定是在它后面所有可能会读取该位置的操作开始之前执行。`store`方法和`load`方法就能做到这一点，编译器不会为了优化，而打乱机器指令的执行顺序。
+此外，它们还用来解决一个问题：多个线程使用共享内存的某个位置作为开关（flag），一旦该位置的值变了，就执行特定操作。这时，必须保证该位置的赋值操作，一定是在它前面的所有可能会改写内存的操作结束后执行；而该位置的取值操作，一定是在它后面所有可能会读取该位置的操作开始之前执行。`store()`方法和`load()`方法就能做到这一点，编译器不会为了优化，而打乱机器指令的执行顺序。
 
 ```javascript
-Atomics.load(array, index)
-Atomics.store(array, index, value)
+Atomics.load(typedArray, index)
+Atomics.store(typedArray, index, value)
 ```
 
-`store`方法接受三个参数：SharedBuffer 的视图、位置索引和值，返回`sharedArray[index]`的值。`load`方法只接受两个参数：SharedBuffer 的视图和位置索引，也是返回`sharedArray[index]`的值。
+`store()`方法接受三个参数：`typedArray`对象（SharedArrayBuffer 的视图）、位置索引和值，返回`typedArray[index]`的值。`load()`方法只接受两个参数：`typedArray`对象（SharedArrayBuffer 的视图）和位置索引，也是返回`typedArray[index]`的值。
 
 ```javascript
 // 主线程 main.js
@@ -1156,7 +1161,7 @@ console.log(ia[37]);  // 123456
 console.log(ia[42]);  // 314159
 ```
 
-上面代码中，主线程的`Atomics.store`向 42 号位置的赋值，一定是早于 37 位置的赋值。只要 37 号位置等于 163，Worker 线程就不会终止循环，而对 37 号位置和 42 号位置的取值，一定是在`Atomics.load`操作之后。
+上面代码中，主线程的`Atomics.store()`向 42 号位置的赋值，一定是早于 37 位置的赋值。只要 37 号位置等于 163，Worker 线程就不会终止循环，而对 37 号位置和 42 号位置的取值，一定是在`Atomics.load()`操作之后。
 
 下面是另一个例子。
 
@@ -1210,9 +1215,11 @@ self.addEventListener('message', (event) => {
 
 上面代码将共享内存的偶数位置的值改成`1`，奇数位置的值改成`2`。
 
-**（3）Atomics.wait()，Atomics.wake()**
+**（3）Atomics.wait()，Atomics.notify()**
 
-使用`while`循环等待主线程的通知，不是很高效，如果用在主线程，就会造成卡顿，`Atomics`对象提供了`wait()`和`wake()`两个方法用于等待通知。这两个方法相当于锁内存，即在一个线程进行操作时，让其他线程休眠（建立锁），等到操作结束，再唤醒那些休眠的线程（解除锁）。
+使用`while`循环等待主线程的通知，不是很高效，如果用在主线程，就会造成卡顿，`Atomics`对象提供了`wait()`和`notify()`两个方法用于等待通知。这两个方法相当于锁内存，即在一个线程进行操作时，让其他线程休眠（建立锁），等到操作结束，再唤醒那些休眠的线程（解除锁）。
+
+`Atomics.notify()`方法以前叫做`Atomics.wake()`，后来进行了改名。
 
 ```javascript
 // Worker 线程
@@ -1235,10 +1242,10 @@ const newArrayValue = 100;
 Atomics.store(sharedArray, 0, newArrayValue);
 const arrayIndex = 0;
 const queuePos = 1;
-Atomics.wake(sharedArray, arrayIndex, queuePos);
+Atomics.notify(sharedArray, arrayIndex, queuePos);
 ```
 
-上面代码中，`sharedArray`的`0`号位置改为`100`，然后就执行`Atomics.wake()`方法，唤醒在`sharedArray`的`0`号位置休眠队列里的一个线程。
+上面代码中，`sharedArray`的`0`号位置改为`100`，然后就执行`Atomics.notify()`方法，唤醒在`sharedArray`的`0`号位置休眠队列里的一个线程。
 
 `Atomics.wait()`方法的使用格式如下。
 
@@ -1251,14 +1258,14 @@ Atomics.wait(sharedArray, index, value, timeout)
 - sharedArray：共享内存的视图数组。
 - index：视图数据的位置（从0开始）。
 - value：该位置的预期值。一旦实际值等于预期值，就进入休眠。
-- timeout：整数，表示过了这个时间以后，就自动唤醒，单位毫秒。该参数可选，默认值是`Infinity`，即无限期的休眠，只有通过`Atomics.wake()`方法才能唤醒。
+- timeout：整数，表示过了这个时间以后，就自动唤醒，单位毫秒。该参数可选，默认值是`Infinity`，即无限期的休眠，只有通过`Atomics.notify()`方法才能唤醒。
 
-`Atomics.wait()`的返回值是一个字符串，共有三种可能的值。如果`sharedArray[index]`不等于`value`，就返回字符串`not-equal`，否则就进入休眠。如果`Atomics.wake()`方法唤醒，就返回字符串`ok`；如果因为超时唤醒，就返回字符串`timed-out`。
+`Atomics.wait()`的返回值是一个字符串，共有三种可能的值。如果`sharedArray[index]`不等于`value`，就返回字符串`not-equal`，否则就进入休眠。如果`Atomics.notify()`方法唤醒，就返回字符串`ok`；如果因为超时唤醒，就返回字符串`timed-out`。
 
-`Atomics.wake()`方法的使用格式如下。
+`Atomics.notify()`方法的使用格式如下。
 
 ```javascript
-Atomics.wake(sharedArray, index, count)
+Atomics.notify(sharedArray, index, count)
 ```
 
 它的三个参数含义如下。
@@ -1267,7 +1274,7 @@ Atomics.wake(sharedArray, index, count)
 - index：视图数据的位置（从0开始）。
 - count：需要唤醒的 Worker 线程的数量，默认为`Infinity`。
 
-`Atomics.wake()`方法一旦唤醒休眠的 Worker 线程，就会让它继续往下运行。
+`Atomics.notify()`方法一旦唤醒休眠的 Worker 线程，就会让它继续往下运行。
 
 请看一个例子。
 
@@ -1275,16 +1282,16 @@ Atomics.wake(sharedArray, index, count)
 // 主线程
 console.log(ia[37]);  // 163
 Atomics.store(ia, 37, 123456);
-Atomics.wake(ia, 37, 1);
+Atomics.notify(ia, 37, 1);
 
 // Worker 线程
 Atomics.wait(ia, 37, 163);
 console.log(ia[37]);  // 123456
 ```
 
-上面代码中，视图数组`ia`的第 37 号位置，原来的值是`163`。Worker 线程使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。主线程使用`Atomics.store()`方法，将`123456`写入`ia[37]`，然后使用`Atomics.wake()`方法唤醒 Worker 线程。
+上面代码中，视图数组`ia`的第 37 号位置，原来的值是`163`。Worker 线程使用`Atomics.wait()`方法，指定只要`ia[37]`等于`163`，就进入休眠状态。主线程使用`Atomics.store()`方法，将`123456`写入`ia[37]`，然后使用`Atomics.notify()`方法唤醒 Worker 线程。
 
-另外，基于`wait`和`wake`这两个方法的锁内存实现，可以看 Lars T Hansen 的 [js-lock-and-condition](https://github.com/lars-t-hansen/js-lock-and-condition) 这个库。
+另外，基于`wait`和`notify`这两个方法的锁内存实现，可以看 Lars T Hansen 的 [js-lock-and-condition](https://github.com/lars-t-hansen/js-lock-and-condition) 这个库。
 
 注意，浏览器的主线程不宜设置休眠，这会导致用户失去响应。而且，主线程实际上会拒绝进入休眠。
 
@@ -1330,3 +1337,4 @@ Atomics.xor(sharedArray, index, value)
 - `Atomics.isLockFree(size)`：返回一个布尔值，表示`Atomics`对象是否可以处理某个`size`的内存锁定。如果返回`false`，应用程序就需要自己来实现锁定。
 
 `Atomics.compareExchange`的一个用途是，从 SharedArrayBuffer 读取一个值，然后对该值进行某个操作，操作结束以后，检查一下 SharedArrayBuffer 里面原来那个值是否发生变化（即被其他线程改写过）。如果没有改写过，就将它写回原来的位置，否则读取新的值，再重头进行一次操作。
+

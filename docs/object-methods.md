@@ -47,7 +47,7 @@ Object.defineProperty(Object, 'is', {
 
 ### 基本用法
 
-`Object.assign`方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
+`Object.assign()`方法用于对象的合并，将源对象（source）的所有可枚举属性，复制到目标对象（target）。
 
 ```javascript
 const target = { a: 1 };
@@ -59,7 +59,7 @@ Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
 ```
 
-`Object.assign`方法的第一个参数是目标对象，后面的参数都是源对象。
+`Object.assign()`方法的第一个参数是目标对象，后面的参数都是源对象。
 
 注意，如果目标对象与源对象有同名属性，或多个源对象有同名属性，则后面的属性会覆盖前面的属性。
 
@@ -73,7 +73,7 @@ Object.assign(target, source1, source2);
 target // {a:1, b:2, c:3}
 ```
 
-如果只有一个参数，`Object.assign`会直接返回该参数。
+如果只有一个参数，`Object.assign()`会直接返回该参数。
 
 ```javascript
 const obj = {a: 1};
@@ -120,9 +120,9 @@ Object(10)  //  {[[PrimitiveValue]]: 10}
 Object('abc') // {0: "a", 1: "b", 2: "c", length: 3, [[PrimitiveValue]]: "abc"}
 ```
 
-上面代码中，布尔值、数值、字符串分别转成对应的包装对象，可以看到它们的原始值都在包装对象的内部属性`[[PrimitiveValue]]`上面，这个属性是不会被`Object.assign`拷贝的。只有字符串的包装对象，会产生可枚举的实义属性，那些属性则会被拷贝。
+上面代码中，布尔值、数值、字符串分别转成对应的包装对象，可以看到它们的原始值都在包装对象的内部属性`[[PrimitiveValue]]`上面，这个属性是不会被`Object.assign()`拷贝的。只有字符串的包装对象，会产生可枚举的实义属性，那些属性则会被拷贝。
 
-`Object.assign`拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），也不拷贝不可枚举的属性（`enumerable: false`）。
+`Object.assign()`拷贝的属性是有限制的，只拷贝源对象的自身属性（不拷贝继承属性），也不拷贝不可枚举的属性（`enumerable: false`）。
 
 ```javascript
 Object.assign({b: 'c'},
@@ -134,9 +134,9 @@ Object.assign({b: 'c'},
 // { b: 'c' }
 ```
 
-上面代码中，`Object.assign`要拷贝的对象只有一个不可枚举属性`invisible`，这个属性并没有被拷贝进去。
+上面代码中，`Object.assign()`要拷贝的对象只有一个不可枚举属性`invisible`，这个属性并没有被拷贝进去。
 
-属性名为 Symbol 值的属性，也会被`Object.assign`拷贝。
+属性名为 Symbol 值的属性，也会被`Object.assign()`拷贝。
 
 ```javascript
 Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
@@ -147,7 +147,7 @@ Object.assign({ a: 'b' }, { [Symbol('c')]: 'd' })
 
 **（1）浅拷贝**
 
-`Object.assign`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
+`Object.assign()`方法实行的是浅拷贝，而不是深拷贝。也就是说，如果源对象某个属性的值是对象，那么目标对象拷贝得到的是这个对象的引用。
 
 ```javascript
 const obj1 = {a: {b: 1}};
@@ -157,11 +157,11 @@ obj1.a.b = 2;
 obj2.a.b // 2
 ```
 
-上面代码中，源对象`obj1`的`a`属性的值是一个对象，`Object.assign`拷贝得到的是这个对象的引用。这个对象的任何变化，都会反映到目标对象上面。
+上面代码中，源对象`obj1`的`a`属性的值是一个对象，`Object.assign()`拷贝得到的是这个对象的引用。这个对象的任何变化，都会反映到目标对象上面。
 
 **（2）同名属性的替换**
 
-对于这种嵌套的对象，一旦遇到同名属性，`Object.assign`的处理方法是替换，而不是添加。
+对于这种嵌套的对象，一旦遇到同名属性，`Object.assign()`的处理方法是替换，而不是添加。
 
 ```javascript
 const target = { a: { b: 'c', d: 'e' } }
@@ -172,22 +172,22 @@ Object.assign(target, source)
 
 上面代码中，`target`对象的`a`属性被`source`对象的`a`属性整个替换掉了，而不会得到`{ a: { b: 'hello', d: 'e' } }`的结果。这通常不是开发者想要的，需要特别小心。
 
-一些函数库提供`Object.assign`的定制版本（比如 Lodash 的`_.defaultsDeep`方法），可以得到深拷贝的合并。
+一些函数库提供`Object.assign()`的定制版本（比如 Lodash 的`_.defaultsDeep()`方法），可以得到深拷贝的合并。
 
 **（3）数组的处理**
 
-`Object.assign`可以用来处理数组，但是会把数组视为对象。
+`Object.assign()`可以用来处理数组，但是会把数组视为对象。
 
 ```javascript
 Object.assign([1, 2, 3], [4, 5])
 // [4, 5, 3]
 ```
 
-上面代码中，`Object.assign`把数组视为属性名为 0、1、2 的对象，因此源数组的 0 号属性`4`覆盖了目标数组的 0 号属性`1`。
+上面代码中，`Object.assign()`把数组视为属性名为 0、1、2 的对象，因此源数组的 0 号属性`4`覆盖了目标数组的 0 号属性`1`。
 
 **（4）取值函数的处理**
 
-`Object.assign`只能进行值的复制，如果要复制的值是一个取值函数，那么将求值后再复制。
+`Object.assign()`只能进行值的复制，如果要复制的值是一个取值函数，那么将求值后再复制。
 
 ```javascript
 const source = {
@@ -199,11 +199,11 @@ Object.assign(target, source)
 // { foo: 1 }
 ```
 
-上面代码中，`source`对象的`foo`属性是一个取值函数，`Object.assign`不会复制这个取值函数，只会拿到值以后，将这个值复制过去。
+上面代码中，`source`对象的`foo`属性是一个取值函数，`Object.assign()`不会复制这个取值函数，只会拿到值以后，将这个值复制过去。
 
 ### 常见用途
 
-`Object.assign`方法有很多用处。
+`Object.assign()`方法有很多用处。
 
 **（1）为对象添加属性**
 
@@ -215,7 +215,7 @@ class Point {
 }
 ```
 
-上面方法通过`Object.assign`方法，将`x`属性和`y`属性添加到`Point`类的对象实例。
+上面方法通过`Object.assign()`方法，将`x`属性和`y`属性添加到`Point`类的对象实例。
 
 **（2）为对象添加方法**
 
@@ -238,7 +238,7 @@ SomeClass.prototype.anotherMethod = function () {
 };
 ```
 
-上面代码使用了对象属性的简洁表示法，直接将两个函数放在大括号中，再使用`assign`方法添加到`SomeClass.prototype`之中。
+上面代码使用了对象属性的简洁表示法，直接将两个函数放在大括号中，再使用`assign()`方法添加到`SomeClass.prototype`之中。
 
 **（3）克隆对象**
 
@@ -290,7 +290,7 @@ function processContent(options) {
 }
 ```
 
-上面代码中，`DEFAULTS`对象是默认值，`options`对象是用户提供的参数。`Object.assign`方法将`DEFAULTS`和`options`合并成一个新对象，如果两者有同名属性，则`options`的属性值会覆盖`DEFAULTS`的属性值。
+上面代码中，`DEFAULTS`对象是默认值，`options`对象是用户提供的参数。`Object.assign()`方法将`DEFAULTS`和`options`合并成一个新对象，如果两者有同名属性，则`options`的属性值会覆盖`DEFAULTS`的属性值。
 
 注意，由于存在浅拷贝的问题，`DEFAULTS`对象和`options`对象的所有属性的值，最好都是简单类型，不要指向另一个对象。否则，`DEFAULTS`对象的该属性很可能不起作用。
 
@@ -478,7 +478,7 @@ JavaScript 语言的对象继承是通过原型链实现的。ES6 提供了更�
 
 ### `__proto__`属性
 
-`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的`prototype`对象。目前，所有浏览器（包括 IE11）都部署了这个属性。
+`__proto__`属性（前后各两个下划线），用来读取或设置当前对象的原型对象（prototype）。目前，所有浏览器（包括 IE11）都部署了这个属性。
 
 ```javascript
 // es5 的写法
@@ -533,7 +533,7 @@ Object.getPrototypeOf({ __proto__: null })
 
 ### Object.setPrototypeOf()
 
-`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的`prototype`对象，返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
+`Object.setPrototypeOf`方法的作用与`__proto__`相同，用来设置一个对象的原型对象（prototype），返回参数对象本身。它是 ES6 正式推荐的设置原型对象的方法。
 
 ```javascript
 // 格式

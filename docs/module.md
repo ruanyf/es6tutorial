@@ -10,7 +10,7 @@ ES6 模块的设计思想是尽量的静态化，使得编译时就能确定模�
 
 ```javascript
 // CommonJS模块
-let { stat, exists, readFile } = require('fs');
+let { stat, exists, readfile } = require('fs');
 
 // 等同于
 let _fs = require('fs');
@@ -89,7 +89,7 @@ var firstName = 'Michael';
 var lastName = 'Jackson';
 var year = 1958;
 
-export {firstName, lastName, year};
+export { firstName, lastName, year };
 ```
 
 上面代码在`export`命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在`var`语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
@@ -190,7 +190,7 @@ foo()
 
 ```javascript
 // main.js
-import {firstName, lastName, year} from './profile.js';
+import { firstName, lastName, year } from './profile.js';
 
 function setName(element) {
   element.textContent = firstName + ' ' + lastName;
@@ -221,12 +221,12 @@ import {a} from './xxx.js'
 a.foo = 'hello'; // 合法操作
 ```
 
-上面代码中，`a`的属性可以成功改写，并且其他模块也可以读到改写后的值。不过，这种写法很难查错，建议凡是输入的变量，都当作完全只读，轻易不要改变它的属性。
+上面代码中，`a`的属性可以成功改写，并且其他模块也可以读到改写后的值。不过，这种写法很难查错，建议凡是输入的变量，都当作完全只读，不要轻易改变它的属性。
 
-`import`后面的`from`指定模块文件的位置，可以是相对路径，也可以是绝对路径，`.js`后缀可以省略。如果只是模块名，不带有路径，那么必须有配置文件，告诉 JavaScript 引擎该模块的位置。
+`import`后面的`from`指定模块文件的位置，可以是相对路径，也可以是绝对路径。如果不带有路径，只是一个模块名，那么必须有配置文件，告诉 JavaScript 引擎该模块的位置。
 
 ```javascript
-import {myMethod} from 'util';
+import { myMethod } from 'util';
 ```
 
 上面代码中，`util`是模块文件名，由于不带有路径，必须通过配置，告诉引擎怎么取到这个模块。
@@ -286,7 +286,7 @@ import { bar } from 'my_module';
 import { foo, bar } from 'my_module';
 ```
 
-上面代码中，虽然`foo`和`bar`在两个语句中加载，但是它们对应的是同一个`my_module`实例。也就是说，`import`语句是 Singleton 模式。
+上面代码中，虽然`foo`和`bar`在两个语句中加载，但是它们对应的是同一个`my_module`模块。也就是说，`import`语句是 Singleton 模式。
 
 目前阶段，通过 Babel 转码，CommonJS 模块的`require`命令和 ES6 模块的`import`命令，可以写在同一个模块里面，但是最好不要这样做。因为`import`在静态解析阶段执行，所以它是一个模块之中最早执行的。下面的代码可能不会得到预期结果。
 
@@ -540,20 +540,20 @@ export default es6;
 export { default as es6 } from './someModule';
 ```
 
-下面三种`import`语句，没有对应的复合写法。
+ES2020 之前，有一种`import`语句，没有对应的复合写法。
 
 ```javascript
 import * as someIdentifier from "someModule";
-import someIdentifier from "someModule";
-import someIdentifier, { namedIdentifier } from "someModule";
 ```
 
-为了做到形式的对称，现在有[提案](https://github.com/leebyron/ecmascript-export-default-from)，提出补上这三种复合写法。
+[ES2020](https://github.com/tc39/proposal-export-ns-from)补上了这个写法。
 
 ```javascript
-export * as someIdentifier from "someModule";
-export someIdentifier from "someModule";
-export someIdentifier, { namedIdentifier } from "someModule";
+export * as ns from "mod";
+
+// 等同于
+import * as ns from "mod";
+export {ns};
 ```
 
 ## 模块的继承
@@ -670,7 +670,7 @@ const myModual = require(path);
 
 上面的语句就是动态加载，`require`到底加载哪一个模块，只有运行时才知道。`import`命令做不到这一点。
 
-因此，有一个[提案](https://github.com/tc39/proposal-dynamic-import)，建议引入`import()`函数，完成动态加载。
+[ES2020提案](https://github.com/tc39/proposal-dynamic-import) 引入`import()`函数，支持动态加载模块。
 
 ```javascript
 import(specifier)
@@ -800,3 +800,4 @@ async function main() {
 }
 main();
 ```
+

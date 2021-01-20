@@ -197,7 +197,7 @@ function f(x = 1, y) {
 }
 
 f() // [1, undefined]
-f(2) // [2, undefined])
+f(2) // [2, undefined]
 f(, 1) // 报错
 f(undefined, 1) // [1, 1]
 
@@ -731,7 +731,7 @@ foo.call({ id: 42 });
 // id: 42
 ```
 
-上面代码中，`setTimeout`的参数是一个箭头函数，这个箭头函数的定义生效是在`foo`函数生成时，而它的真正执行要等到 100 毫秒后。如果是普通函数，执行时`this`应该指向全局对象`window`，这时应该输出`21`。但是，箭头函数导致`this`总是指向函数定义生效时所在的对象（本例是`{id: 42}`），所以输出的是`42`。
+上面代码中，`setTimeout()`的参数是一个箭头函数，这个箭头函数的定义生效是在`foo`函数生成时，而它的真正执行要等到 100 毫秒后。如果是普通函数，执行时`this`应该指向全局对象`window`，这时应该输出`21`。但是，箭头函数导致`this`总是指向函数定义生效时所在的对象（本例是`{id: 42}`），所以打印出来的是`42`。
 
 箭头函数可以让`setTimeout`里面的`this`，绑定定义时所在的作用域，而不是指向运行时所在的作用域。下面是另一个例子。
 
@@ -868,6 +868,35 @@ const cat = {
 ```
 
 上面代码中，`cat.jumps()`方法是一个箭头函数，这是错误的。调用`cat.jumps()`时，如果是普通函数，该方法内部的`this`指向`cat`；如果写成上面那样的箭头函数，使得`this`指向全局对象，因此不会得到预期结果。这是因为对象不构成单独的作用域，导致`jumps`箭头函数定义时的作用域就是全局作用域。
+
+再看一个例子。
+
+```javascript
+globalThis.s = 21;
+
+const obj = {
+  s: 42,
+  m: () => console.log(this.s)
+};
+
+obj.m() // 21
+```
+
+上面例子中，`obj.m()`使用箭头函数定义。JavaScript 引擎的处理方法是，先在全局空间生成这个箭头函数，然后赋值给`obj.m`，这导致箭头函数内部的`this`指向全局对象，所以`obj.m()`输出的是全局空间的`21`，而不是对象内部的`42`。上面的代码实际上等同于下面的代码。
+
+```javascript
+globalThis.s = 21;
+globalThis.m = () => console.log(this.s);
+
+const obj = {
+  s: 42,
+  m: globalThis.m
+};
+
+obj.m() // 21
+```
+
+由于上面这个原因，对象的属性建议使用传统的写法定义，不要用箭头函数定义。
 
 第二个场合是需要动态`this`的时候，也不应使用箭头函数。
 
@@ -1046,6 +1075,8 @@ function addOne(a){
 ```
 
 上面的函数不会进行尾调用优化，因为内层函数`inner`用到了外层函数`addOne`的内部变量`one`。
+
+注意，目前只有 Safari 浏览器支持尾调用优化，Chrome 和 Firefox 都不支持。
 
 ### 尾递归
 
@@ -1312,3 +1343,52 @@ clownsEverywhere(
 ```
 
 这样的规定也使得，函数参数与数组和对象的尾逗号规则，保持一致了。
+
+## Function.prototype.toString()
+
+[ES2019](https://github.com/tc39/Function-prototype-toString-revision) 对函数实例的`toString()`方法做出了修改。
+
+`toString()`方法返回函数代码本身，以前会省略注释和空格。
+
+```javascript
+function /* foo comment */ foo () {}
+
+foo.toString()
+// function foo() {}
+```
+
+上面代码中，函数`foo`的原始代码包含注释，函数名`foo`和圆括号之间有空格，但是`toString()`方法都把它们省略了。
+
+修改后的`toString()`方法，明确要求返回一模一样的原始代码。
+
+```javascript
+function /* foo comment */ foo () {}
+
+foo.toString()
+// "function /* foo comment */ foo () {}"
+```
+
+## catch 命令的参数省略
+
+JavaScript 语言的`try...catch`结构，以前明确要求`catch`命令后面必须跟参数，接受`try`代码块抛出的错误对象。
+
+```javascript
+try {
+  // ...
+} catch (err) {
+  // 处理错误
+}
+```
+
+上面代码中，`catch`命令后面带有参数`err`。
+
+很多时候，`catch`代码块可能用不到这个参数。但是，为了保证语法正确，还是必须写。[ES2019](https://github.com/tc39/proposal-optional-catch-binding) 做出了改变，允许`catch`语句省略参数。
+
+```javascript
+try {
+  // ...
+} catch {
+  // ...
+}
+```
+

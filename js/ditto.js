@@ -4,6 +4,7 @@ var ditto = {
     sidebar_id: "#sidebar",
     edit_id: "#edit",
     back_to_top_id: "#back_to_top",
+    theme_id: "#theme",
     loading_id: "#loading",
     error_id: "#error",
 
@@ -11,6 +12,7 @@ var ditto = {
     sidebar: true,
     edit_button: true,
     back_to_top_button: true,
+    theme_button: true,
     save_progress: true, // 保存阅读进度
     search_bar: true,
 
@@ -58,6 +60,10 @@ function initialize() {
   if (ditto.edit_button) {
     init_edit_button();
   }
+    
+  if (ditto.theme_button) {
+        init_theme_button();
+  }
 
   // page router
   router();
@@ -95,6 +101,8 @@ function init_sidebar_section() {
             }
             location.hash = menu[i + 1];
         });
+        // create_banner($(ditto.sidebar_id).find('p:nth-child(3)').first());
+
     }, "text").fail(function() {
         alert("Opps! can't find the sidebar file to display!");
     });
@@ -131,10 +139,37 @@ function searchbar_listener(event) {
   */
 }
 
+function init_theme_button() {
+    $(ditto.theme_id).show();
+    // 默认主题
+    var currFontColor = localStorage.getItem('fontColor') || '#0d141e';
+    var currBgColor = localStorage.getItem('bgColor') || '#ffffff';
+    $('body').css({
+        color: currFontColor,
+        backgroundColor: currBgColor
+    })
+    $(ditto.theme_id).on('click', changeTheme);
+}
 
 function init_back_to_top_button() {
   $(ditto.back_to_top_id).show();
   $(ditto.back_to_top_id).on('click', goTop);
+}
+
+// 改变主题
+function changeTheme() {
+    var fontColor = localStorage.getItem('fontColor') || '#0d141e';
+    var bgColor = localStorage.getItem('bgColor') || '#ffffff';
+    var fontColors = ['#0d141e', '#020000', '#020702', '#d0d3d8'];
+    var bgColors = ['#ffffff', '#f6f0da', '#c0edc6', '#1f2022'];
+    var currIndex = bgColors.indexOf(bgColor);
+    var nextIndex = (currIndex + 1) >= bgColors.length ? 0 : currIndex + 1;
+    $('body').css({
+        color: fontColors[nextIndex],
+        backgroundColor: bgColors[nextIndex],
+    });
+    localStorage.setItem('fontColor', fontColors[nextIndex]);
+    localStorage.setItem('bgColor', bgColors[nextIndex]);
 }
 
 function goTop(e) {
@@ -176,7 +211,7 @@ function replace_symbols(text) {
   // replace symbols with underscore
   return text
     .replace(/, /g, ',')
-    .replace(/[&\/\\#,.+=$~%'":*?<>{}\ \]\[]/g, "-")
+    .replace(/[&\!\/\\#,.+=$~%'":*?<>{}\ \]\[]/g, "-")
     .replace(/[()]/g, '');
 }
 
@@ -205,6 +240,29 @@ function li_create_linkage(li_tag, header_level) {
     });
     history.pushState(null, null, '#' + location.hash.split('#')[1] + '#' + li_tag.attr('data-src'));
   });
+}
+
+function create_banner(element) {
+  // 2021年2月3日
+  var deadline = new Date(2021, 1, 3);
+  if (deadline - (new Date()) < 0) return;
+
+  var styleStr = [
+    'margin: 1em 0',
+    'padding: 1em',
+    'background-color: #c4e0e1',
+    'border-radius: 5px',
+    'font-size: 90%',
+    // 'font-size: 75%',
+    // 'width: 210px',
+    'color: #333333'
+  ].join(';');
+
+  var text = '【免费课程】' +
+    '<span style="color: #4682BE;">《Vue进阶攻略》</span>领取，Vue 3.0 新知识点讲解。';
+
+  var banner = $('<a href="https://datayi.cn/w/4PK5pQJ9" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+    .insertAfter(element);
 }
 
 function create_page_anchors() {
@@ -243,6 +301,9 @@ function create_page_anchors() {
         .insertAfter('#content h1')
         .addClass('content-toc')
         .attr('id', 'content-toc');
+
+      create_banner(ul_tag);
+
       for (var j = 0; j < headers.length; j++) {
         var li_tag = $('<li></li>').html('<a href="#' + location.hash.split('#')[1] + '#' + headers[j] + '">' + headers[j] + '</a>');
         ul_tag.append(li_tag);
@@ -287,6 +348,14 @@ function show_loading() {
   return loading;
 }
 
+function statistics() {
+  var _hmt = _hmt || [];
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?519d72adb78a0bf66de7bae18e994322";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+}
+
 function router() { 
   var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
@@ -318,6 +387,9 @@ function router() {
 
   // otherwise get the markdown and render it
   var loading = show_loading();
+
+  statistics();
+
   $.get(path, function(data) {
     $(ditto.error_id).hide();
     $(ditto.content_id).html(marked(data) + disqusCode);
@@ -340,14 +412,14 @@ function router() {
       window.disqus_shortname = 'es6';
       window.disqus_identifier = (location.hash ? location.hash.replace("#", "") : 'READEME');
       window.disqus_title = $(ditto.content_id + " h1").text();
-      window.disqus_url = 'http://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
+      window.disqus_url = 'https://es6.ruanyifeng.com/' + (location.hash ? location.hash.replace("#", "") : 'README');
 
       // http://docs.disqus.com/developers/universal/
       (function() {
         var dsq = document.createElement('script');
         dsq.type = 'text/javascript';
         dsq.async = true;
-        dsq.src = 'http://' + window.disqus_shortname + '.disqus.com/embed.js';
+        dsq.src = 'https://' + window.disqus_shortname + '.disqus.com/embed.js';
         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
       })();
     })();

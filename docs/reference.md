@@ -227,6 +227,7 @@
 - Axel Rauschmayer, [Making transpiled ES modules more spec-compliant](http://www.2ality.com/2017/01/babel-esm-spec-mode.html): ES6 模块编译成 CommonJS 模块的详细介绍
 - Axel Rauschmayer, [ES proposal: import() – dynamically importing ES modules](http://www.2ality.com/2017/01/import-operator.html): import() 的用法
 - Node EPS, [ES Module Interoperability](https://github.com/nodejs/node-eps/blob/master/002-es-modules.md): Node 对 ES6 模块的处理规格
+- Dan Fabulich, [Why CommonJS and ES Modules Can’t Get Along](https://redfin.engineering/node-modules-at-war-why-commonjs-and-es-modules-cant-get-along-9617135eeca1): Node.js 对 ES6 模块的处理
 
 ## 二进制数组
 

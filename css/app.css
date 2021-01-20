@@ -340,6 +340,32 @@ input.searchButton {
     cursor: pointer;
 }
 
+#theme {
+    display: none;
+    position: fixed;
+
+    height: 17px;
+    width: 70px;
+    top: 70px;
+
+    margin-left: 930px;
+    margin-top: 0px;
+
+    color: #FFF;
+    line-height: 17px;
+    text-align: center;
+    font-size: 10px;
+
+
+    border-radius: 5px;
+    background-color: #AAA;
+}
+
+#theme:hover {
+    background-color: #444;
+    cursor: pointer;
+}
+
 #loading, #error {
     display: none;
     position: fixed;

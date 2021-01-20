@@ -280,9 +280,9 @@ const shapeType = {
 
 ## 属性名的遍历
 
-Symbol 作为属性名，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols`方法，可以获取指定对象的所有 Symbol 属性名。
+Symbol 作为属性名，遍历对象的时候，该属性不会出现在`for...in`、`for...of`循环中，也不会被`Object.keys()`、`Object.getOwnPropertyNames()`、`JSON.stringify()`返回。
 
-`Object.getOwnPropertySymbols`方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
+但是，它也不是私有属性，有一个`Object.getOwnPropertySymbols()`方法，可以获取指定对象的所有 Symbol 属性名。该方法返回一个数组，成员是当前对象的所有用作属性名的 Symbol 值。
 
 ```javascript
 const obj = {};
@@ -298,31 +298,27 @@ objectSymbols
 // [Symbol(a), Symbol(b)]
 ```
 
-下面是另一个例子，`Object.getOwnPropertySymbols`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
+上面代码是`Object.getOwnPropertySymbols()`方法的示例，可以获取所有 Symbol 属性名。
+
+下面是另一个例子，`Object.getOwnPropertySymbols()`方法与`for...in`循环、`Object.getOwnPropertyNames`方法进行对比的例子。
 
 ```javascript
 const obj = {};
+const foo = Symbol('foo');
 
-let foo = Symbol("foo");
-
-Object.defineProperty(obj, foo, {
-  value: "foobar",
-});
+obj[foo] = 'bar';
 
 for (let i in obj) {
   console.log(i); // 无输出
 }
 
-Object.getOwnPropertyNames(obj)
-// []
-
-Object.getOwnPropertySymbols(obj)
-// [Symbol(foo)]
+Object.getOwnPropertyNames(obj) // []
+Object.getOwnPropertySymbols(obj) // [Symbol(foo)]
 ```
 
-上面代码中，使用`Object.getOwnPropertyNames`方法得不到`Symbol`属性名，需要使用`Object.getOwnPropertySymbols`方法。
+上面代码中，使用`for...in`循环和`Object.getOwnPropertyNames()`方法都得不到 Symbol 键名，需要使用`Object.getOwnPropertySymbols()`方法。
 
-另一个新的 API，`Reflect.ownKeys`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
+另一个新的 API，`Reflect.ownKeys()`方法可以返回所有类型的键名，包括常规键名和 Symbol 键名。
 
 ```javascript
 let obj = {
@@ -335,7 +331,7 @@ Reflect.ownKeys(obj)
 //  ["enum", "nonEnum", Symbol(my_key)]
 ```
 
-由于以 Symbol 值作为名称的属性，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
+由于以 Symbol 值作为键名，不会被常规方法遍历得到。我们可以利用这个特性，为对象定义一些非私有的、但又希望只用于内部的方法。
 
 ```javascript
 let size = Symbol('size');
@@ -370,7 +366,7 @@ Object.getOwnPropertySymbols(x) // [Symbol(size)]
 
 ## Symbol.for()，Symbol.keyFor()
 
-有时，我们希望重新使用同一个 Symbol 值，`Symbol.for`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建并返回一个以该字符串为名称的 Symbol 值。
+有时，我们希望重新使用同一个 Symbol 值，`Symbol.for()`方法可以做到这一点。它接受一个字符串作为参数，然后搜索有没有以该参数作为名称的 Symbol 值。如果有，就返回这个 Symbol 值，否则就新建一个以该字符串为名称的 Symbol 值，并将其注册到全局。
 
 ```javascript
 let s1 = Symbol.for('foo');
@@ -379,7 +375,7 @@ let s2 = Symbol.for('foo');
 s1 === s2 // true
 ```
 
-上面代码中，`s1`和`s2`都是 Symbol 值，但是它们都是同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
+上面代码中，`s1`和`s2`都是 Symbol 值，但是它们都是由同样参数的`Symbol.for`方法生成的，所以实际上是同一个值。
 
 `Symbol.for()`与`Symbol()`这两种写法，都会生成新的 Symbol。它们的区别是，前者会被登记在全局环境中供搜索，后者不会。`Symbol.for()`不会每次调用就返回一个新的 Symbol 类型的值，而是会先检查给定的`key`是否已经存在，如果不存在才会新建一个值。比如，如果你调用`Symbol.for("cat")`30 次，每次都会返回同一个 Symbol 值，但是调用`Symbol("cat")`30 次，会返回 30 个不同的 Symbol 值。
 
@@ -393,7 +389,7 @@ Symbol("bar") === Symbol("bar")
 
 上面代码中，由于`Symbol()`写法没有登记机制，所以每次调用都会返回一个不同的值。
 
-`Symbol.keyFor`方法返回一个已登记的 Symbol 类型值的`key`。
+`Symbol.keyFor()`方法返回一个已登记的 Symbol 类型值的`key`。
 
 ```javascript
 let s1 = Symbol.for("foo");
@@ -405,7 +401,21 @@ Symbol.keyFor(s2) // undefined
 
 上面代码中，变量`s2`属于未登记的 Symbol 值，所以返回`undefined`。
 
-需要注意的是，`Symbol.for`为 Symbol 值登记的名字，是全局环境的，可以在不同的 iframe 或 service worker 中取到同一个值。
+注意，`Symbol.for()`为 Symbol 值登记的名字，是全局环境的，不管有没有在全局环境运行。
+
+```javascript
+function foo() {
+  return Symbol.for('bar');
+}
+
+const x = foo();
+const y = Symbol.for('bar');
+console.log(x === y); // true
+```
+
+上面代码中，`Symbol.for('bar')`是函数内部运行的，但是生成的 Symbol 值是登记在全局环境的。所以，第二次运行`Symbol.for('bar')`可以取到这个 Symbol 值。
+
+`Symbol.for()`的这个全局登记特性，可以用在不同的 iframe 或 service worker 中取到同一个值。
 
 ```javascript
 iframe = document.createElement('iframe');

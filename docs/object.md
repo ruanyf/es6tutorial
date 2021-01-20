@@ -4,7 +4,7 @@
 
 ## 属性的简洁表示法
 
-ES6 允许直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
+ES6 允许在大括号里面，直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
 
 ```javascript
 const foo = 'bar';
@@ -15,7 +15,7 @@ baz // {foo: "bar"}
 const baz = {foo: foo};
 ```
 
-上面代码表明，ES6 允许在对象之中，直接写变量。这时，属性名为变量名, 属性值为变量的值。下面是另一个例子。
+上面代码中，变量`foo`直接写在大括号里面。这时，属性名就是变量名, 属性值就是变量值。下面是另一个例子。
 
 ```javascript
 function f(x, y) {
@@ -125,31 +125,38 @@ const cart = {
 }
 ```
 
-注意，简洁写法的属性名总是字符串，这会导致一些看上去比较奇怪的结果。
+简洁写法在打印对象时也很有用。
 
 ```javascript
-const obj = {
-  class () {}
+let user = {
+  name: 'test'
 };
 
-// 等同于
-
-var obj = {
-  'class': function() {}
+let foo = {
+  bar: 'baz'
 };
+
+console.log(user, foo)
+// {name: "test"} {bar: "baz"}
+console.log({user, foo})
+// {user: {name: "test"}, foo: {bar: "baz"}}
 ```
 
-上面代码中，`class`是字符串，所以不会因为它属于关键字，而导致语法解析报错。
+上面代码中，`console.log`直接输出`user`和`foo`两个对象时，就是两组键值对，可能会混淆。把它们放在大括号里面输出，就变成了对象的简洁表示法，每组键值对前面会打印对象名，这样就比较清晰了。
 
-如果某个方法的值是一个 Generator 函数，前面需要加上星号。
+注意，简写的对象方法不能用作构造函数，会报错。
 
 ```javascript
 const obj = {
-  * m() {
-    yield 'hello world';
+  f() {
+    this.foo = 'bar';
   }
 };
+
+new obj.f() // 报错
 ```
+
+上面代码中，`f`是一个简写的对象方法，所以`obj.f`不能当作构造函数使用。
 
 ## 属性名表达式
 
@@ -369,7 +376,7 @@ ES6 一共有 5 种方法可以遍历对象的属性。
 
 **（5）Reflect.ownKeys(obj)**
 
-`Reflect.ownKeys`返回一个数组，包含对象自身的所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
+`Reflect.ownKeys`返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
 
 以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
 
@@ -686,22 +693,243 @@ const obj = {
 扩展运算符的参数对象之中，如果有取值函数`get`，这个函数是会执行的。
 
 ```javascript
-// 并不会抛出错误，因为 x 属性只是被定义，但没执行
-let aWithXGetter = {
-  ...a,
+let a = {
   get x() {
     throw new Error('not throw yet');
   }
-};
+}
 
-// 会抛出错误，因为 x 属性被执行了
-let runtimeError = {
-  ...a,
-  ...{
-    get x() {
-      throw new Error('throw now');
-    }
-  }
-};
+let aWithXGetter = { ...a }; // 报错
+```
+
+上面例子中，取值函数`get`在扩展`a`对象时会自动执行，导致报错。
+
+## 链判断运算符
+
+编程实务中，如果读取对象内部的某个属性，往往需要判断一下该对象是否存在。比如，要读取`message.body.user.firstName`，安全的写法是写成下面这样。
+
+```javascript
+// 错误的写法
+const  firstName = message.body.user.firstName;
+
+// 正确的写法
+const firstName = (message
+  && message.body
+  && message.body.user
+  && message.body.user.firstName) || 'default';
+```
+
+上面例子中，`firstName`属性在对象的第四层，所以需要判断四次，每一层是否有值。
+
+三元运算符`?:`也常用于判断对象是否存在。
+
+```javascript
+const fooInput = myForm.querySelector('input[name=foo]')
+const fooValue = fooInput ? fooInput.value : undefined
+```
+
+上面例子中，必须先判断`fooInput`是否存在，才能读取`fooInput.value`。
+
+这样的层层判断非常麻烦，因此 [ES2020](https://github.com/tc39/proposal-optional-chaining) 引入了“链判断运算符”（optional chaining operator）`?.`，简化上面的写法。
+
+```javascript
+const firstName = message?.body?.user?.firstName || 'default';
+const fooValue = myForm.querySelector('input[name=foo]')?.value
+```
+
+上面代码使用了`?.`运算符，直接在链式调用的时候判断，左侧的对象是否为`null`或`undefined`。如果是的，就不再往下运算，而是返回`undefined`。
+
+下面是判断对象方法是否存在，如果存在就立即执行的例子。
+
+```javascript
+iterator.return?.()
+```
+
+上面代码中，`iterator.return`如果有定义，就会调用该方法，否则`iterator.return`直接返回`undefined`，不再执行`?.`后面的部分。
+
+对于那些可能没有实现的方法，这个运算符尤其有用。
+
+```javascript
+if (myForm.checkValidity?.() === false) {
+  // 表单校验失败
+  return;
+}
+```
+
+上面代码中，老式浏览器的表单可能没有`checkValidity`这个方法，这时`?.`运算符就会返回`undefined`，判断语句就变成了`undefined === false`，所以就会跳过下面的代码。
+
+链判断运算符有三种用法。
+
+- `obj?.prop` // 对象属性
+- `obj?.[expr]` // 同上
+- `func?.(...args)` // 函数或对象方法的调用
+
+下面是`obj?.[expr]`用法的一个例子。
+
+```bash
+let hex = "#C0FFEE".match(/#([A-Z]+)/i)?.[1];
+```
+
+上面例子中，字符串的`match()`方法，如果没有发现匹配会返回`null`，如果发现匹配会返回一个数组，`?.`运算符起到了判断作用。
+
+下面是`?.`运算符常见形式，以及不使用该运算符时的等价形式。
+
+```javascript
+a?.b
+// 等同于
+a == null ? undefined : a.b
+
+a?.[x]
+// 等同于
+a == null ? undefined : a[x]
+
+a?.b()
+// 等同于
+a == null ? undefined : a.b()
+
+a?.()
+// 等同于
+a == null ? undefined : a()
+```
+
+上面代码中，特别注意后两种形式，如果`a?.b()`里面的`a.b`不是函数，不可调用，那么`a?.b()`是会报错的。`a?.()`也是如此，如果`a`不是`null`或`undefined`，但也不是函数，那么`a?.()`会报错。
+
+使用这个运算符，有几个注意点。
+
+（1）短路机制
+
+`?.`运算符相当于一种短路机制，只要不满足条件，就不再往下执行。
+
+```javascript
+a?.[++x]
+// 等同于
+a == null ? undefined : a[++x]
+```
+
+上面代码中，如果`a`是`undefined`或`null`，那么`x`不会进行递增运算。也就是说，链判断运算符一旦为真，右侧的表达式就不再求值。
+
+（2）delete 运算符
+
+```javascript
+delete a?.b
+// 等同于
+a == null ? undefined : delete a.b
+```
+
+上面代码中，如果`a`是`undefined`或`null`，会直接返回`undefined`，而不会进行`delete`运算。
+
+（3）括号的影响
+
+如果属性链有圆括号，链判断运算符对圆括号外部没有影响，只对圆括号内部有影响。
+
+```javascript
+(a?.b).c
+// 等价于
+(a == null ? undefined : a.b).c
+```
+
+上面代码中，`?.`对圆括号外部没有影响，不管`a`对象是否存在，圆括号后面的`.c`总是会执行。
+
+一般来说，使用`?.`运算符的场合，不应该使用圆括号。
+
+（4）报错场合
+
+以下写法是禁止的，会报错。
+
+```javascript
+// 构造函数
+new a?.()
+new a?.b()
+
+// 链判断运算符的右侧有模板字符串
+a?.`{b}`
+a?.b`{c}`
+
+// 链判断运算符的左侧是 super
+super?.()
+super?.foo
+
+// 链运算符用于赋值运算符左侧
+a?.b = c
+```
+
+（5）右侧不得为十进制数值
+
+为了保证兼容以前的代码，允许`foo?.3:0`被解析成`foo ? .3 : 0`，因此规定如果`?.`后面紧跟一个十进制数字，那么`?.`不再被看成是一个完整的运算符，而会按照三元运算符进行处理，也就是说，那个小数点会归属于后面的十进制数字，形成一个小数。
+
+## Null 判断运算符
+
+读取对象属性的时候，如果某个属性的值是`null`或`undefined`，有时候需要为它们指定默认值。常见做法是通过`||`运算符指定默认值。
+
+```javascript
+const headerText = response.settings.headerText || 'Hello, world!';
+const animationDuration = response.settings.animationDuration || 300;
+const showSplashScreen = response.settings.showSplashScreen || true;
+```
+
+上面的三行代码都通过`||`运算符指定默认值，但是这样写是错的。开发者的原意是，只要属性的值为`null`或`undefined`，默认值就会生效，但是属性的值如果为空字符串或`false`或`0`，默认值也会生效。
+
+为了避免这种情况，[ES2020](https://github.com/tc39/proposal-nullish-coalescing) 引入了一个新的 Null 判断运算符`??`。它的行为类似`||`，但是只有运算符左侧的值为`null`或`undefined`时，才会返回右侧的值。
+
+```javascript
+const headerText = response.settings.headerText ?? 'Hello, world!';
+const animationDuration = response.settings.animationDuration ?? 300;
+const showSplashScreen = response.settings.showSplashScreen ?? true;
+```
+
+上面代码中，默认值只有在左侧属性值为`null`或`undefined`时，才会生效。
+
+这个运算符的一个目的，就是跟链判断运算符`?.`配合使用，为`null`或`undefined`的值设置默认值。
+
+```javascript
+const animationDuration = response.settings?.animationDuration ?? 300;
+```
+
+上面代码中，如果`response.settings`是`null`或`undefined`，或者`response.settings.animationDuration`是`null`或`undefined`，就会返回默认值300。也就是说，这一行代码包括了两级属性的判断。
+
+这个运算符很适合判断函数参数是否赋值。
+
+```javascript
+function Component(props) {
+  const enable = props.enabled ?? true;
+  // …
+}
+```
+
+上面代码判断`props`参数的`enabled`属性是否赋值，基本等同于下面的写法。
+
+```javascript
+function Component(props) {
+  const {
+    enabled: enable = true,
+  } = props;
+  // …
+}
+```
+
+`??`有一个运算优先级问题，它与`&&`和`||`的优先级孰高孰低。现在的规则是，如果多个逻辑运算符一起使用，必须用括号表明优先级，否则会报错。
+
+```javascript
+// 报错
+lhs && middle ?? rhs
+lhs ?? middle && rhs
+lhs || middle ?? rhs
+lhs ?? middle || rhs
+```
+
+上面四个表达式都会报错，必须加入表明优先级的括号。
+
+```javascript
+(lhs && middle) ?? rhs;
+lhs && (middle ?? rhs);
+
+(lhs ?? middle) && rhs;
+lhs ?? (middle && rhs);
+
+(lhs || middle) ?? rhs;
+lhs || (middle ?? rhs);
+
+(lhs ?? middle) || rhs;
+lhs ?? (middle || rhs);
 ```
 
