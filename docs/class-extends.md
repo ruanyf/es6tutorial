@@ -336,8 +336,8 @@ class B extends A {
   }
 }
 
-B.x = 3;
-B.m() // 3
+B.x = 2;
+B.m() // Uncaught TypeError: (intermediate value).m is not a function
 ```
 
 上面代码中，静态方法`B.m`里面，`super.print`指向父类的静态方法。这个方法里面的`this`指向的是`B`，而不是`B`的实例。
