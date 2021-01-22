@@ -418,13 +418,13 @@ myObj.foo === myObj // true
 
 上面代码中，设置`myObj.foo`属性的值时，`myObj`并没有`foo`属性，因此引擎会到`myObj`的原型链去找`foo`属性。`myObj`的原型对象`proxy`是一个 Proxy 实例，设置它的`foo`属性会触发`set`方法。这时，第四个参数`receiver`就指向原始赋值行为所在的对象`myObj`。
 
-注意，如果目标对象自身的某个属性，不可写且不可配置，那么`set`方法将不起作用。
+注意，如果目标对象自身的某个属性不可写，那么`set`方法将不起作用。
 
 ```javascript
 const obj = {};
 Object.defineProperty(obj, 'foo', {
   value: 'bar',
-  writable: false,
+  writable: false
 });
 
 const handler = {
