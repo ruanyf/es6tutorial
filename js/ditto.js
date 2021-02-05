@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2021年2月3日
-  var deadline = new Date(2021, 1, 3);
+  // 2021年3月18日
+  var deadline = new Date(2021, 2, 18);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -258,10 +258,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【免费课程】' +
-    '<span style="color: #4682BE;">《Vue进阶攻略》</span>领取，Vue 3.0 新知识点讲解。';
+  var text = '【免费资料】' +
+    '开课吧<span style="color: #4682BE;">《数据分析全套讲解》</span>视频，讲解统计建模与分析工具（Excel/Python/SQL等）基础知识。';
 
-  var banner = $('<a href="https://datayi.cn/w/4PK5pQJ9" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://t.1yb.co/gUcm" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
