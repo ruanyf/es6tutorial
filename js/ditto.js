@@ -259,9 +259,9 @@ function create_banner(element) {
   ].join(';');
 
   var text = '【免费资料】' +
-    '开课吧<span style="color: #4682BE;">《数据分析全套讲解》</span>视频，讲解统计建模与分析工具（Excel/Python/SQL等）基础知识。';
+    'Excel + Python + SQL 数据处理入门，课程资料下载。';
 
-  var banner = $('<a href="https://t.1yb.co/gUcm" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://t.1yb.co/gXGw" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
