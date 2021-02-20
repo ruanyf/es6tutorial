@@ -259,7 +259,7 @@ function create_banner(element) {
   ].join(';');
 
   var text = '【免费资料】' +
-    'Excel + Python + SQL 数据处理入门，课程资料下载。';
+    '<span style="color: #4682BE;">Excel + Python + SQL 数据处理入门</span>，课程资料下载。';
 
   var banner = $('<a href="https://t.1yb.co/gXGw" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
