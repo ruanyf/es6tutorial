@@ -226,12 +226,12 @@ var point = Point(2, 3);
 var point = new Point(2, 3);
 ```
 
-与 ES5 一样，实例的属性除非显式定义在其本身（即定义在`this`对象上），否则都是定义在原型上（即定义在`class`上）。
+实例的属性可以显式定义在其本身（即定义在`this`对象上），class上的属性添加到this上，而方法都是定义在原型上（即定义在`class`上）。
 
 ```javascript
 //定义类
 class Point {
-
+  z = 10;
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -249,11 +249,12 @@ point.toString() // (2, 3)
 
 point.hasOwnProperty('x') // true
 point.hasOwnProperty('y') // true
+point.hasOwnProperty('z') // true
 point.hasOwnProperty('toString') // false
 point.__proto__.hasOwnProperty('toString') // true
 ```
 
-上面代码中，`x`和`y`都是实例对象`point`自身的属性（因为定义在`this`变量上），所以`hasOwnProperty()`方法返回`true`，而`toString()`是原型对象的属性（因为定义在`Point`类上），所以`hasOwnProperty()`方法返回`false`。这些都与 ES5 的行为保持一致。
+上面代码中，`x`和`y`都是实例对象`point`自身的属性（因为定义在`this`变量上），`z`是定义在class上的属性，所以`hasOwnProperty()`方法返回`true`，而`toString()`是方法，会定义在原型对象上，所以`hasOwnProperty()`方法返回`false`。这些都与 ES5 的行为保持一致。
 
 与 ES5 一样，类的所有实例共享一个原型对象。
 
