@@ -209,9 +209,8 @@ Obj.prototype[Symbol.iterator] = function() {
       var value = current.value;
       current = current.next;
       return { done: false, value: value };
-    } else {
-      return { done: true };
     }
+    return { done: true };
   }
   return iterator;
 }
@@ -245,9 +244,8 @@ let obj = {
             value: self.data[index++],
             done: false
           };
-        } else {
-          return { value: undefined, done: true };
         }
+        return { value: undefined, done: true };
       }
     };
   }
