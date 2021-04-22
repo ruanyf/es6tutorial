@@ -46,7 +46,7 @@ body {
     margin-right: 20px;
 	padding-bottom:0px;
     padding-top: 0px;
-    overflow-y: scroll;
+    overflow-y: auto;
     overflow: -moz-scrollbars-vertical;
 	}
 }
