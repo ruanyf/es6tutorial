@@ -745,6 +745,8 @@ for (var key of Object.keys(someObject)) {
 另一个方法是使用 Generator 函数将对象重新包装一下。
 
 ```javascript
+const obj = { a: 1, b: 2, c: 3 }
+
 function* entries(obj) {
   for (let key of Object.keys(obj)) {
     yield [key, obj[key]];
