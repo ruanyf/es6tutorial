@@ -343,7 +343,7 @@ let validator = {
     }
 
     // 对于满足条件的 age 属性以及其他属性，直接保存
-    obj[prop] = value;
+    return Reflect.set(...arguments);
   }
 };
 
