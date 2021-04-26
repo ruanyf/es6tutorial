@@ -696,7 +696,7 @@ function* gen() {
 
 var g = gen();
 
-g.next()        // { value: 1, done: false }
+g.next() // { value: 1, done: false }
 g.return() // { value: undefined, done: true }
 ```
 
