@@ -805,9 +805,9 @@ Promise.any(promises).then(
 下面是一个例子。
 
 ```javascript
-var resolved = Promise.resolve(42);
-var rejected = Promise.reject(-1);
-var alsoRejected = Promise.reject(Infinity);
+const resolved = Promise.resolve(42);
+const rejected = Promise.reject(-1);
+const alsoRejected = Promise.reject(Infinity);
 
 Promise.any([resolved, rejected, alsoRejected]).then(function (result) {
   console.log(result); // 42

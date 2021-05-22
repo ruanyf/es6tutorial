@@ -74,9 +74,9 @@ ES6 的模块自动采用严格模式，不管你有没有在模块头部加上`
 
 ```javascript
 // profile.js
-export var firstName = 'Michael';
-export var lastName = 'Jackson';
-export var year = 1958;
+export const firstName = 'Michael';
+export const lastName = 'Jackson';
+export const year = 1958;
 ```
 
 上面代码是`profile.js`文件，保存了用户信息。ES6 将其视为一个模块，里面用`export`命令对外部输出了三个变量。
@@ -85,14 +85,14 @@ export var year = 1958;
 
 ```javascript
 // profile.js
-var firstName = 'Michael';
-var lastName = 'Jackson';
-var year = 1958;
+const firstName = 'Michael';
+const lastName = 'Jackson';
+const year = 1958;
 
 export { firstName, lastName, year };
 ```
 
-上面代码在`export`命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在`var`语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
+上面代码在`export`命令后面，使用大括号指定所要输出的一组变量。它与前一种写法（直接放置在声明语句前）是等价的，但是应该优先考虑使用这种写法。因为这样就可以在脚本尾部，一眼看清楚输出了哪些变量。
 
 `export`命令除了输出变量，还可以输出函数或类（class）。
 
@@ -126,7 +126,7 @@ export {
 export 1;
 
 // 报错
-var m = 1;
+const m = 1;
 export m;
 ```
 
@@ -134,14 +134,14 @@ export m;
 
 ```javascript
 // 写法一
-export var m = 1;
+export const m = 1;
 
 // 写法二
-var m = 1;
+const m = 1;
 export {m};
 
 // 写法三
-var n = 1;
+const = 1;
 export {n as m};
 ```
 
@@ -165,7 +165,7 @@ export {f};
 另外，`export`语句输出的接口，与其对应的值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
 
 ```javascript
-export var foo = 'bar';
+export const foo = 'bar';
 setTimeout(() => foo = 'baz', 500);
 ```
 
@@ -431,14 +431,14 @@ import { default as foo } from 'modules';
 
 ```javascript
 // 正确
-export var a = 1;
+export const a = 1;
 
 // 正确
-var a = 1;
+const a = 1;
 export default a;
 
 // 错误
-export default var a = 1;
+export default const a = 1;
 ```
 
 上面代码中，`export default a`的含义是将变量`a`的值赋给变量`default`。所以，最后一种写法会报错。
@@ -566,7 +566,7 @@ export {ns};
 // circleplus.js
 
 export * from 'circle';
-export var e = 2.71828182846;
+export const e = 2.71828182846;
 export default function(x) {
   return Math.exp(x);
 }
