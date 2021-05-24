@@ -924,6 +924,117 @@ FakeMath.#computeRandomNumber() // 报错
 
 上面代码中，`#totallyRandomNumber`是私有属性，`#computeRandomNumber()`是私有方法，只能在`FakeMath`这个类的内部调用，外部调用就会报错。
 
+### in 运算符
+
+`try...catch`结构可以用来判断是否存在某个私有属性。
+
+```javascript
+class A {
+  use(obj) {
+    try {
+      obj.#foo;
+    } catch {
+      // 私有属性 #foo 不存在
+    }
+  }
+}
+
+const a = new A();
+a.use(a); // 报错
+```
+
+上面示例中，类`A`并不存在私有属性`#foo`，所以`try...catch`报错了。
+
+这样的写法很麻烦，可读性很差，V8 引擎改进了`in`运算符，使它也可以用来判断私有属性。
+
+```javascript
+class A {
+  use(obj) {
+    if (#foo in obj) {
+      // 私有属性 #foo 存在
+    } else {
+      // 私有属性 #foo 不存在
+    }
+  }
+}
+```
+
+上面示例中，`in`运算符判断当前类`A`的实例，是否有私有属性`#foo`，如果有返回`true`，否则返回`false`。
+
+`in`也可以跟`this`一起配合使用。
+
+```javascript
+class A {
+  #foo = 0;
+  m() {
+    console.log(#foo in this); // true
+    console.log(#bar in this); // false
+  }
+}
+```
+
+注意，判断私有属性时，`in`只能用在定义该私有属性的类的内部。
+
+```javascript
+class A {
+  #foo = 0;
+  static test(obj) {
+    console.log(#foo in obj);
+  }
+}
+
+A.test(new A()) // true
+A.test({}) // false
+
+class B {
+  #foo = 0;
+}
+
+A.test(new B()) // false
+```
+
+上面示例中，类`A`的私有属性`#foo`，只能在类`A`内部使用`in`运算符判断，而且只对`A`的实例返回`true`，对于其他对象都返回`false`。
+
+子类从父类继承的私有属性，也可以使用`in`运算符来判断。
+
+```javascript
+class A {
+  #foo = 0;
+  static test(obj) {
+    console.log(#foo in obj);
+  }
+}
+
+class SubA extend A {};
+
+A.test(new SubA()) // true
+```
+
+上面示例中，`SubA`从父类继承了私有属性`#foo`，`in`运算符也有效。
+
+注意，`in`运算符对于`Object.create()`、`Object.setPrototypeOf`形成的继承，是无效的，因为这种继承不会传递私有属性。
+
+```javascript
+class A {
+  #foo = 0;
+  static test(obj) {
+    console.log(#foo in obj);
+  }
+}
+const a = new A();
+
+const o1 = Object.create(a);
+A.test(o1) // false
+A.test(o1.__proto__) // true
+
+const o2 = {};
+Object.setPrototypeOf(o2, A);
+A.test(o2) // false
+A.test(o2.__proto__) // true
+```
+
+上面示例中，对于修改原型链形成的继承，子类都取不到父类的私有属性，所以`in`运算符无效。
+
 ## new.target 属性
 
 `new`是从构造函数生成实例对象的命令。ES6 为`new`命令引入了一个`new.target`属性，该属性一般用在构造函数之中，返回`new`命令作用于的那个构造函数。如果构造函数不是通过`new`命令或`Reflect.construct()`调用的，`new.target`会返回`undefined`，因此这个属性可以用来确定构造函数是怎么调用的。
