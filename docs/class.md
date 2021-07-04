@@ -68,7 +68,7 @@ const b = new Bar();
 b.doStuff() // "stuff"
 ```
 
-构造函数的`prototype`属性，在 ES6 的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。
+**构造函数的`prototype`属性，在 ES6 的“类”上面继续存在。事实上，类的所有方法都定义在类的`prototype`属性上面。**
 
 ```javascript
 class Point {
