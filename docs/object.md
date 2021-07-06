@@ -364,7 +364,7 @@ ES6 一共有 5 种方法可以遍历对象的属性。
 
 **（2）Object.keys(obj)**
 
-`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
+`Object.keys`返回一个数组，包括对象自身的所有可枚举属性（不含 Symbol 属性）的键名。
 
 **（3）Object.getOwnPropertyNames(obj)**
 
