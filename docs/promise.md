@@ -758,9 +758,25 @@ try {
 
 ## Promise.any()
 
-ES2021 引入了[`Promise.any()`方法](https://github.com/tc39/proposal-promise-any)。该方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例返回。只要参数实例有一个变成`fulfilled`状态，包装实例就会变成`fulfilled`状态；如果所有参数实例都变成`rejected`状态，包装实例就会变成`rejected`状态。
+ES2021 引入了[`Promise.any()`方法](https://github.com/tc39/proposal-promise-any)。该方法接受一组 Promise 实例作为参数，包装成一个新的 Promise 实例返回。
 
-`Promise.any()`跟`Promise.race()`方法很像，只有一点不同，就是不会因为某个 Promise 变成`rejected`状态而结束。
+```javascript
+Promise.any([
+  fetch('https://v8.dev/').then(() => 'home'),
+  fetch('https://v8.dev/blog').then(() => 'blog'),
+  fetch('https://v8.dev/docs').then(() => 'docs')
+]).then((first) => {  // 只要有一个 fetch() 请求成功
+  console.log(first);
+}).catch((error) => { // 所有三个 fetch() 全部请求失败
+  console.log(error);
+});
+```
+
+只要参数实例有一个变成`fulfilled`状态，包装实例就会变成`fulfilled`状态；如果所有参数实例都变成`rejected`状态，包装实例就会变成`rejected`状态。
+
+`Promise.any()`跟`Promise.race()`方法很像，只有一点不同，就是`Promise.any()`不会因为某个 Promise 变成`rejected`状态而结束，必须等到所有参数 Promise 变成`rejected`状态才会结束。
+
+下面是`Promise()`与`await`命令结合使用的例子。
 
 ```javascript
 const promises = [
@@ -768,6 +784,7 @@ const promises = [
   fetch('/endpoint-b').then(() => 'b'),
   fetch('/endpoint-c').then(() => 'c'),
 ];
+
 try {
   const first = await Promise.any(promises);
   console.log(first);
@@ -778,28 +795,16 @@ try {
 
 上面代码中，`Promise.any()`方法的参数数组包含三个 Promise 操作。其中只要有一个变成`fulfilled`，`Promise.any()`返回的 Promise 对象就变成`fulfilled`。如果所有三个操作都变成`rejected`，那么`await`命令就会抛出错误。
 
-`Promise.any()`抛出的错误，不是一个一般的错误，而是一个 AggregateError 实例。它相当于一个数组，每个成员对应一个被`rejected`的操作所抛出的错误。下面是 AggregateError 的实现示例。
+`Promise.any()`抛出的错误，不是一个一般的 Error 错误对象，而是一个 AggregateError 实例。它相当于一个数组，每个成员对应一个被`rejected`的操作所抛出的错误。下面是 AggregateError 的实现示例。
 
 ```javascript
-new AggregateError() extends Array -> AggregateError
+// new AggregateError() extends Array
 
 const err = new AggregateError();
 err.push(new Error("first error"));
 err.push(new Error("second error"));
+// ...
 throw err;
-```
-
-捕捉错误时，如果不用`try...catch`结构和 await 命令，可以像下面这样写。
-
-```javascript
-Promise.any(promises).then(
-  (first) => {
-    // Any of the promises was fulfilled.
-  },
-  (error) => {
-    // All of the promises were rejected.
-  }
-);
 ```
 
 下面是一个例子。
