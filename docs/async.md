@@ -771,7 +771,7 @@ import { output } from "./awaiting.js";
 function outputPlusValue(value) { return output + value }
 
 console.log(outputPlusValue(100));
-setTimeout(() => console.log(outputPlusValue(100), 1000);
+setTimeout(() => console.log(outputPlusValue(100)), 1000);
 ```
 
 上面代码中，`outputPlusValue()`的执行结果，完全取决于执行的时间。如果`awaiting.js`里面的异步操作没执行完，加载进来的`output`的值就是`undefined`。
@@ -801,7 +801,7 @@ function outputPlusValue(value) { return output + value }
 
 promise.then(() => {
   console.log(outputPlusValue(100));
-  setTimeout(() => console.log(outputPlusValue(100), 1000);
+  setTimeout(() => console.log(outputPlusValue(100)), 1000);
 });
 ```
 
@@ -828,7 +828,7 @@ import { output } from "./awaiting.js";
 function outputPlusValue(value) { return output + value }
 
 console.log(outputPlusValue(100));
-setTimeout(() => console.log(outputPlusValue(100), 1000);
+setTimeout(() => console.log(outputPlusValue(100)), 1000);
 ```
 
 上面代码的写法，与普通的模块加载完全一样。也就是说，模块的使用者完全不用关心，依赖模块的内部有没有异步操作，正常加载即可。
