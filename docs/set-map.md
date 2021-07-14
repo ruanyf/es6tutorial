@@ -1149,7 +1149,7 @@ let target = {};
 let wr = new WeakRef(target);
 ```
 
-上面示例中，`target`是原始对象，构造函数`WeakRef()`创建了一个基于`target`的新对象`wr`。这里，`wr`就是一个 WeakRef 的示例，属于对`target`的弱引用，垃圾回收机制不会计入这个引用，也就是说，`wr`的引入不会妨碍原始对象`target`被垃圾回收机制清除。
+上面示例中，`target`是原始对象，构造函数`WeakRef()`创建了一个基于`target`的新对象`wr`。这里，`wr`就是一个 WeakRef 的实例，属于对`target`的弱引用，垃圾回收机制不会计入这个引用，也就是说，`wr`的引用不会妨碍原始对象`target`被垃圾回收机制清除。
 
 WeakRef 实例对象有一个`deref()`方法，如果原始对象存在，该方法返回原始对象；如果原始对象已经被垃圾回收机制清除，该方法返回`undefined`。
 
