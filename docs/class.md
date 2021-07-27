@@ -1005,7 +1005,7 @@ class A {
   }
 }
 
-class SubA extend A {};
+class SubA extends A {};
 
 A.test(new SubA()) // true
 ```
