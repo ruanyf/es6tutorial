@@ -140,7 +140,7 @@ for (var f of flat(arr)){
 
 上面代码也会产生句法错误，因为`forEach`方法的参数是一个普通函数，但是在里面使用了`yield`表达式（这个函数里面还使用了`yield*`表达式，详细介绍见后文）。一种修改方法是改用`for`循环。
 
-```javascript
+```javascript 
 var arr = [1, [[2, 3], 4], [5, 6]];
 
 var flat = function* (a) {
@@ -637,19 +637,22 @@ function log(generator) {
     v = generator.next();
     console.log('第一次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch: 第一次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   try {
     v = generator.next();
     console.log('第二次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch：第二次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   try {
     v = generator.next();
     console.log('第三次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch：第三次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   console.log('caller done');
 }
@@ -658,7 +661,8 @@ log(g());
 // starting generator
 // 第一次运行next方法 { value: 1, done: false }
 // throwing an exception
-// 捕捉错误 { value: 1, done: false }
+// catch：第二次运行next方法 { value: 1, done: false }
+// 捕捉错误 Error: generator broke!
 // 第三次运行next方法 { value: undefined, done: true }
 // caller done
 ```
