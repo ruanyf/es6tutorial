@@ -626,8 +626,6 @@ function* g() {
   yield 1;
   console.log('throwing an exception');
   throw new Error('generator broke!');
-  yield 2;
-  yield 3;
 }
 
 function log(generator) {
@@ -637,19 +635,22 @@ function log(generator) {
     v = generator.next();
     console.log('第一次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch: 第一次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   try {
     v = generator.next();
     console.log('第二次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch：第二次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   try {
     v = generator.next();
     console.log('第三次运行next方法', v);
   } catch (err) {
-    console.log('捕捉错误', v);
+    console.log('catch：第三次运行next方法', v);
+    console.log('捕捉错误', err);
   }
   console.log('caller done');
 }
@@ -658,7 +659,8 @@ log(g());
 // starting generator
 // 第一次运行next方法 { value: 1, done: false }
 // throwing an exception
-// 捕捉错误 { value: 1, done: false }
+// catch：第二次运行next方法 { value: 1, done: false }
+// 捕捉错误 Error: generator broke!
 // 第三次运行next方法 { value: undefined, done: true }
 // caller done
 ```
