@@ -298,7 +298,7 @@ function example(opts) {
 }
 ```
 
-上面示例中，参数对象`opts`如果不存在属性`foo`和属性`bar`，则为这两个属性设置默认值。有了“Null 赋值运算符”以后，就可以统一写成下面这样。
+上面示例中，参数对象`opts`如果不存在属性`foo`和属性`baz`，则为这两个属性设置默认值。有了“Null 赋值运算符”以后，就可以统一写成下面这样。
 
 ```javascript
 function example(opts) {
