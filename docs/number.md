@@ -830,9 +830,9 @@ for (let i = 1n; i <= 70n; i++) {
 console.log(p); // 11978571...00000000n
 ```
 
-### BigInt 对象
+### BigInt 函数
 
-JavaScript 原生提供`BigInt`对象，可以用作构造函数生成 BigInt 类型的数值。转换规则基本与`Number()`一致，将其他类型的值转为 BigInt。
+JavaScript 原生提供`BigInt`函数，可以用它生成 BigInt 类型的数值。转换规则基本与`Number()`一致，将其他类型的值转为 BigInt。
 
 ```javascript
 BigInt(123) // 123n
@@ -841,7 +841,7 @@ BigInt(false) // 0n
 BigInt(true) // 1n
 ```
 
-`BigInt()`构造函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
+`BigInt()`函数必须有参数，而且参数必须可以正常转为数值，下面的用法都会报错。
 
 ```javascript
 new BigInt() // TypeError
@@ -860,7 +860,7 @@ BigInt(1.5) // RangeError
 BigInt('1.5') // SyntaxError
 ```
 
-BigInt 对象继承了 Object 对象的两个实例方法。
+BigInt 继承了 Object 对象的两个实例方法。
 
 - `BigInt.prototype.toString()`
 - `BigInt.prototype.valueOf()`
