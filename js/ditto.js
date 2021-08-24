@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2021年2月18日
-  var deadline = new Date(2021, 1, 18);
+  // 2021年9月6日
+  var deadline = new Date(2021, 8, 6);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -258,10 +258,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【免费资料】' +
-    '<span style="color: #4682BE;">Excel + Python + SQL 数据处理入门</span>，课程资料下载。';
+  var text = '【免费课程】' +
+    '开课吧<span style="color: #4682BE;">《深度理解 Vue 3.0 核心源码》</span>精品课领取，讲解 Vue 3.0 源码，动手制作实战项目，快速上手Vue 3.0。';
 
-  var banner = $('<a href="https://t.1yb.co/gXGw" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://t.1yb.co/xNGr" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 

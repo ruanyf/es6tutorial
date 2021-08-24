@@ -314,83 +314,6 @@ const userAge = userId |> await fetchUserById |> getAgeFromUser;
 const userAge = getAgeFromUser(await fetchUserById(userId));
 ```
 
-## 数值分隔符
-
-欧美语言中，较长的数值允许每三位添加一个分隔符（通常是一个逗号），增加数值的可读性。比如，`1000`可以写作`1,000`。
-
-现在有一个[提案](https://github.com/tc39/proposal-numeric-separator)，允许 JavaScript 的数值使用下划线（`_`）作为分隔符。
-
-```javascript
-let budget = 1_000_000_000_000;
-budget === 10 ** 12 // true
-```
-
-JavaScript 的数值分隔符没有指定间隔的位数，也就是说，可以每三位添加一个分隔符，也可以每一位、每两位、每四位添加一个。
-
-```javascript
-123_00 === 12_300 // true
-
-12345_00 === 123_4500 // true
-12345_00 === 1_234_500 // true
-```
-
-小数和科学计数法也可以使用数值分隔符。
-
-```javascript
-// 小数
-0.000_001
-// 科学计数法
-1e10_000
-```
-
-数值分隔符有几个使用注意点。
-
-- 不能在数值的最前面（leading）或最后面（trailing）。
-- 不能两个或两个以上的分隔符连在一起。
-- 小数点的前后不能有分隔符。
-- 科学计数法里面，表示指数的`e`或`E`前后不能有分隔符。
-
-下面的写法都会报错。
-
-```javascript
-// 全部报错
-3_.141
-3._141
-1_e12
-1e_12
-123__456
-_1464301
-1464301_
-```
-
-除了十进制，其他进制的数值也可以使用分隔符。
-
-```javascript
-// 二进制
-0b1010_0001_1000_0101
-// 十六进制
-0xA0_B0_C0
-```
-
-注意，分隔符不能紧跟着进制的前缀`0b`、`0B`、`0o`、`0O`、`0x`、`0X`。
-
-```javascript
-// 报错
-0_b111111000
-0b_111111000
-```
-
-下面三个将字符串转成数值的函数，不支持数值分隔符。主要原因是提案的设计者认为，数值分隔符主要是为了编码时书写数值的方便，而不是为了处理外部输入的数据。
-
-- Number()
-- parseInt()
-- parseFloat()
-
-```javascript
-Number('123_456') // NaN
-parseInt('123_456') // 123
-```
-
 ## Math.signbit()
 
 `Math.sign()`用来判断一个值的正负，但是如果参数是`-0`，它会返回`-0`。
@@ -630,5 +553,49 @@ new URL('data.txt', import.meta.url)
 // my-module.js 内部执行下面的代码
 import.meta.scriptElement.dataset.foo
 // "abc"
+```
+
+## JSON 模块
+
+import 命令目前只能用于加载 ES 模块，现在有一个[提案](https://github.com/tc39/proposal-json-modules)，允许加载 JSON 模块。
+
+假定有一个 JSON 模块文件`config.json`。
+
+```javascript
+{
+  "appName": "My App"
+}
+```
+
+目前，只能使用`fetch()`加载 JSON 模块。
+
+```javascript
+const response = await fetch('./config.json');
+const json = await response.json();
+```
+
+import 命令能够直接加载 JSON 模块以后，就可以像下面这样写。
+
+```javascript
+import configData from './config.json' assert { type: "json" };
+console.log(configData.appName);
+```
+
+上面示例中，整个 JSON 对象被导入为`configData`对象，然后就可以从该对象获取 JSON 数据。
+
+`import`命令导入 JSON 模块时，命令结尾的`assert {type: "json"}`不可缺少。这叫做导入断言，用来告诉 JavaScript 引擎，现在加载的是 JSON 模块。你可能会问，为什么不通过`.json`后缀名判断呢？因为浏览器的传统是不通过后缀名判断文件类型，标准委员会希望遵循这种做法，这样也可以避免一些安全问题。
+
+导入断言是 JavaScript 导入其他格式模块的标准写法，JSON 模块将是第一个使用这种语法导入的模块。以后，还会支持导入 CSS 模块、HTML 模块等等。
+
+动态加载模块的`import()`函数也支持加载 JSON 模块。
+
+```javascript
+import('./config.json', { assert: { type: 'json' } })
+```
+
+脚本加载 JSON 模块以后，还可以再用 export 命令输出。这时，可以将 export 和 import 结合成一个语句。
+
+```javascript
+export { config } from './config.json' assert { type: 'json' };
 ```
 

@@ -209,9 +209,8 @@ Obj.prototype[Symbol.iterator] = function() {
       var value = current.value;
       current = current.next;
       return { done: false, value: value };
-    } else {
-      return { done: true };
     }
+    return { done: true };
   }
   return iterator;
 }
@@ -245,9 +244,8 @@ let obj = {
             value: self.data[index++],
             done: false
           };
-        } else {
-          return { value: undefined, done: true };
         }
+        return { value: undefined, done: true };
       }
     };
   }
@@ -745,6 +743,8 @@ for (var key of Object.keys(someObject)) {
 另一个方法是使用 Generator 函数将对象重新包装一下。
 
 ```javascript
+const obj = { a: 1, b: 2, c: 3 }
+
 function* entries(obj) {
   for (let key of Object.keys(obj)) {
     yield [key, obj[key]];
