@@ -439,7 +439,7 @@ import submodule from './node_modules/es-module-package/private-module.js';
 }
 ```
 
-注意，如果同时还有其他别名，就不能采用简写，否则或报错。
+注意，如果同时还有其他别名，就不能采用简写，否则会报错。
 
 ```javascript
 {
