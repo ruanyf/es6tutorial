@@ -437,16 +437,6 @@ export default Breadcrumbs;
 
 如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，`export default`与普通的`export`不要同时使用。
 
-不要在模块输入中使用通配符。因为这样可以确保你的模块之中，有一个默认输出（export default）。
-
-```javascript
-// bad
-import * as myObject from './importModule';
-
-// good
-import myObject from './importModule';
-```
-
 如果模块默认输出一个函数，函数名的首字母应该小写。
 
 ```javascript
