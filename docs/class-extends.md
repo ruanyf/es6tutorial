@@ -654,7 +654,7 @@ myerror.stack
 //     ...
 ```
 
-注意，继承`Object`的子类，有一个[行为差异](http://stackoverflow.com/questions/36203614/super-does-not-pass-arguments-when-instantiating-a-class-extended-from-object)。
+注意，继承`Object`的子类，有一个[行为差异](https://stackoverflow.com/questions/36203614/super-does-not-pass-arguments-when-instantiating-a-class-extended-from-object)。
 
 ```javascript
 class NewObj extends Object{
