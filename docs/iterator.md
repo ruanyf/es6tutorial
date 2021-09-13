@@ -340,7 +340,7 @@ let [first, ...rest] = set;
 
 **（2）扩展运算符**
 
-扩展运算符（...）也会调用默认的 Iterator 接口。
+任何部署了 Iterator 接口的数据结构，扩展运算符（...）就会调用默认的 Iterator 接口。
 
 ```javascript
 // 例一
@@ -351,6 +351,33 @@ var str = 'hello';
 let arr = ['b', 'c'];
 ['a', ...arr, 'd']
 // ['a', 'b', 'c', 'd']
+
+// 例三
+var obj = {
+  a: 123,
+  [Symbol.iterator]: function () {
+    let i = 0
+    return {
+      next: function () {
+        i++;
+        if (i === 1) {
+          return {
+            value: i,
+            done: false
+          }
+        } else {
+          return {
+            value: undefined,
+            done: true
+          }
+        }
+      }
+    }
+  }
+}
+
+var arr = [2, ...obj]
+console.log(arr); // [2, 1]
 ```
 
 上面代码的扩展运算符内部就调用 Iterator 接口。
