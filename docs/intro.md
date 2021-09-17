@@ -242,7 +242,7 @@ import 'core-js';
 import 'regenerator-runtime/runtime';
 // 或者
 require('core-js');
-require('regenerator-runtime/runtime);
+require('regenerator-runtime/runtime');
 ```
 
 Babel 默认不转码的 API 非常多，详细清单可以查看`babel-plugin-transform-runtime`模块的[definitions.js](https://github.com/babel/babel/blob/master/packages/babel-plugin-transform-runtime/src/runtime-corejs3-definitions.js)文件。
