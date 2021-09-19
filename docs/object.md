@@ -706,7 +706,7 @@ let aWithXGetter = { ...a }; // 报错
 
 ## AggregateError 错误对象
 
-ES2021 标准之中，伴随`Promise.any()`方法，还引入一个新的错误对象`AggregateError`，也放在这一章介绍。
+ES2021 标准之中，为了配合新增的`Promise.any()`方法（详见《Promise 对象》一章），还引入一个新的错误对象`AggregateError`，也放在这一章介绍。
 
 AggregateError 在一个错误对象里面，封装了多个错误。如果某个单一操作，同时引发了多个错误，，需要同时抛出这些错误，那么就可以抛出一个 AggregateError 错误对象，把各种错误都放在这个对象里面。
 
