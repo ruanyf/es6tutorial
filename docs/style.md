@@ -397,22 +397,24 @@ class PeekableQueue extends Queue {
 
 ## 模块
 
-首先，Module 语法是 JavaScript 模块的标准写法，坚持使用这种写法。使用`import`取代`require`。
+ES6 模块语法是 JavaScript 模块的标准写法，坚持使用这种写法，取代 Node.js 的 CommonJS 语法。
+
+首先，使用`import`取代`require()`。
 
 ```javascript
-// bad
+// CommonJS 的写法
 const moduleA = require('moduleA');
 const func1 = moduleA.func1;
 const func2 = moduleA.func2;
 
-// good
+// ES6 的写法
 import { func1, func2 } from 'moduleA';
 ```
 
-使用`export`取代`module.exports`。
+其次，使用`export`取代`module.exports`。
 
 ```javascript
-// commonJS的写法
+// commonJS 的写法
 var React = require('react');
 
 var Breadcrumbs = React.createClass({
@@ -423,7 +425,7 @@ var Breadcrumbs = React.createClass({
 
 module.exports = Breadcrumbs;
 
-// ES6的写法
+// ES6 的写法
 import React from 'react';
 
 class Breadcrumbs extends React.Component {
@@ -435,9 +437,9 @@ class Breadcrumbs extends React.Component {
 export default Breadcrumbs;
 ```
 
-如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，就不使用`export default`，`export default`与普通的`export`不要同时使用。
+如果模块只有一个输出值，就使用`export default`，如果模块有多个输出值，除非其中某个输出值特别重要，否则建议不要使用`export default`，即多个输出值如果是平等关系，`export default`与普通的`export`就不要同时使用。
 
-如果模块默认输出一个函数，函数名的首字母应该小写。
+如果模块默认输出一个函数，函数名的首字母应该小写，表示这是一个工具方法。
 
 ```javascript
 function makeStyleGuide() {
@@ -446,7 +448,7 @@ function makeStyleGuide() {
 export default makeStyleGuide;
 ```
 
-如果模块默认输出一个对象，对象名的首字母应该大写。
+如果模块默认输出一个对象，对象名的首字母应该大写，表示这是一个配置值对象。
 
 ```javascript
 const StyleGuide = {
