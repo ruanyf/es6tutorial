@@ -303,10 +303,10 @@ function foo(x = x) {
   // ...
 }
 
-foo() // ReferenceError: x is not defined
+foo() // ReferenceError: Cannot access 'x' before initialization
 ```
 
-上面代码中，参数`x = x`形成一个单独作用域。实际执行的是`let x = x`，由于暂时性死区的原因，这行代码会报错”x 未定义“。
+上面代码中，参数`x = x`形成一个单独作用域。实际执行的是`let x = x`，由于暂时性死区的原因，这行代码会报错。
 
 如果参数的默认值是一个函数，该函数的作用域也遵守这个规则。请看下面的例子。
 
