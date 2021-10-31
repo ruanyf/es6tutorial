@@ -109,7 +109,7 @@ export function mixins(...list) {
 }
 
 // main.js
-import { mixins } from './mixins'
+import { mixins } from './mixins.js'
 
 const Foo = {
   foo() { console.log('foo') }
@@ -591,7 +591,7 @@ export function mixins(...list) {
 然后，就可以使用上面这个装饰器，为类“混入”各种方法。
 
 ```javascript
-import { mixins } from './mixins';
+import { mixins } from './mixins.js';
 
 const Foo = {
   foo() { console.log('foo') }
