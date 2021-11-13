@@ -191,7 +191,7 @@ for (var value of range(0, 3)) {
 
 上面代码是一个类部署 Iterator 接口的写法。`Symbol.iterator`属性对应一个函数，执行后返回当前对象的遍历器对象。
 
-下面是通过遍历器实现指针结构的例子。
+下面是通过遍历器实现“链表”结构的例子。
 
 ```javascript
 function Obj(value) {
