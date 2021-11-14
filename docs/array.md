@@ -544,7 +544,7 @@ function ArrayOf(){
 }
 ```
 
-## 数组实例的 copyWithin()
+## 实例方法：copyWithin()
 
 数组实例的`copyWithin()`方法，在当前数组内部，将指定位置的成员复制到其他位置（会覆盖原有成员），然后返回当前数组。也就是说，使用这个方法，会修改当前数组。
 
@@ -593,7 +593,7 @@ i32a.copyWithin(0, 2);
 // Int32Array [4, 2, 3, 4, 5]
 ```
 
-## 数组实例的 find() 和 findIndex()
+## 实例方法：find() 和 findIndex()
 
 数组实例的`find`方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为`true`的成员，然后返回该成员。如果没有符合条件的成员，则返回`undefined`。
 
@@ -644,7 +644,7 @@ let person = {name: 'John', age: 20};
 
 上面代码中，`indexOf`方法无法识别数组的`NaN`成员，但是`findIndex`方法可以借助`Object.is`方法做到。
 
-## 数组实例的 fill()
+## 实例方法：fill()
 
 `fill`方法使用给定值，填充一个数组。
 
@@ -681,7 +681,7 @@ arr
 // [[5], [5], [5]]
 ```
 
-## 数组实例的 entries()，keys() 和 values()
+## 实例方法：entries()，keys() 和 values()
 
 ES6 提供三个新的方法——`entries()`，`keys()`和`values()`——用于遍历数组。它们都返回一个遍历器对象（详见《Iterator》一章），可以用`for...of`循环进行遍历，唯一的区别是`keys()`是对键名的遍历、`values()`是对键值的遍历，`entries()`是对键值对的遍历。
 
@@ -715,7 +715,7 @@ console.log(entries.next().value); // [1, 'b']
 console.log(entries.next().value); // [2, 'c']
 ```
 
-## 数组实例的 includes()
+## 实例方法：includes()
 
 `Array.prototype.includes`方法返回一个布尔值，表示某个数组是否包含给定的值，与字符串的`includes`方法类似。ES2016 引入了该方法。
 
@@ -770,7 +770,7 @@ contains(['foo', 'bar'], 'baz'); // => false
 - Map 结构的`has`方法，是用来查找键名的，比如`Map.prototype.has(key)`、`WeakMap.prototype.has(key)`、`Reflect.has(target, propertyKey)`。
 - Set 结构的`has`方法，是用来查找值的，比如`Set.prototype.has(value)`、`WeakSet.prototype.has(value)`。
 
-## 数组实例的 flat()，flatMap()
+## 实例方法：flat()，flatMap()
 
 数组的成员有时还是数组，`Array.prototype.flat()`用于将嵌套的数组“拉平”，变成一维的数组。该方法返回一个新数组，对原数据没有影响。
 
@@ -835,9 +835,25 @@ arr.flatMap(function callback(currentValue[, index[, array]]) {
 
 `flatMap()`方法还可以有第二个参数，用来绑定遍历函数里面的`this`。
 
+## 实例方法：at()
+
+长久以来，JavaScript 不支持数组的负索引，如果要引用数组的最后一个成员，不能写成`arr[-1]`，只能使用`arr[arr.length - 1]`。
+
+这是因为方括号运算符`[]`在 JavaScript 语言里面，不仅用于数组，还用于对象。对于对象来说，方括号里面就是键名，比如`obj[1]`引用的是键名为字符串`1`的键，同理`obj[-1]`引用的是键名为字符串`-1`的键。由于 JavaScript 的数组是特殊的对象，所以方括号里面的负数无法再有其他语义了，也就是说，不可能添加新语法来支持负索引。
+
+为了解决这个问题，现在有一个[提案](https://github.com/tc39/proposal-relative-indexing-method/)，为数组实例增加了`at()`方法，接受一个整数作为参数，返回对应位置的成员，支持负索引。这个方法不仅可用于数组，也可用于字符串和类型数组（TypedArray）。
+
+```javascript
+const arr = [5, 12, 8, 130, 44];
+arr.at[2] // 8
+arr.at[-2] // 130
+```
+
+如果参数位置超出了数组范围，`at()`返回`undefined`。
+
 ## 数组的空位
 
-数组的空位指，数组的某一个位置没有任何值。比如，`Array`构造函数返回的数组都是空位。
+数组的空位指的是，数组的某一个位置没有任何值，比如`Array()`构造函数返回的数组都是空位。
 
 ```javascript
 Array(3) // [, , ,]
@@ -845,7 +861,7 @@ Array(3) // [, , ,]
 
 上面代码中，`Array(3)`返回一个具有 3 个空位的数组。
 
-注意，空位不是`undefined`，一个位置的值等于`undefined`，依然是有值的。空位是没有任何值，`in`运算符可以说明这一点。
+注意，空位不是`undefined`，某一个位置的值等于`undefined`，依然是有值的。空位是没有任何值，`in`运算符可以说明这一点。
 
 ```javascript
 0 in [undefined, undefined, undefined] // true
@@ -888,7 +904,7 @@ ES5 对空位的处理，已经很不一致了，大多数情况下会忽略空�
 
 ES6 则是明确将空位转为`undefined`。
 
-`Array.from`方法会将数组的空位，转为`undefined`，也就是说，这个方法不会忽略空位。
+`Array.from()`方法会将数组的空位，转为`undefined`，也就是说，这个方法不会忽略空位。
 
 ```javascript
 Array.from(['a',,'b'])
@@ -925,7 +941,7 @@ for (let i of arr) {
 // 1
 ```
 
-上面代码中，数组`arr`有两个空位，`for...of`并没有忽略它们。如果改成`map`方法遍历，空位是会跳过的。
+上面代码中，数组`arr`有两个空位，`for...of`并没有忽略它们。如果改成`map()`方法遍历，空位是会跳过的。
 
 `entries()`、`keys()`、`values()`、`find()`和`findIndex()`会将空位处理成`undefined`。
 
@@ -986,4 +1002,3 @@ arr.sort(unstableSorting)
 常见的排序算法之中，插入排序、合并排序、冒泡排序等都是稳定的，堆排序、快速排序等是不稳定的。不稳定排序的主要缺点是，多重排序时可能会产生问题。假设有一个姓和名的列表，要求按照“姓氏为主要关键字，名字为次要关键字”进行排序。开发者可能会先按名字排序，再按姓氏进行排序。如果排序算法是稳定的，这样就可以达到“先姓氏，后名字”的排序效果。如果是不稳定的，就不行。
 
 早先的 ECMAScript 没有规定，`Array.prototype.sort()`的默认排序算法是否稳定，留给浏览器自己决定，这导致某些实现是不稳定的。[ES2019](https://github.com/tc39/ecma262/pull/1340) 明确规定，`Array.prototype.sort()`的默认排序算法必须稳定。这个规定已经做到了，现在 JavaScript 各个主要实现的默认排序算法都是稳定的。
-
