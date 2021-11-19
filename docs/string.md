@@ -640,6 +640,16 @@ function tag(strings) {
 
 上面代码中，`tag`函数的第一个参数`strings`，有一个`raw`属性，也指向一个数组。该数组的成员与`strings`数组完全一致。比如，`strings`数组是`["First line\nSecond line"]`，那么`strings.raw`数组就是`["First line\\nSecond line"]`。两者唯一的区别，就是字符串里面的斜杠都被转义了。比如，strings.raw 数组会将`\n`视为`\\`和`n`两个字符，而不是换行符。这是为了方便取得转义之前的原始模板而设计的。
 
+注意，当字符串中包含非法的转义内容时，`strings`的该项会是`undefined`，此时你只能通过`strings.raw`获取原字符串：
+
+```javascript
+tag`\unknown`
+
+function tag(strings) {
+  console.log(strings[0]);// undefined
+}
+```
+
 ## 模板字符串的限制
 
 前面提到标签模板里面，可以内嵌其他语言。但是，模板字符串默认会将字符串转义，导致无法嵌入其他语言。
