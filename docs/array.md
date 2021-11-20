@@ -845,8 +845,8 @@ arr.flatMap(function callback(currentValue[, index[, array]]) {
 
 ```javascript
 const arr = [5, 12, 8, 130, 44];
-arr.at[2] // 8
-arr.at[-2] // 130
+arr.at(2) // 8
+arr.at(-2) // 130
 ```
 
 如果参数位置超出了数组范围，`at()`返回`undefined`。
