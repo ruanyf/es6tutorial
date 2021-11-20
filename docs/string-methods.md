@@ -443,8 +443,8 @@ str.replaceAll(regex, replacer)
 
 ```javascript
 const str = 'hello';
-str.at[1] // "e"
-str.at[-1] // "o"
+str.at(1) // "e"
+str.at(-1) // "o"
 ```
 
 如果参数位置超出了字符串范围，`at()`返回`undefined`。
