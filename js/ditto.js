@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2021年10月9日
-  var deadline = new Date(2021, 9, 9);
+  // 2022年1月1日
+  var deadline = new Date(2022, 0, 1);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -258,10 +258,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【免费课程】' +
-    '开课吧<span style="color: #4682BE;">《深度理解 Vue 3.0 核心源码》</span>精品课领取，讲解 Vue 3.0 源码，动手制作实战项目，快速上手Vue 3.0。';
+  var text = '【课程消息】' +
+    '<span style="color: #4682BE;">《Vue 3.0 核心源码与实战》</span>带大家动手，从零开发网页游戏《飞机大战》，快速上手 Vue 3.0 项目。开课吧的系列课程，现在 0 元领取。';
 
-  var banner = $('<a href="https://t.1yb.co/AzbY" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/N3MIpFtF2DZ91C502gp?kol_ad_code=kKx4Fnfd9ENkHgIfwHb" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
