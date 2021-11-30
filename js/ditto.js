@@ -259,7 +259,7 @@ function create_banner(element) {
   ].join(';');
 
   var text = '【课程消息】' +
-    '<span style="color: #4682BE;">《Vue 3.0 核心源码与实战》</span>带大家动手，从零开发网页游戏《飞机大战》，快速上手 Vue 3.0 项目。开课吧的系列课程，现在 0 元领取。';
+    '<span style="color: #4682BE;">《Vue 3.0 核心源码与实战》</span>带大家动手，从零开发网页游戏《飞机大战》，快速上手 Vue 3.0 项目。开课吧的课程资料，现在 0 元领取。';
 
   var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/N3MIpFtF2DZ91C502gp?kol_ad_code=kKx4Fnfd9ENkHgIfwHb" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
