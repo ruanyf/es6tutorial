@@ -1090,7 +1090,7 @@ target.m() // false
 proxy.m()  // true
 ```
 
-上面代码中，一旦`proxy`代理`target`，`target.m()`内部的`this`就是指向`proxy`，而不是`target`。
+上面代码中，一旦`proxy`代理`target`，`target.m()`内部的`this`就是指向`proxy`，而不是`target`。所以，虽然`proxy`没有做任何拦截，`target.m()`和`proxy.m()`返回不一样的结果。
 
 下面是一个例子，由于`this`指向的变化，导致 Proxy 无法代理目标对象。
 
