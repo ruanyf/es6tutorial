@@ -1028,7 +1028,7 @@ A.test(o1) // false
 A.test(o1.__proto__) // true
 
 const o2 = {};
-Object.setPrototypeOf(o2, A);
+Object.setPrototypeOf(o2, a);
 A.test(o2) // false
 A.test(o2.__proto__) // true
 ```
@@ -1204,3 +1204,4 @@ var y = new Rectangle(3, 4);  // 正确
 上面代码中，`Shape`类不能被实例化，只能用于继承。
 
 注意，在函数外部，使用`new.target`会报错。
+
