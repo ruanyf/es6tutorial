@@ -531,14 +531,14 @@ ES6 借鉴 C++、Java、C# 和 Python 语言，引入了`for...of`循环，作�
 const arr = ['red', 'green', 'blue'];
 
 for(let v of arr) {
-  console.log(v); // red green blue
+  console.log(v); // "red" "green" "blue"
 }
 
 const obj = {};
 obj[Symbol.iterator] = arr[Symbol.iterator].bind(arr);
 
 for(let v of obj) {
-  console.log(v); // red green blue
+  console.log(v); // "red" "green" "blue"
 }
 ```
 
@@ -550,7 +550,7 @@ for(let v of obj) {
 const arr = ['red', 'green', 'blue'];
 
 arr.forEach(function (element, index) {
-  console.log(element); // red green blue
+  console.log(element); // "red" "green" "blue"
   console.log(index);   // 0 1 2
 });
 ```
@@ -561,11 +561,11 @@ JavaScript 原有的`for...in`循环，只能获得对象的键名，不能直�
 var arr = ['a', 'b', 'c', 'd'];
 
 for (let a in arr) {
-  console.log(a); // 0 1 2 3
+  console.log(a); // "0" "1" "2" "3"
 }
 
 for (let a of arr) {
-  console.log(a); // a b c d
+  console.log(a); // "a" "b" "c" "d"
 }
 ```
 
@@ -582,7 +582,7 @@ for (let i in arr) {
 }
 
 for (let i of arr) {
-  console.log(i); //  "3", "5", "7"
+  console.log(i); // 3, 5, 7
 }
 ```
 
