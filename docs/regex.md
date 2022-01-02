@@ -468,7 +468,7 @@ regex.test('ⅠⅡⅢⅣⅤⅥⅦⅧⅨⅩⅪⅫ') // true
 [\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
 
 // 匹配各种文字的所有非字母的字符，等同于 Unicode 版的 \W
-[^\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Connector_Punctuation}\p{Join_Control}]
+[^\P{Alphabetic}\P{Mark}\P{Decimal_Number}\P{Connector_Punctuation}\P{Join_Control}]
 
 // 匹配 Emoji
 /\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Emoji_Presentation}|\p{Emoji}\uFE0F/gu
