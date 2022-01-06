@@ -413,22 +413,22 @@ const RE_DOLLAR_PREFIX = /(?<=\$)foo/g;
 
 ## Unicode 属性类
 
-ES2018 [引入](https://github.com/tc39/proposal-regexp-unicode-property-escapes)了一种新的类的写法`\p{...}`和`\P{...}`，允许正则表达式匹配符合 Unicode 某种属性的所有字符。
+ES2018 [引入](https://github.com/tc39/proposal-regexp-unicode-property-escapes)了 Unicode 属性类，允许使用`\p{...}`和`\P{...}`（`\P`是`\p`的否定形式）代表一类 Unicode 字符，匹配满足条件的所有字符。
 
 ```javascript
 const regexGreekSymbol = /\p{Script=Greek}/u;
 regexGreekSymbol.test('π') // true
 ```
 
-上面代码中，`\p{Script=Greek}`指定匹配一个希腊文字母，所以匹配`π`成功。
+上面代码中，`\p{Script=Greek}`表示匹配一个希腊文字母，所以匹配`π`成功。
 
-Unicode 属性类要指定属性名和属性值。
+Unicode 属性类的标准形式，需要同时指定属性名和属性值。
 
 ```javascript
 \p{UnicodePropertyName=UnicodePropertyValue}
 ```
 
-对于某些属性，可以只写属性名，或者只写属性值。
+但是，对于某些属性，可以只写属性名，或者只写属性值。
 
 ```javascript
 \p{UnicodePropertyName}
@@ -437,7 +437,7 @@ Unicode 属性类要指定属性名和属性值。
 
 `\P{…}`是`\p{…}`的反向匹配，即匹配不满足条件的字符。
 
-注意，这两种类只对 Unicode 有效，所以使用的时候一定要加上`u`修饰符。如果不加`u`修饰符，正则表达式使用`\p`和`\P`会报错，ECMAScript 预留了这两个类。
+注意，这两种类只对 Unicode 有效，所以使用的时候一定要加上`u`修饰符。如果不加`u`修饰符，正则表达式使用`\p`和`\P`会报错。
 
 由于 Unicode 的各种属性非常多，所以这种新的类的表达能力非常强。
 
