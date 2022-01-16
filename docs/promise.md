@@ -1134,7 +1134,7 @@ try {
 }
 ```
 
-上面这样的写法就很笨拙了，这时就可以统一用`promise.catch()`捕获所有同步和异步的错误。
+上面这样的写法就很笨拙了，这时就可以统一用`promise.try()`捕获所有同步和异步的错误。
 
 ```javascript
 Promise.try(() => database.users.get({id: userId}))
