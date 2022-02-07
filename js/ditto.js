@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2021年12月31日
-  var deadline = new Date(2021, 11, 31);
+  // 2022年3月9日
+  var deadline = new Date(2022, 2, 9);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -258,10 +258,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【课程消息】' +
-    '<span style="color: #4682BE;">《Vue 3.0 核心源码与实战》</span>带大家动手，从零开发网页游戏《飞机大战》，快速上手 Vue 3.0 项目。开课吧的课程资料，现在 0 元领取。';
+  var text = '【活动消息】' +
+    '入门 AI，<span style="color: #4682BE;">人工智能四本名著</span>——《人工智能：一种现代方法》、《深度学习》、《动手学机器学习》、《流畅的 Python》——正版学习资料免费领取！';
 
-  var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/N3MIpFtF2DZ91C502gp?kol_ad_code=kKx4Fnfd9ENkHgIfwHb" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/Y9x3zlctUWhoCB3YB8U?kol_ad_code=zhchVAUzJqFhWum1D8c" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
