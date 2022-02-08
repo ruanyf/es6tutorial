@@ -259,7 +259,7 @@ function create_banner(element) {
   ].join(';');
 
   var text = '【活动消息】' +
-    '入门 AI，人工智能四本名著——<span style="color: #4682BE;">《人工智能：一种现代方法》</span>、<span style="color: #4682BE;">《深度学习》</span>、<span style="color: #4682BE;">《动手学机器学习》</span>、<span style="color: #4682BE;">《流畅的 Python》</span>——正版学习资料免费领取！';
+    'AI 入门，人工智能四本名著——<span style="color: #4682BE;">《人工智能：一种现代方法》</span>、<span style="color: #4682BE;">《深度学习》</span>、<span style="color: #4682BE;">《动手学机器学习》</span>、<span style="color: #4682BE;">《流畅的 Python》</span>——正版学习资料免费领取！';
 
   var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/Y9x3zlctUWhoCB3YB8U?kol_ad_code=zhchVAUzJqFhWum1D8c" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
