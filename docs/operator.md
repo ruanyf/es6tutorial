@@ -39,7 +39,7 @@ b **= 3;
 
 ```javascript
 // 错误的写法
-const  firstName = message.body.user.firstName || 'default';
+const firstName = message.body.user.firstName || 'default';
 
 // 正确的写法
 const firstName = (message
