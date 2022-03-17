@@ -1167,7 +1167,7 @@ proxy.foo
 proxy.foo = 1
 // true
 ```
-
+改为箭头函数this指向window，是标准函数和箭头函数this指向问题，应该和proxy无关。
 上面例子中，`get()`和`set()`拦截函数内部的`this`，指向的都是`handler`对象。
 
 ## 实例：Web 服务的客户端
