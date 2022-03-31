@@ -73,9 +73,9 @@ console.log(...[1, 2])
 
 上面三种情况，扩展运算符都放在圆括号里面，但是前两种情况会报错，因为扩展运算符所在的括号不是函数调用。
 
-### 替代函数的 apply 方法
+### 替代函数的 apply() 方法
 
-由于扩展运算符可以展开数组，所以不再需要`apply`方法，将数组转为函数的参数了。
+由于扩展运算符可以展开数组，所以不再需要`apply()`方法将数组转为函数的参数了。
 
 ```javascript
 // ES5 的写法
@@ -85,7 +85,7 @@ function f(x, y, z) {
 var args = [0, 1, 2];
 f.apply(null, args);
 
-// ES6的写法
+// ES6 的写法
 function f(x, y, z) {
   // ...
 }
@@ -93,7 +93,7 @@ let args = [0, 1, 2];
 f(...args);
 ```
 
-下面是扩展运算符取代`apply`方法的一个实际的例子，应用`Math.max`方法，简化求出一个数组最大元素的写法。
+下面是扩展运算符取代`apply()`方法的一个实际的例子，应用`Math.max()`方法，简化求出一个数组最大元素的写法。
 
 ```javascript
 // ES5 的写法
@@ -106,12 +106,12 @@ Math.max(...[14, 3, 77])
 Math.max(14, 3, 77);
 ```
 
-上面代码中，由于 JavaScript 不提供求数组最大元素的函数，所以只能套用`Math.max`函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用`Math.max`了。
+上面代码中，由于 JavaScript 不提供求数组最大元素的函数，所以只能套用`Math.max()`函数，将数组转为一个参数序列，然后求最大值。有了扩展运算符以后，就可以直接用`Math.max()`了。
 
-另一个例子是通过`push`函数，将一个数组添加到另一个数组的尾部。
+另一个例子是通过`push()`函数，将一个数组添加到另一个数组的尾部。
 
 ```javascript
-// ES5的 写法
+// ES5 的写法
 var arr1 = [0, 1, 2];
 var arr2 = [3, 4, 5];
 Array.prototype.push.apply(arr1, arr2);
@@ -122,13 +122,14 @@ let arr2 = [3, 4, 5];
 arr1.push(...arr2);
 ```
 
-上面代码的 ES5 写法中，`push`方法的参数不能是数组，所以只好通过`apply`方法变通使用`push`方法。有了扩展运算符，就可以直接将数组传入`push`方法。
+上面代码的 ES5 写法中，`push()`方法的参数不能是数组，所以只好通过`apply()`方法变通使用`push()`方法。有了扩展运算符，就可以直接将数组传入`push()`方法。
 
 下面是另外一个例子。
 
 ```javascript
 // ES5
 new (Date.bind.apply(Date, [null, 2015, 1, 1]))
+
 // ES6
 new Date(...[2015, 1, 1]);
 ```
@@ -213,6 +214,7 @@ a4[0] === a1[0] // true
 ```javascript
 // ES5
 a = list[0], rest = list.slice(1)
+
 // ES6
 [a, ...rest] = list
 ```
@@ -281,7 +283,7 @@ str.split('').reverse().join('')
 // 'y\uD83D\uDE80x'
 ```
 
-上面代码中，如果不用扩展运算符，字符串的`reverse`操作就不正确。
+上面代码中，如果不用扩展运算符，字符串的`reverse()`操作就不正确。
 
 **（5）实现了 Iterator 接口的对象**
 
@@ -292,7 +294,7 @@ let nodeList = document.querySelectorAll('div');
 let array = [...nodeList];
 ```
 
-上面代码中，`querySelectorAll`方法返回的是一个`NodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator 。
+上面代码中，`querySelectorAll()`方法返回的是一个`NodeList`对象。它不是数组，而是一个类似数组的对象。这时，扩展运算符可以将其转为真正的数组，原因就在于`NodeList`对象实现了 Iterator。
 
 ```javascript
 Number.prototype[Symbol.iterator] = function*() {
@@ -361,9 +363,9 @@ let arr = [...obj]; // TypeError: Cannot spread non-iterable object
 
 ## Array.from()
 
-`Array.from`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括 ES6 新增的数据结构 Set 和 Map）。
+`Array.from()`方法用于将两类对象转为真正的数组：类似数组的对象（array-like object）和可遍历（iterable）的对象（包括 ES6 新增的数据结构 Set 和 Map）。
 
-下面是一个类似数组的对象，`Array.from`将它转为真正的数组。
+下面是一个类似数组的对象，`Array.from()`将它转为真正的数组。
 
 ```javascript
 let arrayLike = {
@@ -373,32 +375,32 @@ let arrayLike = {
     length: 3
 };
 
-// ES5的写法
+// ES5 的写法
 var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
 
-// ES6的写法
+// ES6 的写法
 let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
 ```
 
-实际应用中，常见的类似数组的对象是 DOM 操作返回的 NodeList 集合，以及函数内部的`arguments`对象。`Array.from`都可以将它们转为真正的数组。
+实际应用中，常见的类似数组的对象是 DOM 操作返回的 NodeList 集合，以及函数内部的`arguments`对象。`Array.from()`都可以将它们转为真正的数组。
 
 ```javascript
-// NodeList对象
+// NodeList 对象
 let ps = document.querySelectorAll('p');
 Array.from(ps).filter(p => {
   return p.textContent.length > 100;
 });
 
-// arguments对象
+// arguments 对象
 function foo() {
   var args = Array.from(arguments);
   // ...
 }
 ```
 
-上面代码中，`querySelectorAll`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`filter`方法。
+上面代码中，`querySelectorAll()`方法返回的是一个类似数组的对象，可以将这个对象转为真正的数组，再使用`filter()`方法。
 
-只要是部署了 Iterator 接口的数据结构，`Array.from`都能将其转为数组。
+只要是部署了 Iterator 接口的数据结构，`Array.from()`都能将其转为数组。
 
 ```javascript
 Array.from('hello')
@@ -408,9 +410,9 @@ let namesSet = new Set(['a', 'b'])
 Array.from(namesSet) // ['a', 'b']
 ```
 
-上面代码中，字符串和 Set 结构都具有 Iterator 接口，因此可以被`Array.from`转为真正的数组。
+上面代码中，字符串和 Set 结构都具有 Iterator 接口，因此可以被`Array.from()`转为真正的数组。
 
-如果参数是一个真正的数组，`Array.from`会返回一个一模一样的新数组。
+如果参数是一个真正的数组，`Array.from()`会返回一个一模一样的新数组。
 
 ```javascript
 Array.from([1, 2, 3])
@@ -429,16 +431,16 @@ function foo() {
 [...document.querySelectorAll('div')]
 ```
 
-扩展运算符背后调用的是遍历器接口（`Symbol.iterator`），如果一个对象没有部署这个接口，就无法转换。`Array.from`方法还支持类似数组的对象。所谓类似数组的对象，本质特征只有一点，即必须有`length`属性。因此，任何有`length`属性的对象，都可以通过`Array.from`方法转为数组，而此时扩展运算符就无法转换。
+扩展运算符背后调用的是遍历器接口（`Symbol.iterator`），如果一个对象没有部署这个接口，就无法转换。`Array.from()`方法还支持类似数组的对象。所谓类似数组的对象，本质特征只有一点，即必须有`length`属性。因此，任何有`length`属性的对象，都可以通过`Array.from()`方法转为数组，而此时扩展运算符就无法转换。
 
 ```javascript
 Array.from({ length: 3 });
 // [ undefined, undefined, undefined ]
 ```
 
-上面代码中，`Array.from`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。扩展运算符转换不了这个对象。
+上面代码中，`Array.from()`返回了一个具有三个成员的数组，每个位置的值都是`undefined`。扩展运算符转换不了这个对象。
 
-对于还没有部署该方法的浏览器，可以用`Array.prototype.slice`方法替代。
+对于还没有部署该方法的浏览器，可以用`Array.prototype.slice()`方法替代。
 
 ```javascript
 const toArray = (() =>
@@ -446,7 +448,7 @@ const toArray = (() =>
 )();
 ```
 
-`Array.from`还可以接受第二个参数，作用类似于数组的`map`方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
+`Array.from()`还可以接受一个函数作为第二个参数，作用类似于数组的`map()`方法，用来对每个元素进行处理，将处理后的值放入返回的数组。
 
 ```javascript
 Array.from(arrayLike, x => x * x);
@@ -486,7 +488,7 @@ typesOf(null, [], NaN)
 // ['object', 'object', 'number']
 ```
 
-如果`map`函数里面用到了`this`关键字，还可以传入`Array.from`的第三个参数，用来绑定`this`。
+如果`map()`函数里面用到了`this`关键字，还可以传入`Array.from()`的第三个参数，用来绑定`this`。
 
 `Array.from()`可以将各种值转为真正的数组，并且还提供`map`功能。这实际上意味着，只要有一个原始的数据结构，你就可以先对它的值进行处理，然后转成规范的数组结构，进而就可以使用数量众多的数组方法。
 
@@ -495,7 +497,7 @@ Array.from({ length: 2 }, () => 'jack')
 // ['jack', 'jack']
 ```
 
-上面代码中，`Array.from`的第一个参数指定了第二个参数运行的次数。这种特性可以让该方法的用法变得非常灵活。
+上面代码中，`Array.from()`的第一个参数指定了第二个参数运行的次数。这种特性可以让该方法的用法变得非常灵活。
 
 `Array.from()`的另一个应用是，将字符串转为数组，然后返回字符串的长度。因为它能正确处理各种 Unicode 字符，可以避免 JavaScript 将大于`\uFFFF`的 Unicode 字符，算作两个字符的 bug。
 
