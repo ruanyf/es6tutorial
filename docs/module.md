@@ -692,7 +692,28 @@ import(`./section-modules/${someVariable}.js`)
   });
 ```
 
-`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。`import()`类似于 Node 的`require`方法，区别主要是前者是异步加载，后者是同步加载。
+`import()`函数可以用在任何地方，不仅仅是模块，非模块的脚本也可以使用。它是运行时执行，也就是说，什么时候运行到这一句，就会加载指定的模块。另外，`import()`函数与所加载的模块没有静态连接关系，这点也是与`import`语句不相同。`import()`类似于 Node.js 的`require()`方法，区别主要是前者是异步加载，后者是同步加载。
+
+由于`import()`返回 Promise
+对象，所以需要使用`then()`方法指定处理函数。考虑到代码的清晰，更推荐使用`await`命令。
+
+```javascript
+async function renderWidget() {
+  const container = document.getElementById('widget');
+  if (container !== null) {
+    // 等同于
+    // import("./widget").then(widget => {
+    //   widget.render(container);
+    // });
+    const widget = await import('./widget.js');
+    widget.render(container);
+  }
+}
+
+renderWidget();
+```
+
+上面示例中，`await`命令后面就是使用`import()`，对比`then()`的写法明显更简洁易读。
 
 ### 适用场合
 
