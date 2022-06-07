@@ -811,7 +811,7 @@ try {
 
 上面代码中，`Promise.any()`方法的参数数组包含三个 Promise 操作。其中只要有一个变成`fulfilled`，`Promise.any()`返回的 Promise 对象就变成`fulfilled`。如果所有三个操作都变成`rejected`，那么`await`命令就会抛出错误。
 
-`Promise.any()`抛出的错误是一个 AggregateError 实例（详见《对象的扩展》一章），里面包含了所有成员的错误。
+`Promise.any()`抛出的错误是一个 AggregateError 实例（详见《对象的扩展》一章），这个 AggregateError 实例对象的`errors`属性是一个数组，包含了所有成员的错误。
 
 下面是一个例子。
 
