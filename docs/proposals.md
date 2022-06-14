@@ -524,6 +524,18 @@ $ ./hello.js
 
 对于 JavaScript 引擎来说，会把`#!`理解成注释，忽略掉这一行。
 
+指定谷歌开发的 [zx] 作为执行器以 `js` 实现功能，比 `Bash` 脚本更加高效和可读  
+全局安装执行器 `npm i -g zx`
+
+```javascript
+#!/usr/bin/env zx
+import { join } from 'node:path'
+
+await $`cat package.json | grep name`
+const path = join('foo', 'bar')
+await $`mkdir ${path}`
+```
+
 ## import.meta
 
 开发者使用一个模块时，有时需要知道模板本身的一些信息（比如模块的路径）。现在有一个[提案](https://github.com/tc39/proposal-import-meta)，为 import 命令添加了一个元属性`import.meta`，返回当前模块的元信息。
@@ -599,3 +611,5 @@ import('./config.json', { assert: { type: 'json' } })
 export { config } from './config.json' assert { type: 'json' };
 ```
 
+
+[zx]: https://github.com/google/zx/
