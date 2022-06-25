@@ -1,8 +1,6 @@
 # Class 的基本语法
 
-## 简介
-
-### 类的由来
+## 类的由来
 
 JavaScript 语言中，生成实例对象的传统方法是通过构造函数。下面是一个例子。
 
@@ -166,7 +164,7 @@ Object.getOwnPropertyNames(Point.prototype)
 
 上面代码采用 ES5 的写法，`toString()`方法就是可枚举的。
 
-### constructor 方法
+## constructor() 方法
 
 `constructor()`方法是类的默认方法，通过`new`命令生成对象实例时，自动调用该方法。一个类必须有`constructor()`方法，如果没有显式定义，一个空的`constructor()`方法会被默认添加。
 
@@ -210,9 +208,9 @@ Foo()
 // TypeError: Class constructor Foo cannot be invoked without 'new'
 ```
 
-### 类的实例
+## 类的实例
 
-生成类的实例的写法，与 ES5 完全一样，也是使用`new`命令。前面说过，如果忘记加上`new`，像函数那样调用`Class`，将会报错。
+生成类的实例的写法，与 ES5 完全一样，也是使用`new`命令。前面说过，如果忘记加上`new`，像函数那样调用`Class()`，将会报错。
 
 ```javascript
 class Point {
@@ -226,12 +224,10 @@ var point = Point(2, 3);
 var point = new Point(2, 3);
 ```
 
-与 ES5 一样，实例的属性除非显式定义在其本身（即定义在`this`对象上），否则都是定义在原型上（即定义在`class`上）。
+类的属性和方法，除非显式定义在其本身（即定义在`this`对象上），否则都是定义在原型上（即定义在`class`上）。
 
 ```javascript
-//定义类
 class Point {
-
   constructor(x, y) {
     this.x = x;
     this.y = y;
@@ -240,7 +236,6 @@ class Point {
   toString() {
     return '(' + this.x + ', ' + this.y + ')';
   }
-
 }
 
 var point = new Point(2, 3);
@@ -269,7 +264,7 @@ p1.__proto__ === p2.__proto__
 
 这也意味着，可以通过实例的`__proto__`属性为“类”添加方法。
 
-> `__proto__` 并不是语言本身的特性，这是各大厂商具体实现时添加的私有属性，虽然目前很多现代浏览器的 JS 引擎中都提供了这个私有属性，但依旧不建议在生产中使用该属性，避免对环境产生依赖。生产环境中，我们可以使用 `Object.getPrototypeOf` 方法来获取实例对象的原型，然后再来为原型添加方法/属性。
+> `__proto__` 并不是语言本身的特性，这是各大厂商具体实现时添加的私有属性，虽然目前很多现代浏览器的 JS 引擎中都提供了这个私有属性，但依旧不建议在生产中使用该属性，避免对环境产生依赖。生产环境中，我们可以使用 `Object.getPrototypeOf()` 方法来获取实例对象的原型，然后再来为原型添加方法/属性。
 
 ```javascript
 var p1 = new Point(2,3);
@@ -286,7 +281,63 @@ p3.printName() // "Oops"
 
 上面代码在`p1`的原型上添加了一个`printName()`方法，由于`p1`的原型就是`p2`的原型，因此`p2`也可以调用这个方法。而且，此后新建的实例`p3`也可以调用这个方法。这意味着，使用实例的`__proto__`属性改写原型，必须相当谨慎，不推荐使用，因为这会改变“类”的原始定义，影响到所有实例。
 
-### 取值函数（getter）和存值函数（setter）
+## 实例属性的新写法
+
+[ES2022](https://github.com/tc39/proposal-class-fields) 为类的实例属性，又规定了一种新写法。实例属性现在除了可以定义在`constructor()`方法里面的`this`上面，也可以定义在类内部的最顶层。
+
+```javascript
+// 原来的写法
+class IncreasingCounter {
+  constructor() {
+    this._count = 0;
+  }
+  get value() {
+    console.log('Getting the current value!');
+    return this._count;
+  }
+  increment() {
+    this._count++;
+  }
+}
+```
+
+上面示例中，实例属性`_count`定义在`constructor()`方法里面的`this`上面。
+
+现在的新写法是，这个属性也可以定义在类的最顶层，其他都不变。
+
+```javascript
+class IncreasingCounter {
+  _count = 0;
+  get value() {
+    console.log('Getting the current value!');
+    return this._count;
+  }
+  increment() {
+    this._count++;
+  }
+}
+```
+
+上面代码中，实例属性`_count`与取值函数`value()`和`increment()`方法，处于同一个层级。这时，不需要在实例属性前面加上`this`。
+
+注意，新写法定义的属性是实例对象自身的属性，而不是定义在实例对象的原型上面。
+
+这种新写法的好处是，所有实例对象自身的属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
+
+```javascript
+class foo {
+  bar = 'hello';
+  baz = 'world';
+
+  constructor() {
+    // ...
+  }
+}
+```
+
+上面的代码，一眼就能看出，`foo`类有两个实例属性，一目了然。另外，写起来也比较简洁。
+
+## 取值函数（getter）和存值函数（setter）
 
 与 ES5 一样，在“类”的内部可以使用`get`和`set`关键字，对某个属性设置存值函数和取值函数，拦截该属性的存取行为。
 
@@ -341,7 +392,7 @@ var descriptor = Object.getOwnPropertyDescriptor(
 
 上面代码中，存值函数和取值函数是定义在`html`属性的描述对象上面，这与 ES5 完全一致。
 
-### 属性表达式
+## 属性表达式
 
 类的属性名，可以采用表达式。
 
@@ -361,7 +412,7 @@ class Square {
 
 上面代码中，`Square`类的方法名`getArea`，是从表达式得到的。
 
-### Class 表达式
+## Class 表达式
 
 与函数一样，类也可以使用表达式的形式定义。
 
@@ -406,142 +457,6 @@ person.sayName(); // "张三"
 ```
 
 上面代码中，`person`是一个立即执行的类的实例。
-
-### 注意点
-
-**（1）严格模式**
-
-类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。考虑到未来所有的代码，其实都是运行在模块之中，所以 ES6 实际上把整个语言升级到了严格模式。
-
-**（2）不存在提升**
-
-类不存在变量提升（hoist），这一点与 ES5 完全不同。
-
-```javascript
-new Foo(); // ReferenceError
-class Foo {}
-```
-
-上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为 ES6 不会把类的声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
-
-```javascript
-{
-  let Foo = class {};
-  class Bar extends Foo {
-  }
-}
-```
-
-上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
-
-**（3）name 属性**
-
-由于本质上，ES6 的类只是 ES5 的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
-
-```javascript
-class Point {}
-Point.name // "Point"
-```
-
-`name`属性总是返回紧跟在`class`关键字后面的类名。
-
-**（4）Generator 方法**
-
-如果某个方法之前加上星号（`*`），就表示该方法是一个 Generator 函数。
-
-```javascript
-class Foo {
-  constructor(...args) {
-    this.args = args;
-  }
-  * [Symbol.iterator]() {
-    for (let arg of this.args) {
-      yield arg;
-    }
-  }
-}
-
-for (let x of new Foo('hello', 'world')) {
-  console.log(x);
-}
-// hello
-// world
-```
-
-上面代码中，`Foo`类的`Symbol.iterator`方法前有一个星号，表示该方法是一个 Generator 函数。`Symbol.iterator`方法返回一个`Foo`类的默认遍历器，`for...of`循环会自动调用这个遍历器。
-
-**（5）this 的指向**
-
-类的方法内部如果含有`this`，它默认指向类的实例。但是，必须非常小心，一旦单独使用该方法，很可能报错。
-
-```javascript
-class Logger {
-  printName(name = 'there') {
-    this.print(`Hello ${name}`);
-  }
-
-  print(text) {
-    console.log(text);
-  }
-}
-
-const logger = new Logger();
-const { printName } = logger;
-printName(); // TypeError: Cannot read property 'print' of undefined
-```
-
-上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境（由于 class 内部是严格模式，所以 this 实际指向的是`undefined`），从而导致找不到`print`方法而报错。
-
-一个比较简单的解决方法是，在构造方法中绑定`this`，这样就不会找不到`print`方法了。
-
-```javascript
-class Logger {
-  constructor() {
-    this.printName = this.printName.bind(this);
-  }
-
-  // ...
-}
-```
-
-另一种解决方法是使用箭头函数。
-
-```javascript
-class Obj {
-  constructor() {
-    this.getThis = () => this;
-  }
-}
-
-const myObj = new Obj();
-myObj.getThis() === myObj // true
-```
-
-箭头函数内部的`this`总是指向定义时所在的对象。上面代码中，箭头函数位于构造函数内部，它的定义生效的时候，是在构造函数执行的时候。这时，箭头函数所在的运行环境，肯定是实例对象，所以`this`会总是指向实例对象。
-
-还有一种解决方法是使用`Proxy`，获取方法的时候，自动绑定`this`。
-
-```javascript
-function selfish (target) {
-  const cache = new WeakMap();
-  const handler = {
-    get (target, key) {
-      const value = Reflect.get(target, key);
-      if (typeof value !== 'function') {
-        return value;
-      }
-      if (!cache.has(value)) {
-        cache.set(value, value.bind(target));
-      }
-      return cache.get(value);
-    }
-  };
-  const proxy = new Proxy(target, handler);
-  return proxy;
-}
-
-const logger = selfish(new Logger());
-```
 
 ## 静态方法
 
@@ -618,57 +533,6 @@ class Bar extends Foo {
 Bar.classMethod() // "hello, too"
 ```
 
-## 实例属性的新写法
-
-实例属性除了定义在`constructor()`方法里面的`this`上面，也可以定义在类的最顶层。
-
-```javascript
-class IncreasingCounter {
-  constructor() {
-    this._count = 0;
-  }
-  get value() {
-    console.log('Getting the current value!');
-    return this._count;
-  }
-  increment() {
-    this._count++;
-  }
-}
-```
-
-上面代码中，实例属性`this._count`定义在`constructor()`方法里面。另一种写法是，这个属性也可以定义在类的最顶层，其他都不变。
-
-```javascript
-class IncreasingCounter {
-  _count = 0;
-  get value() {
-    console.log('Getting the current value!');
-    return this._count;
-  }
-  increment() {
-    this._count++;
-  }
-}
-```
-
-上面代码中，实例属性`_count`与取值函数`value()`和`increment()`方法，处于同一个层级。这时，不需要在实例属性前面加上`this`。
-
-这种新写法的好处是，所有实例对象自身的属性都定义在类的头部，看上去比较整齐，一眼就能看出这个类有哪些实例属性。
-
-```javascript
-class foo {
-  bar = 'hello';
-  baz = 'world';
-
-  constructor() {
-    // ...
-  }
-}
-```
-
-上面的代码，一眼就能看出，`foo`类有两个实例属性，一目了然。另外，写起来也比较简洁。
-
 ## 静态属性
 
 静态属性指的是 Class 本身的属性，即`Class.propName`，而不是定义在实例对象（`this`）上的属性。
@@ -716,7 +580,7 @@ class Foo {
 
 ### 现有的解决方案
 
-私有方法和私有属性，是只能在类的内部访问的方法和属性，外部不能访问。这是常见需求，有利于代码的封装，但 ES6 不提供，只能通过变通方法模拟实现。
+私有方法和私有属性，是只能在类的内部访问的方法和属性，外部不能访问。这是常见需求，有利于代码的封装，但早期的 ES6 不提供，只能通过变通方法模拟实现。
 
 一种做法是在命名上加以区别。
 
@@ -790,9 +654,9 @@ Reflect.ownKeys(myClass.prototype)
 
 上面代码中，Symbol 值的属性名依然可以从类的外部拿到。
 
-### 私有属性的提案
+### 私有属性的写法
 
-目前，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+[ES2022](https://github.com/tc39/proposal-class-fields)，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
 
 ```javascript
 class IncreasingCounter {
@@ -815,9 +679,29 @@ counter.#count // 报错
 counter.#count = 42 // 报错
 ```
 
-上面代码在类的外部，读取私有属性，就会报错。
+上面示例中，在类的外部，读取或写入私有属性`#count`，都会报错。
 
-下面是另一个例子。
+另外，不管在类的内部或外部，读取一个不存在的私有属性，也都会报错。这跟公开属性的行为完全不同，如果读取一个不存在的公开属性，不会报错，只会返回`undefined`。
+
+```javascript
+class IncreasingCounter {
+  #count = 0;
+  get value() {
+    console.log('Getting the current value!');
+    return this.#myCount; // 报错
+  }
+  increment() {
+    this.#count++;
+  }
+}
+
+const counter = new IncreasingCounter();
+counter.#myCount // 报错
+```
+
+上面示例中，`#myCount`是一个不存在的私有属性，不管在函数内部或外部，读取该属性都会导致报错。
+
+注意，私有属性的属性名必须包括`#`，如果不带`#`，会被当作另一个属性。
 
 ```javascript
 class Point {
@@ -926,42 +810,46 @@ FakeMath.#computeRandomNumber() // 报错
 
 ### in 运算符
 
-`try...catch`结构可以用来判断是否存在某个私有属性。
+前面说过，直接访问某个类不存在的私有属性会报错，但是访问不存在的公开属性不会报错。这个特性可以用来判断，某个对象是否为类的实例。
 
 ```javascript
-class A {
-  use(obj) {
+class C {
+  #brand;
+
+  static isC(obj) {
     try {
-      obj.#foo;
+      obj.#brand;
+      return true;
     } catch {
-      // 私有属性 #foo 不存在
+      return false;
     }
   }
 }
-
-const a = new A();
-a.use(a); // 报错
 ```
 
-上面示例中，类`A`并不存在私有属性`#foo`，所以`try...catch`报错了。
+上面示例中，类`C`的静态方法`isC()`就用来判断，某个对象是否为`C`的实例。它采用的方法就是，访问该对象的私有属性`#brand`。如果不报错，就会返回`true`；如果报错，就说明该对象不是当前类的实例，从而`catch`部分返回`false`。
 
-这样的写法很麻烦，可读性很差，V8 引擎改进了`in`运算符，使它也可以用来判断私有属性。
+因此，`try...catch`结构可以用来判断某个私有属性是否存在。但是，这样的写法很麻烦，代码可读性很差，[ES2022](https://github.com/tc39/proposal-private-fields-in-in) 改进了`in`运算符，使它也可以用来判断私有属性。
 
 ```javascript
-class A {
-  use(obj) {
-    if (#foo in obj) {
-      // 私有属性 #foo 存在
+class C {
+  #brand;
+
+  static isC(obj) {
+    if (#brand in obj) {
+      // 私有属性 #brand 存在
+      return true;
     } else {
       // 私有属性 #foo 不存在
+      return false;
     }
   }
 }
 ```
 
-上面示例中，`in`运算符判断当前类`A`的实例，是否有私有属性`#foo`，如果有返回`true`，否则返回`false`。
+上面示例中，`in`运算符判断某个对象是否有私有属性`#foo`。它不会报错，而是返回一个布尔值。
 
-`in`也可以跟`this`一起配合使用。
+这种用法的`in`，也可以跟`this`一起配合使用。
 
 ```javascript
 class A {
@@ -973,27 +861,7 @@ class A {
 }
 ```
 
-注意，判断私有属性时，`in`只能用在定义该私有属性的类的内部。
-
-```javascript
-class A {
-  #foo = 0;
-  static test(obj) {
-    console.log(#foo in obj);
-  }
-}
-
-A.test(new A()) // true
-A.test({}) // false
-
-class B {
-  #foo = 0;
-}
-
-A.test(new B()) // false
-```
-
-上面示例中，类`A`的私有属性`#foo`，只能在类`A`内部使用`in`运算符判断，而且只对`A`的实例返回`true`，对于其他对象都返回`false`。
+注意，判断私有属性时，`in`只能用在类的内部。
 
 子类从父类继承的私有属性，也可以使用`in`运算符来判断。
 
@@ -1115,6 +983,142 @@ console.log(getX(new C())); // 1
 ```
 
 上面示例中，`#x`是类的私有属性，如果类外部的`getX()`方法希望获取这个属性，以前是要写在类的`constructor()`方法里面，这样的话，每次新建实例都会定义一次`getX()`方法。现在可以写在静态块里面，这样的话，只在类生成时定义一次。
+
+## 类的注意点
+
+### 严格模式**
+
+类和模块的内部，默认就是严格模式，所以不需要使用`use strict`指定运行模式。只要你的代码写在类或模块之中，就只有严格模式可用。考虑到未来所有的代码，其实都是运行在模块之中，所以 ES6 实际上把整个语言升级到了严格模式。
+
+### 不存在提升**
+
+类不存在变量提升（hoist），这一点与 ES5 完全不同。
+
+```javascript
+new Foo(); // ReferenceError
+class Foo {}
+```
+
+上面代码中，`Foo`类使用在前，定义在后，这样会报错，因为 ES6 不会把类的声明提升到代码头部。这种规定的原因与下文要提到的继承有关，必须保证子类在父类之后定义。
+
+```javascript
+{
+  let Foo = class {};
+  class Bar extends Foo {
+  }
+}
+```
+
+上面的代码不会报错，因为`Bar`继承`Foo`的时候，`Foo`已经有定义了。但是，如果存在`class`的提升，上面代码就会报错，因为`class`会被提升到代码头部，而`let`命令是不提升的，所以导致`Bar`继承`Foo`的时候，`Foo`还没有定义。
+
+### name 属性**
+
+由于本质上，ES6 的类只是 ES5 的构造函数的一层包装，所以函数的许多特性都被`Class`继承，包括`name`属性。
+
+```javascript
+class Point {}
+Point.name // "Point"
+```
+
+`name`属性总是返回紧跟在`class`关键字后面的类名。
+
+### Generator 方法**
+
+如果某个方法之前加上星号（`*`），就表示该方法是一个 Generator 函数。
+
+```javascript
+class Foo {
+  constructor(...args) {
+    this.args = args;
+  }
+  * [Symbol.iterator]() {
+    for (let arg of this.args) {
+      yield arg;
+    }
+  }
+}
+
+for (let x of new Foo('hello', 'world')) {
+  console.log(x);
+}
+// hello
+// world
+```
+
+上面代码中，`Foo`类的`Symbol.iterator`方法前有一个星号，表示该方法是一个 Generator 函数。`Symbol.iterator`方法返回一个`Foo`类的默认遍历器，`for...of`循环会自动调用这个遍历器。
+
+### this 的指向**
+
+类的方法内部如果含有`this`，它默认指向类的实例。但是，必须非常小心，一旦单独使用该方法，很可能报错。
+
+```javascript
+class Logger {
+  printName(name = 'there') {
+    this.print(`Hello ${name}`);
+  }
+
+  print(text) {
+    console.log(text);
+  }
+}
+
+const logger = new Logger();
+const { printName } = logger;
+printName(); // TypeError: Cannot read property 'print' of undefined
+```
+
+上面代码中，`printName`方法中的`this`，默认指向`Logger`类的实例。但是，如果将这个方法提取出来单独使用，`this`会指向该方法运行时所在的环境（由于 class 内部是严格模式，所以 this 实际指向的是`undefined`），从而导致找不到`print`方法而报错。
+
+一个比较简单的解决方法是，在构造方法中绑定`this`，这样就不会找不到`print`方法了。
+
+```javascript
+class Logger {
+  constructor() {
+    this.printName = this.printName.bind(this);
+  }
+
+  // ...
+}
+```
+
+另一种解决方法是使用箭头函数。
+
+```javascript
+class Obj {
+  constructor() {
+    this.getThis = () => this;
+  }
+}
+
+const myObj = new Obj();
+myObj.getThis() === myObj // true
+```
+
+箭头函数内部的`this`总是指向定义时所在的对象。上面代码中，箭头函数位于构造函数内部，它的定义生效的时候，是在构造函数执行的时候。这时，箭头函数所在的运行环境，肯定是实例对象，所以`this`会总是指向实例对象。
+
+还有一种解决方法是使用`Proxy`，获取方法的时候，自动绑定`this`。
+
+```javascript
+function selfish (target) {
+  const cache = new WeakMap();
+  const handler = {
+    get (target, key) {
+      const value = Reflect.get(target, key);
+      if (typeof value !== 'function') {
+        return value;
+      }
+      if (!cache.has(value)) {
+        cache.set(value, value.bind(target));
+      }
+      return cache.get(value);
+    }
+  };
+  const proxy = new Proxy(target, handler);
+  return proxy;
+}
+
+const logger = selfish(new Logger());
+```
 
 ## new.target 属性
 

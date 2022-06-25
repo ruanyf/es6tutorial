@@ -724,7 +724,7 @@ async function logInOrder(urls) {
 
 ## 顶层 await
 
-根据语法规格，`await`命令只能出现在 async 函数内部，否则都会报错。
+早期的语法规定是，`await`命令只能出现在 async 函数内部，否则都会报错。
 
 ```javascript
 // 报错
@@ -733,7 +733,7 @@ const data = await fetch('https://api.example.com');
 
 上面代码中，`await`命令独立使用，没有放在 async 函数里面，就会报错。
 
-目前，有一个[语法提案](https://github.com/tc39/proposal-top-level-await)，允许在模块的顶层独立使用`await`命令，使得上面那行代码不会报错了。这个提案的目的，是借用`await`解决模块异步加载的问题。
+从 [ES2022](https://github.com/tc39/proposal-top-level-await) 开始，允许在模块的顶层独立使用`await`命令，使得上面那行代码不会报错了。它的只要目的，是使用`await`解决模块异步加载的问题。
 
 ```javascript
 // awaiting.js
@@ -748,19 +748,6 @@ export { output };
 ```
 
 上面代码中，模块`awaiting.js`的输出值`output`，取决于异步操作。我们把异步操作包装在一个 async 函数里面，然后调用这个函数，只有等里面的异步操作都执行，变量`output`才会有值，否则就返回`undefined`。
-
-上面的代码也可以写成立即执行函数的形式。
-
-```javascript
-// awaiting.js
-let output;
-(async function main() {
-  const dynamic = await import(someMission);
-  const data = await fetch(url);
-  output = someProcess(dynamic.default, data);
-})();
-export { output };
-```
 
 下面是加载这个模块的写法。
 

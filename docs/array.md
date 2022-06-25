@@ -843,7 +843,7 @@ arr.flatMap(function callback(currentValue[, index[, array]]) {
 
 这是因为方括号运算符`[]`在 JavaScript 语言里面，不仅用于数组，还用于对象。对于对象来说，方括号里面就是键名，比如`obj[1]`引用的是键名为字符串`1`的键，同理`obj[-1]`引用的是键名为字符串`-1`的键。由于 JavaScript 的数组是特殊的对象，所以方括号里面的负数无法再有其他语义了，也就是说，不可能添加新语法来支持负索引。
 
-为了解决这个问题，现在有一个[提案](https://github.com/tc39/proposal-relative-indexing-method/)，为数组实例增加了`at()`方法，接受一个整数作为参数，返回对应位置的成员，支持负索引。这个方法不仅可用于数组，也可用于字符串和类型数组（TypedArray）。
+为了解决这个问题，[ES2022](https://github.com/tc39/proposal-relative-indexing-method/) 为数组实例增加了`at()`方法，接受一个整数作为参数，返回对应位置的成员，并支持负索引。这个方法不仅可用于数组，也可用于字符串和类型数组（TypedArray）。
 
 ```javascript
 const arr = [5, 12, 8, 130, 44];
@@ -852,6 +852,16 @@ arr.at(-2) // 130
 ```
 
 如果参数位置超出了数组范围，`at()`返回`undefined`。
+
+```javascript
+const sentence = 'This is a sample sentence';
+
+sentence.at(0); // 'T'
+sentence.at(-1); // 'e'
+
+sentence.at(-100) // undefined
+sentence.at(100) // undefined
+```
 
 ## 数组的空位
 
