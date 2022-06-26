@@ -595,9 +595,9 @@ i32a.copyWithin(0, 2);
 // Int32Array [4, 2, 3, 4, 5]
 ```
 
-## 实例方法：find() 和 findIndex()
+## 实例方法：find()，findIndex()，findLast()，findLastIndex()
 
-数组实例的`find`方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为`true`的成员，然后返回该成员。如果没有符合条件的成员，则返回`undefined`。
+数组实例的`find()`方法，用于找出第一个符合条件的数组成员。它的参数是一个回调函数，所有数组成员依次执行该回调函数，直到找出第一个返回值为`true`的成员，然后返回该成员。如果没有符合条件的成员，则返回`undefined`。
 
 ```javascript
 [1, 4, -5, 10].find((n) => n < 0)
@@ -612,9 +612,9 @@ i32a.copyWithin(0, 2);
 }) // 10
 ```
 
-上面代码中，`find`方法的回调函数可以接受三个参数，依次为当前的值、当前的位置和原数组。
+上面代码中，`find()`方法的回调函数可以接受三个参数，依次为当前的值、当前的位置和原数组。
 
-数组实例的`findIndex`方法的用法与`find`方法非常类似，返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回`-1`。
+数组实例的`findIndex()`方法的用法与`find()`方法非常类似，返回第一个符合条件的数组成员的位置，如果所有成员都不符合条件，则返回`-1`。
 
 ```javascript
 [1, 5, 10, 15].findIndex(function(value, index, arr) {
@@ -632,9 +632,9 @@ let person = {name: 'John', age: 20};
 [10, 12, 26, 15].find(f, person);    // 26
 ```
 
-上面的代码中，`find`函数接收了第二个参数`person`对象，回调函数中的`this`对象指向`person`对象。
+上面的代码中，`find()`函数接收了第二个参数`person`对象，回调函数中的`this`对象指向`person`对象。
 
-另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf`方法的不足。
+另外，这两个方法都可以发现`NaN`，弥补了数组的`indexOf()`方法的不足。
 
 ```javascript
 [NaN].indexOf(NaN)
@@ -644,7 +644,23 @@ let person = {name: 'John', age: 20};
 // 0
 ```
 
-上面代码中，`indexOf`方法无法识别数组的`NaN`成员，但是`findIndex`方法可以借助`Object.is`方法做到。
+上面代码中，`indexOf()`方法无法识别数组的`NaN`成员，但是`findIndex()`方法可以借助`Object.is()`方法做到。
+
+`find()`和`findIndex()`都是从数组的0号位，依次向后检查。[ES2022](https://github.com/tc39/proposal-array-find-from-last) 新增了两个方法`findLast()`和`findLastIndex()`，从数组的最后一个成员开始，依次向前检查，其他都保持不变。
+
+```javascript
+const array = [
+  { value: 1 },
+  { value: 2 },
+  { value: 3 },
+  { value: 4 }
+];
+
+array.findLast(n => n.value % 2 === 1); // { value: 3 }
+array.findLastIndex(n => n.value % 2 === 1); // 2
+```
+
+上面示例中，`findLast()`和`findLastIndex()`从数组结尾开始，寻找第一个`value`属性为奇数的成员。结果，该成员是`{ value: 3 }`，位置是2号位。
 
 ## 实例方法：fill()
 
@@ -862,6 +878,93 @@ sentence.at(-1); // 'e'
 sentence.at(-100) // undefined
 sentence.at(100) // undefined
 ```
+
+## 实例方法：toReversed()，toSorted()，toSpliced()，with()
+
+很多数组的传统方法会改变原数组，比如`push()`、`pop()`、`shift()`、`unshift()`等等。数组只要调用了这些方法，它的值就变了。现在有一个[提案](https://github.com/tc39/proposal-change-array-by-copy)，允许对数组进行操作时，不改变原数组，而返回一个原数组的拷贝。
+
+这样的方法一共有四个。
+
+- `Array.prototype.toReversed() -> Array`
+- `Array.prototype.toSorted(compareFn) -> Array`
+- `Array.prototype.toSpliced(start, deleteCount, ...items) -> Array`
+- `Array.prototype.with(index, value) -> Array`
+
+它们分别对应数组的原有方法。
+
+- `toReversed()`对应`reverse()`，用来颠倒数组成员的位置。
+- `toSorted()`对应`sort()`，用来对数组成员排序。
+- `toSpliced()`对应`splice()`，用来在指定位置，删除指定数量的成员，并插入新成员。
+- `with(index, value)`对应`splice(index, 1, value)`，用来将指定位置的成员替换为新的值。
+
+上面是这四个新方法对应的原有方法，含义和用法完全一样，唯一不同的是不会改变原数组，而是返回原数组操作后的拷贝。
+
+下面是示例。
+
+```javascript
+const sequence = [1, 2, 3];
+sequence.toReversed() // [3, 2, 1]
+sequence // [1, 2, 3]
+
+const outOfOrder = [3, 1, 2];
+outOfOrder.toSorted() // [1, 2, 3]
+outOfOrder // [3, 1, 2]
+
+const array = [1, 2, 3, 4];
+array.toSpliced(1, 2, 5, 6, 7) // [1, 5, 6, 7, 4]
+array // [1, 2, 3, 4]
+
+const correctionNeeded = [1, 1, 3];
+correctionNeeded.with(1, 2) // [1, 2, 3]
+correctionNeeded // [1, 1, 3]
+```
+
+## 实例方法：group()，groupToMap()
+
+数组成员分组是一个常见需求，比如 SQL 有`GROUP BY`子句和函数式编程有 MapReduce 方法。现在有一个[提案](https://github.com/tc39/proposal-array-grouping)，为 JavaScript 新增了数组实例方法`group()`和`groupToMap()`，它们可以根据分组函数的运行结果，将数组成员分组。
+
+`group()`的参数是一个分组函数，原数组的每个成员都会依次执行这个函数，确定自己是哪一个组。
+
+```javascript
+const array = [1, 2, 3, 4, 5];
+
+array.group((num, index, array) => {
+  return num % 2 === 0 ? 'even': 'odd';
+});
+// { odd: [1, 3, 5], even: [2, 4] }
+```
+
+`group()`的分组函数可以接受三个参数，依次是数组的当前成员、该成员的位置序号、原数组（上例是`num`、`index`和`array`）。分组函数的返回值应该是字符串（或者可以自动转为字符串），以作为分组后的组名。
+
+`group()`的返回值是一个对象，该对象的键名就是每一组的组名，即分组函数返回的每一个字符串（上例是`even`和`odd`）；该对象的键值是一个数组，包括所有产生当前键名的原数组成员。
+
+下面是另一个例子。
+
+```javascript
+[6.1, 4.2, 6.3].groupBy(Math.floor)
+// { '4': [4.2], '6': [6.1, 6.3] }
+```
+
+上面示例中，`Math.floor`作为分组函数，对原数组进行分组。它的返回值原本是数值，这时会自动转为字符串，作为分组的组名。原数组的成员根据分组函数的运行结果，进入对应的组。
+
+`group()`还可以接受一个对象，作为第二个参数。该对象会绑定分组函数（第一个参数）里面的`this`，不过如果分组函数是一个箭头函数，该对象无效，因为箭头函数内部的`this`是固化的。
+
+`groupToMap()`的作用和用法与`group()`完全一致，唯一的区别是返回值是一个 Map 结构，而不是对象。Map 结构的键名可以是各种值，所以不管分组函数返回什么值，都会直接作为组名（Map 结构的键名），不会强制转为字符串。这对于分组函数返回值是对象的情况，尤其有用。
+
+```javascript
+const array = [1, 2, 3, 4, 5];
+
+const odd  = { odd: true };
+const even = { even: true };
+array.groupToMap((num, index, array) => {
+  return num % 2 === 0 ? even: odd;
+});
+//  Map { {odd: true}: [1, 3, 5], {even: true}: [2, 4] }
+```
+
+上面示例返回的是一个 Map 结构，它的键名就是分组函数返回的两个对象`odd`和`even`。
+
+总之，按照字符串分组就使用`group()`，按照对象分组就使用`groupToMap()`。
 
 ## 数组的空位
 

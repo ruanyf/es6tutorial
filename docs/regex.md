@@ -478,6 +478,41 @@ const regexArrows = /^\p{Block=Arrows}+$/u;
 regexArrows.test('←↑→↓↔↕↖↗↘↙⇏⇐⇑⇒⇓⇔⇕⇖⇗⇘⇙⇧⇩') // true
 ```
 
+## v 修饰符，Unicode 属性类的运算
+
+有时，需要向某个 Unicode 属性类添加或减少字符，即需要对属性类进行运算。现在有一个[提案](https://github.com/tc39/proposal-regexp-v-flag)，增加了 Unicode 属性类的运算功能。
+
+它提供两种形式的运算，一种是差集运算（A 集合减去 B 集合），另一种是交集运算。
+
+```javascript
+// 差集运算（A 减去 B）
+[A--B]
+
+// 交集运算（A 与 B 的交集）
+[A&&B]
+```
+
+上面两种写法中，A 和 B 要么是字符类（例如`[a-z]`），要么是 Unicode 属性类（例如`\p{ASCII}`）。
+
+而且，这种运算支持方括号之中嵌入方括号，即方括号的嵌套。
+
+```javascript
+// 方括号嵌套的例子
+[A--[0-9]]
+```
+
+这种运算的前提是，正则表达式必须使用新引入的`v`修饰符。前面说过，Unicode 属性类必须搭配`u`修饰符使用，这个`v`修饰符等于代替`u`，使用了它就不必再写`u`了。
+
+下面是一些例子。
+
+```javascript
+// 十进制字符去除 ASCII 码的0到9
+[\p{Decimal_Number}--[0-9]]
+
+// Emoji 字符去除 ASCII 码字符
+[\p{Emoji}--\p{ASCII}]
+```
+
 ## 具名组匹配
 
 ### 简介
