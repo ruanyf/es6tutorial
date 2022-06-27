@@ -1,6 +1,6 @@
 # 装饰器
 
-[说明] Decorator 提案经过了大幅修改，目前还没有定案，不知道语法会不会再变。下面的内容完全依据以前的提案，已经有点过时了。等待定案以后，需要完全重写。
+[说明] Decorator 提案经历了重大的语法变化，目前处于第三阶段，定案之前不知道是否还有变化。本章现在属于草稿阶段，凡是标注“新语法”的章节，都是基于当前的语法，不过没有详细整理，只是一些原始材料；未标注“新语法”的章节基于以前的语法，是过去遗留的稿子。之所以保留以前的内容，有两个原因，一是 TypeScript 装饰器会用到这些语法，二是里面包含不少有价值的内容。等到标准完全定案，本章将彻底重写：删去过时内容，补充材料，增加解释。（2022年6月）
 
 装饰器（Decorator）用来增强 JavaScript 类（class）的功能，许多面向对象的语言都有这种语法，目前有一个[提案](https://github.com/tc39/proposal-decorators)将其引入了 ECMAScript。
 
@@ -19,16 +19,18 @@
 
 上面代码一共使用了四个装饰器，一个用在类本身，另外三个用在类方法。它们不仅增加了代码的可读性，清晰地表达了意图，而且提供一种方便的手段，增加或修改类的功能。
 
+## 装饰器的种类（新语法）
+
 装饰器可以用来装饰四种类型的值。
 
 - 类
 - 类的属性（public, private, and static）
 - 类的方法（public, private, and static）
-- 类的访问器（accessor）（public, private, and static）
+- 属性存取器（accessor）（public, private, and static）
 
 ## 装饰器 API（新语法）
 
-装饰器是一个函数，它的 API 采用 TypeScript 描述，就是下面的形式。
+装饰器是一个函数，API 的类型描述如下（TypeScript 写法）。
 
 ```typescript
 type Decorator = (value: Input, context: {
