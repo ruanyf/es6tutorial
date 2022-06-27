@@ -2,7 +2,7 @@
 
 [说明] Decorator 提案经过了大幅修改，目前还没有定案，不知道语法会不会再变。下面的内容完全依据以前的提案，已经有点过时了。等待定案以后，需要完全重写。
 
-装饰器（Decorator）是一种与类（class）相关的语法，用来注释或修改类和类方法。许多面向对象的语言都有这项功能，目前有一个[提案](https://github.com/tc39/proposal-decorators)将其引入了 ECMAScript。
+装饰器（Decorator）用来增强 JavaScript 类（class）的功能，许多面向对象的语言都有这种语法，目前有一个[提案](https://github.com/tc39/proposal-decorators)将其引入了 ECMAScript。
 
 装饰器是一种函数，写成`@ + 函数名`。它可以放在类和类方法的定义前面。
 
@@ -18,6 +18,53 @@
 ```
 
 上面代码一共使用了四个装饰器，一个用在类本身，另外三个用在类方法。它们不仅增加了代码的可读性，清晰地表达了意图，而且提供一种方便的手段，增加或修改类的功能。
+
+装饰器可以用来装饰四种类型的值。
+
+- 类
+- 类的属性（public, private, and static）
+- 类的方法（public, private, and static）
+- 类的访问器（accessor）（public, private, and static）
+
+## 装饰器 API（新语法）
+
+装饰器是一个函数，它的 API 采用 TypeScript 描述，就是下面的形式。
+
+```typescript
+type Decorator = (value: Input, context: {
+  kind: string;
+  name: string | symbol;
+  access: {
+    get?(): unknown;
+    set?(value: unknown): void;
+  };
+  private?: boolean;
+  static?: boolean;
+  addInitializer?(initializer: () => void): void;
+}) => Output | void;
+```
+
+装饰器函数调用时，会接收到两个参数。
+
+- `value`：被装饰的值，某些情况下可能是`undefined`（装饰属性时）。
+- `context`：一个对象，包含了被装饰的值的上下文信息。
+
+另外，`input`和`output`表示输入的值和输出的值，每种装饰器都不一样，放在后面介绍。所有装饰器都可以不返回任何值。
+
+`context`对象的属性如下。
+
+- `kind`：字符串，表示装饰类型，可能取值有`class`、`method`、`getter`、`setter`、`field`、`accessor`。
+- `name`：被装饰的值的名称: The name of the value, or in the case of private elements the description of it (e.g. the readable name).
+- `access`：对象，包含访问这个值的方法，即存值器和取值器。
+- `static`: 布尔值，该值是否为静态元素。
+- `private`：布尔值，该值是否为私有元素。
+- `addInitializer`：函数，允许用户增加初始化逻辑。
+
+装饰器的执行步骤如下。
+
+1. 计算各个装饰器的值，按照从左到右，从上到下的顺序。
+1. 调用方法装饰器。
+1. 调用类装饰器。
 
 ## 类的装饰
 
@@ -153,6 +200,118 @@ export default class MyReactComponent extends React.Component {}
 ```
 
 相对来说，后一种写法看上去更容易理解。
+
+## 类装饰器（新语法）
+
+类装饰器的类型描述如下。
+
+```typescript
+type ClassDecorator = (value: Function, context: {
+  kind: "class";
+  name: string | undefined;
+  addInitializer(initializer: () => void): void;
+}) => Function | void;
+```
+
+类装饰器的第一个参数，就是被装饰的类。第二个参数是上下文对象，如果被装饰的类是一个匿名类，`name`属性就为`undefined`。
+
+类装饰器可以返回一个新的类，取代原来的类，也可以不返回任何值。如果返回的不是构造函数，就会报错。
+
+下面是一个例子。
+
+```javascript
+function logged(value, { kind, name }) {
+  if (kind === "class") {
+    return class extends value {
+      constructor(...args) {
+        super(...args);
+        console.log(`constructing an instance of ${name} with arguments ${args.join(", ")}`);
+      }
+    }
+  }
+
+  // ...
+}
+
+@logged
+class C {}
+
+new C(1);
+// constructing an instance of C with arguments 1
+```
+
+如果不使用装饰器，类装饰器实际上执行的是下面的语法。
+
+```javascript
+class C {}
+
+C = logged(C, {
+  kind: "class",
+  name: "C",
+}) ?? C;
+
+new C(1);
+```
+
+## 方法装饰器（新语法）
+
+方式装饰器使用 TypeScript 描述类型如下。
+
+```typescript
+type ClassMethodDecorator = (value: Function, context: {
+  kind: "method";
+  name: string | symbol;
+  access: { get(): unknown };
+  static: boolean;
+  private: boolean;
+  addInitializer(initializer: () => void): void;
+}) => Function | void;
+```
+
+方法装饰器的第一个参数`value`，就是所要装饰的方法。
+
+方法装饰器可以返回一个新方法，取代原来的方法，也可以不返回值，表示依然使用原来的方法。如果返回其他类型的值，就会报错。
+
+下面是一个例子。
+
+```typescript
+function logged(value, { kind, name }) {
+  if (kind === "method") {
+    return function (...args) {
+      console.log(`starting ${name} with arguments ${args.join(", ")}`);
+      const ret = value.call(this, ...args);
+      console.log(`ending ${name}`);
+      return ret;
+    };
+  }
+}
+
+class C {
+  @logged
+  m(arg) {}
+}
+
+new C().m(1);
+// starting m with arguments 1
+// ending m
+```
+
+上面示例中，装饰器`@logged`返回一个函数，代替原来的`m()`方法。
+
+这里的装饰器实际上是一个语法糖，真正的操作是像下面这样，改掉原型链上面`m()`方法。
+
+```javascript
+class C {
+  m(arg) {}
+}
+
+C.prototype.m = logged(C.prototype.m, {
+  kind: "method",
+  name: "m",
+  static: false,
+  private: false,
+}) ?? C.prototype.m;
+```
 
 ## 方法的装饰
 
@@ -364,6 +523,355 @@ function loggingDecorator(wrapped) {
 }
 
 const wrapped = loggingDecorator(doSomething);
+```
+
+## 存取器装饰器（新语法）
+
+存取器装饰器使用 TypeScript 描述的类型如下。
+
+```typescript
+type ClassGetterDecorator = (value: Function, context: {
+  kind: "getter";
+  name: string | symbol;
+  access: { get(): unknown };
+  static: boolean;
+  private: boolean;
+  addInitializer(initializer: () => void): void;
+}) => Function | void;
+
+type ClassSetterDecorator = (value: Function, context: {
+  kind: "setter";
+  name: string | symbol;
+  access: { set(value: unknown): void };
+  static: boolean;
+  private: boolean;
+  addInitializer(initializer: () => void): void;
+}) => Function | void;
+```
+
+存取器装饰器的第一个参数就是原始的存值器（setter）和取值器（getter）。
+
+存取器装饰器的返回值如果是一个函数，就会取代原来的存取器。本质上，就像方法装饰器一样，修改发生在类的原型对象上。它也可以不返回任何值，继续使用原来的存取器。如果返回其他类型的值，就会报错。
+
+存取器装饰器对存值器（setter）和取值器（getter）是分开作用的。下面的例子里面，`@foo`只装饰`get x()`，不装饰`set x()`。
+
+```javascript
+class C {
+  @foo
+  get x() {
+    // ...
+  }
+
+  set x(val) {
+    // ...
+  }
+}
+```
+
+上一节的`@logged`装饰器稍加修改，就可以用在存取装饰器。
+
+```javascript
+function logged(value, { kind, name }) {
+  if (kind === "method" || kind === "getter" || kind === "setter") {
+    return function (...args) {
+      console.log(`starting ${name} with arguments ${args.join(", ")}`);
+      const ret = value.call(this, ...args);
+      console.log(`ending ${name}`);
+      return ret;
+    };
+  }
+}
+
+class C {
+  @logged
+  set x(arg) {}
+}
+
+new C().x = 1
+// starting x with arguments 1
+// ending x
+```
+
+如果去掉语法糖，使用传统语法来写，就是改掉了类的原型链。
+
+```javascript
+class C {
+  set x(arg) {}
+}
+
+let { set } = Object.getOwnPropertyDescriptor(C.prototype, "x");
+set = logged(set, {
+  kind: "setter",
+  name: "x",
+  static: false,
+  private: false,
+}) ?? set;
+
+Object.defineProperty(C.prototype, "x", { set });
+```
+
+## 属性装饰器（新语法）
+
+属性装饰器的类型描述如下。
+
+```typescript
+type ClassFieldDecorator = (value: undefined, context: {
+  kind: "field";
+  name: string | symbol;
+  access: { get(): unknown, set(value: unknown): void };
+  static: boolean;
+  private: boolean;
+}) => (initialValue: unknown) => unknown | void;
+```
+
+属性装饰器的第一个参数是`undefined`，即没有一个直接的输入值。用户可以选择让装饰器返回一个初始化函数，当该属性被赋值时，这个初始化函数会自动运行，它会收到属性的初始值，然后返回一个新的初始值。属性装饰器也可以不返回任何值。只要返回的不是函数，而是其他类型的值，就会报错。
+
+下面是一个例子。
+
+```javascript
+function logged(value, { kind, name }) {
+  if (kind === "field") {
+    return function (initialValue) {
+      console.log(`initializing ${name} with value ${initialValue}`);
+      return initialValue;
+    };
+  }
+
+  // ...
+}
+
+class C {
+  @logged x = 1;
+}
+
+new C();
+// initializing x with value 1
+```
+
+如果不使用装饰器语法，属性装饰器的实际作用如下。
+
+```javascript
+let initializeX = logged(undefined, {
+  kind: "field",
+  name: "x",
+  static: false,
+  private: false,
+}) ?? (initialValue) => initialValue;
+
+class C {
+  x = initializeX.call(this, 1);
+}
+```
+
+## accessor 命令（新语法）
+
+类装饰器引入了一个新命令`accessor`，用来属性的前缀。
+
+```javascript
+class C {
+  accessor x = 1;
+}
+```
+
+它是一种简写形式，相当于声明属性`x`是私有属性`#x`的存取接口。上面的代码等同于下面的代码。
+
+```javascript
+class C {
+  #x = 1;
+
+  get x() {
+    return this.#x;
+  }
+
+  set x(val) {
+    this.#x = val;
+  }
+}
+```
+
+`accessor`命令前面，还可以加上`static`命令和`private`命令。
+
+```javascript
+class C {
+  static accessor x = 1;
+  accessor #y = 2;
+}
+```
+
+`accessor`命令前面还可以接受属性装饰器。
+
+```javascript
+function logged(value, { kind, name }) {
+  if (kind === "accessor") {
+    let { get, set } = value;
+
+    return {
+      get() {
+        console.log(`getting ${name}`);
+
+        return get.call(this);
+      },
+
+      set(val) {
+        console.log(`setting ${name} to ${val}`);
+
+        return set.call(this, val);
+      },
+
+      init(initialValue) {
+        console.log(`initializing ${name} with value ${initialValue}`);
+        return initialValue;
+      }
+    };
+  }
+
+  // ...
+}
+
+class C {
+  @logged accessor x = 1;
+}
+
+let c = new C();
+// initializing x with value 1
+c.x;
+// getting x
+c.x = 123;
+// setting x to 123
+```
+
+上面的示例等同于使用`@logged`装饰器，改写`accessor`属性的 getter 和 setter 方法。
+
+用于`accessor`的属性装饰器的类型描述如下。
+
+```typescript
+type ClassAutoAccessorDecorator = (
+  value: {
+    get: () => unknown;
+    set(value: unknown) => void;
+  },
+  context: {
+    kind: "accessor";
+    name: string | symbol;
+    access: { get(): unknown, set(value: unknown): void };
+    static: boolean;
+    private: boolean;
+    addInitializer(initializer: () => void): void;
+  }
+) => {
+  get?: () => unknown;
+  set?: (value: unknown) => void;
+  initialize?: (initialValue: unknown) => unknown;
+} | void;
+```
+
+`accessor`命令的第一个参数接收到的是一个对象，包含了`accessor`命令定义的属性的存取器 get 和 set。属性装饰器可以返回一个新对象，其中包含了新的存取器，用来取代原来的，即相当于拦截了原来的存取器。此外，返回的对象还可以包括一个`initialize`函数，用来改变私有属性的初始值。装饰器也可以不返回值，如果返回的是其他类型的值，或者包含其他属性的对象，就会报错。
+
+## addInitializer() 方法（新语法）
+
+除了属性装饰器，其他装饰器的上下文对象还包括一个`addInitializer()`方法，用来完成初始化操作。
+
+它的运行时间如下。
+
+- 类装饰器：在类被完全定义之后。
+- 方法装饰器：在类构造期间运行，在属性初始化之前。
+- 静态方法装饰器：在类定义期间运行，早于静态属性定义，但晚于类方法的定义。
+
+下面是一个例子。
+
+```javascript
+function customElement(name) {
+  return (value, { addInitializer }) => {
+    addInitializer(function() {
+      customElements.define(name, this);
+    });
+  }
+}
+
+@customElement('my-element')
+class MyElement extends HTMLElement {
+  static get observedAttributes() {
+    return ['some', 'attrs'];
+  }
+}
+```
+
+上面的代码等同于下面不使用装饰器的代码。
+
+```javascript
+class MyElement {
+  static get observedAttributes() {
+    return ['some', 'attrs'];
+  }
+}
+
+let initializersForMyElement = [];
+
+MyElement = customElement('my-element')(MyElement, {
+  kind: "class",
+  name: "MyElement",
+  addInitializer(fn) {
+    initializersForMyElement.push(fn);
+  },
+}) ?? MyElement;
+
+for (let initializer of initializersForMyElement) {
+  initializer.call(MyElement);
+}
+```
+
+下面是方法装饰器的例子。
+
+```javascript
+function bound(value, { name, addInitializer }) {
+  addInitializer(function () {
+    this[name] = this[name].bind(this);
+  });
+}
+
+class C {
+  message = "hello!";
+
+  @bound
+  m() {
+    console.log(this.message);
+  }
+}
+
+let { m } = new C();
+
+m(); // hello!
+```
+
+上面的代码等同于下面不使用装饰器的代码。
+
+```javascript
+class C {
+  constructor() {
+    for (let initializer of initializersForM) {
+      initializer.call(this);
+    }
+
+    this.message = "hello!";
+  }
+
+  m() {}
+}
+
+let initializersForM = []
+
+C.prototype.m = bound(
+  C.prototype.m,
+  {
+    kind: "method",
+    name: "m",
+    static: false,
+    private: false,
+    addInitializer(fn) {
+      initializersForM.push(fn);
+    },
+  }
+) ?? C.prototype.m;
 ```
 
 ## core-decorators.js
