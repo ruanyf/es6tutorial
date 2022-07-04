@@ -79,7 +79,7 @@ iterator.return?.()
 对于那些可能没有实现的方法，这个运算符尤其有用。
 
 ```javascript
-if (myForm.checkValidity?.() === false) {
+if (myForm.checkValidity?.() == false) {
   // 表单校验失败
   return;
 }
