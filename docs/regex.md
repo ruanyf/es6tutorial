@@ -633,11 +633,11 @@ RE_TWICE.test('abc!abc!ab') // false
 
 正则匹配的结果，在原始字符串里面的开始位置和结束位置，目前获取并不是很方便。正则实例的`exec()`方法的返回结果，现有一个`index`属性，可以获取整个匹配结果的开始位置。但是，组匹配的每个组的开始位置，很难拿到。
 
-[ES2022](https://github.com/tc39/proposal-regexp-match-Indices) 为`exec()`方法的返回结果加上`indices`属性，在这个属性上面可以拿到匹配的开始位置和结束位置。
+[ES2022](https://github.com/tc39/proposal-regexp-match-Indices) 中新增`d`修饰符，使用`/d`修饰符，为`exec()`、`match()`等方法的返回结果加上`indices`属性，在这个属性上面可以拿到匹配的开始位置和结束位置。
 
 ```javascript
 const text = 'zabbcdef';
-const re = /ab/;
+const re = /ab/d;
 const result = re.exec(text);
 
 result.index // 1
@@ -652,7 +652,7 @@ result.indices // [ [1, 3] ]
 
 ```javascript
 const text = 'zabbcdef';
-const re = /ab+(cd)/;
+const re = /ab+(cd)/d;
 const result = re.exec(text);
 
 result.indices // [ [ 1, 6 ], [ 4, 6 ] ]
@@ -664,7 +664,7 @@ result.indices // [ [ 1, 6 ], [ 4, 6 ] ]
 
 ```javascript
 const text = 'zabbcdef';
-const re = /ab+(cd(ef))/;
+const re = /ab+(cd(ef))/d;
 const result = re.exec(text);
 
 result.indices // [ [1, 8], [4, 8], [6, 8] ]
@@ -676,7 +676,7 @@ result.indices // [ [1, 8], [4, 8], [6, 8] ]
 
 ```javascript
 const text = 'zabbcdef';
-const re = /ab+(?<Z>cd)/;
+const re = /ab+(?<Z>cd)/d;
 const result = re.exec(text);
 
 result.indices.groups // { Z: [ 4, 6 ] }
@@ -688,7 +688,7 @@ result.indices.groups // { Z: [ 4, 6 ] }
 
 ```javascript
 const text = 'zabbcdef';
-const re = /ab+(?<Z>ce)?/;
+const re = /ab+(?<Z>ce)?/d;
 const result = re.exec(text);
 
 result.indices[1] // undefined
