@@ -733,7 +733,7 @@ const data = await fetch('https://api.example.com');
 
 上面代码中，`await`命令独立使用，没有放在 async 函数里面，就会报错。
 
-从 [ES2022](https://github.com/tc39/proposal-top-level-await) 开始，允许在模块的顶层独立使用`await`命令，使得上面那行代码不会报错了。它的主要目的，是使用`await`解决模块异步加载的问题。
+从 [ES2022](https://github.com/tc39/proposal-top-level-await) 开始，允许在模块的顶层独立使用`await`命令，使得上面那行代码不会报错了。它的主要目的是使用`await`解决模块异步加载的问题。
 
 ```javascript
 // awaiting.js
