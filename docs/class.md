@@ -578,7 +578,7 @@ class Foo {
 
 ## 私有方法和私有属性
 
-### 现有的解决方案
+### 早期解决方案
 
 私有方法和私有属性，是只能在类的内部访问的方法和属性，外部不能访问。这是常见需求，有利于代码的封装，但早期的 ES6 不提供，只能通过变通方法模拟实现。
 
@@ -654,9 +654,9 @@ Reflect.ownKeys(myClass.prototype)
 
 上面代码中，Symbol 值的属性名依然可以从类的外部拿到。
 
-### 私有属性的写法
+### 私有属性的正式写法
 
-[ES2022](https://github.com/tc39/proposal-class-fields)，有一个[提案](https://github.com/tc39/proposal-private-methods)，为`class`加了私有属性。方法是在属性名之前，使用`#`表示。
+[ES2022](https://github.com/tc39/proposal-class-fields)正式为`class`添加了私有属性，方法是在属性名之前使用`#`表示。
 
 ```javascript
 class IncreasingCounter {
@@ -723,8 +723,6 @@ class Point {
 
 上面代码中，`#x`就是私有属性，在`Point`类之外是读取不到这个属性的。由于井号`#`是属性名的一部分，使用时必须带有`#`一起使用，所以`#x`和`x`是两个不同的属性。
 
-之所以要引入一个新的前缀`#`表示私有属性，而没有采用`private`关键字，是因为 JavaScript 是一门动态语言，没有类型声明，使用独立的符号似乎是唯一的比较方便可靠的方法，能够准确地区分一种属性是否为私有属性。另外，Ruby 语言使用`@`表示私有属性，ES6 没有用这个符号而使用`#`，是因为`@`已经被留给了 Decorator。
-
 这种写法不仅可以写私有属性，还可以用来写私有方法。
 
 ```javascript
@@ -744,7 +742,7 @@ class Foo {
 }
 ```
 
-上面代码中，`#sum()`就是一个私有方法。
+上面示例中，`#sum()`就是一个私有方法。
 
 另外，私有属性也可以设置 getter 和 setter 方法。
 
@@ -753,18 +751,18 @@ class Counter {
   #xValue = 0;
 
   constructor() {
-    super();
-    // ...
+    console.log(this.#x);
   }
 
-  get #x() { return #xValue; }
+  get #x() { return this.#xValue; }
   set #x(value) {
     this.#xValue = value;
   }
 }
 ```
 
-上面代码中，`#x`是一个私有属性，它的读写都通过`get #x()`和`set #x()`来完成。
+上面代码中，`#x`是一个私有属性，它的读写都通过`get #x()`和`set
+#x()`操作另一个私有属性`#xValue`来完成。
 
 私有属性不限于从`this`引用，只要是在类的内部，实例也可以引用私有属性。
 
