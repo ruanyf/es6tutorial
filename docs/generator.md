@@ -221,7 +221,7 @@ g[Symbol.iterator]() === g
 `yield`表达式本身没有返回值，或者说总是返回`undefined`。`next`方法可以带一个参数，该参数就会被当作上一个`yield`表达式的返回值。
 
 ```javascript
-function* f() {
+function* f(reset) {
   for(var i = 0; true; i++) {
     var reset = yield i;
     if(reset) { i = -1; }
