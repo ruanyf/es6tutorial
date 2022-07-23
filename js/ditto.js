@@ -243,8 +243,8 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  // 2022年3月9日
-  var deadline = new Date(2022, 2, 9);
+  // 2022年8月25日
+  var deadline = new Date(2022, 7, 25);
   if (deadline - (new Date()) < 0) return;
 
   var styleStr = [
@@ -258,10 +258,10 @@ function create_banner(element) {
     'color: #333333'
   ].join(';');
 
-  var text = '【活动消息】' +
-    'AI 入门，人工智能四本名著——<span style="color: #4682BE;">《人工智能：一种现代方法》</span>、<span style="color: #4682BE;">《深度学习》</span>、<span style="color: #4682BE;">《动手学机器学习》</span>、<span style="color: #4682BE;">《流畅的 Python》</span>——正版学习资料免费领取！';
+  var text = '【活动】' +
+    '<span style="color: #4682BE;">IT 廉价课程超市 ApeClass</span> 新上线，不必注册，直接试听前端、Python、JAVA、云计算等众多课程，满意再开通永久会员（所有课程仅需299.5元）。';
 
-  var banner = $('<a href="https://wx.kaikeba.com/xiaoke/market/landing-page/v2/Y9x3zlctUWhoCB3YB8U?kol_ad_code=zhchVAUzJqFhWum1D8c" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
+  var banner = $('<a href="http://www.apeclass.com?did=12" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
 }
 
