@@ -942,7 +942,7 @@ map.set(null, 2)
 
 上面代码中，如果将数值`1`和`Symbol`值作为 WeakMap 的键名，都会报错。
 
-不过，现在有一个[提案](https://github.com/tc39/proposal-symbols-as-weakmap-keys)，允许 Symbol 值也可以作为 WeakMap 的键名。一旦纳入标准，就意味着键名存在两种可能：对象和 Symbole 值。
+不过，现在有一个[提案](https://github.com/tc39/proposal-symbols-as-weakmap-keys)，允许 Symbol 值也可以作为 WeakMap 的键名。一旦纳入标准，就意味着键名存在两种可能：对象和 Symbol 值。
 
 其次，`WeakMap`的键名所指向的对象，不计入垃圾回收机制。
 
