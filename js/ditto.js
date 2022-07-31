@@ -263,7 +263,7 @@ function create_banner(element) {
 
   var banner = $('<a href="http://www.apeclass.com?did=12" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
-  setTimeout(function () {if (banner.css('display') === 'none') $(ditto.content_id).html('seems adblock works...'); }, 500);
+  setTimeout(function () {if (banner.css('display') === 'none') {show_loading();show_error();} }, 500);
 }
 
 function create_page_anchors() {
