@@ -119,22 +119,9 @@ cp instanceof Point // true
 
 上面示例中，实例对象`cp`同时是`ColorPoint`和`Point`两个类的实例，这与 ES5 的行为完全一致。
 
-除了私有属性，父类的所有属性和方法，都会被子类继承，其中包括静态方法。
+## 私有属性和私有方法的继承
 
-```javascript
-class A {
-  static hello() {
-    console.log('hello world');
-  }
-}
-
-class B extends A {
-}
-
-B.hello()  // hello world
-```
-
-上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
+父类所有的属性和方法，都会被子类继承，除了私有的属性和方法。
 
 子类无法继承父类的私有属性，或者说，私有属性只能在定义它的 class 里面使用。
 
@@ -176,6 +163,64 @@ class Bar extends Foo {
 ```
 
 上面示例中，`getP()`是父类用来读取私有属性的方法，通过该方法，子类就可以读到父类的私有属性。
+
+## 静态属性和静态方法的继承
+
+父类的静态属性和静态方法，也会被子类继承。
+
+```javascript
+class A {
+  static hello() {
+    console.log('hello world');
+  }
+}
+
+class B extends A {
+}
+
+B.hello()  // hello world
+```
+
+上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
+
+注意，静态属性是通过软拷贝实现继承的。
+
+```javascript
+class A { static foo = 100; }
+class B extends A {
+  constructor() {
+    super();
+    B.foo--;
+  }
+}
+
+const b = new B();
+B.foo // 99
+A.foo // 100
+```
+
+上面示例中，`foo`是 A 类的静态属性，B 类继承了 A 类，因此也继承了这个属性。但是，在 B 类内部操作`B.foo`这个静态属性，影响不到`A.foo`，原因就是 B 类继承静态属性时，会采用浅拷贝，拷贝父类静态属性的值，因此`A.foo`和`B.foo`是两个彼此独立的属性。
+
+但是，由于这种拷贝是浅拷贝，如果父类的静态属性的值是一个对象，那么子类的静态属性也会指向这个对象，因为浅拷贝只会拷贝对象的内存地址。
+
+```javascript
+class A {
+  static foo = { n: 100 };
+}
+
+class B extends A {
+  constructor() {
+    super();
+    B.foo.n--;
+  }
+}
+
+const b = new B();
+B.foo.n // 99
+A.foo.n // 99
+```
+
+上面示例中，`A.foo`的值是一个对象，浅拷贝导致`B.foo`和`A.foo`指向同一个对象。所以，子类`A`修改这个对象的属性值，会影响到父类`A`。
 
 ## Object.getPrototypeOf()
 
