@@ -328,7 +328,7 @@ Math.sign(-0) // -0
 +0 === -0 // true
 ```
 
-目前，有一个[提案](https://jfbastien.github.io/papers/Math.signbit.html)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
+目前，有一个[提案](https://github.com/tc39/proposal-Math.signbit)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
 
 ```javascript
 Math.signbit(2) //false
