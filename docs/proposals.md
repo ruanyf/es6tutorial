@@ -316,16 +316,16 @@ const userAge = getAgeFromUser(await fetchUserById(userId));
 
 ## Math.signbit()
 
-`Math.sign()`用来判断一个值的正负，但是如果参数是`-0`，它会返回`-0`。
-
-```javascript
-Math.sign(-0) // -0
-```
-
-这导致对于判断符号位的正负，`Math.sign()`不是很有用。JavaScript 内部使用 64 位浮点数（国际标准 IEEE 754）表示数值，IEEE 754 规定第一位是符号位，`0`表示正数，`1`表示负数。所以会有两种零，`+0`是符号位为`0`时的零值，`-0`是符号位为`1`时的零值。实际编程中，判断一个值是`+0`还是`-0`非常麻烦，因为它们是相等的。
+JavaScript 内部使用64位浮点数（国际标准 IEEE 754）表示数值。IEEE 754 规定，64位浮点数的第一位是符号位，`0`表示正数，`1`表示负数。所以会有两种零，`+0`是符号位为`0`时的零，`-0`是符号位为`1`时的零。实际编程中，判断一个值是`+0`还是`-0`非常麻烦，因为它们是相等的。
 
 ```javascript
 +0 === -0 // true
+```
+
+ES6 新增的`Math.sign()`方法，只能用来判断数值的正负，对于判断数值的符号位用处不大。因为如果参数是`-0`，它会返回`-0`，还是不能直接知道符号位是`1`还是`0`。
+
+```javascript
+Math.sign(-0) // -0
 ```
 
 目前，有一个[提案](https://github.com/tc39/proposal-Math.signbit)，引入了`Math.signbit()`方法判断一个数的符号位是否设置了。
@@ -348,7 +348,7 @@ Math.signbit(-0) //true
 
 ## 双冒号运算符
 
-箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call`、`apply`、`bind`）。但是，箭头函数并不适用于所有场合，所以现在有一个[提案](https://github.com/zenparsing/es-function-bind)，提出了“函数绑定”（function bind）运算符，用来取代`call`、`apply`、`bind`调用。
+箭头函数可以绑定`this`对象，大大减少了显式绑定`this`对象的写法（`call()`、`apply()`、`bind()`）。但是，箭头函数并不适用于所有场合，所以现在有一个[提案](https://github.com/zenparsing/es-function-bind)，提出了“函数绑定”（function bind）运算符，用来取代`call()`、`apply()`、`bind()`调用。
 
 函数绑定运算符是并排的两个冒号（`::`），双冒号左边是一个对象，右边是一个函数。该运算符会自动将左边的对象，作为上下文环境（即`this`对象），绑定到右边的函数上面。
 
