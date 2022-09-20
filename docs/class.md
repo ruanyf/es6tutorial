@@ -947,11 +947,30 @@ class C {
 
 上面代码中，类的内部有一个 static 代码块，这就是静态块。它的好处是将静态属性`y`和`z`的初始化逻辑，写入了类的内部，而且只运行一次。
 
-每个类只能有一个静态块，在静态属性声明后运行。静态块的内部不能有`return`语句。
+每个类允许有多个静态块，每个静态块中只能访问当前静态块之前声明的静态属性。
+
+```javascript
+class C {
+  static x = 1;
+  static {
+    console.log(this.x, this.y, this.z); // 1 undefined undefined
+  }
+  static y = 2;
+  static {
+    console.log(this.x, this.y, this.z); // 1 2 undefined
+  }
+  static z = 3;
+  static {
+    console.log(this.x, this.y, this.z); // 1 2 3
+  }
+}
+```
+
+静态块的内部不能有`return`语句。
 
 静态块内部可以使用类名或`this`，指代当前类。
 
-```c
+```javascript
 class C {
   static x = 1;
   static {
