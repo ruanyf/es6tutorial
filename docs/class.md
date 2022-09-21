@@ -902,7 +902,7 @@ A.test(o2.__proto__) // true
 
 ## 静态块
 
-静态属性的一个问题是，它的初始化要么写在类的外部，要么写在`constructor()`方法里面。
+静态属性的一个问题是，如果它有初始化逻辑，这个逻辑要么写在类的外部，要么写在`constructor()`方法里面。
 
 ```javascript
 class C {
@@ -921,9 +921,9 @@ try {
 }
 ```
 
-上面示例中，静态属性`y`和`z`的值依赖静态属性`x`，它们的初始化写在类的外部（上例的`try...catch`代码块）。另一种方法是写到类的`constructor()`方法里面。这两种方法都不是很理想，前者是将类的内部逻辑写到了外部，后者则是每次新建实例都会运行一次。
+上面示例中，静态属性`y`和`z`的值依赖于静态属性`x`的运算结果，这段初始化逻辑写在类的外部（上例的`try...catch`代码块）。另一种方法是写到类的`constructor()`方法里面。这两种方法都不是很理想，前者是将类的内部逻辑写到了外部，后者则是每次新建实例都会运行一次。
 
-为了解决这个问题，ES2022 引入了[静态块](https://github.com/tc39/proposal-class-static-block)（static block），允许在类的内部设置一个代码块，在类生成时运行一次，主要作用是对静态属性进行初始化。
+为了解决这个问题，ES2022 引入了[静态块](https://github.com/tc39/proposal-class-static-block)（static block），允许在类的内部设置一个代码块，在类生成时运行且只运行一次，主要作用是对静态属性进行初始化。以后，新建类的实例时，这个块就不运行了。
 
 ```javascript
 class C {
@@ -947,26 +947,7 @@ class C {
 
 上面代码中，类的内部有一个 static 代码块，这就是静态块。它的好处是将静态属性`y`和`z`的初始化逻辑，写入了类的内部，而且只运行一次。
 
-每个类允许有多个静态块，每个静态块中只能访问之前声明的静态属性。
-
-```javascript
-class C {
-  static x = 1;
-  static {
-    console.log(this.x, this.y, this.z); // 1 undefined undefined
-  }
-  static y = 2;
-  static {
-    console.log(this.x, this.y, this.z); // 1 2 undefined
-  }
-  static z = 3;
-  static {
-    console.log(this.x, this.y, this.z); // 1 2 3
-  }
-}
-```
-
-静态块的内部不能有`return`语句。
+每个类允许有多个静态块，每个静态块中只能访问之前声明的静态属性。另外，静态块的内部不能有`return`语句。
 
 静态块内部可以使用类名或`this`，指代当前类。
 
