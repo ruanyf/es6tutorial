@@ -120,7 +120,7 @@ Object.assign(Point.prototype, {
 });
 ```
 
-`prototype`对象的`constructor()`属性，直接指向“类”的本身，这与 ES5 的行为是一致的。
+`prototype`对象的`constructor`属性，直接指向“类”的本身，这与 ES5 的行为是一致的。
 
 ```javascript
 Point.prototype.constructor === Point // true
