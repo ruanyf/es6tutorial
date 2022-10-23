@@ -824,7 +824,7 @@ main();
 
 ## import.meta
 
-开发者使用一个模块时，有时需要知道模板本身的一些信息（比如模块的路径）。[ES2020](https://github.com/tc39/proposal-import-meta)，为 import 命令添加了一个元属性`import.meta`，返回当前模块的元信息。
+开发者使用一个模块时，有时需要知道模板本身的一些信息（比如模块的路径）。[ES2020](https://github.com/tc39/proposal-import-meta) 为 import 命令添加了一个元属性`import.meta`，返回当前模块的元信息。
 
 `import.meta`只能在模块内部使用，如果在模块外部使用会报错。
 
