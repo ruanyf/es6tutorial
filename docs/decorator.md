@@ -2,9 +2,18 @@
 
 [说明] Decorator 提案经历了重大的语法变化，目前处于第三阶段，定案之前不知道是否还有变化。本章现在属于草稿阶段，凡是标注“新语法”的章节，都是基于当前的语法，不过没有详细整理，只是一些原始材料；未标注“新语法”的章节基于以前的语法，是过去遗留的稿子。之所以保留以前的内容，有两个原因，一是 TypeScript 装饰器会用到这些语法，二是里面包含不少有价值的内容。等到标准完全定案，本章将彻底重写：删去过时内容，补充材料，增加解释。（2022年6月）
 
+## 简介（新语法）
+
 装饰器（Decorator）用来增强 JavaScript 类（class）的功能，许多面向对象的语言都有这种语法，目前有一个[提案](https://github.com/tc39/proposal-decorators)将其引入了 ECMAScript。
 
-装饰器是一种函数，写成`@ + 函数名`。它可以放在类和类方法的定义前面。
+装饰器是一种函数，写成`@ + 函数名`，可以用来装饰四种类型的值。
+
+- 类
+- 类的属性
+- 类的方法
+- 属性存取器（accessor）
+
+下面的例子是装饰器放在类名和类方法名之前，大家可以感受一下写法。
 
 ```javascript
 @frozen class Foo {
@@ -17,16 +26,7 @@
 }
 ```
 
-上面代码一共使用了四个装饰器，一个用在类本身，另外三个用在类方法。它们不仅增加了代码的可读性，清晰地表达了意图，而且提供一种方便的手段，增加或修改类的功能。
-
-## 装饰器的种类（新语法）
-
-装饰器可以用来装饰四种类型的值。
-
-- 类
-- 类的属性（public, private, and static）
-- 类的方法（public, private, and static）
-- 属性存取器（accessor）（public, private, and static）
+上面代码一共使用了四个装饰器，一个用在类本身（@frozen），另外三个用在类方法（@configurable()、@enumerable()、@throttle()）。它们不仅增加了代码的可读性，清晰地表达了意图，而且提供一种方便的手段，增加或修改类的功能。
 
 ## 装饰器 API（新语法）
 
@@ -46,16 +46,16 @@ type Decorator = (value: Input, context: {
 }) => Output | void;
 ```
 
-装饰器函数调用时，会接收到两个参数。
+装饰器函数有两个参数。运行时，JavaScript 引擎会提供这两个参数。
 
-- `value`：被装饰的值，某些情况下可能是`undefined`（装饰属性时）。
-- `context`：一个对象，包含了被装饰的值的上下文信息。
+- `value`：所要装饰的值，某些情况下可能是`undefined`（装饰属性时）。
+- `context`：上下文信息对象。
 
-另外，`input`和`output`表示输入的值和输出的值，每种装饰器都不一样，放在后面介绍。所有装饰器都可以不返回任何值。
+装饰器函数的返回值，是一个新版本的装饰对象，但也可以不返回任何值（void）。
 
-`context`对象的属性如下。
+`context`对象有很多属性，其中`kind`属性表示属于哪一种装饰，其他属性的含义如下。
 
-- `kind`：字符串，表示装饰类型，可能取值有`class`、`method`、`getter`、`setter`、`field`、`accessor`。
+- `kind`：字符串，表示装饰类型，可能的取值有`class`、`method`、`getter`、`setter`、`field`、`accessor`。
 - `name`：被装饰的值的名称: The name of the value, or in the case of private elements the description of it (e.g. the readable name).
 - `access`：对象，包含访问这个值的方法，即存值器和取值器。
 - `static`: 布尔值，该值是否为静态元素。
@@ -257,6 +257,22 @@ new C(1);
 
 ## 方法装饰器（新语法）
 
+方法装饰器会修改类的方法。
+
+```javascript
+class C {
+  @trace
+  toString() {
+    return 'C';
+  }
+}
+
+// 相当于
+C.prototype.toString = trace(C.prototype.toString);
+```
+
+上面示例中，`@trace`装饰`toString()`方法，就相当于修改了该方法。
+
 方式装饰器使用 TypeScript 描述类型如下。
 
 ```typescript
@@ -272,9 +288,31 @@ type ClassMethodDecorator = (value: Function, context: {
 
 方法装饰器的第一个参数`value`，就是所要装饰的方法。
 
-方法装饰器可以返回一个新方法，取代原来的方法，也可以不返回值，表示依然使用原来的方法。如果返回其他类型的值，就会报错。
+方法装饰器可以返回一个新函数，取代原来的方法，也可以不返回值，表示依然使用原来的方法。如果返回其他类型的值，就会报错。下面是一个例子。
 
-下面是一个例子。
+```javascript
+function replaceMethod() {
+  return function () {
+    return `How are you, ${this.name}?`;
+  }
+}
+
+class Person {
+  constructor(name) {
+    this.name = name;
+  }
+  @replaceMethod
+  hello() {
+    return `Hi ${this.name}!`;
+  }
+}
+
+const robin = new Person('Robin');
+
+robin.hello(), 'How are you, Robin?'
+```
+
+上面示例中，`@replaceMethod`返回了一个新函数，取代了原来的`hello()`方法。
 
 ```typescript
 function logged(value, { kind, name }) {
@@ -626,7 +664,7 @@ type ClassFieldDecorator = (value: undefined, context: {
 }) => (initialValue: unknown) => unknown | void;
 ```
 
-属性装饰器的第一个参数是`undefined`，即没有一个直接的输入值。用户可以选择让装饰器返回一个初始化函数，当该属性被赋值时，这个初始化函数会自动运行，它会收到属性的初始值，然后返回一个新的初始值。属性装饰器也可以不返回任何值。只要返回的不是函数，而是其他类型的值，就会报错。
+属性装饰器的第一个参数是`undefined`，即不输入值。用户可以选择让装饰器返回一个初始化函数，当该属性被赋值时，这个初始化函数会自动运行，它会收到属性的初始值，然后返回一个新的初始值。属性装饰器也可以不返回任何值。除了这两种情况，返回其他类型的值都会报错。
 
 下面是一个例子。
 
