@@ -273,7 +273,7 @@ C.prototype.toString = trace(C.prototype.toString);
 
 上面示例中，`@trace`装饰`toString()`方法，就相当于修改了该方法。
 
-方式装饰器使用 TypeScript 描述类型如下。
+方法装饰器使用 TypeScript 描述类型如下。
 
 ```typescript
 type ClassMethodDecorator = (value: Function, context: {
