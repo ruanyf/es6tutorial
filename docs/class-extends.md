@@ -241,7 +241,7 @@ Object.getPrototypeOf(ColorPoint) === Point
 
 `super`这个关键字，既可以当作函数使用，也可以当作对象使用。在这两种情况下，它的用法完全不同。
 
-第一种情况，`super`作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次`super`函数。
+第一种情况，`super`作为函数调用时，代表父类的构造函数。ES6 要求，子类的构造函数必须执行一次`super()`函数。
 
 ```javascript
 class A {}
@@ -253,9 +253,11 @@ class B extends A {
 }
 ```
 
-上面代码中，子类`B`的构造函数之中的`super()`，代表调用父类的构造函数。这是必须的，否则 JavaScript 引擎会报错。
+上面代码中，子类`B`的构造函数之中的`super()`，代表调用父类的构造函数。这是必须的，否则报错。
 
-注意，`super`虽然代表了父类`A`的构造函数，但是返回的是子类`B`的实例，即`super`内部的`this`指的是`B`的实例，因此`super()`在这里相当于`A.prototype.constructor.call(this)`。
+调用`super()`的作用是形成子类的`this`对象，把父类的实例属性和方法放到这个`this`对象上面。子类在调用`super()`之前，是没有`this`对象的，任何对`this`的操作都要放在`super()`的后面。
+
+注意，这里的`super`虽然代表了父类的构造函数，但是因为返回的是子类的`this`（即子类的实例对象），所以`super`内部的`this`代表子类的实例，而不是父类的实例，这里的`super()`相当于`A.prototype.constructor.call(this)`（在子类的`this`上运行父类的构造函数）。
 
 ```javascript
 class A {
@@ -272,7 +274,26 @@ new A() // A
 new B() // B
 ```
 
-上面代码中，`new.target`指向当前正在执行的函数。可以看到，在`super()`执行时，它指向的是子类`B`的构造函数，而不是父类`A`的构造函数。也就是说，`super()`内部的`this`指向的是`B`。
+上面示例中，`new.target`指向当前正在执行的函数。可以看到，在`super()`执行时（`new B()`），它指向的是子类`B`的构造函数，而不是父类`A`的构造函数。也就是说，`super()`内部的`this`指向的是`B`。
+
+不过，由于`super()`在子类构造方法中执行时，子类的属性和方法还没有绑定到`this`，所以如果存在同名属性，此时拿到的是父类的属性。
+
+```javascript
+class A {
+  name = 'A';
+  constructor() {
+    console.log('My name is ' + this.name);
+  }
+}
+
+class B extends A {
+  name = 'B';
+}
+
+const b = new B(); // My name is A
+```
+
+上面示例中，最后一行输出的是`A`，而不是`B`，原因就在于`super()`执行时，`B`的`name`属性还没有绑定到`this`，所以`this.name`拿到的是`A`类的`name`属性。
 
 作为函数时，`super()`只能用在子类的构造函数之中，用在其他地方就会报错。
 
