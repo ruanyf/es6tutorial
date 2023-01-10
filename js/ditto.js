@@ -243,15 +243,7 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  (function() {
-    var wwads = document.createElement('script');
-    wwads.type = 'text/javascript';
-    wwads.async = true;
-    wwads.src = 'https://cdn.wwads.cn/js/makemoney.js';
-    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(wwads);
-  })();
-
-  var banner = $('<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%"></div>')
+  var banner = $('<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%;"></div>')
     .insertAfter(element);
 /*
   // 2022年8月25日
