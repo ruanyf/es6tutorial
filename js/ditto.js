@@ -243,6 +243,17 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
+  (function() {
+    var wwads = document.createElement('script');
+    wwads.type = 'text/javascript';
+    wwads.async = true;
+    wwads.src = 'https://cdn.wwads.cn/js/makemoney.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(wwads);
+  })();
+
+  var banner = $('<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%"></div>')
+    .insertAfter(element);
+/*
   // 2022年8月25日
   var deadline = new Date(2022, 7, 25);
   if (deadline - (new Date()) < 0) return;
@@ -264,6 +275,7 @@ function create_banner(element) {
   var banner = $('<a href="http://www.apeclass.com?did=12" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
   setTimeout(function () {if (banner.css('display') === 'none') {show_loading();show_error();} }, 500);
+*/
 }
 
 function create_page_anchors() {
