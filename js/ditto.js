@@ -45,6 +45,7 @@ var getHash = function (hash) {
 };
 
 var disqusCode = '<h3>留言</h3><div id="disqus_thread"></div>';
+var wwadsCode = '<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%;"></div>';
 var menu = new Array();
 
 function initialize() {
@@ -243,9 +244,6 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  var banner = $('<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%;"></div>')
-    .insertAfter(element);
-/*
   // 2022年8月25日
   var deadline = new Date(2022, 7, 25);
   if (deadline - (new Date()) < 0) return;
@@ -267,7 +265,6 @@ function create_banner(element) {
   var banner = $('<a href="http://www.apeclass.com?did=12" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
   setTimeout(function () {if (banner.css('display') === 'none') {show_loading();show_error();} }, 500);
-*/
 }
 
 function create_page_anchors() {
@@ -397,7 +394,7 @@ function router() {
 
   $.get(path, function(data) {
     $(ditto.error_id).hide();
-    $(ditto.content_id).html(marked(data) + disqusCode);
+    $(ditto.content_id).html(marked(data) + wwadsCode + disqusCode);
     if ($(ditto.content_id + " h1").text() === ditto.document_title) {
       document.title = ditto.document_title;
     } else {
