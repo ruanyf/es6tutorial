@@ -15,6 +15,7 @@ var ditto = {
     theme_button: true,
     save_progress: true, // 保存阅读进度
     search_bar: true,
+    wwads: true,
 
     // initialize function
     run: initialize
@@ -78,6 +79,10 @@ function init_sidebar_section() {
            init_searchbar();
         }
 
+        if (ditto.wwads) {
+          init_wwads();
+        }
+
         // 初始化内容数组
         var menuOL = $(ditto.sidebar_id + ' ol');
         menuOL.attr('start', 0);
@@ -137,6 +142,11 @@ function searchbar_listener(event) {
     }
   }
   */
+}
+
+function init_wwads() {
+  var wwads = '<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%;"></div>';
+  $(ditto.sidebar_id).find('h2').first().before($(wwads));
 }
 
 function init_theme_button() {
@@ -243,9 +253,6 @@ function li_create_linkage(li_tag, header_level) {
 }
 
 function create_banner(element) {
-  var banner = $('<div class="wwads-cn wwads-horizontal" data-id="197" style="max-width:100%;"></div>')
-    .insertAfter(element);
-  /*
   // 2022年8月25日
   var deadline = new Date(2022, 7, 25);
   if (deadline - (new Date()) < 0) return;
@@ -267,7 +274,6 @@ function create_banner(element) {
   var banner = $('<a href="http://www.apeclass.com?did=12" style="color: #333333;" target="_blank"><div style="' + styleStr + '">' + text + '</div></a>')
     .insertAfter(element);
   setTimeout(function () {if (banner.css('display') === 'none') {show_loading();show_error();} }, 500);
-  */
 }
 
 function create_page_anchors() {
@@ -362,7 +368,6 @@ function statistics() {
 }
 
 function router() {
-  window.focus();
   var path = location.hash.replace(/#([^#]*)(#.*)?/, './$1');
 
   var hashArr = location.hash.split('#');
