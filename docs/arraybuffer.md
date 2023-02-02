@@ -746,7 +746,7 @@ const dv = new DataView(buffer);
 - `DataView.prototype.byteLength`：返回占据的内存字节长度
 - `DataView.prototype.byteOffset`：返回当前视图从对应的 ArrayBuffer 对象的哪个字节开始
 
-`DataView`实例提供 8 个方法读取内存。
+`DataView`实例提供10个方法读取内存。
 
 - **`getInt8`**：读取 1 个字节，返回一个 8 位整数。
 - **`getUint8`**：读取 1 个字节，返回一个无符号的 8 位整数。
@@ -790,7 +790,7 @@ const v2 = dv.getUint16(3, false);
 const v3 = dv.getUint16(3);
 ```
 
-DataView 视图提供 8 个方法写入内存。
+DataView 视图提供10个方法写入内存。
 
 - **`setInt8`**：写入 1 个字节的 8 位整数。
 - **`setUint8`**：写入 1 个字节的 8 位无符号整数。
