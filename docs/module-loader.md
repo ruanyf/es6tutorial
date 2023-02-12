@@ -412,7 +412,7 @@ import submodule from './node_modules/es-module-package/private-module.js';
 
 **（3）条件加载**
 
-利用`.`这个别名，可以为 ES6 模块和 CommonJS 指定不同的入口。目前，这个功能需要在 Node.js 运行的时候，打开`--experimental-conditional-exports`标志。
+利用`.`这个别名，可以为 ES6 模块和 CommonJS 指定不同的入口。
 
 ```javascript
 {
