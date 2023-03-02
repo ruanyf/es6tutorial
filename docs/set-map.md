@@ -114,7 +114,7 @@ s.has(1) // true
 s.has(2) // true
 s.has(3) // false
 
-s.delete(2);
+s.delete(2) // true
 s.has(2) // false
 ```
 
