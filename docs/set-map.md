@@ -358,8 +358,8 @@ const ws = new WeakSet(b);
 
 WeakSet 结构有以下三个方法。
 
-- **WeakSet.prototype.add(value)**：向 WeakSet 实例添加一个新成员。
-- **WeakSet.prototype.delete(value)**：清除 WeakSet 实例的指定成员。
+- **WeakSet.prototype.add(value)**：向 WeakSet 实例添加一个新成员，返回 WeakSet 结构本身。
+- **WeakSet.prototype.delete(value)**：清除 WeakSet 实例的指定成员，清除成功返回`true`，如果在 WeakSet 中找不到该成员或该成员不是对象，返回`false`。
 - **WeakSet.prototype.has(value)**：返回一个布尔值，表示某个值是否在 WeakSet 实例之中。
 
 下面是一个例子。
@@ -373,10 +373,10 @@ ws.add(window);
 ws.add(obj);
 
 ws.has(window); // true
-ws.has(foo);    // false
+ws.has(foo); // false
 
-ws.delete(window);
-ws.has(window);    // false
+ws.delete(window); // true
+ws.has(window); // false
 ```
 
 WeakSet 没有`size`属性，没有办法遍历它的成员。
