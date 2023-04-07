@@ -307,3 +307,45 @@ function example(opts) {
 }
 ```
 
+## `#!`命令
+
+Unix 的命令行脚本都支持`#!`命令，又称为 Shebang 或 Hashbang。这个命令放在脚本的第一行，用来指定脚本的执行器。
+
+比如 Bash 脚本的第一行。
+
+```bash
+#!/bin/sh
+```
+
+Python 脚本的第一行。
+
+```python
+#!/usr/bin/env python
+```
+
+[ES2023](https://github.com/tc39/proposal-hashbang) 为 JavaScript 脚本引入了`#!`命令，写在脚本文件或者模块文件的第一行。
+
+```javascript
+// 写在脚本文件第一行
+#!/usr/bin/env node
+'use strict';
+console.log(1);
+
+// 写在模块文件第一行
+#!/usr/bin/env node
+export {};
+console.log(1);
+```
+
+有了这一行以后，Unix 命令行就可以直接执行脚本。
+
+```bash
+# 以前执行脚本的方式
+$ node hello.js
+
+# hashbang 的方式
+$ ./hello.js
+```
+
+对于 JavaScript 引擎来说，会把`#!`理解成注释，忽略掉这一行。
+
