@@ -118,7 +118,7 @@ s.delete(2) // true
 s.has(2) // false
 ```
 
-下面是一个对比，看看在判断是否包括一个键上面，`Object`结构和`Set`结构的写法不同。
+下面是一个对比，判断一个键是否包括在一个`Object`结构或`Set`结构上面，`Object`结构和`Set`结构的写法不同。
 
 ```javascript
 // 对象的写法
