@@ -118,7 +118,7 @@ s.delete(2) // true
 s.has(2) // false
 ```
 
-下面是一个对比，看看在判断是否包括一个键上面，`Object`结构和`Set`结构的写法不同。
+下面是一个对比，判断是否包括一个键，`Object`结构和`Set`结构写法的不同。
 
 ```javascript
 // 对象的写法
@@ -142,7 +142,7 @@ if (properties.has(someName)) {
 }
 ```
 
-`Array.from`方法可以将 Set 结构转为数组。
+`Array.from()`方法可以将 Set 结构转为数组。
 
 ```javascript
 const items = new Set([1, 2, 3, 4, 5]);
