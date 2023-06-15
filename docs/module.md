@@ -162,6 +162,8 @@ function f() {}
 export {f};
 ```
 
+目前，export 命令能够对外输出的就是三种接口：函数（Functions）， 类（Classes），var、let、const 声明的变量（Variables）。
+
 另外，`export`语句输出的接口，与其对应的值是动态绑定关系，即通过该接口，可以取到模块内部实时的值。
 
 ```javascript
