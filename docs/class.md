@@ -853,7 +853,7 @@ class A {
   #foo = 0;
   m() {
     console.log(#foo in this); // true
-    console.log(#bar in this); // false
+    console.log(#bar in this); // 报错
   }
 }
 ```
