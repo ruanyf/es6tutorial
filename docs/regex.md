@@ -376,7 +376,7 @@ JavaScript 语言的正则表达式，只支持先行断言（lookahead）和先
 
 ```javascript
 /(?<=\$)\d+/.exec('Benjamin Franklin is on the $100 bill')  // ["100"]
-/(?<!\$)\d+/.exec('it’s is worth about €90')                // ["90"]
+/(?<!\$)\d+/.exec('it’s worth about €90')                   // ["90"]
 ```
 
 上面的例子中，“后行断言”的括号之中的部分（`(?<=\$)`），也是不计入返回结果。
