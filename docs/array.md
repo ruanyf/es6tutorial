@@ -941,7 +941,7 @@ array.group((num, index, array) => {
 下面是另一个例子。
 
 ```javascript
-[6.1, 4.2, 6.3].groupBy(Math.floor)
+[6.1, 4.2, 6.3].group(Math.floor)
 // { '4': [4.2], '6': [6.1, 6.3] }
 ```
 
