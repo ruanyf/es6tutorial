@@ -308,17 +308,15 @@ set = new Set(Array.from(set, val => val * 2));
 
 WeakSet 结构与 Set 类似，也是不重复的值的集合。但是，它与 Set 有两个区别。
 
-首先，WeakSet 的成员只能是对象，而不能是其他类型的值。
+首先，WeakSet 的成员只能是对象和 Symbol 值，而不能是其他类型的值。
 
 ```javascript
 const ws = new WeakSet();
-ws.add(1)
-// TypeError: Invalid value used in weak set
-ws.add(Symbol())
-// TypeError: invalid value used in weak set
+ws.add(1) // 报错
+ws.add(Symbol()) // 不报错
 ```
 
-上面代码试图向 WeakSet 添加一个数值和`Symbol`值，结果报错，因为 WeakSet 只能放置对象。
+上面代码试图向 WeakSet 添加一个数值和`Symbol`值，结果前者报错了，因为 WeakSet 只能放置对象和 Symbol 值。
 
 其次，WeakSet 中的对象都是弱引用，即垃圾回收机制不考虑 WeakSet 对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于 WeakSet 之中。
 
@@ -633,7 +631,7 @@ m.has(undefined)     // true
 
 **（5）Map.prototype.delete(key)**
 
-`delete`方法删除某个键，返回`true`。如果删除失败，返回`false`。
+`delete()`方法删除某个键，返回`true`。如果删除失败，返回`false`。
 
 ```javascript
 const m = new Map();
@@ -646,7 +644,7 @@ m.has(undefined)       // false
 
 **（6）Map.prototype.clear()**
 
-`clear`方法清除所有成员，没有返回值。
+`clear()`方法清除所有成员，没有返回值。
 
 ```javascript
 let map = new Map();
@@ -928,21 +926,16 @@ wm2.get(k2) // "bar"
 
 `WeakMap`与`Map`的区别有两点。
 
-首先，`WeakMap`只接受对象作为键名（`null`除外），不接受其他类型的值作为键名。
+首先，`WeakMap`只接受对象（`null`除外）和 [Symbol 值](https://github.com/tc39/proposal-symbols-as-weakmap-keys)作为键名，不接受其他类型的值作为键名。
 
 ```javascript
 const map = new WeakMap();
-map.set(1, 2)
-// TypeError: 1 is not an object!
-map.set(Symbol(), 2)
-// TypeError: Invalid value used as weak map key
-map.set(null, 2)
-// TypeError: Invalid value used as weak map key
+map.set(1, 2) // 报错
+map.set(null, 2) // 报错
+map.set(Symbol(), 2) // 不报错
 ```
 
-上面代码中，如果将数值`1`和`Symbol`值作为 WeakMap 的键名，都会报错。
-
-不过，现在有一个[提案](https://github.com/tc39/proposal-symbols-as-weakmap-keys)，允许 Symbol 值也可以作为 WeakMap 的键名。一旦纳入标准，就意味着键名存在两种可能：对象和 Symbol 值。
+上面代码中，如果将数值`1`和`null`作为 WeakMap 的键名，都会报错，将 Symbol 值作为键名不会报错。
 
 其次，`WeakMap`的键名所指向的对象，不计入垃圾回收机制。
 
