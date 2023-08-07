@@ -1,5 +1,9 @@
 # ES6 入门教程
 
+- [官方镜像](https://wangdoc.com/es6/)
+- [JavaScript 教程](https://wangdoc.com/javascript)
+- [TypeScript 教程](https://wangdoc.com/typescript)
+
 《ECMAScript 6 入门教程》是一本开源的 JavaScript 语言教程，全面介绍 ECMAScript 6 新引入的语法特性。
 
 [![cover](images/cover_thumbnail_3rd.jpg)](images/cover-3rd.jpg)
@@ -14,13 +18,7 @@
 - [京东](https://search.jd.com/Search?keyword=ES6%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8%20%E7%AC%AC3%E7%89%88&enc=utf-8&wq=ES6%E6%A0%87%E5%87%86%E5%85%A5%E9%97%A8%20%E7%AC%AC3%E7%89%88)
 - [当当](https://product.dangdang.com/25156888.html)
 
-## 相关链接
-
-- [官方镜像](https://wangdoc.com/es6/)
-- [JavaScript 教程](https://wangdoc.com/javascript)
-- [TypeScript 教程](https://wangdoc.com/typescript)
-
-## 版权许可
+### 版权许可
 
 本书采用“保持署名—非商用”创意共享4.0许可证。
 
