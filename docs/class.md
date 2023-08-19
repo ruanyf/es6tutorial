@@ -681,6 +681,8 @@ counter.#count = 42 // 报错
 
 上面示例中，在类的外部，读取或写入私有属性`#count`，都会报错。
 
+注意，[从 Chrome 111 开始](https://developer.chrome.com/blog/new-in-devtools-111/#misc)，开发者工具里面可以读写私有属性，不会报错，原因是 Chrome 团队认为这样方便调试。
+
 另外，不管在类的内部或外部，读取一个不存在的私有属性，也都会报错。这跟公开属性的行为完全不同，如果读取一个不存在的公开属性，不会报错，只会返回`undefined`。
 
 ```javascript
