@@ -286,7 +286,7 @@ const proxy = new Proxy({}, {
 proxy.getReceiver === proxy // true
 ```
 
-上面代码中，`proxy`对象的`getReceiver`属性是由`proxy`对象提供的，所以`receiver`指向`proxy`对象。
+上面代码中，`proxy`对象的`getReceiver`属性会被`get()`拦截，得到的返回值就是`proxy`对象。
 
 ```javascript
 const proxy = new Proxy({}, {
