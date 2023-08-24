@@ -846,7 +846,7 @@ String(obj) // 'str'
 
 ### Symbol.toStringTag
 
-对象的`Symbol.toStringTag`属性，返回一个字符串。在目标对象上面调用`Object.prototype.toString`方法时，如果`Symbol.toStringTag`属性存在，它的返回值会出现在`toString`方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中`object`后面的那个字符串。
+对象的`Symbol.toStringTag`属性，用来设定一个字符串（设为其他类型的值无效，但不报错）。在目标对象上面调用`Object.prototype.toString()`方法时，如果`Symbol.toStringTag`属性存在，该属性设定的字符串会出现在`toString()`方法返回的字符串之中，表示对象的类型。也就是说，这个属性可以用来定制`[object Object]`或`[object Array]`中`object`后面的那个大写字符串。
 
 ```javascript
 // 例一
