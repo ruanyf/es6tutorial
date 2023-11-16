@@ -958,7 +958,7 @@ const mult2 = a => a * 2;
 const addThenMult = pipeline(plus1, mult2);
 
 addThenMult(5)
-// 12
+// 8
 ```
 
 如果觉得上面的写法可读性比较差，也可以采用下面的写法。
@@ -968,7 +968,7 @@ const plus1 = a => a + 1;
 const mult2 = a => a * 2;
 
 mult2(plus1(5))
-// 12
+// 8
 ```
 
 箭头函数还有一个功能，就是可以很方便地改写 λ 演算。
