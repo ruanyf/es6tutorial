@@ -183,7 +183,7 @@ B.hello()  // hello world
 
 上面代码中，`hello()`是`A`类的静态方法，`B`继承`A`，也继承了`A`的静态方法。
 
-注意，静态属性是通过软拷贝实现继承的。
+注意，静态属性是通过浅拷贝实现继承的。
 
 ```javascript
 class A { static foo = 100; }
