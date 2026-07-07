@@ -166,7 +166,7 @@ Temporal.ZonedDateTime.from('2020-11-01T12:00-08:00[America/Los_Angeles]').hours
 
 ZonedDateTime 实例对象有以下方法。
 
-- .withTimeZone()：切换时区。
+- .withTimeZone()：保持同一精确时刻，换一种时区视角来表示。
 
 ```javascript
 zdt = Temporal.ZonedDateTime.from('1995-12-07T03:24:30+09:00[Asia/Tokyo]');
@@ -182,7 +182,8 @@ zdt = Temporal.ZonedDateTime.from('2020-03-08T00:00-08:00[America/Los_Angeles]')
 // 增加一天
 laterDay = zdt.add({ days: 1 });
 // 2020-03-09T00:00:00-07:00[America/Los_Angeles]
-// 注意：时区改变了，表示洛杉矶这个日期处于夏令时，比正常情况早一个小时
+// 注意：由于进入夏令时（DST），UTC 偏移从 -08:00 变为 -07:00。
+// 本地时间仍然是 00:00，但对应的 UTC 时间提前了 1 小时。
 
 laterDay.since(zdt, { largestUnit: 'hour' }).hours;
 // 23
