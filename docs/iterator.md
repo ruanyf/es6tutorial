@@ -979,7 +979,7 @@ const obj = {
 const it = Iterator.concat(Iterator.from(Obj)); // 不报错 
 ```
 
-## Iterator 对象的实例方法
+### Iterator 对象的实例方法
 
 Iterator 对象的实例方法，基本上对应同名的数组方法，用法也类似，不同之处是，它只处理遍历器对象。下面是其中一些方法。
 
