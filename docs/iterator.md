@@ -819,9 +819,194 @@ for (var n of fibonacci) {
 
 上面的例子，会输出斐波纳契数列小于等于 1000 的项。如果当前项大于 1000，就会使用`break`语句跳出`for...of`循环。
 
-## 遍历器对象的工具方法
+## Iterator 对象
 
-ES2025 为遍历器接口返回的遍历器对象，添加了一些工具方法，便于处理数据。
+ES2025 正式提供了 Iterator 对象，作为遍历器的原型对象。这个对象可以作为抽象类，供其他类继承。
+
+```javascript
+class MyIterator extends Iterator {
+  next() {
+    // …
+  }
+}
+```
+
+上面就是继承 Iterator 的例子，需要自己部署`next()`方法。
+
+除了继承使用，这个对象还有一些静态方法，作为工具使用。另外，它还提供很多遍历器的实例方法。
+
+### Iterator 对象的静态方法
+
+Iterator 对象主要有下面两个静态方法。
+
+- Iterator.from()
+- Iterator.concat()
+
+**（1）Iterator.from()**
+
+这个方法接受一个部署了遍历器接口的对象作为参数，返回该对象的遍历器。
+
+```javascript
+const it = (function* () {
+  yield 1;
+  yield 2;
+  yield 3;
+})();
+
+const obj = {
+  [Symbol.iterator]() {
+    return it;
+  },
+};
+
+const it2 = Iterator.from(obj);
+
+it2 === it // true
+```
+
+上面示例中，对象`obj`的遍历器是函数`it`，调用`Iterator.from(obj)`就会返回遍历器`it`，即上面例子的`it2`和`it`是同一个对象。
+
+但是现实中，很多对象的遍历器接口是自定义的，只定义了`next()`方法，并不是真实的 Iterator 实例对象（即并未继承`Iterator.prototype`）。这种情况下，`Iterator.from()`会将自定义的遍历器对象，转成 Iterator 实例对象。
+
+```javascript
+const it = {
+  current: 0,
+  next() {
+    return { value: this.current++, done: false };
+  },
+};
+
+const obj = {
+  [Symbol.iterator]() {
+    return it;
+  },
+};
+
+const it2 = Iterator.from(obj);
+
+it2 === it // false
+it2.next() // {value: 0, done: false}
+it.next() // {value: 1, done: false}
+```
+
+上面示例中，对象`obj`的遍历器是自定义对象`it`，它带有一个手工构造的`next()`方法，并不是 Iterator 的实例对象。这时，`Iterator.from(obj)`就会返回`it`的一个包装对象。`it2`和`it`并不是同一个对象，`it2`只是让`it`继承了 Iterator 对象的实例方法，`it`自身定义的`next()`方法还是不变的，因此`it2.next()`和`it.next()`移动的是同一个指针。
+
+总之，`Iterator.from()`的目的就是获取对象的遍历器对象（`[System.iterator]()`方法的值），并确保该对象是 Iterator 的实例对象。
+
+如果一个对象本身就是遍历器对象，那么`Iterator.from()`也可以用来直接转化该对象。
+
+```javascript
+// 示例一
+const obj1 = (function* () {
+  yield 1;
+  yield 2;
+  yield 3;
+})();
+
+const obj2 = Iterator.from(obj1);
+obj2 === obj1 // true
+
+// 示例二
+const obj3 = {
+  current: 0,
+  next() {
+    return { value: this.current++, done: false };
+  },
+};
+
+const obj4 = Iterator.from(obj4);
+obj3 === obj4 // false
+```
+
+上面示例中，`Obj1`和`obj3`本身就是遍历器对象，`Iterator.from()`可以直接转换它们。`Obj1`是 Iterator 的实例对象，所以转换后不变，而`Obj3`不是 Iterator 实例对象，所以转换后变成了原对象的包装对象。
+
+**（2）Iterator.concat()**
+
+`Iterator.concat()`可以把多个遍历器对象合成一个对象（即按顺序遍历）。
+
+```javascript
+const a1 = [1,2];
+const a2 = [3,4];
+const a3 = [5,6];
+
+const it = Iterator.concat(a1, a2, a3)
+
+it.next() // {value: 1, done: false}
+it.next() // {value: 2, done: false}
+it.next() // {value: 3, done: false}
+```
+
+上面示例中，`Iterator.concat()`将`a1`、`a2`、`a3`三个数组的遍历器连接起来，可以顺序遍历。
+
+它可以将不同类型对象的遍历器连接起来。
+
+```javascript
+const array = [1, 2, 3];
+const set = new Set([4, 5, 6]);
+function* gen() {
+  yield 7;
+  yield 8;
+  yield 9;
+}
+
+const it = Iterator.concat(array, set, gen());
+[...it] // [1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
+
+上面示例中，`Iterator.concat()`将三种不同类型的遍历器连接了起来。
+
+如果参数是不可遍历对象，它会报错。
+
+```javascript
+const obj = {
+  next() {
+    return { done: true };
+  },
+};
+
+const it = Iterator.concat(obj); // 报错
+```
+
+上面示例中，`obj`不是符合要求的遍历器对象，所以`Iterator.concat()`就报错了。如果用`Iterator.from()`转换成合格对象，就不报错了。
+
+```javascript
+const obj = {
+  next() {
+    return { done: true };
+  },
+};
+
+const it = Iterator.concat(Iterator.from(Obj)); // 不报错 
+```
+
+## Iterator 对象的实例方法
+
+Iterator 对象的实例方法，基本上对应同名的数组方法，用法也类似，不同之处是，它只处理遍历器对象。下面是其中一些方法。
+
+```javascript
+- Iterator.prototype.every()
+- Iterator.prototype.filter()
+- Iterator.prototype.find()
+- Iterator.prototype.flatMap()
+- Iterator.prototype.forEach()
+- Iterator.prototype.includes()
+- Iterator.prototype.join()
+- Iterator.prototype.map()
+- Iterator.prototype.reduce()
+- Iterator.prototype.some()
+```
+
+这些方法可以像数组方法一样链式使用。
+
+```javascript
+const result = Iterator.from(array)
+  .map(x => x * 2)
+  .filter(x => x > 10)
+  .take(3)
+  .toArray();
+```
+
+下面是一个实际的例子。
 
 ```javascript
 const arr = ['a', '', 'b', '', 'c', '', 'd', '', 'e'];
@@ -835,26 +1020,11 @@ arr.values() // creates an iterator
 // ['=b=', '=c=', '=d=']
 ```
 
-上面示例中，arr 是一个数组，它的 values() 方法返回的是一个遍历器对象，以前要使用 for...of 循环来处理，现在有了工具方法，就可以直接链式处理了。
+上面示例中，arr 是一个数组，它的 values() 方法返回的是一个遍历器对象，以前要使用 for...of 循环来处理，现在有了遍历器对象的实例方法，就可以直接链式处理了。
 
-遍历器对象的工具方法，基本上与数组方法是对应的。
+有三个实例方法是 Iterator 实例对象独有的。
 
-- 返回遍历器对象的方法
-  - iterator.filter(filterFn)
-  - iterator.map(mapFn)
-  - iterator.flatMap(mapFn)
-- 返回布尔值的方法
-  - iterator.some(fn)
-  - iterator.every(fn)
-- 返回其他值的方法
-  - iterator.find(fn)
-  - iterator.reduce(reducer, initialValue?)
-- 不返回值的方法
-  - iterator.forEach(fn)
-
-以下是遍历器对象独有的方法。
-
-- iterator.drop(limit)：返回一个遍历器对象，丢弃前 limit 个成员。
-- iterator.take(limit)：返回一个遍历器对象，包含前 limit 个成员。
-- iterator.toArray()：返回一个数组，包含所有成员。
+- Iterator.prototype.drop(limit)：返回一个遍历器对象，丢弃前 limit 个成员。
+- Iterator.prototype.take(limit)：返回一个遍历器对象，包含前 limit 个成员。
+- Iterator.prototype.toArray()：返回一个数组，包含所有成员。
 
