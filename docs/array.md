@@ -546,6 +546,27 @@ function ArrayOf(){
 }
 ```
 
+## Array.fromAsync()
+
+ES2026 引入了 Array.fromAsync() 方法，用于收集异步遍历器（参见《异步遍历器》一章）的值，作为一个数组返回。
+
+```javascript
+async function* fetchNumbers() {
+  yield 1;
+  await new Promise(r => setTimeout(r, 100));
+  yield 2;
+  await new Promise(r => setTimeout(r, 100));
+  yield 3;
+}
+
+const numbers = await Array.fromAsync(fetchNumbers());
+console.log(numbers); // [1, 2, 3]
+```
+
+上面示例中，`fetchNumber()`是一个异步遍历器，`Array.fromAsync()`方法收集它每一步的值，作为一个数组返回。
+
+这个方法的使用场合，主要是循环遍历多个异步函数并等待它们返回结果，比如分页之类的操作。
+
 ## 实例方法：copyWithin()
 
 数组实例的`copyWithin()`方法，在当前数组内部，将指定位置的成员复制到其他位置（会覆盖原有成员），然后返回当前数组。也就是说，使用这个方法，会修改当前数组。

@@ -562,21 +562,27 @@ export {ns};
 
 ES2025 引入了“[import 属性](https://github.com/tc39/proposal-import-attributes)”（import attributes），允许为 import 命令设置属性，主要用于导入非模块的代码，比如 JSON 数据、WebAssembly 代码、CSS 代码。
 
-目前，只支持导入 JSON 数据。
+导入 JSON 文件的写法如下。
 
 ```javascript
-// 静态导入
 import configData from './config-data.json' with { type: 'json' };
-
-// 动态导入
-const configData = await import(
-  './config-data.json', { with: { type: 'json' } }
-);
 ```
 
-上面代码中，import 命令使用 with 子句，指定一个属性对象。这个属性对象目前只有一个 type 属性，它的值就是导入代码的类型，现在只能设置为`json`一个值。
+上面代码中，import 命令使用 with 子句，指定一个属性对象。这个属性对象目前只有一个 type 属性，它的值就是导入代码的类型，这里设置为`json`。
 
-如果没有 import 属性，导入 JSON 数据只能使用 fetch 命令。
+这种写法的一个缺点是，如果导入失败，整个模块就会崩溃。为了避免报错，可以使用异步的`import()`方法来导入。
+
+```javascript
+try {
+  const configData = await import(
+    './config-data.json', { with: { type: 'json' } }
+  );
+} catch(error) {
+  // 处理报错
+}
+```
+
+如果没有 import 属性，导入 JSON 文件只能使用 fetch 命令。
 
 ```javascript
 const response = await fetch('./config.json');
@@ -587,6 +593,28 @@ export 命令与 import 命令写在一起，形成一个再导出语句时，�
 
 ```javascript
 export { default as config } from './config-data.json' with { type: 'json' };
+```
+
+导入 CSS 文件的写法如下。
+
+```javascript
+import componentStyles from "./component.css" with { type: "css" };
+```
+
+下面是一个实际的例子。
+
+```javascript
+import sheet from './styles.css' with { type: 'css' };
+
+class MyComponent extends HTMLElement {
+  constructor() {
+    super();
+    const shadowRoot = this.attachShadow({ mode: 'open' });
+    shadowRoot.adoptedStyleSheets = [sheet];
+  }
+
+  // ...
+}
 ```
 
 ## 模块的继承

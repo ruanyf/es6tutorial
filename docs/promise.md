@@ -1023,7 +1023,17 @@ run(g);
 
 ## Promise.try()
 
-实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。一般就会采用下面的写法。
+实际开发中，经常遇到一种情况：不知道或者不想区分，函数`f`是同步函数还是异步操作，但是想用 Promise 来处理它。因为这样就可以不管`f`是否包含异步操作，都用`then`方法指定下一步流程，用`catch`方法处理`f`抛出的错误。
+
+```javascript
+loadUser(id))
+  .then(user => render(user))
+  .catch(err => showError(err));
+```
+
+上面示例中，如果我们不知道`loadUser()`是同步函数还是异步函数，但还是想采用`then()...catch()`，应该怎么办？
+
+一般就会采用下面的写法。
 
 ```javascript
 Promise.resolve().then(f)

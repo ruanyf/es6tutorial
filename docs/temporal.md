@@ -7,7 +7,7 @@ Temporal 是一个表示时间日期的全新 API，对目前的 Date API 的诸
 Temporal API 将时间分成四种。
 
 - 当前时间：表示此时此刻的时间，位于 Temporal.Now 对象。
-- 时点时间（instant），表示历史上某个唯一时间，其中 Temporal.Instant 对象表示时间戳，Temporal.ZonedDateTime 表示带有时区的日期时间。
+- 时点时间（instant），表示某个指定的时点，其中 Temporal.Instant 对象表示时间戳，Temporal.ZonedDateTime 表示带有时区的日期时间。
 - 本地时间（wall-clock times），包含以下几个对象，不涉及时区。
     - Temporal.PlainDateTime：完整的日期和时间。
     - Temporal.PlainDate：仅限于日期。
@@ -214,6 +214,14 @@ const newDate = date.add({ days: 10 });
 console.log(newDate.toString()); // Outputs '2024-01-11'
 ```
 
+使用这个方法，用来计算下个月的同一天非常方便。比如，现在是1月31日，下个月的最后一天就是2月28日。
+
+```javascript
+const jan31 = Temporal.PlainDate.from("2026-01-31");
+const feb = jan31.add({ months: 1 });
+console.log(feb.toString()); // 2026-02-28
+```
+
 ## Temporal.PlainTime
 
 `Temporal.PlainTime`表示与时区无关的某个时点。
@@ -307,7 +315,23 @@ const duration = Temporal.Duration.from({
 });
 
 duration.total({ unit: 'second' }); // => 469200
+```
 
+上面示例中，`total()`方法返回了当前时间段的总秒数。
+
+`compare()`方法可以比较两个时间段的长短。
+
+```javascript
+const a = Temporal.Duration.from({ hours: 25 });
+const b = Temporal.Duration.from({ days: 1 });
+
+const cmp = Temporal.Duration.compare(a, b, { relativeTo: Temporal.Now.plainDateISO() });
+console.log(cmp); // 1  (25h > 1 day)
+```
+
+`sort()`方法可以按照时间段的长短进行排序。
+
+```javascript
 const durations = [
   Temporal.Duration.from({ hours: 1 }),
   Temporal.Duration.from({ hours: 2 }),
